@@ -16,7 +16,7 @@ class CreateItemTable extends Migration
         Schema::create('Item', function (Blueprint $table) {
             
             $table->bigIncrements('iid');
-            $table->binary('i_content');
+            $table->text('i_content');
             $table->foreign('i_case')->references('cid')->on('Case');
             $table->foreign('i_type')->references('itt_id')->on('Item_Type');
 
