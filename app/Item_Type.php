@@ -28,7 +28,7 @@ class Item_Type extends Model
      */
     protected $connection = 'riseup';
 
-    public function Item(){
+    public function item(){
 
         return $this->belongsTo('App\Item');
     }
