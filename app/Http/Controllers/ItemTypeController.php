@@ -14,7 +14,8 @@ class ItemTypeController extends Controller
      */
     public function index()
     {
-        //
+        $item_Type = Item_Type::all();
+        return view();
     }
 
     /**
@@ -24,7 +25,7 @@ class ItemTypeController extends Controller
      */
     public function create()
     {
-        //
+        return view();
     }
 
     /**
@@ -35,7 +36,11 @@ class ItemTypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $item_type = new Item_Type();
+        $item_type->itt_name = $request('itt_name');
+        
+
+        $item_type->save();
     }
 
     /**

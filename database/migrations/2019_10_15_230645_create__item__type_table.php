@@ -14,10 +14,8 @@ class CreateItemTypeTable extends Migration
     public function up()
     {
         Schema::create('Item_Type', function (Blueprint $table) {
-            
             $table->bigIncrements('iid');
-            $table->string('itt_name',255);
-        
+            $table->string('itt_name', 255);
         });
     }
 

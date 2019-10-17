@@ -14,7 +14,8 @@ class ItemController extends Controller
      */
     public function index()
     {
-        //
+        $items = Item::all();
+        return view();
     }
 
     /**
@@ -24,7 +25,7 @@ class ItemController extends Controller
      */
     public function create()
     {
-        //
+        return view();
     }
 
     /**
@@ -35,7 +36,12 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $item = new Item();
+        $item->i_content = $request('i_content');
+        $item->i_case = $request('i_case');
+        $item->i_type = $request('i_type');
+        
+        $item->save();
     }
 
     /**

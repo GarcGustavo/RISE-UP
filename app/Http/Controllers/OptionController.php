@@ -14,7 +14,8 @@ class OptionController extends Controller
      */
     public function index()
     {
-        //
+        $options = Option::all();
+        return view();
     }
 
     /**
@@ -24,7 +25,7 @@ class OptionController extends Controller
      */
     public function create()
     {
-        //
+        return view();
     }
 
     /**
@@ -35,7 +36,11 @@ class OptionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $options = new Option();
+        $options->o_parameter = $request('o_parameter');
+        $options->o_content = $request('o_content');
+
+        $options->save();
     }
 
     /**
