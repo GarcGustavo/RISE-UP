@@ -29,7 +29,7 @@ class Item extends Model
      */
     protected $connection = 'riseup';
 
-    public function Item_type(){
+    public function item_type(){
 
         return $this->hasMany('App\Item_Type','i_type');
     }
