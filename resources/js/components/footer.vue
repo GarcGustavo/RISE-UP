@@ -1,5 +1,4 @@
 <template>
-    <div>
 
 <!-- Footer -->
   <footer class="py-5 bg-dark">
@@ -8,9 +7,6 @@
     </div>
     <!-- /.container -->
   </footer>
-
-
-    </div>
 </template>
 
 <script>
