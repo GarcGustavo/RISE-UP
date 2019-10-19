@@ -20,7 +20,7 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('iren_header', require('./components/header.vue').default);
-Vue.component('iren_about', require('./components/about.vue').default);
+Vue.component('user_menu', require('./components/user-menu.vue').default);
 Vue.component('iren_footer', require('./components/footer.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
