@@ -51,7 +51,7 @@ class ItemTypeController extends Controller
      */
     public function show(Item_Type $item_Type)
     {
-        //
+        return view();
     }
 
     /**
