@@ -14,11 +14,11 @@ class Option extends Model
      */
     protected $table = 'Option';
 
-     /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
+    /**
+    * Indicates if the model should be timestamped.
+    *
+    * @var bool
+    */
     public $timestamps = false;
     
     
@@ -29,4 +29,3 @@ class Option extends Model
      */
     protected $connection = 'riseup';
 }
-

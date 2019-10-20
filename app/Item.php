@@ -14,11 +14,11 @@ class Item extends Model
      */
     protected $table = 'Item';
 
-     /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
+    /**
+    * Indicates if the model should be timestamped.
+    *
+    * @var bool
+    */
     public $timestamps = false;
     
     
@@ -29,9 +29,8 @@ class Item extends Model
      */
     protected $connection = 'riseup';
 
-    public function item_type(){
-
-        return $this->hasMany('App\Item_Type','i_type');
+    public function item_type()
+    {
+        return $this->hasMany('App\Item_Type', 'i_type');
     }
 }
-
