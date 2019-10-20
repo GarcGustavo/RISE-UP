@@ -89,10 +89,12 @@ a:link {
   padding-top: 30px;
   padding-bottom: 100px;
 }
+
 /* padding for content, and links text */
 .text-white {
   padding-right: 55px;
 }
+
 /* font weight for links options */
 ul {
   font-weight: 300;

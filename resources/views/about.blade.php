@@ -79,7 +79,6 @@
     </div>
 </div>
 
-
 <style>
     .card .card-body {
 
@@ -87,9 +86,5 @@
         padding-right: 20px;
     }
 
-    .card-title p
-    {
-        color: red !important;
-        }
 </style>
 @endsection
