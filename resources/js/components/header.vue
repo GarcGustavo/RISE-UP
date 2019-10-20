@@ -94,12 +94,14 @@ export default {};
 
 .navbar-custom {
   background-color: #333333;
+  border: 0;
 }
 
 /* change the brand and text color */
 .navbar-custom .navbar-brand,
 .navbar-custom .navbar-text {
   color: rgba(255, 255, 255, 0.8);
+  //color: #000 !important;
 }
 
 /* change the link color */

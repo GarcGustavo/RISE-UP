@@ -19,25 +19,25 @@
     </div>
     <hr />
     <div class="info">
-        <div class="card mt-5 ">
-            <div class="card-body">
+        <div class="card mt-5 border-0 ">
+            <div class="card-body ">
 
-                <h2>About Modern Business</h2>
-                <p>
+                <h2 class="card-title">About Modern Business</h2>
+                <p class="card-text">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed voluptate nihil eum
                     consectetur
                     similique? Consectetur, quod, incidunt, harum nisi dolores delectus reprehenderit
                     voluptatem
                     perferendis dicta dolorem non blanditiis ex fugiat.
                 </p>
-                <p>
+                <p class="card-text">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe, magni, aperiam
                     vitae illum
                     voluptatum aut sequi impedit non velit ab ea pariatur sint quidem corporis eveniet.
                     Odit,
                     temporibus reprehenderit dolorum!
                 </p>
-                <p>
+                <p class="card-text">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et, consequuntur, modi
                     mollitia
                     corporis ipsa voluptate corrupti eum ratione ex ea praesentium quibusdam? Aut, in
@@ -74,20 +74,22 @@
                     eum facere
                     corrupti necessitatibus perspiciatis quis?
                 </p>
-
             </div>
-
         </div>
-
     </div>
 </div>
 
 
 <style>
-    .card-body {
+    .card .card-body {
 
         padding-left: 20px;
-        ` padding-right: 20px;
+        padding-right: 20px;
     }
+
+    .card-title p
+    {
+        color: red !important;
+        }
 </style>
 @endsection

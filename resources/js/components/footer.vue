@@ -9,8 +9,8 @@
             <!-- Grid column -->
             <div class="col-md-6 mt-md-0 mt-3">
               <!-- Content -->
-              <h5 class="text-uppercase text-white">Footer Content</h5>
-              <p class="text-white">
+              <h5 class="text-uppercase text-white" style="width:235px;">Footer Content</h5>
+              <p class="text-white font-weight-light">
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed voluptate nihil eum
                 consectetur
                 similique? Consectetur, quod, incidunt, harum nisi dolores delectus reprehenderit
@@ -25,11 +25,11 @@
             <!-- Grid column -->
             <div class="col-md-3 mb-md-0 mb-3">
               <!-- Links -->
-              <h5 class="text-uppercase text-white">Links</h5>
+              <h5 class="text-uppercase text-white" style="width:50px;">Links</h5>
 
               <ul class="list-unstyled">
                 <li>
-                  <a href="#!">Link 1</a>
+                  <a href="#!">Link</a>
                 </li>
                 <li>
                   <a href="#!">Link 2</a>
@@ -47,7 +47,7 @@
             <!-- Grid column -->
             <div class="col-md-3 mb-md-0 mb-3">
               <!-- Links -->
-              <h5 class="text-uppercase text-white">Links</h5>
+              <h5 class="text-uppercase text-white" style="width:50px;">Links</h5>
 
               <ul class="list-unstyled">
                 <li>
@@ -88,5 +88,18 @@ a:link {
 .container-fluid {
   padding-top: 30px;
   padding-bottom: 100px;
+}
+/* padding for content, and links text */
+.text-white {
+  padding-right: 55px;
+}
+/* font weight for links options */
+ul {
+  font-weight: 300;
+}
+
+/* underline for footer title text */
+h5 {
+  border-bottom: 2px solid white;
 }
 </style>

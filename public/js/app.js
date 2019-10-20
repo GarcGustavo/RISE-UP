@@ -6457,7 +6457,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* change links text color */\na[data-v-585a4226]:link {\n  color: white;\n}\n\n/* Footer padding */\n.container-fluid[data-v-585a4226] {\n  padding-top: 30px;\n  padding-bottom: 100px;\n}", ""]);
+exports.push([module.i, "/* change links text color */\na[data-v-585a4226]:link {\n  color: white;\n}\n\n/* Footer padding */\n.container-fluid[data-v-585a4226] {\n  padding-top: 30px;\n  padding-bottom: 100px;\n}\n.text-white[data-v-585a4226] {\n  padding-right: 55px;\n}\nul[data-v-585a4226] {\n  font-weight: 300;\n}\nh5[data-v-585a4226] {\n  border-bottom: 2px solid white;\n}", ""]);
 
 // exports
 
@@ -6476,7 +6476,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 16px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n.profile-usertitle-job[data-v-798ca618] {\n  text-transform: uppercase;\n  color: #5b9bd1;\n  font-size: 12px;\n  font-weight: 600;\n  margin-bottom: 15px;\n}\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of droodown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 35px;\n}\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
+exports.push([module.i, ".profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 16px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n.profile-usertitle-job[data-v-798ca618] {\n  text-transform: uppercase;\n  color: #5b9bd1;\n  font-size: 12px;\n  font-weight: 600;\n  margin-bottom: 15px;\n}\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n  border: 0;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of droodown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 35px;\n}\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
 
 // exports
 
@@ -38016,11 +38016,16 @@ var staticRenderFns = [
             [
               _c("div", { staticClass: "row" }, [
                 _c("div", { staticClass: "col-md-6 mt-md-0 mt-3" }, [
-                  _c("h5", { staticClass: "text-uppercase text-white" }, [
-                    _vm._v("Footer Content")
-                  ]),
+                  _c(
+                    "h5",
+                    {
+                      staticClass: "text-uppercase text-white",
+                      staticStyle: { width: "235px" }
+                    },
+                    [_vm._v("Footer Content")]
+                  ),
                   _vm._v(" "),
-                  _c("p", { staticClass: "text-white" }, [
+                  _c("p", { staticClass: "text-white font-weight-light" }, [
                     _vm._v(
                       "\n              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed voluptate nihil eum\n              consectetur\n              similique? Consectetur, quod, incidunt, harum nisi dolores delectus reprehenderit\n              voluptatem\n              perferendis dicta dolorem non blanditiis ex fugiat.\n            "
                     )
@@ -38030,13 +38035,18 @@ var staticRenderFns = [
                 _c("hr", { staticClass: "clearfix w-100 d-md-none pb-3" }),
                 _vm._v(" "),
                 _c("div", { staticClass: "col-md-3 mb-md-0 mb-3" }, [
-                  _c("h5", { staticClass: "text-uppercase text-white" }, [
-                    _vm._v("Links")
-                  ]),
+                  _c(
+                    "h5",
+                    {
+                      staticClass: "text-uppercase text-white",
+                      staticStyle: { width: "50px" }
+                    },
+                    [_vm._v("Links")]
+                  ),
                   _vm._v(" "),
                   _c("ul", { staticClass: "list-unstyled" }, [
                     _c("li", [
-                      _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 1")])
+                      _c("a", { attrs: { href: "#!" } }, [_vm._v("Link")])
                     ]),
                     _vm._v(" "),
                     _c("li", [
@@ -38054,9 +38064,14 @@ var staticRenderFns = [
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "col-md-3 mb-md-0 mb-3" }, [
-                  _c("h5", { staticClass: "text-uppercase text-white" }, [
-                    _vm._v("Links")
-                  ]),
+                  _c(
+                    "h5",
+                    {
+                      staticClass: "text-uppercase text-white",
+                      staticStyle: { width: "50px" }
+                    },
+                    [_vm._v("Links")]
+                  ),
                   _vm._v(" "),
                   _c("ul", { staticClass: "list-unstyled" }, [
                     _c("li", [
@@ -50481,14 +50496,15 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /*!********************************************!*\
   !*** ./resources/js/components/footer.vue ***!
   \********************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _footer_vue_vue_type_template_id_585a4226_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./footer.vue?vue&type=template&id=585a4226&scoped=true& */ "./resources/js/components/footer.vue?vue&type=template&id=585a4226&scoped=true&");
 /* harmony import */ var _footer_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./footer.vue?vue&type=script&lang=js& */ "./resources/js/components/footer.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _footer_vue_vue_type_style_index_0_id_585a4226_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./footer.vue?vue&type=style&index=0&id=585a4226&lang=scss&scoped=true& */ "./resources/js/components/footer.vue?vue&type=style&index=0&id=585a4226&lang=scss&scoped=true&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _footer_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _footer_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _footer_vue_vue_type_style_index_0_id_585a4226_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./footer.vue?vue&type=style&index=0&id=585a4226&lang=scss&scoped=true& */ "./resources/js/components/footer.vue?vue&type=style&index=0&id=585a4226&lang=scss&scoped=true&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -50520,7 +50536,7 @@ component.options.__file = "resources/js/components/footer.vue"
 /*!*********************************************************************!*\
   !*** ./resources/js/components/footer.vue?vue&type=script&lang=js& ***!
   \*********************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -50568,14 +50584,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!********************************************!*\
   !*** ./resources/js/components/header.vue ***!
   \********************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _header_vue_vue_type_template_id_798ca618_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./header.vue?vue&type=template&id=798ca618&scoped=true& */ "./resources/js/components/header.vue?vue&type=template&id=798ca618&scoped=true&");
 /* harmony import */ var _header_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./header.vue?vue&type=script&lang=js& */ "./resources/js/components/header.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _header_vue_vue_type_style_index_0_id_798ca618_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./header.vue?vue&type=style&index=0&id=798ca618&lang=scss&scoped=true& */ "./resources/js/components/header.vue?vue&type=style&index=0&id=798ca618&lang=scss&scoped=true&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _header_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _header_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _header_vue_vue_type_style_index_0_id_798ca618_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./header.vue?vue&type=style&index=0&id=798ca618&lang=scss&scoped=true& */ "./resources/js/components/header.vue?vue&type=style&index=0&id=798ca618&lang=scss&scoped=true&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -50607,7 +50624,7 @@ component.options.__file = "resources/js/components/header.vue"
 /*!*********************************************************************!*\
   !*** ./resources/js/components/header.vue?vue&type=script&lang=js& ***!
   \*********************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

@@ -33,7 +33,9 @@
         </div>
         <script src="{{asset('js/app.js')}}">
         </script>
+
     </body>
+
     <style>
         .container {
             padding-top: 56px;
