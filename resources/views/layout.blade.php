@@ -13,14 +13,8 @@
         <!-- Bootstrap core CSS -->
         <link href="{{asset('css/bootstrap.min.css')}}" rel="stylesheet">
 
-
-        <!-- Custom styles for this template -->
-        <link href="{{asset('css/modern-business.css')}}" rel="stylesheet">
-
-
         <!-- icons for this template -->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
 
         <!-- font for this template -->
         <link
@@ -40,5 +34,10 @@
         <script src="{{asset('js/app.js')}}">
         </script>
     </body>
+    <style>
+        .container {
+            padding-top: 56px;
+        }
+    </style>
 
 </html>

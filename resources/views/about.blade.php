@@ -5,7 +5,7 @@
 
 <div class="body mb-5 mt-5">
     <!-- Page Heading/Breadcrumbs -->
-    <h1 class=" mb-3">
+    <h1 class="mb-3">
         About
     </h1>
 
@@ -87,7 +87,7 @@
     .card-body {
 
         padding-left: 20px;
-        padding-right: 20px;
+        ` padding-right: 20px;
     }
 </style>
 @endsection
