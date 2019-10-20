@@ -1,6 +1,6 @@
 <template>
   <!-- Navigation -->
-  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-custom">
     <a class="navbar-brand" href="#">Interdisciplinary Research Network</a>
     <button
       class="navbar-toggler"
@@ -12,7 +12,8 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <form class="navbar-form navbar-right ml-auto mt-2 mr-5" action>
+    <!-- Search bar -->
+    <form class="navbar-form navbar-right ml-auto mt-2 mr-5 search" action>
       <div class="input-group mb-3">
         <input
           type="text"
@@ -28,6 +29,8 @@
         </div>
       </div>
     </form>
+
+    <!-- Nav options -->
     <ul class="navbar-nav mr-3">
       <li class="nav-item">
         <a class="nav-link" href>Collaborate</a>
@@ -41,6 +44,8 @@
       <li class="nav-item">
         <a class="nav-link" href>Language</a>
       </li>
+
+      <!-- User menu -->
       <li class="nav-item dropdown">
         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
           <i class="material-icons" style="font-size: 25px">person</i>
@@ -67,11 +72,6 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
-.dropdown-item {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
 .profile-usertitle {
   text-align: center;
   margin-top: 20px;
@@ -92,15 +92,8 @@ export default {};
   margin-bottom: 15px;
 }
 
-/**
-*
-*
-*   navbar-custom is not used
-*
-*
-*/
-navbar-custom {
-  background-color: #ff5500;
+.navbar-custom {
+  background-color: #333333;
 }
 
 /* change the brand and text color */
@@ -122,14 +115,26 @@ navbar-custom {
 
 /* for dropdown only - change the color of droodown */
 .navbar-custom .dropdown-menu {
-  background-color: #ff5500;
+  background-color: #ffffff;
 }
 .navbar-custom .dropdown-item {
-  color: #ffffff;
+  color: black;
 }
 .navbar-custom .dropdown-item:hover,
 .navbar-custom .dropdown-item:focus {
   color: #333333;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: lightgray;
+}
+
+.navbar-custom .dropdown-item {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.navbar-custom .dropdown-menu {
+  width: 35px;
+}
+
+.search input[type="text"] {
+  width: 315px !important;
 }
 </style>

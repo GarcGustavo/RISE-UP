@@ -1,10 +1,76 @@
 <template>
   <!-- Footer -->
-  <footer class="py-5 bg-dark">
-    <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+  <footer class="page-footer">
+    <div style="background-color: #333333;">
+      <div class="container">
+        <div class="container-fluid text-center text-md-left">
+          <!-- Grid row -->
+          <div class="row">
+            <!-- Grid column -->
+            <div class="col-md-6 mt-md-0 mt-3">
+              <!-- Content -->
+              <h5 class="text-uppercase text-white">Footer Content</h5>
+              <p class="text-white">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed voluptate nihil eum
+                consectetur
+                similique? Consectetur, quod, incidunt, harum nisi dolores delectus reprehenderit
+                voluptatem
+                perferendis dicta dolorem non blanditiis ex fugiat.
+              </p>
+            </div>
+            <!-- Grid column -->
+
+            <hr class="clearfix w-100 d-md-none pb-3">
+
+            <!-- Grid column -->
+            <div class="col-md-3 mb-md-0 mb-3">
+              <!-- Links -->
+              <h5 class="text-uppercase text-white">Links</h5>
+
+              <ul class="list-unstyled">
+                <li>
+                  <a href="#!">Link 1</a>
+                </li>
+                <li>
+                  <a href="#!">Link 2</a>
+                </li>
+                <li>
+                  <a href="#!">Link 3</a>
+                </li>
+                <li>
+                  <a href="#!">Link 4</a>
+                </li>
+              </ul>
+            </div>
+            <!-- Grid column -->
+
+            <!-- Grid column -->
+            <div class="col-md-3 mb-md-0 mb-3">
+              <!-- Links -->
+              <h5 class="text-uppercase text-white">Links</h5>
+
+              <ul class="list-unstyled">
+                <li>
+                  <a href="#!">Link 1</a>
+                </li>
+                <li>
+                  <a href="#!">Link 2</a>
+                </li>
+                <li>
+                  <a href="#!">Link 3</a>
+                </li>
+                <li>
+                  <a href="#!">Link 4</a>
+                </li>
+              </ul>
+            </div>
+            <!-- Grid column -->
+          </div>
+          <!-- Grid row -->
+        </div>
+        <!-- Footer Links -->
+      </div>
     </div>
-    <!-- /.container -->
   </footer>
 </template>
 
@@ -13,4 +79,14 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
+/* change links text color */
+a:link {
+  color: white;
+}
+
+/* Footer padding */
+.container-fluid {
+  padding-top: 30px;
+  padding-bottom: 100px;
+}
 </style>
