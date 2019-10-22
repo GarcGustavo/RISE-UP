@@ -21,6 +21,9 @@ window.Vue = require('vue');
 
 Vue.component('iren_header', require('./components/header.vue').default);
 Vue.component('iren_footer', require('./components/footer.vue').default);
+Vue.component('iren_help', require('./components/help.vue').default);
+Vue.component('iren_about', require('./components/about.vue').default);
+Vue.component('iren_group', require('./components/group.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

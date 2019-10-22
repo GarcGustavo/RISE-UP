@@ -79,6 +79,13 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
+.page-footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #333333;
+}
+
 /* change links text color */
 a:link {
   color: white;

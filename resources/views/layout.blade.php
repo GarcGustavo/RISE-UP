@@ -12,7 +12,6 @@
 
         <!-- Bootstrap core CSS -->
         <link href="{{asset('css/bootstrap.min.css')}}" rel="stylesheet">
-
         <!-- icons for this template -->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -37,8 +36,8 @@
     </body>
 
     <style>
-        .container {
-            padding-top: 56px;
+            .container {
+            padding-top: 55px;
         }
     </style>
 
