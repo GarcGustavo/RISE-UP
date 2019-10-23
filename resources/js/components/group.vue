@@ -60,7 +60,7 @@
     <div class="card mb-5" id="cases">
       <div class="col-sm-12 mb-3">
         <ul class="list-group list-group-flush border-0">
-          <li class="list-group-item" style="border:none;">
+          <li class="list-group-item">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">Card One</a>
@@ -69,7 +69,7 @@
               <p class="card-text">Some text.</p>
             </div>
           </li>
-          <li class="list-group-item" style="border:none;">
+          <li class="list-group-item">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">Card One</a>
@@ -78,7 +78,7 @@
               <p class="card-text">Some text.</p>
             </div>
           </li>
-          <li class="list-group-item" style="border:none;">
+          <li class="list-group-item">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">Card One</a>
@@ -87,7 +87,7 @@
               <p class="card-text">Some text.</p>
             </div>
           </li>
-          <li class="list-group-item" style="border:none;">
+          <li class="list-group-item">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">Card One</a>
@@ -96,7 +96,7 @@
               <p class="card-text">Some text.</p>
             </div>
           </li>
-          <li class="list-group-item" style="border:none;">
+          <li class="list-group-item">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">Card One</a>
@@ -105,7 +105,7 @@
               <p class="card-text">Some text.</p>
             </div>
           </li>
-          <li class="list-group-item" style="border:none;">
+          <li class="list-group-item">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">Card One</a>
@@ -124,10 +124,17 @@
 export default {};
 </script>
 
+
+
+
 <style lang="scss" scoped>
 #cases,
 #members {
   max-height: 450px;
   overflow-y: auto;
+}
+
+li {
+  border: none;
 }
 </style>

@@ -36,9 +36,14 @@
     </body>
 
     <style>
-            .container {
+        /* body padding in reference to header */
+        .container {
             padding-top: 55px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
     </style>
 
 </html>

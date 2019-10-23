@@ -80,10 +80,10 @@ export default {};
 
 <style lang="scss" scoped>
 .page-footer {
-  position: relative;
   bottom: 0;
   width: 100%;
   background-color: #333333;
+  margin-top: auto;
 }
 
 /* change links text color */

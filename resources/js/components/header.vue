@@ -58,7 +58,7 @@
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Profile</a>
           <a href="#" class="dropdown-item">Cases</a>
-          <a href="#" class="dropdown-item">Groups</a>
+          <a href="/user_groups" class="dropdown-item">Groups</a>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Logout</a>
         </div>

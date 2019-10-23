@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('layout');
+    return view('layout.layout');
 });
 Route::get('/about', function () {
     return view('about');
@@ -22,4 +22,7 @@ Route::get('/help', function () {
 });
 Route::get('/group', function () {
     return view('group');
+});
+Route::get('/user_groups', function () {
+    return view('user_groups');
 });
