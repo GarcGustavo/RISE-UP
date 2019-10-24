@@ -12,7 +12,14 @@
     </ol>
     -->
     <hr>
-
+    <h1 class="text-center mt-5">
+      <i class="material-icons">remove_circle_outline</i>
+      <a href="#add_member" data-toggle="modal" data-target="#add_member" @click="showModal=true">
+        <i class="material-icons">add_circle_outline</i>
+      </a>
+      <add_member>v-if="showModal" @close="showModal = false"></add_member>
+      <p style="padding-left:75px;">Members</p>
+    </h1>
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4">
         <div class="card h-100 text-center shadow">
@@ -121,10 +128,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      showModal: false
+    };
+  }
+};
 </script>
-
-
 
 
 <style lang="scss" scoped>
@@ -136,5 +147,15 @@ export default {};
 
 li {
   border: none;
+}
+h1 i {
+  float: right;
+  margin: 10px;
+}
+h1 i:hover {
+  color: blue;
+}
+a {
+  color: black;
 }
 </style>

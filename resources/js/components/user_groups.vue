@@ -5,21 +5,21 @@
 
     <hr>
 
-    <table
-      id="dtBasicExample"
-      class="table table-hover table-bordered table-sm w-75"
-      cellspacing="0"
-    >
+    <table id="group-table" class="table table-hover table-bordered table-sm" cellspacing="0">
       <thead class="thead-dark">
         <tr>
-          <th class="col-1 th-sm">#</th>
-          <th class="th-sm">Name</th>
+          <th id="row-order">#</th>
+          <th>Name</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in pageOfItems" :key="item.id">
-          <td>{{item.id}}</td>
-          <td>{{item.name}}</td>
+          <td>
+            <a href="#">{{item.id}}</a>
+          </td>
+          <td>
+            <a href="#">{{item.name}}</a>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -30,10 +30,12 @@
 <script>
 const exampleItems = [...Array(150).keys()].map(i => ({
   id: i + 1,
-  name: "Item " + (i + 1)
+  name: "Name of group " + (i + 1)
 }));
 
+
 export default {
+
   data() {
     return {
       exampleItems,
@@ -45,7 +47,8 @@ export default {
       // update page of items
       this.pageOfItems = pageOfItems;
     }
-  }
+  },
+
 };
 </script>
 
@@ -55,16 +58,28 @@ export default {
 table {
   margin-left: auto;
   margin-right: auto;
+  width: 85%;
 }
 
 table td {
   text-align: center;
-  padding-top: 10px;
-  padding-bottom: 10px;
+
+}
+
+td a {
+  display: block;
+  color: black;
+  text-decoration: none;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+#row-order {
+  width: 15%;
 }
 
 .pagination {
   float: right;
-  border:none;
 }
 </style>

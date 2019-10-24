@@ -1,5 +1,13 @@
 <template>
   <ul v-if="pager.pages && pager.pages.length" class="pagination" :style="ulStyles">
+    <li class="page-item skip-prev" :class="{'disabled': pager.currentPage < 5}" :style="liStyles">
+      <a
+        class="page-link"
+        @click="setPage(pager.currentPage - 5)"
+        :style="aStyles"
+      >{{labels.skip_prev}}</a>
+    </li>
+
     <li class="page-item first" :class="{'disabled': pager.currentPage === 1}" :style="liStyles">
       <a class="page-link" @click="setPage(1)" :style="aStyles">{{labels.first}}</a>
     </li>
@@ -33,6 +41,13 @@
     >
       <a class="page-link" @click="setPage(pager.totalPages)" :style="aStyles">{{labels.last}}</a>
     </li>
+    <li
+      class="page-item skip-next"
+      :class="{'disabled': pager.currentPage > pager.totalPages - 5}"
+      :style="liStyles"
+    >
+      <a class="page-link" @click="setPage(pager.currentPage + 5)" :style="aStyles">{{labels.skip_next}}</a>
+    </li>
   </ul>
 </template>
 
@@ -42,8 +57,10 @@ import paginate from "jw-paginate";
 const defaultLabels = {
   first: "First",
   last: "Last",
-  previous: "Previous",
-  next: "Next"
+  previous: "<",
+  next: ">",
+  skip_prev: "<<",
+  skip_next: ">>"
 };
 
 const defaultStyles = {
@@ -51,7 +68,6 @@ const defaultStyles = {
     margin: 0,
     padding: 0,
     display: "inline-block"
-
   },
   li: {
     listStyle: "none",
@@ -59,7 +75,7 @@ const defaultStyles = {
     textAlign: "center"
   },
   a: {
-      border:0,
+    border: 0,
     cursor: "pointer",
     padding: "6px 12px",
     display: "block",
@@ -79,7 +95,7 @@ export default {
     },
     pageSize: {
       type: Number,
-      default:10
+      default: 10
     },
     maxPages: {
       type: Number,

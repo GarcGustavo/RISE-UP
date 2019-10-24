@@ -24,7 +24,10 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+//web pages components
 Vue.component('paginator', require('./components/paginator.vue').default);
+Vue.component('add_member', require('./components/add_member.vue').default);
+//web pages
 Vue.component('iren_header', require('./components/header.vue').default);
 Vue.component('iren_footer', require('./components/footer.vue').default);
 Vue.component('iren_help', require('./components/help.vue').default);
