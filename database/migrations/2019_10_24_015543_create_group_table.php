@@ -14,13 +14,10 @@ class CreateGroupTable extends Migration
     public function up()
     {
         Schema::create('group', function (Blueprint $table) {
-            $table->increments('id');
             $table->bigIncrement('gid');
-            $table->string('g_name');
+            $table->string('g_name', 255);
             $table->date('g_creation_date');
             $table->foreign('g_owner')->user()->uid();
-            $table->timestamps();
-            $table->softDeletes();
         });
     }
 

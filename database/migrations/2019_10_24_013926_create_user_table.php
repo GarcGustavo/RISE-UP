@@ -15,13 +15,13 @@ class CreateUserTable extends Migration
     {
         Schema::create('user', function (Blueprint $table) {
             $table->bigIncrements('uid');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email');
-            $table->string('contact_email');
+            $table->string('first_name', 255);
+            $table->string('last_name', 255);
+            $table->string('email', 255);
+            $table->string('contact_email', 255);
             $table->date('u_creation_date');
-            $table->string('u_ban_status');
-            $table->string('current_edit_cid');
+            $table->boolean('u_ban_status');
+            $table->string('current_edit_cid', 255);
             $table->foreign('u_role')->references('rid')->on('role');
         });
     }
