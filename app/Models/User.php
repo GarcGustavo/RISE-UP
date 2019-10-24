@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Class User
  * @package App\Models
- * @version October 23, 2019, 10:54 pm UTC
+ * @version October 24, 2019, 12:27 am UTC
  *
  * @property \App\Models\Role uRole
  * @property \Illuminate\Database\Eloquent\Collection actionTypes
@@ -30,10 +30,6 @@ class User extends Model
 
     public $table = 'user';
     
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
     protected $dates = ['deleted_at'];
 
 

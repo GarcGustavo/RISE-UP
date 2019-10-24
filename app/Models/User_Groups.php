@@ -19,10 +19,6 @@ class User_Groups extends Model
     use SoftDeletes;
 
     public $table = 'user_groups';
-    
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
 
     protected $dates = ['deleted_at'];
 
