@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreatePostsTable extends Migration
+class CreateGroupTable extends Migration
 {
 
     /**
@@ -13,8 +13,12 @@ class CreatePostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('group', function (Blueprint $table) {
             $table->increments('id');
+            $table->bigIncrement('gid');
+            $table->string('g_name');
+            $table->date('g_creation_date');
+            $table->foreign('g_owner')->user()->uid();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,6 +31,6 @@ class CreatePostsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('posts');
+        Schema::drop('group');
     }
 }
