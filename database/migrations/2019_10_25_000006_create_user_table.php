@@ -22,7 +22,8 @@ class CreateUserTable extends Migration
             $table->date('u_creation_date');
             $table->boolean('u_ban_status');
             $table->string('current_edit_cid', 255);
-            $table->foreign('u_role')->references('rid')->on('role');
+            $table->unsignedBigInteger('u_role');
+            $table->foreign('u_role')->references('rid')->on('Role');
         });
     }
 

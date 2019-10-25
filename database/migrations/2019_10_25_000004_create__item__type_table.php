@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOptionTable extends Migration
+class CreateItemTypeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateOptionTable extends Migration
      */
     public function up()
     {
-        Schema::create('Option', function (Blueprint $table) {
-            $table->bigIncrements('oid');
-            $table->foreign('o_parameter')->references('csp_id')->on('Case_Parameter');
-            $table->string('o_content', 255);
+        Schema::create('Item_Type', function (Blueprint $table) {
+            $table->bigIncrements('itt_id');
+            $table->string('itt_name', 255);
         });
     }
 
@@ -27,6 +26,6 @@ class CreateOptionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('Option');
+        Schema::dropIfExists('Item_Type');
     }
 }

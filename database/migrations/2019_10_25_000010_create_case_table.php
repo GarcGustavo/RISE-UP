@@ -20,8 +20,10 @@ class CreateCaseTable extends Migration
             $table->string('c_thumbnail', 255);
             $table->string('c_status', 255);
             $table->date('c_date');
-            $table->foreign('c_owner')->references('uid')->on('user');
-            $table->foreign('c_group')->references('gid')->on('group');
+            $table->unsignedBigInteger('c_owner');
+            $table->unsignedBigInteger('c_group');
+            $table->foreign('c_owner')->references('uid')->on('User');
+            $table->foreign('c_group')->references('gid')->on('Group');
         });
     }
 

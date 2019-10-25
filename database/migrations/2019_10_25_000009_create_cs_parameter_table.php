@@ -14,7 +14,7 @@ class CreateCsParameterTable extends Migration
     public function up()
     {
         Schema::create('CS_Parameter', function (Blueprint $table) {
-            $table->bigIncrement('csp_id');
+            $table->bigIncrements('csp_id');
             $table->string('csp_name', 255);
         });
     }
