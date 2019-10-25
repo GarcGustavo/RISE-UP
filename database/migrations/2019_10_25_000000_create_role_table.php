@@ -14,7 +14,7 @@ class CreateRoleTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->'Role', function (Blueprint $table) {
+        Schema::create('Role', function (Blueprint $table) {
             
             $table->bigIncrements('rid');
             $table->date('r_creation_date');
@@ -30,6 +30,6 @@ class CreateRoleTable extends Migration
      */
      public function down()
      {
-       Schema::dropIfExists($this->tableName);
+       Schema::dropIfExists('Role');
      }
 }

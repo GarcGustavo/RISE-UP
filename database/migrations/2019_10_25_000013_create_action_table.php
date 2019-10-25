@@ -13,12 +13,14 @@ class CreateActionTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->Action, function (Blueprint $table) {
+        Schema::create('Action', function (Blueprint $table) {
 
             $table->bigIncrements('aid');
             $table->date('a_date');
-            $table->foreign('a_type')->references('act_id')->on('action_type');
-            $table->foreign('a_user')->references('uid')->on('user');
+            $table->unsignedBigInteger('a_type');
+            $table->unsignedBigInteger('a_user');
+            $table->foreign('a_type')->references('act_id')->on('Action_type');
+            $table->foreign('a_user')->references('uid')->on('User');
         });
     }
 
@@ -29,6 +31,6 @@ class CreateActionTable extends Migration
      */
      public function down()
      {
-       Schema::dropIfExists($this->tableName);
+       Schema::dropIfExists('Action');
      }
 }

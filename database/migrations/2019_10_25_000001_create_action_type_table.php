@@ -13,7 +13,7 @@ class CreateActionTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->'Action_Type', function (Blueprint $table) {
+        Schema::create('Action_Type', function (Blueprint $table) {
           
             $table->bigIncrements('act_id');
             $table->string('act_name', 225);
@@ -28,6 +28,6 @@ class CreateActionTypeTable extends Migration
      */
      public function down()
      {
-       Schema::dropIfExists($this->tableName);
+       Schema::dropIfExists('Action_Type');
      }
 }

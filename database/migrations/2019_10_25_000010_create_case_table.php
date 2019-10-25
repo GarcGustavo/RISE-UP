@@ -13,15 +13,17 @@ class CreateCaseTable extends Migration
      */
     public function up()
     {
-        Schema::create('case', function (Blueprint $table) {
+        Schema::create('Case', function (Blueprint $table) {
             $table->bigIncrements('cid');
             $table->string('c_title', 255);
             $table->string('c_description', 255);
             $table->string('c_thumbnail', 255);
             $table->string('c_status', 255);
             $table->date('c_date');
-            $table->foreign('c_owner')->references('uid')->on('user');
-            $table->foreign('c_group')->references('gid')->on('group');
+            $table->unsignedBigInteger('c_owner');
+            $table->unsignedBigInteger('c_group');
+            $table->foreign('c_owner')->references('uid')->on('User');
+            $table->foreign('c_group')->references('gid')->on('Group');
         });
     }
 
@@ -32,6 +34,6 @@ class CreateCaseTable extends Migration
      */
     public function down()
     {
-        Schema::drop('case');
+        Schema::drop('Case');
     }
 }

@@ -13,9 +13,11 @@ class CreateCaseParametersTable extends Migration
      */
     public function up()
     {
-        Schema::create('case_parameters', function (Blueprint $table) {
-            $table->foreign('c_owner')->references('cid')->on('case');
-            $table->foreign('c_group')->references('csp_id')->on('cs_parameter');
+        Schema::create('Case_Parameters', function (Blueprint $table) {
+            $table->unsignedBigInteger('c_owner');
+            $table->unsignedBigInteger('c_group');
+            $table->foreign('c_owner')->references('cid')->on('Case');
+            $table->foreign('c_group')->references('csp_id')->on('CS_Parameter');
         });
     }
 
@@ -26,6 +28,6 @@ class CreateCaseParametersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('case_parameters');
+        Schema::drop('Case_Parameters');
     }
 }

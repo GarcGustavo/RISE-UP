@@ -13,7 +13,7 @@ class CreateUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('user', function (Blueprint $table) {
+        Schema::create('User', function (Blueprint $table) {
             $table->bigIncrements('uid');
             $table->string('first_name', 255);
             $table->string('last_name', 255);
@@ -22,7 +22,8 @@ class CreateUserTable extends Migration
             $table->date('u_creation_date');
             $table->boolean('u_ban_status');
             $table->string('current_edit_cid', 255);
-            $table->foreign('u_role')->references('rid')->on('role');
+            $table->unsignedBigInteger('u_role');
+            $table->foreign('u_role')->references('rid')->on('Role');
         });
     }
 
@@ -33,6 +34,6 @@ class CreateUserTable extends Migration
      */
     public function down()
     {
-        Schema::drop('user');
+        Schema::drop('User');
     }
 }
