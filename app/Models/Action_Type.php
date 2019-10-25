@@ -6,18 +6,22 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Action_Type
+ * Class action_type
  * @package App\Models
- * @version October 23, 2019, 10:57 pm UTC
+ * @version October 25, 2019, 6:18 am UTC
  *
  * @property \Illuminate\Database\Eloquent\Collection users
  * @property string act_name
  */
-class Action_Type extends Model
+class action_type extends Model
 {
     use SoftDeletes;
 
     public $table = 'action_type';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
 
     protected $dates = ['deleted_at'];
 

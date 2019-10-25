@@ -6,30 +6,34 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class User
+ * Class user
  * @package App\Models
- * @version October 24, 2019, 12:27 am UTC
+ * @version October 25, 2019, 6:18 am UTC
  *
  * @property \App\Models\Role uRole
  * @property \Illuminate\Database\Eloquent\Collection actionTypes
  * @property \Illuminate\Database\Eloquent\Collection groups
  * @property \Illuminate\Database\Eloquent\Collection group1s
- * @property \Illuminate\Database\Eloquent\Collection userGroups
+ * @property \Illuminate\Database\Eloquent\Collection group2s
  * @property string first_name
  * @property string last_name
  * @property string email
  * @property string contact_email
  * @property string u_creation_date
- * @property string u_ban_status
- * @property integer current_edit_cid
+ * @property boolean u_ban_status
+ * @property string current_edit_cid
  * @property integer u_role
  */
-class User extends Model
+class user extends Model
 {
     use SoftDeletes;
 
     public $table = 'user';
     
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
+
     protected $dates = ['deleted_at'];
 
 
@@ -57,8 +61,8 @@ class User extends Model
         'email' => 'string',
         'contact_email' => 'string',
         'u_creation_date' => 'date',
-        'u_ban_status' => 'string',
-        'current_edit_cid' => 'integer',
+        'u_ban_status' => 'boolean',
+        'current_edit_cid' => 'string',
         'u_role' => 'integer'
     ];
 
@@ -111,10 +115,10 @@ class User extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
-    public function userGroups()
+    public function group2s()
     {
-        return $this->hasMany(\App\Models\UserGroup::class, 'uid');
+        return $this->belongsToMany(\App\Models\Group::class, 'user_groups');
     }
 }

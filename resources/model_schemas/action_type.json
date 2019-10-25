@@ -1,6 +1,6 @@
 [
     {
-        "name": "csp_id",
+        "name": "act_id",
         "dbType": "bigInteger,true,true",
         "htmlType": null,
         "validations": null,
@@ -12,8 +12,8 @@
         "inView": false
     },
     {
-        "name": "csp_name",
-        "dbType": "string,255",
+        "name": "act_name",
+        "dbType": "string,225",
         "htmlType": "text",
         "validations": "required",
         "searchable": true,
@@ -25,10 +25,6 @@
     },
     {
         "type": "relation",
-        "relation": "mtm,Case,case_parameters"
-    },
-    {
-        "type": "relation",
-        "relation": "1tm,Option,o_parameter"
+        "relation": "mtm,User,action"
     }
 ]

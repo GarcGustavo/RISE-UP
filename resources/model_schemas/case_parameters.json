@@ -1,6 +1,6 @@
 [
     {
-        "name": "gid",
+        "name": "c_owner",
         "dbType": "bigInteger,false,true",
         "htmlType": null,
         "validations": "required",
@@ -12,7 +12,7 @@
         "inView": true
     },
     {
-        "name": "uid",
+        "name": "c_group",
         "dbType": "bigInteger,false,true",
         "htmlType": null,
         "validations": "required",
@@ -25,10 +25,10 @@
     },
     {
         "type": "relation",
-        "relation": "mt1,Group,gid"
+        "relation": "mt1,CsParameter,c_group"
     },
     {
         "type": "relation",
-        "relation": "mt1,User,uid"
+        "relation": "mt1,Case,c_owner"
     }
 ]

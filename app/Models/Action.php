@@ -6,17 +6,17 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Action
+ * Class action
  * @package App\Models
- * @version October 23, 2019, 10:57 pm UTC
+ * @version October 25, 2019, 6:18 am UTC
  *
- * @property \App\Models\User aUser
  * @property \App\Models\ActionType aType
+ * @property \App\Models\User aUser
  * @property string a_date
- * @property integer a_user
  * @property integer a_type
+ * @property integer a_user
  */
-class Action extends Model
+class action extends Model
 {
     use SoftDeletes;
 
@@ -32,8 +32,8 @@ class Action extends Model
 
     public $fillable = [
         'a_date',
-        'a_user',
-        'a_type'
+        'a_type',
+        'a_user'
     ];
 
     /**
@@ -44,8 +44,8 @@ class Action extends Model
     protected $casts = [
         'aid' => 'integer',
         'a_date' => 'date',
-        'a_user' => 'integer',
-        'a_type' => 'integer'
+        'a_type' => 'integer',
+        'a_user' => 'integer'
     ];
 
     /**
@@ -55,17 +55,9 @@ class Action extends Model
      */
     public static $rules = [
         'a_date' => 'required',
-        'a_user' => 'required',
-        'a_type' => 'required'
+        'a_type' => 'required',
+        'a_user' => 'required'
     ];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     **/
-    public function aUser()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'a_user');
-    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -73,5 +65,13 @@ class Action extends Model
     public function aType()
     {
         return $this->belongsTo(\App\Models\ActionType::class, 'a_type');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     **/
+    public function aUser()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'a_user');
     }
 }

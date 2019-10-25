@@ -6,27 +6,31 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Role
+ * Class role
  * @package App\Models
- * @version October 23, 2019, 10:59 pm UTC
+ * @version October 25, 2019, 6:22 am UTC
  *
  * @property \Illuminate\Database\Eloquent\Collection users
- * @property string r_name
  * @property string r_creation_date
+ * @property string r_name
  */
-class Role extends Model
+class role extends Model
 {
     use SoftDeletes;
 
     public $table = 'role';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
 
     protected $dates = ['deleted_at'];
 
 
 
     public $fillable = [
-        'r_name',
-        'r_creation_date'
+        'r_creation_date',
+        'r_name'
     ];
 
     /**
@@ -36,8 +40,8 @@ class Role extends Model
      */
     protected $casts = [
         'rid' => 'integer',
-        'r_name' => 'string',
-        'r_creation_date' => 'date'
+        'r_creation_date' => 'date',
+        'r_name' => 'string'
     ];
 
     /**
@@ -46,8 +50,8 @@ class Role extends Model
      * @var array
      */
     public static $rules = [
-        'r_name' => 'required',
-        'r_creation_date' => 'required'
+        'r_creation_date' => 'required',
+        'r_name' => 'required'
     ];
 
     /**

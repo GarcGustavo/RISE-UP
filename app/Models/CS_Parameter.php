@@ -6,19 +6,23 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class CS_Parameter
+ * Class cs_parameter
  * @package App\Models
- * @version October 23, 2019, 10:58 pm UTC
+ * @version October 25, 2019, 6:19 am UTC
  *
- * @property \Illuminate\Database\Eloquent\Collection caseParameters
+ * @property \Illuminate\Database\Eloquent\Collection cases
  * @property \Illuminate\Database\Eloquent\Collection options
  * @property string csp_name
  */
-class CS_Parameter extends Model
+class cs_parameter extends Model
 {
     use SoftDeletes;
 
     public $table = 'cs_parameter';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
 
     protected $dates = ['deleted_at'];
 
@@ -48,11 +52,11 @@ class CS_Parameter extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
-    public function caseParameters()
+    public function cases()
     {
-        return $this->hasMany(\App\Models\CaseParameter::class, 'csp_id');
+        return $this->belongsToMany(\App\Models\Case::class, 'case_parameters');
     }
 
     /**

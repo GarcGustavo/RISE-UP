@@ -1,7 +1,7 @@
 [
     {
-        "name": "id",
-        "dbType": "increments",
+        "name": "cid",
+        "dbType": "bigInteger,true,true",
         "htmlType": null,
         "validations": null,
         "searchable": false,
@@ -12,27 +12,103 @@
         "inView": false
     },
     {
-        "name": "created_at",
-        "dbType": "timestamp",
-        "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
+        "name": "c_title",
+        "dbType": "string,255",
+        "htmlType": "text",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
         "primary": false,
-        "inForm": false,
-        "inIndex": false,
+        "inForm": true,
+        "inIndex": true,
         "inView": true
     },
     {
-        "name": "updated_at",
-        "dbType": "timestamp",
-        "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
+        "name": "c_description",
+        "dbType": "string,255",
+        "htmlType": "text",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
         "primary": false,
-        "inForm": false,
-        "inIndex": false,
+        "inForm": true,
+        "inIndex": true,
         "inView": true
+    },
+    {
+        "name": "c_thumbnail",
+        "dbType": "string,255",
+        "htmlType": "text",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true,
+        "inView": true
+    },
+    {
+        "name": "c_status",
+        "dbType": "string,255",
+        "htmlType": "text",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true,
+        "inView": true
+    },
+    {
+        "name": "c_date",
+        "dbType": "date",
+        "htmlType": "date",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true,
+        "inView": true
+    },
+    {
+        "name": "c_owner",
+        "dbType": "bigInteger,false,true",
+        "htmlType": null,
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true,
+        "inView": true
+    },
+    {
+        "name": "c_group",
+        "dbType": "bigInteger,false,true",
+        "htmlType": null,
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true,
+        "inView": true
+    },
+    {
+        "type": "relation",
+        "relation": "mt1,Group,c_group"
+    },
+    {
+        "type": "relation",
+        "relation": "mt1,User,c_owner"
+    },
+    {
+        "type": "relation",
+        "relation": "mtm,CsParameter,case_parameters"
+    },
+    {
+        "type": "relation",
+        "relation": "mtm,ItemType,item"
     }
 ]

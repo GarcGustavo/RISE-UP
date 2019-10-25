@@ -6,25 +6,31 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Group
+ * Class group
  * @package App\Models
- * @version October 23, 2019, 10:58 pm UTC
+ * @version October 25, 2019, 6:21 am UTC
  *
  * @property \App\Models\User gOwner
  * @property \Illuminate\Database\Eloquent\Collection user1s
- * @property \App\Models\UserGroup userGroup
+ * @property \Illuminate\Database\Eloquent\Collection user2s
  * @property string g_name
  * @property string g_status
  * @property string g_creation_date
  * @property integer g_owner
  */
-class Group extends Model
+class group extends Model
 {
     use SoftDeletes;
 
     public $table = 'group';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
 
     protected $dates = ['deleted_at'];
+
+
 
     public $fillable = [
         'g_name',
@@ -75,10 +81,10 @@ class Group extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
-    public function userGroup()
+    public function user2s()
     {
-        return $this->hasOne(\App\Models\UserGroup::class);
+        return $this->belongsToMany(\App\Models\User::class, 'user_groups');
     }
 }

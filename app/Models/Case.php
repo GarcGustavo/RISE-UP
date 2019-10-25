@@ -6,13 +6,13 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Case
+ * Class case
  * @package App\Models
- * @version October 23, 2019, 10:57 pm UTC
+ * @version October 25, 2019, 6:15 am UTC
  *
- * @property \App\Models\User cOwner
  * @property \App\Models\Group cGroup
- * @property \App\Models\CaseParameter caseParameter
+ * @property \App\Models\User cOwner
+ * @property \Illuminate\Database\Eloquent\Collection csParameters
  * @property \Illuminate\Database\Eloquent\Collection itemTypes
  * @property string c_title
  * @property string c_description
@@ -22,11 +22,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property integer c_owner
  * @property integer c_group
  */
-class Case extends Model
+class case extends Model
 {
     use SoftDeletes;
 
     public $table = 'case';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
 
     protected $dates = ['deleted_at'];
 
@@ -66,18 +70,12 @@ class Case extends Model
     public static $rules = [
         'c_title' => 'required',
         'c_description' => 'required',
+        'c_thumbnail' => 'required',
         'c_status' => 'required',
         'c_date' => 'required',
-        'c_owner' => 'required'
+        'c_owner' => 'required',
+        'c_group' => 'required'
     ];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     **/
-    public function cOwner()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'c_owner');
-    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -88,11 +86,19 @@ class Case extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function caseParameter()
+    public function cOwner()
     {
-        return $this->hasOne(\App\Models\CaseParameter::class);
+        return $this->belongsTo(\App\Models\User::class, 'c_owner');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     **/
+    public function csParameters()
+    {
+        return $this->belongsToMany(\App\Models\CsParameter::class, 'case_parameters');
     }
 
     /**

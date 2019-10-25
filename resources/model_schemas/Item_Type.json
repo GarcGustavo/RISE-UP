@@ -1,7 +1,7 @@
 [
     {
-        "name": "id",
-        "dbType": "increments",
+        "name": "itt_id",
+        "dbType": "bigInteger,true,true",
         "htmlType": null,
         "validations": null,
         "searchable": false,
@@ -12,27 +12,19 @@
         "inView": false
     },
     {
-        "name": "created_at",
-        "dbType": "timestamp",
-        "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
+        "name": "itt_name",
+        "dbType": "string,255",
+        "htmlType": "text",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
         "primary": false,
-        "inForm": false,
-        "inIndex": false,
+        "inForm": true,
+        "inIndex": true,
         "inView": true
     },
     {
-        "name": "updated_at",
-        "dbType": "timestamp",
-        "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
-        "primary": false,
-        "inForm": false,
-        "inIndex": false,
-        "inView": true
+        "type": "relation",
+        "relation": "mtm,Case,item"
     }
 ]

@@ -1,7 +1,7 @@
 [
     {
-        "name": "id",
-        "dbType": "increments",
+        "name": "aid",
+        "dbType": "bigInteger,true,true",
         "htmlType": null,
         "validations": null,
         "searchable": false,
@@ -12,27 +12,47 @@
         "inView": false
     },
     {
-        "name": "created_at",
-        "dbType": "timestamp",
-        "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
+        "name": "a_date",
+        "dbType": "date",
+        "htmlType": "date",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
         "primary": false,
-        "inForm": false,
-        "inIndex": false,
+        "inForm": true,
+        "inIndex": true,
         "inView": true
     },
     {
-        "name": "updated_at",
-        "dbType": "timestamp",
+        "name": "a_type",
+        "dbType": "bigInteger,false,true",
         "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
         "primary": false,
-        "inForm": false,
-        "inIndex": false,
+        "inForm": true,
+        "inIndex": true,
         "inView": true
+    },
+    {
+        "name": "a_user",
+        "dbType": "bigInteger,false,true",
+        "htmlType": null,
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true,
+        "inView": true
+    },
+    {
+        "type": "relation",
+        "relation": "mt1,ActionType,a_type"
+    },
+    {
+        "type": "relation",
+        "relation": "mt1,User,a_user"
     }
 ]

@@ -6,20 +6,23 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Case_Parameters
+ * Class case_parameters
  * @package App\Models
- * @version October 23, 2019, 10:57 pm UTC
+ * @version October 25, 2019, 6:19 am UTC
  *
- * @property \App\Models\Case cid
- * @property \App\Models\CsParameter csp
- * @property string opt_selected
- * @property integer csp_id
+ * @property \App\Models\CsParameter cGroup
+ * @property \App\Models\Case cOwner
+ * @property integer c_owner
+ * @property integer c_group
  */
-class Case_Parameters extends Model
+class case_parameters extends Model
 {
     use SoftDeletes;
 
     public $table = 'case_parameters';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
 
     protected $dates = ['deleted_at'];
@@ -27,8 +30,8 @@ class Case_Parameters extends Model
 
 
     public $fillable = [
-        'opt_selected',
-        'csp_id'
+        'c_owner',
+        'c_group'
     ];
 
     /**
@@ -37,9 +40,8 @@ class Case_Parameters extends Model
      * @var array
      */
     protected $casts = [
-        'opt_selected' => 'string',
-        'cid' => 'integer',
-        'csp_id' => 'integer'
+        'c_owner' => 'integer',
+        'c_group' => 'integer'
     ];
 
     /**
@@ -48,23 +50,23 @@ class Case_Parameters extends Model
      * @var array
      */
     public static $rules = [
-        'opt_selected' => 'required',
-        'csp_id' => 'required'
+        'c_owner' => 'required',
+        'c_group' => 'required'
     ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function cid()
+    public function cGroup()
     {
-        return $this->belongsTo(\App\Models\Case::class, 'cid');
+        return $this->belongsTo(\App\Models\CsParameter::class, 'c_group');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function csp()
+    public function cOwner()
     {
-        return $this->belongsTo(\App\Models\CsParameter::class, 'csp_id');
+        return $this->belongsTo(\App\Models\Case::class, 'c_owner');
     }
 }

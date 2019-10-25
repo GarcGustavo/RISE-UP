@@ -6,18 +6,22 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Item_Type
+ * Class item_type
  * @package App\Models
- * @version October 23, 2019, 10:59 pm UTC
+ * @version October 25, 2019, 6:21 am UTC
  *
  * @property \Illuminate\Database\Eloquent\Collection cases
  * @property string itt_name
  */
-class Item_Type extends Model
+class item_type extends Model
 {
     use SoftDeletes;
 
     public $table = 'item_type';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
 
     protected $dates = ['deleted_at'];
 

@@ -6,25 +6,31 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class User_Groups
+ * Class user_groups
  * @package App\Models
- * @version October 23, 2019, 11:00 pm UTC
+ * @version October 25, 2019, 6:23 am UTC
  *
  * @property \App\Models\Group gid
  * @property \App\Models\User uid
+ * @property integer gid
  * @property integer uid
  */
-class User_Groups extends Model
+class user_groups extends Model
 {
     use SoftDeletes;
 
     public $table = 'user_groups';
+    
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
 
     protected $dates = ['deleted_at'];
 
 
 
     public $fillable = [
+        'gid',
         'uid'
     ];
 
@@ -44,6 +50,7 @@ class User_Groups extends Model
      * @var array
      */
     public static $rules = [
+        'gid' => 'required',
         'uid' => 'required'
     ];
 
