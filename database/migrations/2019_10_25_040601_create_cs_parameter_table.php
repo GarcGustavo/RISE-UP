@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateUserGroupsTable extends Migration
+class CreateCsParameterTable extends Migration
 {
 
     /**
@@ -13,9 +13,9 @@ class CreateUserGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('User_Groups', function (Blueprint $table) {
-            $table->foreign('gid')->references('gid')->on('group');
-            $table->foreign('uid')->references('uid')->on('user');
+        Schema::create('CS_Parameter', function (Blueprint $table) {
+            $table->bigIncrement('csp_id');
+            $table->string('csp_name', 255);
         });
     }
 
@@ -26,6 +26,6 @@ class CreateUserGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('User_Groups');
+        Schema::drop('CS_Parameter');
     }
 }

@@ -2,10 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateUserGroupsTable extends Migration
+class CreateItemTypeTable extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -13,9 +13,9 @@ class CreateUserGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('User_Groups', function (Blueprint $table) {
-            $table->foreign('gid')->references('gid')->on('group');
-            $table->foreign('uid')->references('uid')->on('user');
+        Schema::create('Item_Type', function (Blueprint $table) {
+            $table->bigIncrements('iid');
+            $table->string('itt_name', 255);
         });
     }
 
@@ -26,6 +26,6 @@ class CreateUserGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('User_Groups');
+        Schema::dropIfExists('Item_Type');
     }
 }

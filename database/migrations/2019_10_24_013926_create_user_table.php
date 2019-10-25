@@ -13,7 +13,7 @@ class CreateUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('user', function (Blueprint $table) {
+        Schema::create('User', function (Blueprint $table) {
             $table->bigIncrements('uid');
             $table->string('first_name', 255);
             $table->string('last_name', 255);
@@ -33,6 +33,6 @@ class CreateUserTable extends Migration
      */
     public function down()
     {
-        Schema::drop('user');
+        Schema::drop('User');
     }
 }

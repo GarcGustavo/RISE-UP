@@ -13,11 +13,12 @@ class CreateGroupTable extends Migration
      */
     public function up()
     {
-        Schema::create('group', function (Blueprint $table) {
+        Schema::create('Group', function (Blueprint $table) {
             $table->bigIncrement('gid');
-            $table->string('g_name', 255);
+            $table->string('g_name');
+            $table->string('g_status');
             $table->date('g_creation_date');
-            $table->foreign('g_owner')->user()->uid();
+            $table->foreign('g_owner')->references('uid')->on('user');
         });
     }
 
@@ -28,6 +29,6 @@ class CreateGroupTable extends Migration
      */
     public function down()
     {
-        Schema::drop('group');
+        Schema::drop('Group');
     }
 }
