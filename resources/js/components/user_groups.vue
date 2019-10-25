@@ -4,7 +4,7 @@
     <h1 class="mb-3">My groups</h1>
 
     <hr>
-
+<!-- Table -->
     <table id="group-table" class="table table-hover table-bordered table-sm" cellspacing="0">
       <thead class="thead-dark">
         <tr>
@@ -30,12 +30,10 @@
 <script>
 const exampleItems = [...Array(150).keys()].map(i => ({
   id: i + 1,
-  name: "Name of group " + (i + 1)
+  name: "Name of group  " + (i + 1)
 }));
 
-
 export default {
-
   data() {
     return {
       exampleItems,
@@ -47,8 +45,7 @@ export default {
       // update page of items
       this.pageOfItems = pageOfItems;
     }
-  },
-
+  }
 };
 </script>
 
@@ -58,23 +55,27 @@ export default {
 table {
   margin-left: auto;
   margin-right: auto;
-  width: 85%;
+  text-align: center;
 }
 
-table td {
-  text-align: center;
 
+table tr td a {
+  text-align: center;
+  display: inline-block;
 }
 
 td a {
-  display: block;
+  vertical-align: middle;
+  display: table-cell;
   color: black;
   text-decoration: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   padding-top: 20px;
   padding-bottom: 20px;
-  width: 100%;
+  max-width: 775px;
 }
-
 #row-order {
   width: 15%;
 }

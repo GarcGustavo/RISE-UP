@@ -17,8 +17,8 @@
       <a href="#add_member" data-toggle="modal" data-target="#add_member" @click="showModal=true">
         <i class="material-icons">add_circle_outline</i>
       </a>
-      <add_member>v-if="showModal" @close="showModal = false"></add_member>
-      <p style="padding-left:75px;">Members</p>
+      <add_member v-if="showModal" @close="showModal = false"></add_member>
+      <p style="margin-left:90px;">Members</p>
     </h1>
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4">
@@ -62,9 +62,12 @@
     <hr>
     <!-- Case view -->
 
-    <h1 class="mt-5 text-center">Our Cases</h1>
+    <h1 id="cases_header" class="mt-5 text-center">
+      <a href="#">Create case study</a>
+      <p style="margin-left:170px;">Our Cases</p>
+    </h1>
 
-    <div class="card mb-5" id="cases">
+    <div class="mt-1 card mb-5" id="cases">
       <div class="col-sm-12 mb-3">
         <ul class="list-group list-group-flush border-0">
           <li class="list-group-item">
@@ -148,6 +151,7 @@ export default {
 li {
   border: none;
 }
+
 h1 i {
   float: right;
   margin: 10px;
@@ -157,5 +161,11 @@ h1 i:hover {
 }
 a {
   color: black;
+}
+
+#cases_header a {
+  float: right;
+  font-size: 18px;
+  margin-top: 10px;
 }
 </style>

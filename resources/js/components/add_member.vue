@@ -1,7 +1,7 @@
 <template>
   <transition>
-    <div class="modal" id="add_member" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
+    <div class="modal fade" id="add_member" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Add member</h5>
@@ -11,7 +11,7 @@
           </div>
           <div class="modal-body">
             <div class="input-group">
-              <p>Search</p>
+              <label>Search</label>
               <div class="input-group-append">
                 <input type="text" placeholder="User email..">
               </div>
@@ -20,25 +20,35 @@
               <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
                 <thead class="thead-dark">
                   <tr>
-                    <th id="row-order">#</th>
+                    <th id="row-checkbox">#</th>
+                    <th>Email</th>
                     <th>Name</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>1</td>
-                    <td>Melvin</td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>Melvin</td>
+                    <td>
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck1">
+                        <label class="custom-control-label" for="customCheck1">1</label>
+                      </div>
+                    </td>
+                    <td>Melvinmalave95@gmail.com</td>
+                    <td>Melvin Jesus Malave Sanchez</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Add</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#add_member_confirm"
+
+            >Add</button>
+            <add_member_confirm></add_member_confirm>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -48,42 +58,65 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      showModal: false
+    };
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 .table-wrapper {
   font-size: 18px;
-  max-height: 350px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: auto;
+  width: 775px;
+  height: 500px;
+  white-space: nowrap;
 }
 
 table tr td {
+  text-align: center;
   vertical-align: middle;
   padding-top: 18px;
   padding-bottom: 18px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 386px;
 }
 
-table body {
-  max-height: 5px;
-}
-
-#row-order {
+#row-checkbox {
   width: 15%;
 }
 
-.modal-body p,
+.modal-body label,
 .modal-body input {
   font-size: 18px;
   display: inline-block;
-margin: 5px;
+  margin: 5px;
 }
 
-.input-group{
-margin-bottom: 10px;
+.input-group {
+  margin-bottom: 10px;
 }
+
 .input-group-append input {
- border-radius:10px;
+  border-radius: 10px;
+}
+
+.form-check-input {
+  font-size: 20px;
+}
+
+.modal-backdrop {
+  display: none;
+}
+
+.modal {
+  background: rgba(85, 85, 85, 0.5);
 }
 
 </style>
