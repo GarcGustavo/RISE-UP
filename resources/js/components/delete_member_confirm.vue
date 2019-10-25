@@ -1,6 +1,12 @@
 <template>
   <transition>
-    <div class="modal" id="add_member_confirm" tabindex="-1" data-backdrop="static" role="dialog">
+    <div
+      class="modal"
+      id="delete_member_confirm"
+      tabindex="-1"
+      data-backdrop="static"
+      role="dialog"
+    >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -10,7 +16,7 @@
             </button>
           </div>
           <div class="modal-body text-center">
-            <p>Add selected members?</p>
+            <p>Delete selected members?</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary">Yes</button>

@@ -1,10 +1,10 @@
 <template>
   <transition>
-    <div class="modal fade" id="add_member" tabindex="-1" role="dialog">
+    <div class="modal fade" id="delete_member" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Add member</h5>
+            <h5 class="modal-title">Delete member</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -45,9 +45,9 @@
               type="button"
               class="btn btn-primary"
               data-toggle="modal"
-              data-target="#add_member_confirm"
-            >Add</button>
-            <add_member_confirm></add_member_confirm>
+              data-target="#delete_member_confirm"
+            >Delete</button>
+            <delete_member_confirm></delete_member_confirm>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -59,19 +59,14 @@
 <script>
 export default {
   data() {
-
     return {
-      showModal: false,
+      showModal: false
     };
-  },
-  methods:{
-
   }
 };
 </script>
 
 <style lang="scss" scoped>
-/*set table's main attributes*/
 .table-wrapper {
   font-size: 18px;
   overflow-y: auto;
@@ -80,7 +75,7 @@ export default {
   height: 500px;
   white-space: nowrap;
 }
-/*table cell attrbites*/
+
 table tr td {
   text-align: center;
   vertical-align: middle;
@@ -91,11 +86,11 @@ table tr td {
   text-overflow: ellipsis;
   max-width: 386px;
 }
-/*set checkbock row's width*/
+
 #row-checkbox {
   width: 15%;
 }
-/*the following style are for the search text and input bar*/
+
 .modal-body label,
 .modal-body input {
   font-size: 18px;
@@ -114,7 +109,7 @@ table tr td {
 .form-check-input {
   font-size: 20px;
 }
-/***********************************************************/
+
 
 .modal {
   background: rgba(85, 85, 85, 0.5);

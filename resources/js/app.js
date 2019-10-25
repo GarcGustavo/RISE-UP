@@ -28,6 +28,8 @@ window.Vue = require('vue');
 Vue.component('paginator', require('./components/paginator.vue').default);
 Vue.component('add_member', require('./components/add_member.vue').default);
 Vue.component('add_member_confirm', require('./components/add_member_confirm.vue').default);
+Vue.component('delete_member', require('./components/delete_member.vue').default);
+Vue.component('delete_member_confirm', require('./components/delete_member_confirm.vue').default);
 //web pages
 Vue.component('iren_header', require('./components/header.vue').default);
 Vue.component('iren_footer', require('./components/footer.vue').default);

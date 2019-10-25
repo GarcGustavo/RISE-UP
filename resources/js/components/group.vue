@@ -13,13 +13,22 @@
     -->
     <hr>
     <h1 class="text-center mt-5">
-      <i class="material-icons">remove_circle_outline</i>
-      <a href="#add_member" data-toggle="modal" data-target="#add_member" @click="showModal=true">
+      <a
+        href="#delete_member"
+        data-toggle="modal"
+        data-target="#delete_member"
+        @click="showModal=true"
+      >
+        <i class="material-icons">remove_circle_outline</i>
+      </a>
+      <a href="#add_member" data-toggle="modal" data-target="#add_member"  @click="showModal=true">
         <i class="material-icons">add_circle_outline</i>
       </a>
       <add_member v-if="showModal" @close="showModal = false"></add_member>
+      <delete_member v-if="showModal" @close="showModal = false"></delete_member>
       <p style="margin-left:90px;">Members</p>
     </h1>
+
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4">
         <div class="card h-100 text-center shadow">
@@ -142,27 +151,35 @@ export default {
 
 
 <style lang="scss" scoped>
+/* Set max height for content containers */
 #cases,
 #members {
   max-height: 450px;
   overflow-y: auto;
 }
 
+/* remove case cards borders */
 li {
   border: none;
 }
 
+/* add/remove icons position in relation to header */
 h1 i {
   float: right;
   margin: 10px;
 }
+
+/* change icon background when hovered */
 h1 i:hover {
   color: blue;
 }
+
+/* icon initial color */
 a {
   color: black;
 }
 
+/* position create case study button */
 #cases_header a {
   float: right;
   font-size: 18px;
