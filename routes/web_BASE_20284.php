@@ -12,20 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('layout.layout');
+    return view('layout');
 });
 Route::get('/about', function () {
     return view('about');
-});
-Route::get('/help', function () {
-    return view('help');
-});
-Route::get('/group', function () {
-    return view('group');
-});
-Route::get('/user_groups', function () {
-    return view('user_groups');
-});
-Route::get('/Home', function () {
-    return view('home');
 });

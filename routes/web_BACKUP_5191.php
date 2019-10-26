@@ -17,6 +17,7 @@ Route::get('/', function () {
 Route::get('/about', function () {
     return view('about');
 });
+<<<<<<< HEAD
 Route::get('/help', function () {
     return view('help');
 });
@@ -25,7 +26,8 @@ Route::get('/group', function () {
 });
 Route::get('/user_groups', function () {
     return view('user_groups');
-});
+=======
 Route::get('/Home', function () {
     return view('home');
+>>>>>>> 0838e86b17f88c3ccde3836b7447303fa9b3a5aa
 });

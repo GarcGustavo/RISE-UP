@@ -26,6 +26,3 @@ Route::get('/group', function () {
 Route::get('/user_groups', function () {
     return view('user_groups');
 });
-Route::get('/Home', function () {
-    return view('home');
-});

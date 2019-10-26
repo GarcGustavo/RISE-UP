@@ -2,10 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
-class CreateItemTypeTable extends Migration
+class CreateCsParameterTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -13,9 +13,9 @@ class CreateItemTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('Item_Type', function (Blueprint $table) {
-            $table->bigIncrements('iid');
-            $table->string('itt_name', 255);
+        Schema::create('CS_Parameter', function (Blueprint $table) {
+            $table->bigIncrements('csp_id');
+            $table->string('csp_name', 255);
         });
     }
 
@@ -26,6 +26,6 @@ class CreateItemTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('Item_Type');
+        Schema::drop('CS_Parameter');
     }
 }
