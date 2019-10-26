@@ -20,3 +20,6 @@ Route::get('/about', function () {
 Route::get('/Home', function () {
     return view('home');
 });
+
+Route::get('/admin', 'AdminController@index');
+
