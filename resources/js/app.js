@@ -3,7 +3,7 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-import JwPagination from 'jw-vue-pagination';
+//import JwPagination from 'jw-vue-pagination';
 
 
 
@@ -26,10 +26,8 @@ window.Vue = require('vue');
 
 //web pages components
 Vue.component('paginator', require('./components/paginator.vue').default);
-Vue.component('add_member', require('./components/add_member.vue').default);
-Vue.component('add_member_confirm', require('./components/add_member_confirm.vue').default);
-Vue.component('delete_member', require('./components/delete_member.vue').default);
-Vue.component('delete_member_confirm', require('./components/delete_member_confirm.vue').default);
+Vue.component('mg_action_table', require('./components/mg_action_table.vue').default);
+Vue.component('mg_action_confirm', require('./components/mg_action_confirm.vue').default);
 //web pages
 Vue.component('iren_header', require('./components/header.vue').default);
 Vue.component('iren_footer', require('./components/footer.vue').default);

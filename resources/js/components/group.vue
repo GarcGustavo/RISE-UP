@@ -14,18 +14,25 @@
     <hr>
     <h1 class="text-center mt-5">
       <a
-        href="#delete_member"
+        href="#mg_action_table"
         data-toggle="modal"
-        data-target="#delete_member"
-        @click="showModal=true"
+        data-target="#mg_action_table"
+        @click="showModal=true, action='Remove',
+        actor='member(s)'"
       >
         <i class="material-icons">remove_circle_outline</i>
       </a>
-      <a href="#add_member" data-toggle="modal" data-target="#add_member"  @click="showModal=true">
+      <a
+        href="#mg_action_table"
+        data-toggle="modal"
+        data-target="#mg_action_table"
+        @click="showModal=true, action='Add',
+        actor='member(s)'"
+      >
         <i class="material-icons">add_circle_outline</i>
       </a>
-      <add_member v-if="showModal" @close="showModal = false"></add_member>
-      <delete_member v-if="showModal" @close="showModal = false"></delete_member>
+      <mg_action_table v-if="showModal" @close="showModal = false" :action="action" :actor="actor"></mg_action_table>
+
       <p style="margin-left:90px;">Members</p>
     </h1>
 
@@ -143,7 +150,9 @@
 export default {
   data() {
     return {
-      showModal: false
+      showModal: false,
+      action: "",
+      actor: ""
     };
   }
 };

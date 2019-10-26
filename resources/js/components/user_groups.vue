@@ -2,14 +2,33 @@
   <div class="body mb-5 mt-5">
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mb-3">
-      <a href="#delete_member_confirm" data-toggle="modal" data-target="#delete_member_confirm">
+      <a
+        href="#mg_action_confirm"
+        data-toggle="modal"
+        data-target="#mg_action_confirm"
+        @click="action='Remove',
+        actor='group(s)'"
+      >
         <i class="material-icons">remove_circle_outline</i>
       </a>
-      <a href="#add_member" data-toggle="modal" data-target="#add_member">
+      <a
+        href="#mg_action_table"
+        data-toggle="modal"
+        data-target="#mg_action_table"
+        @click="gname_box_show=true,
+        action='Create',
+        actor='group'"
+      >
         <i class="material-icons">add_circle_outline</i>
       </a>
-      <add_member></add_member>
-      <delete_member_confirm></delete_member_confirm>
+
+      <div v-if="action=='Remove'">
+        <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it renders a confirm box itself -->
+        <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
+      </div>
+
+      <mg_action_table :action="action" :actor="actor" :gname_box_show="gname_box_show"></mg_action_table>
+
       <p>My groups</p>
     </h1>
 
@@ -45,12 +64,14 @@ const exampleItems = [...Array(150).keys()].map(i => ({
   id: i + 1,
   name: "Name of group  " + (i + 1)
 }));
-
 export default {
   data() {
     return {
       exampleItems,
-      pageOfItems: []
+      pageOfItems: [],
+      action: "",
+      actor: "",
+      gname_box_show: false
     };
   },
   methods: {
@@ -71,7 +92,6 @@ table {
   margin-right: auto;
   text-align: center;
 }
-
 /* control column display format for and content size
 *Block is display to make whole row selectable
 */
@@ -79,7 +99,6 @@ table tr td a {
   display: block;
   font-size: 18px;
 }
-
 /* This is for row content style and alignment */
 td a {
   text-align: center;
@@ -94,17 +113,14 @@ td a {
   padding-bottom: 20px;
   max-width: 775px;
 }
-
 /* align vertically to center checkbox */
 table tr td .check-box {
   padding-top: 20px;
 }
-
 /* checkbox column width */
 #row-order {
   width: 15%;
 }
-
 /* check box and label styling */
 input[type="checkbox"] + label {
   font-size: 18px;
@@ -113,29 +129,24 @@ input[type="checkbox"] + label {
   display: inline-block;
   padding: 0 0 0 0px;
 }
-
 /* change checkbox size */
 input[type="checkbox"] {
   transform: scale(1.2);
 }
-
 /* paginate component position in body */
 .pagination {
   float: right;
 }
-
 /* add/remove icons position in relation to header */
 h1 i {
   float: right;
   margin: 10px;
   margin-top: 20px;
 }
-
 /* change icon background when hovered */
 h1 i:hover {
   color: blue;
 }
-
 /* icon initial color */
 a {
   color: black;

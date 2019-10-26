@@ -1,12 +1,6 @@
 <template>
   <transition>
-    <div
-      class="modal"
-      id="delete_member_confirm"
-      tabindex="-1"
-      data-backdrop="static"
-      role="dialog"
-    >
+    <div class="modal" id="mg_action_confirm" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -16,7 +10,12 @@
             </button>
           </div>
           <div class="modal-body text-center">
-            <p>Delete selected members?</p>
+            <div v-if="action_confirm=='Create'">
+              <p>{{action_confirm}} {{actor}}?</p>
+            </div>
+            <div v-else>
+              <p>{{action_confirm}} selected {{actor}}?</p>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary">Yes</button>
@@ -29,7 +28,16 @@
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    action_confirm: {
+      type: String
+    },
+    actor: {
+      type: String
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -38,4 +46,7 @@ p {
   padding-bottom: 15px;
   font-size: 18px;
 }
+
+
+
 </style>
