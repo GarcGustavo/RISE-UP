@@ -23,7 +23,7 @@
       </a>
 
       <div v-if="action=='Remove'">
-        <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it renders a confirm box itself -->
+        <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
         <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
       </div>
 
@@ -71,7 +71,7 @@ export default {
       pageOfItems: [],
       action: "",
       actor: "",
-      gname_box_show: false
+      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
   methods: {
