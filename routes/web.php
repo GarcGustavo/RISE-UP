@@ -17,7 +17,6 @@ Route::get('/', function () {
 Route::get('/about', function () {
     return view('about');
 });
-<<<<<<< HEAD
 
 
 Route::resource('posts', 'PostController');
@@ -79,7 +78,6 @@ Route::resource('userGroups', 'User_GroupsController');
 Route::resource('users', 'UserController');
 
 Route::resource('users', 'UserController');
-=======
 Route::get('/Home', function () {
     return view('home');
 });
@@ -91,4 +89,3 @@ Route::get('/home', 'HomeController@index')->name('home');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
->>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1

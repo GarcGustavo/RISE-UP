@@ -20,13 +20,6 @@ class cs_parameter extends Model
 
     public $table = 'cs_parameter';
     
-<<<<<<< HEAD
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
-=======
->>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     protected $dates = ['deleted_at'];
 
 

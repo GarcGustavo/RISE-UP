@@ -19,13 +19,6 @@ class action_type extends Model
 
     public $table = 'action_type';
     
-<<<<<<< HEAD
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
-=======
->>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     protected $dates = ['deleted_at'];
 
 
@@ -54,18 +47,10 @@ class action_type extends Model
     ];
 
     /**
-<<<<<<< HEAD
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     **/
-    public function users()
-    {
-        return $this->belongsToMany(\App\Models\User::class, 'action');
-=======
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      **/
     public function users()
     {
         return $this->hasMany(\App\Models\User::class, 'action');
->>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     }
 }
