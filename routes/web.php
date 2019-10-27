@@ -22,4 +22,5 @@ Route::get('/Home', function () {
 });
 
 Route::get('/admin', 'AdminController@index');
+//Route::get('/admin/users/{}', 'AdminController@users');
 
