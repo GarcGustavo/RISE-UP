@@ -30,10 +30,6 @@ class user extends Model
 
     public $table = 'user';
     
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
     protected $dates = ['deleted_at'];
 
 
@@ -91,11 +87,11 @@ class user extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function actionTypes()
+    public function actions()
     {
-        return $this->belongsToMany(\App\Models\ActionType::class, 'action');
+        return $this->belongsTo(\App\Models\ActionType::class, 'action');
     }
 
     /**
@@ -103,13 +99,13 @@ class user extends Model
      **/
     public function groups()
     {
-        return $this->belongsToMany(\App\Models\Group::class, 'case');
+        return $this->belongsToMany(\App\Models\Group::class, 'gid');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      **/
-    public function group1s()
+    public function groupsOwned()
     {
         return $this->hasMany(\App\Models\Group::class, 'g_owner');
     }
@@ -117,7 +113,7 @@ class user extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
-    public function group2s()
+    public function userGroups()
     {
         return $this->belongsToMany(\App\Models\Group::class, 'user_groups');
     }

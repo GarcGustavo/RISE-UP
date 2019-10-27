@@ -6,31 +6,27 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class option
+ * Class Option
  * @package App\Models
- * @version October 25, 2019, 6:22 am UTC
+ * @version October 23, 2019, 10:59 pm UTC
  *
  * @property \App\Models\CsParameter oParameter
- * @property integer o_parameter
  * @property string o_content
+ * @property integer o_parameter
  */
-class option extends Model
+class Option extends Model
 {
     use SoftDeletes;
 
     public $table = 'option';
     
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
     protected $dates = ['deleted_at'];
 
-
+ 
 
     public $fillable = [
-        'o_parameter',
-        'o_content'
+        'o_content',
+        'o_parameter'
     ];
 
     /**
@@ -40,8 +36,8 @@ class option extends Model
      */
     protected $casts = [
         'oid' => 'integer',
-        'o_parameter' => 'integer',
-        'o_content' => 'string'
+        'o_content' => 'string',
+        'o_parameter' => 'integer'
     ];
 
     /**
@@ -50,8 +46,8 @@ class option extends Model
      * @var array
      */
     public static $rules = [
-        'o_parameter' => 'required',
-        'o_content' => 'required'
+        'o_content' => 'required',
+        'o_parameter' => 'required'
     ];
 
     /**

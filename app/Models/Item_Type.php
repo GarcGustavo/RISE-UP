@@ -18,10 +18,6 @@ class item_type extends Model
     use SoftDeletes;
 
     public $table = 'item_type';
-    
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
 
     protected $dates = ['deleted_at'];
 
@@ -51,10 +47,10 @@ class item_type extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function cases()
+    public function item()
     {
-        return $this->belongsToMany(\App\Models\Case::class, 'item');
+        return $this->hasMany(\App\Models\Item::class, 'item');
     }
 }
