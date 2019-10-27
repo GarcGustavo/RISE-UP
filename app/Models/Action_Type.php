@@ -19,10 +19,6 @@ class action_type extends Model
 
     public $table = 'action_type';
     
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
     protected $dates = ['deleted_at'];
 
 
@@ -51,10 +47,10 @@ class action_type extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      **/
     public function users()
     {
-        return $this->belongsToMany(\App\Models\User::class, 'action');
+        return $this->hasMany(\App\Models\User::class, 'action');
     }
 }

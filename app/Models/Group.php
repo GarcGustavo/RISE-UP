@@ -24,10 +24,6 @@ class group extends Model
 
     public $table = 'group';
     
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
     protected $dates = ['deleted_at'];
 
 
@@ -73,17 +69,17 @@ class group extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      **/
-    public function user1s()
+    public function case()
     {
-        return $this->belongsToMany(\App\Models\User::class, 'case');
+        return $this->hasMany(\App\Models\Case::class, 'case');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
-    public function user2s()
+    public function users()
     {
         return $this->belongsToMany(\App\Models\User::class, 'user_groups');
     }

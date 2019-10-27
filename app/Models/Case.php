@@ -28,10 +28,6 @@ class case extends Model
 
     public $table = 'case';
     
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-
     protected $dates = ['deleted_at'];
 
 
@@ -104,8 +100,8 @@ class case extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
-    public function itemTypes()
+    public function item()
     {
-        return $this->belongsToMany(\App\Models\ItemType::class, 'item');
+        return $this->belongsToMany(\App\Models\Item::class, 'item');
     }
 }
