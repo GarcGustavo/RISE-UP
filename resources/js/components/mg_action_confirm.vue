@@ -1,5 +1,5 @@
 <template>
-  <transition>
+  <transition> <!-- member group action confirmation -->
     <div class="modal" id="mg_action_confirm" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -10,10 +10,10 @@
             </button>
           </div>
           <div class="modal-body text-center">
-            <div v-if="action_confirm=='Create'">
+            <div v-if="action_confirm=='Create'"> <!-- dialogue content to confirm when user creates group dialogue -->
               <p>{{action_confirm}} {{actor}}?</p>
             </div>
-            <div v-else>
+            <div v-else> <!-- Dialogue content when user selects a member to add/remove from group or to delete a group -->
               <p>{{action_confirm}} selected {{actor}}?</p>
             </div>
           </div>

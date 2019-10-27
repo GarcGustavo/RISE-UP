@@ -1,5 +1,5 @@
 <template>
-  <transition>
+  <transition> <!--member group action table -->
     <div class="modal fade" id="mg_action_table" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -9,7 +9,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-
+          <!-- Add group name input element to dialogue box when user creates group -->
           <div class="modal-body">
             <div class="input-group" v-if="gname_box_show==true">
               <label>Group name</label>
@@ -17,14 +17,14 @@
                 <input type="text" placeholder="Name...">
               </div>
             </div>
-
+          <!-- Search box for table -->
             <div class="input-group">
               <label>Search</label>
               <div class="input-group-append search">
                 <input type="text" placeholder="User email..">
               </div>
             </div>
-
+          <!-- table --> 
             <div class="table-wrapper">
               <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
                 <thead class="thead-dark">
@@ -54,8 +54,8 @@
                 type="button"
                 class="btn btn-primary"
                 data-toggle="modal"
-                data-target="#mg_action_confirm"
-              >{{action}}</button>
+                data-target="#mg_action_confirm" 
+              >{{action}}</button> <!--confirmation dialogue box -->
             <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
@@ -67,6 +67,7 @@
 
 <script>
 export default {
+  
   props: {
     action: {
       type: String
