@@ -30,10 +30,13 @@ class user extends Model
 
     public $table = 'user';
     
+<<<<<<< HEAD
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
 
+=======
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     protected $dates = ['deleted_at'];
 
 
@@ -91,11 +94,19 @@ class user extends Model
     }
 
     /**
+<<<<<<< HEAD
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
     public function actionTypes()
     {
         return $this->belongsToMany(\App\Models\ActionType::class, 'action');
+=======
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     **/
+    public function actions()
+    {
+        return $this->belongsTo(\App\Models\ActionType::class, 'action');
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     }
 
     /**
@@ -103,13 +114,21 @@ class user extends Model
      **/
     public function groups()
     {
+<<<<<<< HEAD
         return $this->belongsToMany(\App\Models\Group::class, 'case');
+=======
+        return $this->belongsToMany(\App\Models\Group::class, 'gid');
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      **/
+<<<<<<< HEAD
     public function group1s()
+=======
+    public function groupsOwned()
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     {
         return $this->hasMany(\App\Models\Group::class, 'g_owner');
     }
@@ -117,7 +136,11 @@ class user extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
+<<<<<<< HEAD
     public function group2s()
+=======
+    public function userGroups()
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     {
         return $this->belongsToMany(\App\Models\Group::class, 'user_groups');
     }

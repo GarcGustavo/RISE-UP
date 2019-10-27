@@ -24,10 +24,13 @@ class group extends Model
 
     public $table = 'group';
     
+<<<<<<< HEAD
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
 
+=======
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     protected $dates = ['deleted_at'];
 
 
@@ -73,17 +76,29 @@ class group extends Model
     }
 
     /**
+<<<<<<< HEAD
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
     public function user1s()
     {
         return $this->belongsToMany(\App\Models\User::class, 'case');
+=======
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     **/
+    public function case()
+    {
+        return $this->hasMany(\App\Models\Case::class, 'case');
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
+<<<<<<< HEAD
     public function user2s()
+=======
+    public function users()
+>>>>>>> 93c98cde80fa31a70778edd8fe36cbf288ce96a1
     {
         return $this->belongsToMany(\App\Models\User::class, 'user_groups');
     }
