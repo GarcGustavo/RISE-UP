@@ -18,11 +18,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class item extends Model
 {
-    use SoftDeletes;
-
     public $table = 'Item';
 
-    protected $dates = ['deleted_at'];
+    protected $dates = false;
 
     public $timestamps = false;
 

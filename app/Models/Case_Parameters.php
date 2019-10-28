@@ -17,11 +17,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class case_parameters extends Model
 {
-    use SoftDeletes;
-
     public $table = 'Case_Parameters';
 
-    protected $dates = ['deleted_at'];
+    protected $dates = false;
 
     public $timestamps = false;
 

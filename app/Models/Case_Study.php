@@ -24,11 +24,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class case_study extends Model
 {
-    use SoftDeletes;
-
     public $table = 'Case';
 
-    protected $dates = ['deleted_at'];
+    protected $dates = false;
 
     public $timestamps = false;
 
