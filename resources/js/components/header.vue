@@ -36,10 +36,10 @@
         <a class="nav-link" href>Collaborate</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href>Help</a>
+        <a class="nav-link" href="/help">Help</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href>About</a>
+        <a class="nav-link" href="/about">About</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href>Language</a>
@@ -58,7 +58,7 @@
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Profile</a>
           <a href="#" class="dropdown-item">Cases</a>
-          <a href="#" class="dropdown-item">Groups</a>
+          <a href="/user_groups" class="dropdown-item">Groups</a>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Logout</a>
         </div>
@@ -72,6 +72,7 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
+
 .profile-usertitle {
   text-align: center;
   margin-top: 20px;

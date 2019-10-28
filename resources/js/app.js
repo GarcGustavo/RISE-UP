@@ -35,7 +35,6 @@ Vue.component('iren_help', require('./components/help.vue').default);
 Vue.component('iren_about', require('./components/about.vue').default);
 Vue.component('iren_group', require('./components/group.vue').default);
 Vue.component('iren_user_groups', require('./components/user_groups.vue').default);
-Vue.component('case_study', require('./components/case_study.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
