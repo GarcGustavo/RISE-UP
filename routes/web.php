@@ -12,10 +12,19 @@
 */
 
 Route::get('/', function () {
-    return view('layout');
+    return view('layout.layout');
 });
 Route::get('/about', function () {
     return view('about');
+});
+Route::get('/help', function () {
+    return view('help');
+});
+Route::get('/group', function () {
+    return view('group');
+});
+Route::get('/user_groups', function () {
+    return view('user_groups');
 });
 Route::get('/home', function () {
     return view('home');
@@ -23,3 +32,7 @@ Route::get('/home', function () {
 Route::get('/page', function () {
     return view('case_study');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
