@@ -29,8 +29,21 @@ Route::get('/user_groups', function () {
 Route::get('/home', function () {
     return view('home');
 });
-Route::get('/page', function () {
+Route::get('/case', function () {
     return view('case_study');
 });
 
 Auth::routes();
+
+
+//Show case
+Route::get('/case_study/{id}', 'CaseController@show');
+
+//List users
+Route::get('/users', 'UserController@index');
+
+//List members of a group
+Route::get('/group/{id}/members', 'User_GroupsController@show_members');
+
+//List groups of a user
+Route::get('/user/{id}/groups', 'GroupController@show_groups');

@@ -11,6 +11,6 @@ class CaseTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Case::class, 50)->create();
+        factory(App\Models\Case_Study::class, 50)->create();
     }
 }

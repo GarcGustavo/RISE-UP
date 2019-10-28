@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @version October 25, 2019, 6:19 am UTC
  *
  * @property \App\Models\CsParameter cGroup
- * @property \App\Models\Case cOwner
+ * @property \App\Models\Case_Study cOwner
  * @property integer c_owner
  * @property integer c_group
  */

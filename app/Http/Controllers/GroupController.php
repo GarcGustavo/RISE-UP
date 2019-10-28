@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Group;
+use App\Models\User_Groups;
 use App\Http\Resources\Group as GroupResource;
+use App\Http\Resources\User_Groups as User_GroupsResource;
 
 class GroupController extends Controller
 {
@@ -58,11 +60,21 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show_groups($id)
     {
-        $group = Group::findOrFail($id);
+        //$group = Group::findOrFail($id);
 
-        return new GroupResource($group);
+        //  return new GroupResource($group);
+
+        $uid = $id;
+        $groups = User_Groups::
+        where('User_Groups.uid', $uid)
+        ->join('User', 'User_Groups.uid', '=', 'User.uid')
+        ->join('Group', 'User_Groups.gid', '=', 'Group.gid')
+        ->select('Group.*')
+        ->get();
+
+        return GroupResource::collection($groups);
     }
 
     /**
