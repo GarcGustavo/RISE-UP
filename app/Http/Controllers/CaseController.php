@@ -2,155 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateCaseRequest;
-use App\Http\Requests\UpdateCaseRequest;
-use App\Repositories\CaseRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
 
-class CaseController extends AppBaseController
+class CaseController extends Controller
 {
-    /** @var  CaseRepository */
-    private $caseRepository;
-
-    public function __construct(CaseRepository $caseRepo)
-    {
-        $this->caseRepository = $caseRepo;
-    }
-
     /**
-     * Display a listing of the Case.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $cases = $this->caseRepository->all();
-
-        return view('cases.index')
-            ->with('cases', $cases);
+        //
     }
 
     /**
-     * Show the form for creating a new Case.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('cases.create');
+        //
     }
 
     /**
-     * Store a newly created Case in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateCaseRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateCaseRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-
-        $case = $this->caseRepository->create($input);
-
-        Flash::success('Case saved successfully.');
-
-        return redirect(route('cases.index'));
+        //
     }
 
     /**
-     * Display the specified Case.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $case = $this->caseRepository->find($id);
-
-        if (empty($case)) {
-            Flash::error('Case not found');
-
-            return redirect(route('cases.index'));
-        }
-
-        return view('cases.show')->with('case', $case);
+        //
     }
 
     /**
-     * Show the form for editing the specified Case.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $case = $this->caseRepository->find($id);
-
-        if (empty($case)) {
-            Flash::error('Case not found');
-
-            return redirect(route('cases.index'));
-        }
-
-        return view('cases.edit')->with('case', $case);
+        //
     }
 
     /**
-     * Update the specified Case in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateCaseRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateCaseRequest $request)
+    public function update(Request $request, $id)
     {
-        $case = $this->caseRepository->find($id);
-
-        if (empty($case)) {
-            Flash::error('Case not found');
-
-            return redirect(route('cases.index'));
-        }
-
-        $case = $this->caseRepository->update($request->all(), $id);
-
-        Flash::success('Case updated successfully.');
-
-        return redirect(route('cases.index'));
+        //
     }
 
     /**
-     * Remove the specified Case from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $case = $this->caseRepository->find($id);
-
-        if (empty($case)) {
-            Flash::error('Case not found');
-
-            return redirect(route('cases.index'));
-        }
-
-        $this->caseRepository->delete($id);
-
-        Flash::success('Case deleted successfully.');
-
-        return redirect(route('cases.index'));
+        //
     }
 }

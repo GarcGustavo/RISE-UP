@@ -2,155 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateRoleRequest;
-use App\Http\Requests\UpdateRoleRequest;
-use App\Repositories\RoleRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
 
-class RoleController extends AppBaseController
+class RoleController extends Controller
 {
-    /** @var  RoleRepository */
-    private $roleRepository;
-
-    public function __construct(RoleRepository $roleRepo)
-    {
-        $this->roleRepository = $roleRepo;
-    }
-
     /**
-     * Display a listing of the Role.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $roles = $this->roleRepository->all();
-
-        return view('roles.index')
-            ->with('roles', $roles);
+        //
     }
 
     /**
-     * Show the form for creating a new Role.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('roles.create');
+        //
     }
 
     /**
-     * Store a newly created Role in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateRoleRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateRoleRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-
-        $role = $this->roleRepository->create($input);
-
-        Flash::success('Role saved successfully.');
-
-        return redirect(route('roles.index'));
+        //
     }
 
     /**
-     * Display the specified Role.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $role = $this->roleRepository->find($id);
-
-        if (empty($role)) {
-            Flash::error('Role not found');
-
-            return redirect(route('roles.index'));
-        }
-
-        return view('roles.show')->with('role', $role);
+        //
     }
 
     /**
-     * Show the form for editing the specified Role.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $role = $this->roleRepository->find($id);
-
-        if (empty($role)) {
-            Flash::error('Role not found');
-
-            return redirect(route('roles.index'));
-        }
-
-        return view('roles.edit')->with('role', $role);
+        //
     }
 
     /**
-     * Update the specified Role in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateRoleRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateRoleRequest $request)
+    public function update(Request $request, $id)
     {
-        $role = $this->roleRepository->find($id);
-
-        if (empty($role)) {
-            Flash::error('Role not found');
-
-            return redirect(route('roles.index'));
-        }
-
-        $role = $this->roleRepository->update($request->all(), $id);
-
-        Flash::success('Role updated successfully.');
-
-        return redirect(route('roles.index'));
+        //
     }
 
     /**
-     * Remove the specified Role from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $role = $this->roleRepository->find($id);
-
-        if (empty($role)) {
-            Flash::error('Role not found');
-
-            return redirect(route('roles.index'));
-        }
-
-        $this->roleRepository->delete($id);
-
-        Flash::success('Role deleted successfully.');
-
-        return redirect(route('roles.index'));
+        //
     }
 }

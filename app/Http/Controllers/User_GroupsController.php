@@ -2,155 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateUser_GroupsRequest;
-use App\Http\Requests\UpdateUser_GroupsRequest;
-use App\Repositories\User_GroupsRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
 
-class User_GroupsController extends AppBaseController
+class User_GroupsController extends Controller
 {
-    /** @var  User_GroupsRepository */
-    private $userGroupsRepository;
-
-    public function __construct(User_GroupsRepository $userGroupsRepo)
-    {
-        $this->userGroupsRepository = $userGroupsRepo;
-    }
-
     /**
-     * Display a listing of the User_Groups.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $userGroups = $this->userGroupsRepository->all();
-
-        return view('user__groups.index')
-            ->with('userGroups', $userGroups);
+        //
     }
 
     /**
-     * Show the form for creating a new User_Groups.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('user__groups.create');
+        //
     }
 
     /**
-     * Store a newly created User_Groups in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateUser_GroupsRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateUser_GroupsRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-
-        $userGroups = $this->userGroupsRepository->create($input);
-
-        Flash::success('User  Groups saved successfully.');
-
-        return redirect(route('userGroups.index'));
+        //
     }
 
     /**
-     * Display the specified User_Groups.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $userGroups = $this->userGroupsRepository->find($id);
-
-        if (empty($userGroups)) {
-            Flash::error('User  Groups not found');
-
-            return redirect(route('userGroups.index'));
-        }
-
-        return view('user__groups.show')->with('userGroups', $userGroups);
+        //
     }
 
     /**
-     * Show the form for editing the specified User_Groups.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $userGroups = $this->userGroupsRepository->find($id);
-
-        if (empty($userGroups)) {
-            Flash::error('User  Groups not found');
-
-            return redirect(route('userGroups.index'));
-        }
-
-        return view('user__groups.edit')->with('userGroups', $userGroups);
+        //
     }
 
     /**
-     * Update the specified User_Groups in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateUser_GroupsRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateUser_GroupsRequest $request)
+    public function update(Request $request, $id)
     {
-        $userGroups = $this->userGroupsRepository->find($id);
-
-        if (empty($userGroups)) {
-            Flash::error('User  Groups not found');
-
-            return redirect(route('userGroups.index'));
-        }
-
-        $userGroups = $this->userGroupsRepository->update($request->all(), $id);
-
-        Flash::success('User  Groups updated successfully.');
-
-        return redirect(route('userGroups.index'));
+        //
     }
 
     /**
-     * Remove the specified User_Groups from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $userGroups = $this->userGroupsRepository->find($id);
-
-        if (empty($userGroups)) {
-            Flash::error('User  Groups not found');
-
-            return redirect(route('userGroups.index'));
-        }
-
-        $this->userGroupsRepository->delete($id);
-
-        Flash::success('User  Groups deleted successfully.');
-
-        return redirect(route('userGroups.index'));
+        //
     }
 }
