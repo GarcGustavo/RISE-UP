@@ -1,43 +1,64 @@
 <template>
-  <div class="crud">
-    <div class="col-1">
-      <img :src="image"/>
+  <div id="app">
+    <div class="heading">
+      <h1>Cruds</h1>
     </div>
-    <div class="col-2">
-      <h3>Name: {{ name | properCase }}</h3>
-      <select @change="update">
-        <option
-          v-for="col in [ 'red', 'green' ]"
-          :value="col"
-          :key="col"
-          :selected="col === color ? 'selected' : ''"
-        >{{ col | properCase }}</option>
-      </select>
-      <button @click="del">Delete</button>
+    <crud-component
+      v-for="crud in cruds"
+      v-bind="crud"
+      :key="crud.id"
+      @update="update"
+      @delete="del"
+    ></crud-component>
+    <div>
+      <button @click="create()">Add</button>
     </div>
   </div>
 </template>
+
 <script>
+  function Crud({ id, color, name}) {
+    this.id = id;
+    this.color = color;
+    this.name = name;
+  }
+
+  import CrudComponent from './CrudComponent.vue';
+
   export default {
-    computed: {
-      image() {
-        return `/images/${this.color}.png`;
+    data() {
+      return {
+        cruds: []
       }
     },
     methods: {
-      update(val) {
-        this.$emit('update', this.id, val.target.selectedOptions[0].value);
+      create() {
+        window.axios.get('/api/cruds/create').then(({ data }) => {
+        this.cruds.push(new Crud(data));
+        });
       },
-      del() {
-        this.$emit('delete', this.id);
+      read() {
+          window.axios.get('/api/cruds').then(({ data }) => {
+          data.forEach(crud => {
+          this.cruds.push(new Crud(crud));
+          });
+        });
+      },
+      update(id, color) {
+        window.axios.put(`/api/cruds/${id}`, { color }).then(() => {
+          this.cruds.find(crud => crud.id === id).color = color;
+        });
+      },
+      del(id) {
+        window.axios.delete(`/api/cruds/${id}`).then(() => {
+        let index = this.cruds.findIndex(crud => crud.id === id);
+        this.cruds.splice(index, 1);
+        });
       }
     },
-    props: ['id', 'color', 'name'],
-    filters: {
-      properCase(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-      }
+    components: {
+      CrudComponent
     }
+    
   }
 </script>
-<style></style>
