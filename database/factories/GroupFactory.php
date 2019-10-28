@@ -1,16 +1,15 @@
+
 <?php
-
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-
-use App\Models\Group;
+use App\Models\group;
 use Faker\Generator as Faker;
-
-$factory->define(Group::class, function (Faker $faker) {
-
+$factory->define(group::class, function (Faker $faker) {
     return [
         'g_name' => $faker->word,
         'g_status' => $faker->word,
-        'g_creation_date' => $faker->word,
-        'g_owner' => $faker->randomDigitNotNull
+        'g_creation_date' => $faker->date,
+        'g_owner' => $faker->numberBetween($min=1, $max=50)
     ];
+
+
 });
