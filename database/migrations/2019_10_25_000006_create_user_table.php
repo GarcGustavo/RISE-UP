@@ -24,6 +24,7 @@ class CreateUserTable extends Migration
             $table->string('current_edit_cid', 255);
             $table->unsignedBigInteger('u_role');
             $table->foreign('u_role')->references('rid')->on('Role');
+            $table->softDeletes();
         });
     }
 

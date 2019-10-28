@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Http\Resources\User as UserResource;
 
 class UserController extends Controller
 {
@@ -13,7 +15,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+
+        return UserResource::collection($users);
     }
 
     /**
@@ -34,7 +38,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = $request->isMethod('put') ? User::findOrFail($request->uid): new User;
+
+        $user->uid = $request -> input('uid');
+        $user->first_name = $request -> input('first_name');
+        $user->last_name = $request -> input('last_name');
+        $user->email = $request -> input('email');
+        $user->contact_email = $request -> input('contact_email');
+        $user->u_creation_date = $request -> input('u_creation_date');
+        $user->u_ban_status = $request -> input('u_ban_status');
+        $user->current_edit_cid = $request -> input('current_edit_cid');
+        $user->u_role = $request -> input('u_role');
+        $user->delete_at = null;
+
+        if ($user->save()) {
+            return new UserResource($user);
+        }
     }
 
     /**
@@ -45,7 +64,9 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        return new UserResource($user);
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Group;
+use App\Http\Resources\Group as GroupResource;
 
 class GroupController extends Controller
 {
@@ -13,7 +15,9 @@ class GroupController extends Controller
      */
     public function index()
     {
-        //
+        $groups = Group::all();
+
+        return GroupResource::collection($groups);
     }
 
     /**
@@ -34,8 +38,19 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $group = $request->isMethod('put') ? group::findOrFail($request->gid): new group;
+
+        $group->gid = $request -> input('gid');
+        $group->gname = $request -> input('gname');
+        $group->g_status = $request -> input('g_status');
+        $group->g_creation_date = $request -> input('g_creation_date');
+        $group->g_owner = $request -> input('g_owner');
+
+        if ($group->save()) {
+            return new GroupResource($group);
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -45,7 +60,9 @@ class GroupController extends Controller
      */
     public function show($id)
     {
-        //
+        $group = Group::findOrFail($id);
+
+        return new GroupResource($group);
     }
 
     /**
@@ -79,6 +96,11 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $group = Group::findOrFail($id);
+
+
+        if ($group->delete()) {
+            return new GroupResource($group);
+        }
     }
 }
