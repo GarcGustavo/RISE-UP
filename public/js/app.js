@@ -2491,6 +2491,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2506,10 +2511,29 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      showModal: false
+      showModal: false,
+      users: [],
+      user: {
+        first_name: "",
+        last_name: "",
+        email: ""
+      }
     };
   },
-  methods: {}
+  created: function created() {
+    this.fetchUsers();
+  },
+  methods: {
+    fetchUsers: function fetchUsers() {
+      var _this = this;
+
+      fetch("/users").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.users = res.data;
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -40120,61 +40144,71 @@ var render = function() {
                         ])
                       ]),
                       _vm._v(" "),
-                      _c("tbody", [
-                        _c("tr", [
-                          _c("td", [
-                            _c("div", { staticClass: "check-box" }, [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.checked,
-                                    expression: "checked"
-                                  }
-                                ],
-                                staticClass: "checkbox",
-                                attrs: { type: "checkbox", id: "'checkbox1" },
-                                domProps: {
-                                  checked: Array.isArray(_vm.checked)
-                                    ? _vm._i(_vm.checked, null) > -1
-                                    : _vm.checked
-                                },
-                                on: {
-                                  change: function($event) {
-                                    var $$a = _vm.checked,
-                                      $$el = $event.target,
-                                      $$c = $$el.checked ? true : false
-                                    if (Array.isArray($$a)) {
-                                      var $$v = null,
-                                        $$i = _vm._i($$a, $$v)
-                                      if ($$el.checked) {
-                                        $$i < 0 &&
-                                          (_vm.checked = $$a.concat([$$v]))
+                      _c(
+                        "tbody",
+                        _vm._l(_vm.users, function(user, index) {
+                          return _c("tr", { key: index }, [
+                            _c("td", [
+                              _c("div", { staticClass: "check-box" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.checked,
+                                      expression: "checked"
+                                    }
+                                  ],
+                                  staticClass: "checkbox",
+                                  attrs: { type: "checkbox", id: "'checkbox1" },
+                                  domProps: {
+                                    checked: Array.isArray(_vm.checked)
+                                      ? _vm._i(_vm.checked, null) > -1
+                                      : _vm.checked
+                                  },
+                                  on: {
+                                    change: function($event) {
+                                      var $$a = _vm.checked,
+                                        $$el = $event.target,
+                                        $$c = $$el.checked ? true : false
+                                      if (Array.isArray($$a)) {
+                                        var $$v = null,
+                                          $$i = _vm._i($$a, $$v)
+                                        if ($$el.checked) {
+                                          $$i < 0 &&
+                                            (_vm.checked = $$a.concat([$$v]))
+                                        } else {
+                                          $$i > -1 &&
+                                            (_vm.checked = $$a
+                                              .slice(0, $$i)
+                                              .concat($$a.slice($$i + 1)))
+                                        }
                                       } else {
-                                        $$i > -1 &&
-                                          (_vm.checked = $$a
-                                            .slice(0, $$i)
-                                            .concat($$a.slice($$i + 1)))
+                                        _vm.checked = $$c
                                       }
-                                    } else {
-                                      _vm.checked = $$c
                                     }
                                   }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("label", { attrs: { for: "'checkbox1" } }, [
-                                _vm._v("1")
+                                }),
+                                _vm._v(" "),
+                                _c("label", { attrs: { for: "'checkbox1" } }, [
+                                  _vm._v(_vm._s(index + 1))
+                                ])
                               ])
+                            ]),
+                            _vm._v(" "),
+                            _c("td", [_vm._v(_vm._s(user.email))]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _vm._v(
+                                _vm._s(user.first_name) +
+                                  " " +
+                                  _vm._s(user.last_name)
+                              )
                             ])
-                          ]),
-                          _vm._v(" "),
-                          _c("td", [_vm._v("Melvinmalave95@gmail.com")]),
-                          _vm._v(" "),
-                          _c("td", [_vm._v("Melvin Jesus Malave Sanchez")])
-                        ])
-                      ])
+                          ])
+                        }),
+                        0
+                      )
                     ]
                   )
                 ])

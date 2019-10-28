@@ -1,5 +1,6 @@
 <template>
-  <transition> <!--member group action table -->
+  <transition>
+    <!--member group action table -->
     <div class="modal fade" id="mg_action_table" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -17,14 +18,14 @@
                 <input type="text" placeholder="Name...">
               </div>
             </div>
-          <!-- Search box for table -->
+            <!-- Search box for table -->
             <div class="input-group">
               <label>Search</label>
               <div class="input-group-append search">
                 <input type="text" placeholder="User email..">
               </div>
             </div>
-          <!-- table --> 
+            <!-- table -->
             <div class="table-wrapper">
               <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
                 <thead class="thead-dark">
@@ -35,27 +36,28 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr v-for="(user,index) in users" v-bind:key="index">
                     <td>
                       <div class="check-box">
                         <input class="checkbox" type="checkbox" id="'checkbox1" v-model="checked">
-                        <label for="'checkbox1">1</label>
+                        <label for="'checkbox1">{{index+1}}</label>
                       </div>
                     </td>
-                    <td>Melvinmalave95@gmail.com</td>
-                    <td>Melvin Jesus Malave Sanchez</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.first_name}} {{user.last_name}}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
           <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-toggle="modal"
-                data-target="#mg_action_confirm" 
-              >{{action}}</button> <!--confirmation dialogue box -->
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#mg_action_confirm"
+            >{{action}}</button>
+            <!--confirmation dialogue box -->
             <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
@@ -67,7 +69,6 @@
 
 <script>
 export default {
-  
   props: {
     action: {
       type: String
@@ -83,10 +84,28 @@ export default {
 
   data() {
     return {
-      showModal: false
+      showModal: false,
+      users: [],
+      user: {
+        first_name: "",
+        last_name: "",
+        email: ""
+      }
     };
   },
-  methods: {}
+  created() {
+    this.fetchUsers();
+  },
+
+  methods: {
+    fetchUsers() {
+      fetch("/users")
+        .then(res => res.json())
+        .then(res => {
+          this.users = res.data;
+        });
+    }
+  }
 };
 </script>
 
@@ -151,7 +170,4 @@ input[type="checkbox"] + label {
 input[type="checkbox"] {
   transform: scale(1.2);
 }
-
-
-
 </style>

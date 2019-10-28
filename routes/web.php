@@ -40,5 +40,10 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 
 //List users
-Route::
-get('/users', 'UserController@index');
+Route::get('/users', 'UserController@index');
+
+//List members of a group
+Route::get('/group/{id}/members', 'User_GroupsController@show_members');
+
+//List groups of a user
+Route::get('/user/{id}/groups', 'GroupController@show_groups');

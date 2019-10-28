@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User_Groups;
+use App\Http\Resources\User_Groups as User_GroupsResource;
+use App\Http\Resources\User as UserResource;
 
 class User_GroupsController extends Controller
 {
@@ -43,9 +46,16 @@ class User_GroupsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show_members($id)
     {
-        //
+        $gid = $id;
+        $members = User_Groups::
+        where('gid', $gid)
+        ->join('User', 'User_Groups.uid', '=', 'User.uid')
+        ->select('User.*')
+        ->get();
+
+        return UserResource::collection($members);
     }
 
     /**

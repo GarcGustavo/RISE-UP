@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Case;
+use App\Models\Case_Study;
 
 class UpdateCaseRequest extends FormRequest
 {
@@ -25,8 +25,8 @@ class UpdateCaseRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = Case::$rules;
-        
+        $rules = Case_Study::$rules;
+
         return $rules;
     }
 }
