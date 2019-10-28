@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class GroupTableSeeder extends Seeder
+class User_GroupsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +11,6 @@ class GroupTableSeeder extends Seeder
      */
     public function run()
     {
-    factory(App\Models\group::class, 10)->create();
+        factory(App\Models\user_groups::class, 50)->create();
     }
 }
