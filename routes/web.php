@@ -37,7 +37,7 @@ Auth::routes();
 
 
 //Show case
-Route::get('/case_study/{id}', 'CaseController@show');
+//Route::get('/case_study/{id}', 'CaseController@show');
 
 //List users
 Route::get('/users', 'UserController@index');
