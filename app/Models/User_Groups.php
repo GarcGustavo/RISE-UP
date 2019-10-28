@@ -19,11 +19,11 @@ class user_groups extends Model
 {
     use SoftDeletes;
 
-    public $table = 'user_groups';
-    
+    public $table = 'User_Groups';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'gid',

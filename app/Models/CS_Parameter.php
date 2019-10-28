@@ -18,11 +18,11 @@ class cs_parameter extends Model
 {
     use SoftDeletes;
 
-    public $table = 'cs_parameter';
-    
+    public $table = 'Cs_Parameter';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'csp_name'
@@ -52,7 +52,7 @@ class cs_parameter extends Model
      **/
     public function cases()
     {
-        return $this->belongsToMany(\App\Models\Case::class, 'case_parameters');
+        return $this->belongsToMany(\App\Models\Case_study::class, 'case_parameters');
     }
 
     /**

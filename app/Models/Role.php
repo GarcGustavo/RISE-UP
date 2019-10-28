@@ -18,11 +18,11 @@ class role extends Model
 {
     use SoftDeletes;
 
-    public $table = 'role';
+    public $table = 'Role';
 
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'r_creation_date',

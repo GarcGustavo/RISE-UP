@@ -17,11 +17,11 @@ class item_type extends Model
 {
     use SoftDeletes;
 
-    public $table = 'item_type';
+    public $table = 'Item_Type';
 
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'itt_name'

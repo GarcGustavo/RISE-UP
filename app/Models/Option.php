@@ -18,11 +18,11 @@ class Option extends Model
 {
     use SoftDeletes;
 
-    public $table = 'option';
-    
+    public $table = 'Option';
+
     protected $dates = ['deleted_at'];
 
- 
+    public $timestamps = false;
 
     public $fillable = [
         'o_content',

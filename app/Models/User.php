@@ -28,11 +28,11 @@ class user extends Model
 {
     use SoftDeletes;
 
-    public $table = 'user';
-    
+    public $table = 'User';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'first_name',

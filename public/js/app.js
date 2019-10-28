@@ -2787,7 +2787,8 @@ var exampleItems = _toConsumableArray(Array(150).keys()).map(function (i) {
       pageOfItems: [],
       action: "",
       actor: "",
-      gname_box_show: false
+      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
+
     };
   },
   methods: {
