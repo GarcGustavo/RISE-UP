@@ -29,10 +29,13 @@ Route::get('/user_groups', function () {
 Route::get('/home', function () {
     return view('home');
 });
+
 Route::get('/page', function () {
     return view('case_study');
 });
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');
+
+//Route::get('/page', 'CaseController@index')->name('page');

@@ -1,15 +1,9 @@
 @extends('layout.layout')
-@section('title')
-@endsection
-
-@section('head')
-@endsection
 
 @section('content')
-
-@endsection
-
-@section('scripts')
-<script>
+<div id="app"> 
+    <case_study></case_study>
+</div>
+<script src="{{asset('js/app.js')}}">
 </script>
 @endsection

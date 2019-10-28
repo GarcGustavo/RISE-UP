@@ -15,7 +15,7 @@ class CaseController extends Controller
      */
     public function index()
     {
-        $groups = Case_Study::all();
+        $case_studies = Case_Study::all();
 
         return CaseResource::collection($case_studies);
     }
