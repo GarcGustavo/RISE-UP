@@ -2,155 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateOptionRequest;
-use App\Http\Requests\UpdateOptionRequest;
-use App\Repositories\OptionRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
 
-class OptionController extends AppBaseController
+class OptionController extends Controller
 {
-    /** @var  OptionRepository */
-    private $optionRepository;
-
-    public function __construct(OptionRepository $optionRepo)
-    {
-        $this->optionRepository = $optionRepo;
-    }
-
     /**
-     * Display a listing of the Option.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $options = $this->optionRepository->all();
-
-        return view('options.index')
-            ->with('options', $options);
+        //
     }
 
     /**
-     * Show the form for creating a new Option.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('options.create');
+        //
     }
 
     /**
-     * Store a newly created Option in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateOptionRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateOptionRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-
-        $option = $this->optionRepository->create($input);
-
-        Flash::success('Option saved successfully.');
-
-        return redirect(route('options.index'));
+        //
     }
 
     /**
-     * Display the specified Option.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $option = $this->optionRepository->find($id);
-
-        if (empty($option)) {
-            Flash::error('Option not found');
-
-            return redirect(route('options.index'));
-        }
-
-        return view('options.show')->with('option', $option);
+        //
     }
 
     /**
-     * Show the form for editing the specified Option.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $option = $this->optionRepository->find($id);
-
-        if (empty($option)) {
-            Flash::error('Option not found');
-
-            return redirect(route('options.index'));
-        }
-
-        return view('options.edit')->with('option', $option);
+        //
     }
 
     /**
-     * Update the specified Option in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateOptionRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateOptionRequest $request)
+    public function update(Request $request, $id)
     {
-        $option = $this->optionRepository->find($id);
-
-        if (empty($option)) {
-            Flash::error('Option not found');
-
-            return redirect(route('options.index'));
-        }
-
-        $option = $this->optionRepository->update($request->all(), $id);
-
-        Flash::success('Option updated successfully.');
-
-        return redirect(route('options.index'));
+        //
     }
 
     /**
-     * Remove the specified Option from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $option = $this->optionRepository->find($id);
-
-        if (empty($option)) {
-            Flash::error('Option not found');
-
-            return redirect(route('options.index'));
-        }
-
-        $this->optionRepository->delete($id);
-
-        Flash::success('Option deleted successfully.');
-
-        return redirect(route('options.index'));
+        //
     }
 }

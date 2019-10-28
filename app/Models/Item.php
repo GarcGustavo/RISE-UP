@@ -20,11 +20,11 @@ class item extends Model
 {
     use SoftDeletes;
 
-    public $table = 'item';
+    public $table = 'Item';
 
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'i_content',
@@ -60,7 +60,7 @@ class item extends Model
      **/
     public function iCase()
     {
-        return $this->belongsTo(\App\Models\Case::class, 'i_case');
+        return $this->belongsTo(\App\Models\Case_study::class, 'i_case');
     }
 
     /**

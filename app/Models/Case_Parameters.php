@@ -19,11 +19,11 @@ class case_parameters extends Model
 {
     use SoftDeletes;
 
-    public $table = 'case_parameters';
-    
+    public $table = 'Case_Parameters';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'c_owner',
@@ -63,6 +63,6 @@ class case_parameters extends Model
      **/
     public function cOwner()
     {
-        return $this->belongsTo(\App\Models\Case::class, 'c_owner');
+        return $this->belongsTo(\App\Models\case_study::class, 'c_owner');
     }
 }

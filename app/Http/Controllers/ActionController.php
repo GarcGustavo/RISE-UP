@@ -2,155 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateActionRequest;
-use App\Http\Requests\UpdateActionRequest;
-use App\Repositories\ActionRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
 
-class ActionController extends AppBaseController
+class ActionController extends Controller
 {
-    /** @var  ActionRepository */
-    private $actionRepository;
-
-    public function __construct(ActionRepository $actionRepo)
-    {
-        $this->actionRepository = $actionRepo;
-    }
-
     /**
-     * Display a listing of the Action.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $actions = $this->actionRepository->all();
-
-        return view('actions.index')
-            ->with('actions', $actions);
+        //
     }
 
     /**
-     * Show the form for creating a new Action.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('actions.create');
+        //
     }
 
     /**
-     * Store a newly created Action in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateActionRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateActionRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-
-        $action = $this->actionRepository->create($input);
-
-        Flash::success('Action saved successfully.');
-
-        return redirect(route('actions.index'));
+        //
     }
 
     /**
-     * Display the specified Action.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $action = $this->actionRepository->find($id);
-
-        if (empty($action)) {
-            Flash::error('Action not found');
-
-            return redirect(route('actions.index'));
-        }
-
-        return view('actions.show')->with('action', $action);
+        //
     }
 
     /**
-     * Show the form for editing the specified Action.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $action = $this->actionRepository->find($id);
-
-        if (empty($action)) {
-            Flash::error('Action not found');
-
-            return redirect(route('actions.index'));
-        }
-
-        return view('actions.edit')->with('action', $action);
+        //
     }
 
     /**
-     * Update the specified Action in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateActionRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateActionRequest $request)
+    public function update(Request $request, $id)
     {
-        $action = $this->actionRepository->find($id);
-
-        if (empty($action)) {
-            Flash::error('Action not found');
-
-            return redirect(route('actions.index'));
-        }
-
-        $action = $this->actionRepository->update($request->all(), $id);
-
-        Flash::success('Action updated successfully.');
-
-        return redirect(route('actions.index'));
+        //
     }
 
     /**
-     * Remove the specified Action from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $action = $this->actionRepository->find($id);
-
-        if (empty($action)) {
-            Flash::error('Action not found');
-
-            return redirect(route('actions.index'));
-        }
-
-        $this->actionRepository->delete($id);
-
-        Flash::success('Action deleted successfully.');
-
-        return redirect(route('actions.index'));
+        //
     }
 }

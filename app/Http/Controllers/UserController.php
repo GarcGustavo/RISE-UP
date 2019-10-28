@@ -2,155 +2,104 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateUserRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Repositories\UserRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
+use App\Models\User;
+use App\Http\Resources\User as UserResource;
 
-class UserController extends AppBaseController
+class UserController extends Controller
 {
-    /** @var  UserRepository */
-    private $userRepository;
-
-    public function __construct(UserRepository $userRepo)
-    {
-        $this->userRepository = $userRepo;
-    }
-
     /**
-     * Display a listing of the User.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $users = $this->userRepository->all();
+        $users = User::all();
 
-        return view('users.index')
-            ->with('users', $users);
+        return UserResource::collection($users);
     }
 
     /**
-     * Show the form for creating a new User.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('users.create');
+        //
     }
 
     /**
-     * Store a newly created User in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateUserRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateUserRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
+        $user = $request->isMethod('put') ? User::findOrFail($request->uid): new User;
 
-        $user = $this->userRepository->create($input);
+        $user->uid = $request -> input('uid');
+        $user->first_name = $request -> input('first_name');
+        $user->last_name = $request -> input('last_name');
+        $user->email = $request -> input('email');
+        $user->contact_email = $request -> input('contact_email');
+        $user->u_creation_date = $request -> input('u_creation_date');
+        $user->u_ban_status = $request -> input('u_ban_status');
+        $user->current_edit_cid = $request -> input('current_edit_cid');
+        $user->u_role = $request -> input('u_role');
+        $user->delete_at = null;
 
-        Flash::success('User saved successfully.');
-
-        return redirect(route('users.index'));
+        if ($user->save()) {
+            return new UserResource($user);
+        }
     }
 
     /**
-     * Display the specified User.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $user = $this->userRepository->find($id);
+        $user = User::findOrFail($id);
 
-        if (empty($user)) {
-            Flash::error('User not found');
-
-            return redirect(route('users.index'));
-        }
-
-        return view('users.show')->with('user', $user);
+        return new UserResource($user);
     }
 
     /**
-     * Show the form for editing the specified User.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $user = $this->userRepository->find($id);
-
-        if (empty($user)) {
-            Flash::error('User not found');
-
-            return redirect(route('users.index'));
-        }
-
-        return view('users.edit')->with('user', $user);
+        //
     }
 
     /**
-     * Update the specified User in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateUserRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateUserRequest $request)
+    public function update(Request $request, $id)
     {
-        $user = $this->userRepository->find($id);
-
-        if (empty($user)) {
-            Flash::error('User not found');
-
-            return redirect(route('users.index'));
-        }
-
-        $user = $this->userRepository->update($request->all(), $id);
-
-        Flash::success('User updated successfully.');
-
-        return redirect(route('users.index'));
+        //
     }
 
     /**
-     * Remove the specified User from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $user = $this->userRepository->find($id);
-
-        if (empty($user)) {
-            Flash::error('User not found');
-
-            return redirect(route('users.index'));
-        }
-
-        $this->userRepository->delete($id);
-
-        Flash::success('User deleted successfully.');
-
-        return redirect(route('users.index'));
+        //
     }
 }

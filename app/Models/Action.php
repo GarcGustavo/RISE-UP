@@ -20,10 +20,11 @@ class action extends Model
 {
     use SoftDeletes;
 
-    public $table = 'action';
+    public $table = 'Action';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'a_date',

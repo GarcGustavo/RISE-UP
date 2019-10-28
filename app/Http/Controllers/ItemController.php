@@ -2,155 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateItemRequest;
-use App\Http\Requests\UpdateItemRequest;
-use App\Repositories\ItemRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
 
-class ItemController extends AppBaseController
+class ItemController extends Controller
 {
-    /** @var  ItemRepository */
-    private $itemRepository;
-
-    public function __construct(ItemRepository $itemRepo)
-    {
-        $this->itemRepository = $itemRepo;
-    }
-
     /**
-     * Display a listing of the Item.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $items = $this->itemRepository->all();
-
-        return view('items.index')
-            ->with('items', $items);
+        //
     }
 
     /**
-     * Show the form for creating a new Item.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('items.create');
+        //
     }
 
     /**
-     * Store a newly created Item in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateItemRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateItemRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-
-        $item = $this->itemRepository->create($input);
-
-        Flash::success('Item saved successfully.');
-
-        return redirect(route('items.index'));
+        //
     }
 
     /**
-     * Display the specified Item.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $item = $this->itemRepository->find($id);
-
-        if (empty($item)) {
-            Flash::error('Item not found');
-
-            return redirect(route('items.index'));
-        }
-
-        return view('items.show')->with('item', $item);
+        //
     }
 
     /**
-     * Show the form for editing the specified Item.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $item = $this->itemRepository->find($id);
-
-        if (empty($item)) {
-            Flash::error('Item not found');
-
-            return redirect(route('items.index'));
-        }
-
-        return view('items.edit')->with('item', $item);
+        //
     }
 
     /**
-     * Update the specified Item in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateItemRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateItemRequest $request)
+    public function update(Request $request, $id)
     {
-        $item = $this->itemRepository->find($id);
-
-        if (empty($item)) {
-            Flash::error('Item not found');
-
-            return redirect(route('items.index'));
-        }
-
-        $item = $this->itemRepository->update($request->all(), $id);
-
-        Flash::success('Item updated successfully.');
-
-        return redirect(route('items.index'));
+        //
     }
 
     /**
-     * Remove the specified Item from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $item = $this->itemRepository->find($id);
-
-        if (empty($item)) {
-            Flash::error('Item not found');
-
-            return redirect(route('items.index'));
-        }
-
-        $this->itemRepository->delete($id);
-
-        Flash::success('Item deleted successfully.');
-
-        return redirect(route('items.index'));
+        //
     }
 }

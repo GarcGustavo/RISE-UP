@@ -2,155 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateAction_TypeRequest;
-use App\Http\Requests\UpdateAction_TypeRequest;
-use App\Repositories\Action_TypeRepository;
-use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
-use Flash;
-use Response;
 
-class Action_TypeController extends AppBaseController
+class Action_TypeController extends Controller
 {
-    /** @var  Action_TypeRepository */
-    private $actionTypeRepository;
-
-    public function __construct(Action_TypeRepository $actionTypeRepo)
-    {
-        $this->actionTypeRepository = $actionTypeRepo;
-    }
-
     /**
-     * Display a listing of the Action_Type.
+     * Display a listing of the resource.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $actionTypes = $this->actionTypeRepository->all();
-
-        return view('action__types.index')
-            ->with('actionTypes', $actionTypes);
+        //
     }
 
     /**
-     * Show the form for creating a new Action_Type.
+     * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('action__types.create');
+        //
     }
 
     /**
-     * Store a newly created Action_Type in storage.
+     * Store a newly created resource in storage.
      *
-     * @param CreateAction_TypeRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(CreateAction_TypeRequest $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-
-        $actionType = $this->actionTypeRepository->create($input);
-
-        Flash::success('Action  Type saved successfully.');
-
-        return redirect(route('actionTypes.index'));
+        //
     }
 
     /**
-     * Display the specified Action_Type.
+     * Display the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $actionType = $this->actionTypeRepository->find($id);
-
-        if (empty($actionType)) {
-            Flash::error('Action  Type not found');
-
-            return redirect(route('actionTypes.index'));
-        }
-
-        return view('action__types.show')->with('actionType', $actionType);
+        //
     }
 
     /**
-     * Show the form for editing the specified Action_Type.
+     * Show the form for editing the specified resource.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $actionType = $this->actionTypeRepository->find($id);
-
-        if (empty($actionType)) {
-            Flash::error('Action  Type not found');
-
-            return redirect(route('actionTypes.index'));
-        }
-
-        return view('action__types.edit')->with('actionType', $actionType);
+        //
     }
 
     /**
-     * Update the specified Action_Type in storage.
+     * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param UpdateAction_TypeRequest $request
-     *
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, UpdateAction_TypeRequest $request)
+    public function update(Request $request, $id)
     {
-        $actionType = $this->actionTypeRepository->find($id);
-
-        if (empty($actionType)) {
-            Flash::error('Action  Type not found');
-
-            return redirect(route('actionTypes.index'));
-        }
-
-        $actionType = $this->actionTypeRepository->update($request->all(), $id);
-
-        Flash::success('Action  Type updated successfully.');
-
-        return redirect(route('actionTypes.index'));
+        //
     }
 
     /**
-     * Remove the specified Action_Type from storage.
+     * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $actionType = $this->actionTypeRepository->find($id);
-
-        if (empty($actionType)) {
-            Flash::error('Action  Type not found');
-
-            return redirect(route('actionTypes.index'));
-        }
-
-        $this->actionTypeRepository->delete($id);
-
-        Flash::success('Action  Type deleted successfully.');
-
-        return redirect(route('actionTypes.index'));
+        //
     }
 }

@@ -22,11 +22,11 @@ class group extends Model
 {
     use SoftDeletes;
 
-    public $table = 'group';
-    
+    public $table = 'Group';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'g_name',
@@ -73,7 +73,7 @@ class group extends Model
      **/
     public function case()
     {
-        return $this->hasMany(\App\Models\Case::class, 'case');
+        return $this->hasMany(\App\Models\Case_study::class, 'case');
     }
 
     /**

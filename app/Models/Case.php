@@ -22,15 +22,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property integer c_owner
  * @property integer c_group
  */
-class case extends Model
+class case_study extends Model
 {
     use SoftDeletes;
 
-    public $table = 'case';
-    
+    public $table = 'Case';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'c_title',

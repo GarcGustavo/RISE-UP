@@ -21,7 +21,7 @@ class Migrations extends Model
 
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'migration',
@@ -49,5 +49,5 @@ class Migrations extends Model
         'batch' => 'required'
     ];
 
-    
+
 }

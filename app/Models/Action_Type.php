@@ -17,11 +17,11 @@ class action_type extends Model
 {
     use SoftDeletes;
 
-    public $table = 'action_type';
-    
+    public $table = 'Action_Type';
+
     protected $dates = ['deleted_at'];
 
-
+    public $timestamps = false;
 
     public $fillable = [
         'act_name'
