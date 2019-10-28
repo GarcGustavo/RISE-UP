@@ -13,7 +13,9 @@ class CaseController extends Controller
      */
     public function index()
     {
-        //
+        $groups = Case_Study::all();
+
+        return CaseResource::collection($case_studies);
     }
 
     /**
@@ -34,7 +36,19 @@ class CaseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $case_study = $request->isMethod('put') ? case_study::findOrFail($request->cid): new case_study;
+
+        $case_study->c_title = $request -> input('c_title');
+        $case_study->c_description = $request -> input('c_description');
+        $case_study->c_thumbnail = $request -> input('c_thumbnail');
+        $case_study->c_status = $request -> input('c_status');
+        $case_study->c_date = $request -> input('c_date');
+        $case_study->c_owner = $request -> input('c_owner');
+        $case_study->c_group = $request -> input('c_group');
+
+        if ($case_study->save()) {
+            return new CaseResource($case_study);
+        }
     }
 
     /**
@@ -45,7 +59,9 @@ class CaseController extends Controller
      */
     public function show($id)
     {
-        //
+        $case_study = Case_Study::findOrFail($id);
+
+        return new CaseResource($case_study);
     }
 
     /**
@@ -79,6 +95,11 @@ class CaseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $case_study = Case_Study::findOrFail($id);
+
+
+        if ($case_study->delete()) {
+            return new CaseResource($case_study);
+        }
     }
 }

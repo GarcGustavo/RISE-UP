@@ -3,10 +3,15 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+//import JwPagination from 'jw-vue-pagination';
+
+
 
 require('./bootstrap');
 
+
 window.Vue = require('vue');
+
 
 /**
  * The following block of code may be used to automatically register your
@@ -19,8 +24,18 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+//web pages components
+Vue.component('paginator', require('./components/paginator.vue').default);
+Vue.component('mg_action_table', require('./components/mg_action_table.vue').default);
+Vue.component('mg_action_confirm', require('./components/mg_action_confirm.vue').default);
+//web pages
 Vue.component('iren_header', require('./components/header.vue').default);
 Vue.component('iren_footer', require('./components/footer.vue').default);
+Vue.component('iren_help', require('./components/help.vue').default);
+Vue.component('iren_about', require('./components/about.vue').default);
+Vue.component('iren_group', require('./components/group.vue').default);
+Vue.component('iren_user_groups', require('./components/user_groups.vue').default);
+Vue.component('case_study', require('./components/case_study.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -29,4 +44,4 @@ Vue.component('iren_footer', require('./components/footer.vue').default);
 
 const app = new Vue({
     el: '#app',
-});
+})
