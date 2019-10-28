@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Case;
+use App\Http\Resources\Case_Study as CaseResource;
 
 class CaseController extends Controller
 {
