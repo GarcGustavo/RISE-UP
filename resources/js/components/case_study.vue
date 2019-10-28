@@ -15,14 +15,5 @@
 </template>
 
 <script>
-export default {
-  data() {
-  },
-
-  created() {
-  },
-
-  methods: {
-    }
-  };
+export default {};
 </script>
