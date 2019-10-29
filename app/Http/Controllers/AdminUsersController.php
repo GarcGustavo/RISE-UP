@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class AdminController extends Controller
+class AdminUsersController extends Controller
 {
     //public function index
 	public function index(){
-		return view('adminTable');
+		return view('admin.users');
 	}
 }
 ?>
