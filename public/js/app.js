@@ -2151,36 +2151,38 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       showModal: false,
       action: "",
-      actor: ""
+      actor: "",
+      gid: "",
+      members: [],
+      member: {
+        first_name: "",
+        last_name: "",
+        email: ""
+      }
     };
+  },
+  created: function created() {
+    this.fetchMembers();
+  },
+  methods: {
+    fetchMembers: function fetchMembers() {
+      var _this = this;
+
+      this.path = window.location.pathname.split('/');
+      this.gid = this.path[this.path.length - 1];
+      fetch('/group/' + this.gid + '/members').then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.members = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    }
   }
 });
 
@@ -2264,7 +2266,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      uid: 2
+    };
+  }
+});
 
 /***/ }),
 
@@ -2493,9 +2501,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2531,6 +2536,8 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this.users = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
       });
     }
   }
@@ -2728,14 +2735,6 @@ var defaultStyles = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 //
 //
 //
@@ -2797,17 +2796,15 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-var exampleItems = _toConsumableArray(Array(150).keys()).map(function (i) {
-  return {
-    id: i + 1,
-    name: "Name of group  " + (i + 1)
-  };
-});
-
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      exampleItems: exampleItems,
+      ready: false,
+      groups: [],
       pageOfItems: [],
       action: "",
       actor: "",
@@ -2815,10 +2812,26 @@ var exampleItems = _toConsumableArray(Array(150).keys()).map(function (i) {
 
     };
   },
+  components: {},
+  created: function created() {
+    this.fetchGroups();
+  },
   methods: {
     onChangePage: function onChangePage(pageOfItems) {
       // update page of items
       this.pageOfItems = pageOfItems;
+    },
+    fetchGroups: function fetchGroups() {
+      var _this = this;
+
+      fetch('/user_groups/' + 46).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.groups = res.data;
+        _this.ready = true;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     }
   }
 });
@@ -39408,25 +39421,11 @@ var render = function() {
       1
     ),
     _vm._v(" "),
-    _vm._m(0),
-    _vm._v(" "),
-    _c("hr"),
-    _vm._v(" "),
-    _vm._m(1),
-    _vm._v(" "),
-    _vm._m(2)
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
+    _c(
       "div",
       { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
-      [
-        _c("div", { staticClass: "col-lg-4 mb-4" }, [
+      _vm._l(_vm.members, function(member) {
+        return _c("div", { key: member.uid, staticClass: "col-lg-4 mb-4" }, [
           _c("div", { staticClass: "card h-100 text-center shadow" }, [
             _c(
               "i",
@@ -39438,71 +39437,32 @@ var staticRenderFns = [
             ),
             _vm._v(" "),
             _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [_vm._v("Team Member")]),
+              _c("h4", { staticClass: "card-title" }, [
+                _vm._v(
+                  _vm._s(member.first_name) + " " + _vm._s(member.last_name)
+                )
+              ]),
               _vm._v(" "),
-              _c("h6", { staticClass: "card-subtitle text-muted" }, [
-                _vm._v("Position")
-              ])
+              _c("h6", { staticClass: "card-subtitle text-muted" })
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "card-footer" }, [
-              _c("a", { attrs: { href: "#" } }, [_vm._v("name@example.com")])
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-lg-4 mb-4" }, [
-          _c("div", { staticClass: "card h-100 text-center shadow" }, [
-            _c(
-              "i",
-              {
-                staticClass: "material-icons pt-2",
-                staticStyle: { "font-size": "125px" }
-              },
-              [_vm._v("person")]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [_vm._v("Team Member")]),
-              _vm._v(" "),
-              _c("h6", { staticClass: "card-subtitle text-muted" }, [
-                _vm._v("Position")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-footer" }, [
-              _c("a", { attrs: { href: "#" } }, [_vm._v("name@example.com")])
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-lg-4 mb-4" }, [
-          _c("div", { staticClass: "card h-100 text-center shadow" }, [
-            _c(
-              "i",
-              {
-                staticClass: "material-icons pt-2",
-                staticStyle: { "font-size": "125px" }
-              },
-              [_vm._v("person")]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [_vm._v("Team Member")]),
-              _vm._v(" "),
-              _c("h6", { staticClass: "card-subtitle text-muted" }, [
-                _vm._v("Position")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-footer" }, [
-              _c("a", { attrs: { href: "#" } }, [_vm._v("name@example.com")])
+              _c("a", { attrs: { href: "#" } }, [_vm._v(_vm._s(member.email))])
             ])
           ])
         ])
-      ]
-    )
-  },
+      }),
+      0
+    ),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    _vm._m(0),
+    _vm._v(" "),
+    _vm._m(1)
+  ])
+}
+var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -39639,7 +39599,62 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "nav",
+    { staticClass: "navbar fixed-top navbar-expand-lg navbar-custom" },
+    [
+      _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
+        _vm._v("Interdisciplinary Research Network")
+      ]),
+      _vm._v(" "),
+      _vm._m(0),
+      _vm._v(" "),
+      _vm._m(1),
+      _vm._v(" "),
+      _c("ul", { staticClass: "navbar-nav mr-3" }, [
+        _vm._m(2),
+        _vm._v(" "),
+        _vm._m(3),
+        _vm._v(" "),
+        _vm._m(4),
+        _vm._v(" "),
+        _vm._m(5),
+        _vm._v(" "),
+        _c("li", { staticClass: "nav-item dropdown" }, [
+          _vm._m(6),
+          _vm._v(" "),
+          _c("div", { staticClass: "dropdown-menu dropdown-menu-right" }, [
+            _vm._m(7),
+            _vm._v(" "),
+            _c("div", { staticClass: "dropdown-divider" }),
+            _vm._v(" "),
+            _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
+              _vm._v("Profile")
+            ]),
+            _vm._v(" "),
+            _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
+              _vm._v("Cases")
+            ]),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "/user/" + _vm.uid + "/groups" }
+              },
+              [_vm._v("Groups")]
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "dropdown-divider" }),
+            _vm._v(" "),
+            _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
+              _vm._v("Logout")
+            ])
+          ])
+        ])
+      ])
+    ]
+  )
 }
 var staticRenderFns = [
   function() {
@@ -39647,147 +39662,128 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c(
-      "nav",
-      { staticClass: "navbar fixed-top navbar-expand-lg navbar-custom" },
+      "button",
+      {
+        staticClass: "navbar-toggler",
+        attrs: {
+          type: "button",
+          "data-toggle": "collapse",
+          "aria-expanded": "false",
+          "aria-label": "Toggle navigation"
+        }
+      },
+      [_c("span", { staticClass: "navbar-toggler-icon" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "form",
+      {
+        staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
+        attrs: { action: "" }
+      },
       [
-        _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
-          _vm._v("Interdisciplinary Research Network")
-        ]),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "navbar-toggler",
+        _c("div", { staticClass: "input-group mb-3" }, [
+          _c("input", {
+            staticClass: "form-control",
             attrs: {
-              type: "button",
-              "data-toggle": "collapse",
-              "aria-expanded": "false",
-              "aria-label": "Toggle navigation"
+              type: "text",
+              placeholder: "search",
+              "aria-label": "Search",
+              "aria-describedby": "basic-addon2"
             }
-          },
-          [_c("span", { staticClass: "navbar-toggler-icon" })]
-        ),
-        _vm._v(" "),
-        _c(
-          "form",
-          {
-            staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
-            attrs: { action: "" }
-          },
-          [
-            _c("div", { staticClass: "input-group mb-3" }, [
-              _c("input", {
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  placeholder: "search",
-                  "aria-label": "Search",
-                  "aria-describedby": "basic-addon2"
-                }
-              }),
-              _vm._v(" "),
-              _c("div", { staticClass: "input-group-append" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-primary border-0 btn-sm",
-                    attrs: { type: "button" }
-                  },
-                  [
-                    _c("i", { staticClass: "material-icons" }, [
-                      _vm._v("search")
-                    ])
-                  ]
-                )
-              ])
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c("ul", { staticClass: "navbar-nav mr-3" }, [
-          _c("li", { staticClass: "nav-item" }, [
-            _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-              _vm._v("Collaborate")
-            ])
-          ]),
+          }),
           _vm._v(" "),
-          _c("li", { staticClass: "nav-item" }, [
-            _c("a", { staticClass: "nav-link", attrs: { href: "/help" } }, [
-              _vm._v("Help")
-            ])
-          ]),
-          _vm._v(" "),
-          _c("li", { staticClass: "nav-item" }, [
-            _c("a", { staticClass: "nav-link", attrs: { href: "/about" } }, [
-              _vm._v("About")
-            ])
-          ]),
-          _vm._v(" "),
-          _c("li", { staticClass: "nav-item" }, [
-            _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-              _vm._v("Language")
-            ])
-          ]),
-          _vm._v(" "),
-          _c("li", { staticClass: "nav-item dropdown" }, [
+          _c("div", { staticClass: "input-group-append" }, [
             _c(
-              "a",
+              "button",
               {
-                staticClass: "nav-link dropdown-toggle",
-                attrs: { href: "#", "data-toggle": "dropdown" }
+                staticClass: "btn btn-primary border-0 btn-sm",
+                attrs: { type: "button" }
               },
-              [
-                _c(
-                  "i",
-                  {
-                    staticClass: "material-icons",
-                    staticStyle: { "font-size": "25px" }
-                  },
-                  [_vm._v("person")]
-                )
-              ]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "dropdown-menu dropdown-menu-right" }, [
-              _c("div", { staticClass: "profile-usertitle" }, [
-                _c("div", { staticClass: "profile-usertitle-name" }, [
-                  _vm._v("Melvin J Malave")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "profile-usertitle-role" }, [
-                  _vm._v("Admin")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "dropdown-divider" }),
-              _vm._v(" "),
-              _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-                _vm._v("Profile")
-              ]),
-              _vm._v(" "),
-              _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-                _vm._v("Cases")
-              ]),
-              _vm._v(" "),
-              _c(
-                "a",
-                {
-                  staticClass: "dropdown-item",
-                  attrs: { href: "/user_groups" }
-                },
-                [_vm._v("Groups")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "dropdown-divider" }),
-              _vm._v(" "),
-              _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-                _vm._v("Logout")
-              ])
-            ])
+              [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
+            )
           ])
         ])
       ]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", { staticClass: "nav-item" }, [
+      _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
+        _vm._v("Collaborate")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", { staticClass: "nav-item" }, [
+      _c("a", { staticClass: "nav-link", attrs: { href: "/help" } }, [
+        _vm._v("Help")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", { staticClass: "nav-item" }, [
+      _c("a", { staticClass: "nav-link", attrs: { href: "/about" } }, [
+        _vm._v("About")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", { staticClass: "nav-item" }, [
+      _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
+        _vm._v("Language")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "nav-link dropdown-toggle",
+        attrs: { href: "#", "data-toggle": "dropdown" }
+      },
+      [
+        _c(
+          "i",
+          {
+            staticClass: "material-icons",
+            staticStyle: { "font-size": "25px" }
+          },
+          [_vm._v("person")]
+        )
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "profile-usertitle" }, [
+      _c("div", { staticClass: "profile-usertitle-name" }, [
+        _vm._v("Melvin J Malave")
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "profile-usertitle-role" }, [_vm._v("Admin")])
+    ])
   }
 ]
 render._withStripped = true
@@ -40190,7 +40186,7 @@ var render = function() {
                                   }
                                 }),
                                 _vm._v(" "),
-                                _c("label", { attrs: { for: "'checkbox1" } }, [
+                                _c("label", { attrs: { for: "checkbox1" } }, [
                                   _vm._v(_vm._s(index + 1))
                                 ])
                               ])
@@ -40483,163 +40479,168 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "body mb-5 mt-5" },
-    [
-      _c(
-        "h1",
-        { staticClass: "mb-3" },
-        [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#mg_action_confirm",
-                "data-toggle": "modal",
-                "data-target": "#mg_action_confirm"
-              },
-              on: {
-                click: function($event) {
-                  ;(_vm.action = "Remove"), (_vm.actor = "group(s)")
-                }
-              }
-            },
-            [
-              _c("i", { staticClass: "material-icons" }, [
-                _vm._v("remove_circle_outline")
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#mg_action_table",
-                "data-toggle": "modal",
-                "data-target": "#mg_action_table"
-              },
-              on: {
-                click: function($event) {
-                  ;(_vm.gname_box_show = true),
-                    (_vm.action = "Create"),
-                    (_vm.actor = "group")
-                }
-              }
-            },
-            [
-              _c("i", { staticClass: "material-icons" }, [
-                _vm._v("add_circle_outline")
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _vm.action == "Remove"
-            ? _c(
-                "div",
-                [
-                  _c("mg_action_confirm", {
-                    attrs: { action_confirm: _vm.action, actor: _vm.actor }
-                  })
-                ],
-                1
-              )
-            : _vm._e(),
-          _vm._v(" "),
-          _c("mg_action_table", {
+  return _c("div", { staticClass: "body mb-5 mt-5" }, [
+    _c(
+      "h1",
+      { staticClass: "mb-3" },
+      [
+        _c(
+          "a",
+          {
             attrs: {
-              action: _vm.action,
-              actor: _vm.actor,
-              gname_box_show: _vm.gname_box_show
+              href: "#mg_action_confirm",
+              "data-toggle": "modal",
+              "data-target": "#mg_action_confirm"
+            },
+            on: {
+              click: function($event) {
+                ;(_vm.action = "Remove"), (_vm.actor = "group(s)")
+              }
             }
-          }),
-          _vm._v(" "),
-          _c("p", [_vm._v("My groups")])
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      _c(
-        "table",
-        {
-          staticClass: "table table-hover table-bordered table-sm",
-          attrs: { id: "group-table", cellspacing: "0" }
-        },
-        [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.pageOfItems, function(item) {
-              return _c("tr", { key: item.id }, [
-                _c("td", [
-                  _c("div", { staticClass: "check-box" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.checked,
-                          expression: "checked"
-                        }
-                      ],
-                      staticClass: "checkbox",
-                      attrs: { type: "checkbox", id: "'checkbox' item.id" },
-                      domProps: {
-                        checked: Array.isArray(_vm.checked)
-                          ? _vm._i(_vm.checked, null) > -1
-                          : _vm.checked
-                      },
-                      on: {
-                        change: function($event) {
-                          var $$a = _vm.checked,
-                            $$el = $event.target,
-                            $$c = $$el.checked ? true : false
-                          if (Array.isArray($$a)) {
-                            var $$v = null,
-                              $$i = _vm._i($$a, $$v)
-                            if ($$el.checked) {
-                              $$i < 0 && (_vm.checked = $$a.concat([$$v]))
-                            } else {
-                              $$i > -1 &&
-                                (_vm.checked = $$a
-                                  .slice(0, $$i)
-                                  .concat($$a.slice($$i + 1)))
-                            }
+          },
+          [
+            _c("i", { staticClass: "material-icons" }, [
+              _vm._v("remove_circle_outline")
+            ])
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            attrs: {
+              href: "#mg_action_table",
+              "data-toggle": "modal",
+              "data-target": "#mg_action_table"
+            },
+            on: {
+              click: function($event) {
+                ;(_vm.gname_box_show = true),
+                  (_vm.action = "Create"),
+                  (_vm.actor = "group")
+              }
+            }
+          },
+          [
+            _c("i", { staticClass: "material-icons" }, [
+              _vm._v("add_circle_outline")
+            ])
+          ]
+        ),
+        _vm._v(" "),
+        _vm.action == "Remove"
+          ? _c(
+              "div",
+              [
+                _c("mg_action_confirm", {
+                  attrs: { action_confirm: _vm.action, actor: _vm.actor }
+                })
+              ],
+              1
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _c("mg_action_table", {
+          attrs: {
+            action: _vm.action,
+            actor: _vm.actor,
+            gname_box_show: _vm.gname_box_show
+          }
+        }),
+        _vm._v(" "),
+        _c("p", [_vm._v("My groups")])
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    _c(
+      "table",
+      {
+        staticClass: "table table-hover table-bordered table-sm",
+        attrs: { id: "group-table", cellspacing: "0" }
+      },
+      [
+        _vm._m(0),
+        _vm._v(" "),
+        _c(
+          "tbody",
+          _vm._l(_vm.pageOfItems, function(item, index) {
+            return _c("tr", { key: index }, [
+              _c("td", [
+                _c("div", { staticClass: "check-box" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.checked,
+                        expression: "checked"
+                      }
+                    ],
+                    staticClass: "checkbox",
+                    attrs: { type: "checkbox", id: "'checkbox' + index" },
+                    domProps: {
+                      checked: Array.isArray(_vm.checked)
+                        ? _vm._i(_vm.checked, null) > -1
+                        : _vm.checked
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.checked,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.checked = $$a.concat([$$v]))
                           } else {
-                            _vm.checked = $$c
+                            $$i > -1 &&
+                              (_vm.checked = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
                           }
+                        } else {
+                          _vm.checked = $$c
                         }
                       }
-                    }),
-                    _vm._v(" "),
-                    _c("label", { attrs: { for: "'checkbox' item.id" } }, [
-                      _vm._v(_vm._s(item.id))
-                    ])
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { attrs: { for: "'checkbox' + index" } }, [
+                    _vm._v(_vm._s(index + 1))
                   ])
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v(_vm._s(item.name))])
+                ])
+              ]),
+              _vm._v(" "),
+              _c("td", [
+                _c("a", { attrs: { href: "/group/" + item.gid } }, [
+                  _vm._v(_vm._s(item.g_name))
                 ])
               ])
-            }),
-            0
-          )
-        ]
-      ),
-      _vm._v(" "),
-      _c("paginator", {
-        staticClass: "pagination",
-        attrs: { items: _vm.exampleItems },
-        on: { changePage: _vm.onChangePage }
-      })
-    ],
-    1
-  )
+            ])
+          }),
+          0
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _vm.ready
+      ? _c(
+          "div",
+          [
+            _c("paginator", {
+              staticClass: "pagination",
+              attrs: { items: _vm.groups },
+              on: { changePage: _vm.onChangePage }
+            })
+          ],
+          1
+        )
+      : _vm._e()
+  ])
 }
 var staticRenderFns = [
   function() {

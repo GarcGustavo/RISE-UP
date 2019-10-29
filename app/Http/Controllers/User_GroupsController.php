@@ -55,7 +55,8 @@ class User_GroupsController extends Controller
         ->select('User.*')
         ->get();
 
-        return UserResource::collection($members);
+       return UserResource::collection($members);
+       // return view('group')->with('gid',$gid);
     }
 
     /**

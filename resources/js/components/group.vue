@@ -1,4 +1,5 @@
 <template>
+
   <!-- Team Members -->
   <div class="body mb-5 mt-5">
     <h1 class="text-center">Our Group</h1>
@@ -37,39 +38,15 @@
     </h1>
 
     <div class="row mt-1 mb-5" id="members">
-      <div class="col-lg-4 mb-4">
+      <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
         <div class="card h-100 text-center shadow">
           <i class="material-icons pt-2" style="font-size: 125px">person</i>
           <div class="card-body">
-            <h4 class="card-title">Team Member</h4>
-            <h6 class="card-subtitle text-muted">Position</h6>
+            <h4 class="card-title">{{member.first_name}} {{member.last_name}}</h4>
+            <h6 class="card-subtitle text-muted"></h6>
           </div>
           <div class="card-footer">
-            <a href="#">name@example.com</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 mb-4">
-        <div class="card h-100 text-center shadow">
-          <i class="material-icons pt-2" style="font-size: 125px">person</i>
-          <div class="card-body">
-            <h4 class="card-title">Team Member</h4>
-            <h6 class="card-subtitle text-muted">Position</h6>
-          </div>
-          <div class="card-footer">
-            <a href="#">name@example.com</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 mb-4">
-        <div class="card h-100 text-center shadow">
-          <i class="material-icons pt-2" style="font-size: 125px">person</i>
-          <div class="card-body">
-            <h4 class="card-title">Team Member</h4>
-            <h6 class="card-subtitle text-muted">Position</h6>
-          </div>
-          <div class="card-footer">
-            <a href="#">name@example.com</a>
+            <a href="#">{{member.email}}</a>
           </div>
         </div>
       </div>
@@ -148,12 +125,40 @@
 
 <script>
 export default {
+
   data() {
     return {
       showModal: false,
+
       action: "",
-      actor: ""
+      actor: "",
+      gid:"",
+      members:[],
+      member: {
+        first_name: "",
+        last_name: "",
+        email: ""
+      },
+
     };
+
+  },
+
+  created() {
+   this.fetchMembers();
+  },
+
+  methods: {
+    fetchMembers() {
+        this.path=( window.location.pathname.split( '/' ) );
+        this.gid = this.path[this.path.length-1];
+      fetch('/group/'+this.gid+'/members')
+        .then(res => res.json())
+        .then(res => {
+          this.members = res.data;
+        })
+        .catch(err => console.log(err));
+          }
   }
 };
 </script>

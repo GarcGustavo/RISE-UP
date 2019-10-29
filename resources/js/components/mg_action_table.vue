@@ -40,7 +40,7 @@
                     <td>
                       <div class="check-box">
                         <input class="checkbox" type="checkbox" id="'checkbox1" v-model="checked">
-                        <label for="'checkbox1">{{index+1}}</label>
+                        <label for="checkbox1">{{index+1}}</label>
                       </div>
                     </td>
                     <td>{{user.email}}</td>
@@ -103,7 +103,8 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
-        });
+        })
+        .catch(err => console.log(err));
     }
   }
 };

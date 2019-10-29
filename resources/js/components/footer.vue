@@ -82,6 +82,10 @@ export default {};
 
 <style lang="scss" scoped>
 
+//footer{
+
+    //position: relative;
+//}
 .page-footer {
 
   bottom: 0;

@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\User_GroupsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +21,14 @@ Route::get('/about', function () {
 Route::get('/help', function () {
     return view('help');
 });
-Route::get('/group', function () {
-    return view('group');
-});
-Route::get('/user_groups', function () {
+
+Route::get('/group/{id}', function () {
+   return view('group');
+})->name('group');
+
+//Route::get('/group/{id}', 'User_GroupsController@show_members')->name('group');
+
+Route::get('/user/{id}/groups', function () {
     return view('user_groups');
 });
 Route::get('/Home', function () {
@@ -46,4 +51,4 @@ Route::get('/users', 'UserController@index');
 Route::get('/group/{id}/members', 'User_GroupsController@show_members');
 
 //List groups of a user
-Route::get('/user/{id}/groups', 'GroupController@show_groups');
+Route::get('user_groups/{id}', 'GroupController@show_groups');

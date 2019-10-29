@@ -143,6 +143,7 @@ export default {
     // set page if items array isn't empty
     if (this.items && this.items.length) {
       this.setPage(this.initialPage);
+
     }
   },
   methods: {
@@ -151,6 +152,7 @@ export default {
 
       // get new pager object for specified page
       const pager = paginate(items.length, page, pageSize, maxPages);
+      
 
       // get new page of items from items array
       const pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1);

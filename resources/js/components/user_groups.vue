@@ -1,3 +1,4 @@
+
 <template>
   <div class="body mb-5 mt-5">
     <!-- Page Heading/Breadcrumbs -->
@@ -42,42 +43,58 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in pageOfItems" :key="item.id">
+        <tr v-for="(item,index) in pageOfItems" :key="index">
           <td>
             <div class="check-box">
-              <input class="checkbox" type="checkbox" id="'checkbox' item.id" v-model="checked">
-              <label for="'checkbox' item.id">{{ item.id}}</label>
+              <input class="checkbox" type="checkbox" id="'checkbox' + index" v-model="checked">
+              <label for="'checkbox' + index">{{index+1}}</label>
             </div>
           </td>
           <td>
-            <a href="#">{{item.name}}</a>
+            <a :href="'/group/' + item.gid">{{item.g_name}}</a>
+
           </td>
         </tr>
       </tbody>
     </table>
-    <paginator :items="exampleItems" @changePage="onChangePage" class="pagination"></paginator>
+    <div v-if="ready">
+      <paginator :items="groups" @changePage="onChangePage" class="pagination"></paginator>
+    </div>
   </div>
 </template>
 
 <script>
-const exampleItems = [...Array(150).keys()].map(i => ({
-  id: i + 1,
-  name: "Name of group  " + (i + 1)
-}));
+
 export default {
   data() {
     return {
-      exampleItems,
+      ready: false,
+      groups: [],
       pageOfItems: [],
       action: "",
       actor: "",
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
+  components: {
+      },
+  created() {
+    this.fetchGroups();
+  },
+
   methods: {
     onChangePage(pageOfItems) {
       // update page of items
       this.pageOfItems = pageOfItems;
+    },
+    fetchGroups() {
+      fetch('/user_groups/'+46)
+        .then(res => res.json())
+        .then(res => {
+          this.groups = res.data;
+          this.ready = true;
+        })
+        .catch(err => console.log(err));
     }
   }
 };

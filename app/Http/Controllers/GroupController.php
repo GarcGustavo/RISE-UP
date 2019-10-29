@@ -74,7 +74,8 @@ class GroupController extends Controller
         ->select('Group.*')
         ->get();
 
-        return GroupResource::collection($groups);
+       return GroupResource::collection($groups);
+
     }
 
     /**
