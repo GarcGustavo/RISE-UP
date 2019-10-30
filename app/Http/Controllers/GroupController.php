@@ -9,6 +9,10 @@ use App\Http\Resources\Group as GroupResource;
 use App\Http\Resources\User_Groups as User_GroupsResource;
 use App\Models\case_study;
 use App\Http\Resources\Case_Study as Case_StudyResource;
+<<<<<<< HEAD
+=======
+
+>>>>>>> Melvin
 class GroupController extends Controller
 {
     /**
@@ -78,11 +82,18 @@ class GroupController extends Controller
         return GroupResource::collection($groups);
     }
 
+<<<<<<< HEAD
 
     public function show_group_cases($id)
     {
         $gid = $id;
 
+=======
+    public function show_group_cases($id)
+    {
+        $gid = $id;
+
+>>>>>>> Melvin
         $cases = Case_Study::where('Case.c_group', $gid)->get();
         return Case_StudyResource::collection($cases);
     }
