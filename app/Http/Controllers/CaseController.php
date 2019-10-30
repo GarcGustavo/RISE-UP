@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\case_study;
-use App\Http\Resources\Case_Study as Case_StudyResource;
 use Illuminate\Http\Request;
 
 class CaseController extends Controller
@@ -49,15 +47,6 @@ class CaseController extends Controller
     {
         //
     }
-
-    public function show_group_cases($id)
-    {
-        $uid = $id;
-
-        $cases = Case_Study::where('Case.c_group', $uid)->get();
-        return Case_StudyResource::collection($cases);
-    }
-
 
     /**
      * Show the form for editing the specified resource.

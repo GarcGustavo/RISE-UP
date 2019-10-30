@@ -7,7 +7,8 @@ use App\Models\Group;
 use App\Models\User_Groups;
 use App\Http\Resources\Group as GroupResource;
 use App\Http\Resources\User_Groups as User_GroupsResource;
-
+use App\Models\case_study;
+use App\Http\Resources\Case_Study as Case_StudyResource;
 class GroupController extends Controller
 {
     /**
@@ -74,9 +75,19 @@ class GroupController extends Controller
         ->select('Group.*')
         ->get();
 
-       return GroupResource::collection($groups);
-
+        return GroupResource::collection($groups);
     }
+
+
+    public function show_group_cases($id)
+    {
+        $gid = $id;
+
+        $cases = Case_Study::where('Case.c_group', $gid)->get();
+        return Case_StudyResource::collection($cases);
+    }
+
+
 
     /**
      * Show the form for editing the specified resource.
