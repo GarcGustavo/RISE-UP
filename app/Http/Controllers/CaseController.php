@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> Melvin
 use Illuminate\Http\Request;
 
 class CaseController extends Controller
@@ -52,10 +48,6 @@ class CaseController extends Controller
         //
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> Melvin
     /**
      * Show the form for editing the specified resource.
      *
