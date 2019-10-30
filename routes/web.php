@@ -54,4 +54,4 @@ Route::get('/group/{id}/members', 'User_GroupsController@show_members');
 Route::get('user_groups/{id}', 'GroupController@show_groups');
 
 //List cases of a group
-Route::get('group/{id}/cases', 'GroupController@show_group_cases');
+Route::get('group/{id}/cases', 'CaseController@show_group_cases');
