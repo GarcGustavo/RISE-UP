@@ -12,9 +12,6 @@
 
         <!-- Bootstrap core CSS -->
         <link href="{{asset('css/bootstrap.min.css')}}" rel="stylesheet">
-
-        <link href="{{asset('css/admin-sidebar.css')}}" rel="stylesheet">
-
         <!-- icons for this template -->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -40,10 +37,8 @@
             </div>
             <iren_footer></iren_footer>
         </div>
-
-        <script src="{{asset('js/app.js')}}"></script>
-       <!-- <script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>  -->
-        <script src="{{asset('js/admin-sidebar.js')}}"></script>
+        <script src="{{asset('js/app.js')}}">
+        </script>
 
     </body>
 

@@ -35,7 +35,6 @@ Route::get('/Home', function () {
     return view('home');
 });
 
-
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
@@ -56,8 +55,3 @@ Route::get('user_groups/{id}', 'GroupController@show_groups');
 
 //List cases of a group
 Route::get('group/{id}/cases', 'GroupController@show_group_cases');
-
-//List users with recent activities or requests
-Route::get('/admin/users', 'AdminUsersController@index');
-//Route::get('/admin/users/{}', 'AdminUsersController@users');
-
