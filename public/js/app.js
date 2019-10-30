@@ -2114,43 +2114,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2159,26 +2122,50 @@ __webpack_require__.r(__webpack_exports__);
       actor: "",
       gid: "",
       members: [],
-      member: {
-        first_name: "",
-        last_name: "",
-        email: ""
-      }
+      users: [],
+      cases: []
     };
   },
   created: function created() {
     this.fetchMembers();
+    this.fetchCases();
   },
   methods: {
-    fetchMembers: function fetchMembers() {
+    fetchUsers: function fetchUsers() {
       var _this = this;
 
-      this.path = window.location.pathname.split('/');
-      this.gid = this.path[this.path.length - 1];
-      fetch('/group/' + this.gid + '/members').then(function (res) {
+      fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.members = res.data;
+        _this.users = res.data; //to send to modal
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    fetchMembers: function fetchMembers() {
+      var _this2 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.gid = this.path[this.path.length - 1];
+      fetch("/group/" + this.gid + "/members").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.users = res.data; //to send to modal
+
+        _this2.members = res.data; //to render in view
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    fetchCases: function fetchCases() {
+      var _this3 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.gid = this.path[this.path.length - 1];
+      fetch("/group/" + this.gid + "/cases").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this3.cases = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2269,7 +2256,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      uid: 2
+      uid: 10
     };
   }
 });
@@ -2501,6 +2488,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2512,12 +2500,14 @@ __webpack_require__.r(__webpack_exports__);
     gname_box_show: {
       type: Boolean,
       "default": false
+    },
+    users: {
+      type: Array
     }
   },
   data: function data() {
     return {
       showModal: false,
-      users: [],
       user: {
         first_name: "",
         last_name: "",
@@ -2525,22 +2515,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     };
   },
-  created: function created() {
-    this.fetchUsers();
-  },
-  methods: {
-    fetchUsers: function fetchUsers() {
-      var _this = this;
-
-      fetch("/users").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this.users = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    }
-  }
+  methods: {}
 });
 
 /***/ }),
@@ -2800,12 +2775,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       ready: false,
       groups: [],
       pageOfItems: [],
+      users: [],
+      uid: "",
       action: "",
       actor: "",
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
@@ -2821,14 +2802,27 @@ __webpack_require__.r(__webpack_exports__);
       // update page of items
       this.pageOfItems = pageOfItems;
     },
-    fetchGroups: function fetchGroups() {
+    fetchUsers: function fetchUsers() {
       var _this = this;
 
-      fetch('/user_groups/' + 46).then(function (res) {
+      fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.groups = res.data;
-        _this.ready = true;
+        _this.users = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    fetchGroups: function fetchGroups() {
+      var _this2 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.uid = this.path[this.path.length - 2];
+      fetch("/user_groups/" + this.uid).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.groups = res.data;
+        _this2.ready = true;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -39365,13 +39359,15 @@ var render = function() {
             attrs: {
               href: "#mg_action_table",
               "data-toggle": "modal",
-              "data-target": "#mg_action_table"
+              "data-target": "#mg_action_table",
+              "data-dismiss": "modal"
             },
             on: {
               click: function($event) {
                 ;(_vm.showModal = true),
                   (_vm.action = "Remove"),
-                  (_vm.actor = "member(s)")
+                  (_vm.actor = "member(s)"),
+                  _vm.fetchMembers()
               }
             }
           },
@@ -39388,13 +39384,15 @@ var render = function() {
             attrs: {
               href: "#mg_action_table",
               "data-toggle": "modal",
-              "data-target": "#mg_action_table"
+              "data-target": "#mg_action_table",
+              "data-dismiss": "modal"
             },
             on: {
               click: function($event) {
                 ;(_vm.showModal = true),
                   (_vm.action = "Add"),
-                  (_vm.actor = "member(s)")
+                  (_vm.actor = "member(s)"),
+                  _vm.fetchUsers()
               }
             }
           },
@@ -39407,7 +39405,7 @@ var render = function() {
         _vm._v(" "),
         _vm.showModal
           ? _c("mg_action_table", {
-              attrs: { action: _vm.action, actor: _vm.actor },
+              attrs: { action: _vm.action, actor: _vm.actor, users: _vm.users },
               on: {
                 close: function($event) {
                   _vm.showModal = false
@@ -39459,7 +39457,34 @@ var render = function() {
     _vm._v(" "),
     _vm._m(0),
     _vm._v(" "),
-    _vm._m(1)
+    _c("div", { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } }, [
+      _c("div", { staticClass: "col-sm-12 mb-3" }, [
+        _c(
+          "ul",
+          { staticClass: "list-group list-group-flush border-0" },
+          _vm._l(_vm.cases, function(case_study, index) {
+            return _c("li", { key: index, staticClass: "list-group-item" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _c("h5", { staticClass: "card-title" }, [
+                  _c("a", { attrs: { href: "#" } }, [
+                    _vm._v(_vm._s(case_study.c_title))
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
+                  _vm._v(_vm._s(case_study.c_date))
+                ]),
+                _vm._v(" "),
+                _c("p", { staticClass: "card-text" }, [
+                  _vm._v(_vm._s(case_study.c_description))
+                ])
+              ])
+            ])
+          }),
+          0
+        )
+      ])
+    ])
   ])
 }
 var staticRenderFns = [
@@ -39475,104 +39500,6 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("p", { staticStyle: { "margin-left": "170px" } }, [
           _vm._v("Our Cases")
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } },
-      [
-        _c("div", { staticClass: "col-sm-12 mb-3" }, [
-          _c("ul", { staticClass: "list-group list-group-flush border-0" }, [
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ])
-          ])
         ])
       ]
     )
@@ -39961,7 +39888,13 @@ var render = function() {
       "div",
       {
         staticClass: "modal",
-        attrs: { id: "mg_action_confirm", tabindex: "-1", role: "dialog" }
+        attrs: {
+          id: "mg_action_confirm",
+          tabindex: "-1",
+          "data-keyboard": "false",
+          "data-backdrop": "static",
+          role: "dialog"
+        }
       },
       [
         _c(
@@ -40066,7 +39999,13 @@ var render = function() {
       "div",
       {
         staticClass: "modal fade",
-        attrs: { id: "mg_action_table", tabindex: "-1", role: "dialog" }
+        attrs: {
+          id: "mg_action_table",
+          tabindex: "-1",
+          "data-keyboard": "false",
+          "data-backdrop": "static",
+          role: "dialog"
+        }
       },
       [
         _c(
@@ -40517,7 +40456,8 @@ var render = function() {
               click: function($event) {
                 ;(_vm.gname_box_show = true),
                   (_vm.action = "Create"),
-                  (_vm.actor = "group")
+                  (_vm.actor = "group"),
+                  _vm.fetchUsers()
               }
             }
           },
@@ -40544,7 +40484,8 @@ var render = function() {
           attrs: {
             action: _vm.action,
             actor: _vm.actor,
-            gname_box_show: _vm.gname_box_show
+            gname_box_show: _vm.gname_box_show,
+            users: _vm.users
           }
         }),
         _vm._v(" "),

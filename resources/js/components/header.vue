@@ -69,19 +69,15 @@
 
 <script>
 export default {
-
-data() {
+  data() {
     return {
-        uid: 2
-    }
-},
-
-
+      uid: 10
+    };
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-
 .profile-usertitle {
   text-align: center;
   margin-top: 20px;

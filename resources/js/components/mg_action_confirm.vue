@@ -1,6 +1,6 @@
 <template>
   <transition> <!-- member group action confirmation -->
-    <div class="modal" id="mg_action_confirm" tabindex="-1" role="dialog">
+    <div class="modal" id="mg_action_confirm" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">

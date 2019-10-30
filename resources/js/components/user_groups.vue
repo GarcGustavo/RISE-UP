@@ -18,7 +18,7 @@
         data-target="#mg_action_table"
         @click="gname_box_show=true,
         action='Create',
-        actor='group'"
+        actor='group', fetchUsers()"
       >
         <i class="material-icons">add_circle_outline</i>
       </a>
@@ -28,7 +28,12 @@
         <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
       </div>
 
-      <mg_action_table :action="action" :actor="actor" :gname_box_show="gname_box_show"></mg_action_table>
+      <mg_action_table
+        :action="action"
+        :actor="actor"
+        :gname_box_show="gname_box_show"
+        :users="users"
+      ></mg_action_table>
 
       <p>My groups</p>
     </h1>
@@ -52,7 +57,6 @@
           </td>
           <td>
             <a :href="'/group/' + item.gid">{{item.g_name}}</a>
-
           </td>
         </tr>
       </tbody>
@@ -64,20 +68,20 @@
 </template>
 
 <script>
-
 export default {
   data() {
     return {
       ready: false,
       groups: [],
       pageOfItems: [],
+      users: [],
+      uid: "",
       action: "",
       actor: "",
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
-  components: {
-      },
+  components: {},
   created() {
     this.fetchGroups();
   },
@@ -87,8 +91,20 @@ export default {
       // update page of items
       this.pageOfItems = pageOfItems;
     },
+
+    fetchUsers() {
+      fetch("/users")
+        .then(res => res.json())
+        .then(res => {
+          this.users = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+
     fetchGroups() {
-      fetch('/user_groups/'+46)
+      this.path = window.location.pathname.split("/");
+      this.uid = this.path[this.path.length - 2];
+      fetch("/user_groups/" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
@@ -99,7 +115,6 @@ export default {
   }
 };
 </script>
-
 
 
 <style lang="scss" scoped>

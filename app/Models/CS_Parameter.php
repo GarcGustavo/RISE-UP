@@ -52,7 +52,7 @@ class cs_parameter extends Model
      **/
     public function cases()
     {
-        return $this->belongsToMany(\App\Models\Case_study::class, 'case_parameters');
+        return $this->belongsToMany(\App\Models\case_study::class, 'case_parameters');
     }
 
     /**

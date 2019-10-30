@@ -24,6 +24,7 @@ class CreateCaseTable extends Migration
             $table->unsignedBigInteger('c_group');
             $table->foreign('c_owner')->references('uid')->on('User');
             $table->foreign('c_group')->references('gid')->on('Group');
+            $table->softDeletes();
         });
     }
 

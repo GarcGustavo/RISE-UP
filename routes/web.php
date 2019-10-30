@@ -26,11 +26,11 @@ Route::get('/group/{id}', function () {
    return view('group');
 })->name('group');
 
-//Route::get('/group/{id}', 'User_GroupsController@show_members')->name('group');
 
 Route::get('/user/{id}/groups', function () {
     return view('user_groups');
 });
+
 Route::get('/Home', function () {
     return view('home');
 });
@@ -52,3 +52,6 @@ Route::get('/group/{id}/members', 'User_GroupsController@show_members');
 
 //List groups of a user
 Route::get('user_groups/{id}', 'GroupController@show_groups');
+
+//List cases of a group
+Route::get('group/{id}/cases', 'CaseController@show_group_cases');

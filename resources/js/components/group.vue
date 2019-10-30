@@ -1,5 +1,4 @@
 <template>
-
   <!-- Team Members -->
   <div class="body mb-5 mt-5">
     <h1 class="text-center">Our Group</h1>
@@ -18,8 +17,9 @@
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
+        data-dismiss="modal"
         @click="showModal=true, action='Remove',
-        actor='member(s)'"
+        actor='member(s)', fetchMembers()"
       >
         <i class="material-icons">remove_circle_outline</i>
       </a>
@@ -27,16 +27,24 @@
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
+        data-dismiss="modal"
         @click="showModal=true, action='Add',
-        actor='member(s)'"
+        actor='member(s)', fetchUsers()"
       >
         <i class="material-icons">add_circle_outline</i>
       </a>
-      <mg_action_table v-if="showModal" @close="showModal = false" :action="action" :actor="actor"></mg_action_table>
+      <mg_action_table
+        v-if="showModal"
+        @close="showModal = false"
+        :action="action"
+        :actor="actor"
+        :users="users"
+      ></mg_action_table>
 
       <p style="margin-left:90px;">Members</p>
     </h1>
 
+<!-- Members --> 
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
         <div class="card h-100 text-center shadow">
@@ -63,58 +71,13 @@
     <div class="mt-1 card mb-5" id="cases">
       <div class="col-sm-12 mb-3">
         <ul class="list-group list-group-flush border-0">
-          <li class="list-group-item">
+          <li class="list-group-item" v-for="(case_study,index) in cases" :key="index">
             <div class="card-body">
               <h5 class="card-title">
-                <a href="#">Card One</a>
+                <a href="#">{{case_study.c_title}}</a>
               </h5>
-              <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-              <p class="card-text">Some text.</p>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a href="#">Card One</a>
-              </h5>
-              <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-              <p class="card-text">Some text.</p>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a href="#">Card One</a>
-              </h5>
-              <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-              <p class="card-text">Some text.</p>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a href="#">Card One</a>
-              </h5>
-              <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-              <p class="card-text">Some text.</p>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a href="#">Card One</a>
-              </h5>
-              <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-              <p class="card-text">Some text.</p>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a href="#">Card One</a>
-              </h5>
-              <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-              <p class="card-text">Some text.</p>
+              <h6 class="card-subtitle mb-2 text-muted">{{case_study.c_date}}</h6>
+              <p class="card-text">{{case_study.c_description}}</p>
             </div>
           </li>
         </ul>
@@ -125,40 +88,55 @@
 
 <script>
 export default {
-
   data() {
     return {
       showModal: false,
-
       action: "",
       actor: "",
-      gid:"",
-      members:[],
-      member: {
-        first_name: "",
-        last_name: "",
-        email: ""
-      },
-
+      gid: "",
+      members: [],
+      users: [],
+      cases: []
     };
-
   },
 
   created() {
-   this.fetchMembers();
+    this.fetchMembers();
+    this.fetchCases();
   },
 
   methods: {
-    fetchMembers() {
-        this.path=( window.location.pathname.split( '/' ) );
-        this.gid = this.path[this.path.length-1];
-      fetch('/group/'+this.gid+'/members')
+    fetchUsers() {
+      fetch("/users")
         .then(res => res.json())
         .then(res => {
-          this.members = res.data;
+          this.users = res.data; //to send to modal
         })
         .catch(err => console.log(err));
-          }
+    },
+
+    fetchMembers() {
+      this.path = window.location.pathname.split("/");
+      this.gid = this.path[this.path.length - 1];
+      fetch("/group/" + this.gid + "/members")
+        .then(res => res.json())
+        .then(res => {
+          this.users = res.data; //to send to modal
+          this.members = res.data;//to render in view
+        })
+        .catch(err => console.log(err));
+    },
+
+    fetchCases() {
+      this.path = window.location.pathname.split("/");
+      this.gid = this.path[this.path.length - 1];
+      fetch("/group/" + this.gid + "/cases")
+        .then(res => res.json())
+        .then(res => {
+          this.cases = res.data;
+        })
+        .catch(err => console.log(err));
+    }
   }
 };
 </script>

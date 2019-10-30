@@ -1,7 +1,7 @@
 <template>
   <transition>
     <!--member group action table -->
-    <div class="modal fade" id="mg_action_table" tabindex="-1" role="dialog">
+    <div class="modal fade" id="mg_action_table" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -27,6 +27,7 @@
             </div>
             <!-- table -->
             <div class="table-wrapper">
+              <!-- change table id -->
               <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
                 <thead class="thead-dark">
                   <tr>
@@ -79,13 +80,15 @@ export default {
     gname_box_show: {
       type: Boolean,
       default: false
+    },
+    users: {
+      type: Array
     }
   },
 
   data() {
     return {
       showModal: false,
-      users: [],
       user: {
         first_name: "",
         last_name: "",
@@ -93,20 +96,8 @@ export default {
       }
     };
   },
-  created() {
-    this.fetchUsers();
-  },
 
-  methods: {
-    fetchUsers() {
-      fetch("/users")
-        .then(res => res.json())
-        .then(res => {
-          this.users = res.data;
-        })
-        .catch(err => console.log(err));
-    }
-  }
+  methods: {}
 };
 </script>
 
