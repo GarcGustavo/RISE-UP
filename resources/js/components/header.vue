@@ -1,7 +1,7 @@
 <template>
   <!-- Navigation -->
   <nav class="navbar fixed-top navbar-expand-lg navbar-custom">
-    <a class="navbar-brand" href="#">Interdisciplinary Research Network</a>
+    <a class="navbar-brand" href="/">Interdisciplinary Research Network</a>
     <button
       class="navbar-toggler"
       type="button"
@@ -39,7 +39,7 @@
         <a class="nav-link" href>Help</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href>About</a>
+        <a class="nav-link" href="/about">About</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href>Language</a>
@@ -53,7 +53,7 @@
         <div class="dropdown-menu dropdown-menu-right">
           <div class="profile-usertitle">
             <div class="profile-usertitle-name">Melvin J Malave</div>
-            <div class="profile-usertitle-role">Admin</div>
+            <div class="profile-usertitle-role"><a href="/admin/users">Admin</a></div>
           </div>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Profile</a>
