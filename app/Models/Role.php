@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class role extends Model
 {
-    protected $dates = false;
+    use SoftDeletes;
+
+    public $table = 'Role';
 
     protected $dates = ['deleted_at'];
 
