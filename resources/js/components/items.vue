@@ -3,7 +3,7 @@
         <div class="align-middle">
             <section class="list">
                 <header>Case Items</header>
-                <draggable class="drag-area" :list="caseItems" :options="{animation:200, group:'i_content'}" :element="'article'" @add="onAdd($event, false)"  @change="update">
+                <draggable class="drag-area" :list="caseItems" :options="{animation:200, group:'i_content'}" :element="'article'" @add="onAdd($event)"  @change="update">
                     <article class="card" v-for="item in caseItems" :key="item.iid" :data-id="item.iid">
                         <header>
                             {{ item.i_content }}
@@ -29,9 +29,9 @@
             }
         },
         methods: {
-            onAdd(event, i_case) {
+            onAdd(event) {
                 let id = event.item.getAttribute('i_case');
-                axios.patch('/case/' + id + '/updateItems', {
+                axios.patch('/case/' + id + '/items/add', {
                     items: items
                 }).then((response) => {
                     console.log(response.data);

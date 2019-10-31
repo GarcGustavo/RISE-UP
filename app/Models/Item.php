@@ -28,7 +28,8 @@ class item extends Model
         'i_content',
         'i_case',
         'i_type',
-        'order'
+        'order',
+        'i_name'
     ];
 
     /**
@@ -41,7 +42,8 @@ class item extends Model
         'i_content' => 'string',
         'i_case' => 'integer',
         'i_type' => 'integer',
-        'order' => 'integer'
+        'order' => 'integer',
+        'i_name' => 'string'
     ];
 
     /**
@@ -53,7 +55,8 @@ class item extends Model
         'i_content' => 'required',
         'i_case' => 'required',
         'i_type' => 'required',
-        'order' => 'required'
+        'order' => 'required',
+        'i_name' => 'required'
     ];
 
     /**

@@ -43,11 +43,12 @@ Route::get('/caseBodyTest', function () {
     return view('case_study_body');
 });
 //Case item routes
-Route::get('/case/{id}/items','ItemController@showCaseItems');
+Route::get('/case/{id}/items','ItemController@getCaseItems');
 //Route::post('case/{id}/items','ItemController@store');
 Route::patch('/case/{id}/updateItems', 'ItemController@updateItemOrder');
 //Route::delete('case/{id}/items/{id}','ItemController@delete');
-Route::put('/case/{id}/items/updateAll', 'ItemController@updateItemOrder');
+Route::put('/case/{id}/items/add', 'ItemController@addCaseItem');
+Route::put('/case/{id}/items/remove', 'ItemController@removeCaseItem');
 
 //List users
 Route::get('/users', 'UserController@index');

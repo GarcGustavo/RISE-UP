@@ -19,6 +19,7 @@ class CreateItemTable extends Migration
             $table->unsignedBigInteger('i_case');
             $table->unsignedBigInteger('i_type');
             $table->integer('order')->unsigned()->default(0);
+            $table->text('i_name');
             $table->foreign('i_case')->references('cid')->on('Case');
             $table->foreign('i_type')->references('itt_id')->on('Item_Type');
         });

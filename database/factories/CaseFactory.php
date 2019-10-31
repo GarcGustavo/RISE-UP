@@ -14,6 +14,6 @@ $factory->define(Case_Study::class, function (Faker $faker) {
         'c_status' => $faker->word,
         'c_date' => $faker->date,
         'c_owner' => $faker->numberBetween($min=1, $max=50),
-        'c_group' => $faker->numberBetween($min=1, $max=50)
+        'c_group' => $faker->numberBetween($min=1, $max=10)
     ];
 });

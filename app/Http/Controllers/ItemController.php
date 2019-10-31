@@ -10,15 +10,41 @@ use App\Http\Resources\Item as ItemResource;
 class ItemController extends Controller
 {
 
-    public function showCaseItems($id)
+    public function getCaseItems($id)
     {
         $cid = $id;
+        $item = ItemResource::
         $caseItems = Item:: orderBy('Item.order')
         ->where('Item.i_case', $cid)
         ->select('Item.*')
         ->get();
 
-        return view('case_study_body',compact('caseItems'));//ItemResource::collection($caseItems);
+        return GroupResource::collection($caseItems);
+    }
+
+    public function addCaseItem($id)
+    {
+        $caseItem = $request->isMethod('put') ? group::findOrFail($request->gid): new group;
+
+        $caseItem->gid = $request -> input('gid');
+        $caseItem->gname = $request -> input('gname');
+        $caseItem->g_status = $request -> input('g_status');
+        $caseItem->g_creation_date = $request -> input('g_creation_date');
+        $caseItem->g_owner = $request -> input('g_owner');
+
+        if ($caseItem->save()) {
+            return new GroupResource($caseItem);
+        }
+    }
+
+    public function removeCaseItem($id)
+    {
+        $group = Group::findOrFail($id);
+
+
+        if ($group->delete()) {
+            return new GroupResource($group);
+        }
     }
 
     public function updateItemOrder(Request $request, $id)

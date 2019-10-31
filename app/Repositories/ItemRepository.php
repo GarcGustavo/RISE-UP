@@ -19,7 +19,8 @@ class ItemRepository extends BaseRepository
     protected $fieldSearchable = [
         'i_content',
         'i_case',
-        'i_type'
+        'i_type',
+        'i_name'
     ];
 
     /**
