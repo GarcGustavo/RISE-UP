@@ -8,17 +8,17 @@
         data-toggle="modal"
         data-target="#mg_action_confirm"
         @click="action='Remove',
-        actor='group(s)'"
+        actor='case study(s)'"
       >
         <i class="material-icons">remove_circle_outline</i>
       </a>
       <a
-        href="#mg_action_table"
+        href="#case_create_dbox"
         data-toggle="modal"
-        data-target="#mg_action_table"
-        @click="gname_box_show=true,
+        data-target="#case_create_dbox"
+        @click="
         action='Create',
-        actor='group', fetchUsers()"
+        actor='case study'"
       >
         <i class="material-icons">add_circle_outline</i>
       </a>
@@ -28,14 +28,12 @@
         <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
       </div>
 
-      <mg_action_table
+      <case_create_dbox
         :action="action"
         :actor="actor"
-        :gname_box_show="gname_box_show"
-        :users="users"
-      ></mg_action_table>
+      ></case_create_dbox>
 
-      <p>My groups</p>
+      <p>My cases</p>
     </h1>
 
     <hr>
@@ -48,7 +46,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(group,index) in pageOfGroups" :key="index">
+        <tr v-for="(cases,index) in pageOfCases" :key="index">
           <td>
             <div class="check-box">
               <input class="checkbox" type="checkbox" id="'checkbox' + index" v-model="checked">
@@ -56,13 +54,13 @@
             </div>
           </td>
           <td>
-            <a :href="'/group/' + group.gid">{{group.g_name}}</a>
+            <a href="#">{{cases.c_title}}</a>
           </td>
         </tr>
       </tbody>
     </table>
     <div v-if="ready">
-      <paginator :items="groups" @changePage="onChangePage" class="pagination"></paginator>
+      <paginator :items="cases" @changePage="onChangePage" class="pagination"></paginator>
     </div>
   </div>
 </template>
@@ -72,8 +70,8 @@ export default {
   data() {
     return {
       ready: false,
-      groups: [],
-      pageOfGroups: [],
+      cases: [],
+      pageOfCases: [],
       users: [],
       uid: "",
       action: "",
@@ -83,13 +81,13 @@ export default {
   },
   components: {},
   created() {
-    this.fetchGroups();
+    this.fetchCases();
   },
 
   methods: {
-    onChangePage(pageOfGroups) {
-      // update page of Groups
-      this.pageOfGroups = pageOfGroups;
+    onChangePage(pageOfCases) {
+      // update page of Casess
+      this.pageOfCases = pageOfCases;
     },
 
     fetchUsers() {
@@ -101,13 +99,13 @@ export default {
         .catch(err => console.log(err));
     },
 
-    fetchGroups() {
+    fetchCases() {
       this.path = window.location.pathname.split("/");
       this.uid = this.path[this.path.length - 2];
-      fetch("/user_groups/" + this.uid)
+      fetch("/user_cases/" + this.uid)
         .then(res => res.json())
         .then(res => {
-          this.groups = res.data;
+          this.cases = res.data;
           this.ready = true;
         })
         .catch(err => console.log(err));

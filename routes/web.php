@@ -31,6 +31,11 @@ Route::get('/user/{id}/groups', function () {
     return view('user_groups');
 });
 
+
+Route::get('/user/{id}/cases', function () {
+    return view('user_cases');
+});
+
 Route::get('/Home', function () {
     return view('home');
 });
@@ -55,3 +60,6 @@ Route::get('user_groups/{id}', 'GroupController@show_groups');
 
 //List cases of a group
 Route::get('group/{id}/cases', 'CaseController@show_group_cases');
+
+//List all cases of a user(author and group cases)
+Route::get('user_cases/{id}', 'CaseController@show_all_user_cases');

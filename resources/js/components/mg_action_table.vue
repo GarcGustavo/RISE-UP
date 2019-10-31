@@ -1,68 +1,104 @@
 <template>
+  <!--member group action table
+        this table is used everytime a user wants to remove
+         members of an existing group or to add an existing
+         user to a new group
+  -->
   <transition>
-    <!--member group action table -->
-    <div class="modal fade" id="mg_action_table" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{action}} {{actor}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <!-- Add group name input element to dialogue box when user creates group -->
-          <div class="modal-body">
-            <div class="input-group" v-if="gname_box_show==true">
-              <label>Group name</label>
-              <div class="input-group-append name">
-                <input type="text" placeholder="Name...">
+    <div>
+      <div
+        class="modal fade"
+        id="mg_action_table"
+        tabindex="-1"
+        data-keyboard="false"
+        data-backdrop="static"
+        role="dialog"
+      >
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{action}} {{actor}}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <!-- Render group name input element to dialogue box when user creates group -->
+            <div class="modal-body">
+              <div class="input-group" v-if="gname_box_show==true">
+                <label>Group name</label>
+                <div class="input-group-append">
+                  <input type="text" placeholder="Name...">
+                </div>
+              </div>
+              <!-- Search box for table -->
+              <div class="input-group">
+                <label>Search</label>
+                <div class="input-group-append search">
+                  <input type="text" placeholder="User email..">
+                </div>
+              </div>
+              <!-- table -->
+              <div class="table-wrapper">
+                <!-- change table id -->
+                <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th id="row-checkbox">#</th>
+                      <th>Email</th>
+                      <th>Name</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(user,index) in users" v-bind:key="index">
+                      <td>
+                        <div class="check-box">
+                          <input class="checkbox" type="checkbox" v-model="uids" :value="user.uid">
+                          <label for="checkbox">{{index+1}}</label>
+                        </div>
+                      </td>
+                      <td>{{user.email}}</td>
+                      <td>{{user.first_name}} {{user.last_name}}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-            <!-- Search box for table -->
-            <div class="input-group">
-              <label>Search</label>
-              <div class="input-group-append search">
-                <input type="text" placeholder="User email..">
+            <div class="modal-footer">
+              <div v-if="action=='Remove'">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                >{{action}}</button>
               </div>
+              <div v-else>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-dismiss="modal"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                  @click="addUsers()"
+                >{{action}}</button>
+              </div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+                @click="uncheck()"
+              >Close</button>
             </div>
-            <!-- table -->
-            <div class="table-wrapper">
-              <!-- change table id -->
-              <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
-                <thead class="thead-dark">
-                  <tr>
-                    <th id="row-checkbox">#</th>
-                    <th>Email</th>
-                    <th>Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(user,index) in users" v-bind:key="index">
-                    <td>
-                      <div class="check-box">
-                        <input class="checkbox" type="checkbox" id="'checkbox1" v-model="checked">
-                        <label for="checkbox1">{{index+1}}</label>
-                      </div>
-                    </td>
-                    <td>{{user.email}}</td>
-                    <td>{{user.first_name}} {{user.last_name}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-toggle="modal"
-              data-target="#mg_action_confirm"
-            >{{action}}</button>
-            <!--confirmation dialogue box -->
-            <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
+      </div>
+      <!--confirmation dialogue box -->
+
+      <div v-if="action=='Add'">
+        <mg_action_confirm :message="'Added user(s) to group'" :action_confirm="'Add'"></mg_action_confirm>
+      </div>
+      <div v-else>
+        <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
       </div>
     </div>
   </transition>
@@ -93,11 +129,38 @@ export default {
         first_name: "",
         last_name: "",
         email: ""
-      }
+      },
+      data: [
+        {
+          uid: "",
+          gid: ""
+        }
+      ],
+      success: false,
+      uids: []
     };
   },
 
-  methods: {}
+  methods: {
+    uncheck() {
+      this.uids = [];
+
+      for (let i in this.uids) {
+        this.uids.push(this.uids[i].uid);
+      }
+    },
+    addUsers() {
+      this.path = window.location.pathname.split("/");
+      this.gid = this.path[this.path.length - 1];
+
+      for (let i in this.uids) {
+        this.data[i].uid = this.uids[i];
+        this.data[i].gid = this.gid;
+      }
+      console.log(this.data);
+      this.success = true;
+    }
+  }
 };
 </script>
 
@@ -145,6 +208,11 @@ table tr td {
 .form-check-input {
   font-size: 20px;
 }
+
+.form-control {
+  height: 30px;
+}
+
 /***********************************************************/
 
 .modal {
