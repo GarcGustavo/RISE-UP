@@ -2,14 +2,14 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Item;
+use App\Models\item;
 use Faker\Generator as Faker;
 
-$factory->define(Item::class, function (Faker $faker) {
+$factory->define(item::class, function (Faker $faker) {
 
     return [
         'i_content' => $faker->text,
-        'i_case' => $faker->randomDigitNotNull,
-        'i_type' => $faker->randomDigitNotNull
+        'i_case' => $faker->numberBetween($min=1, $max=50),
+        'i_type' => $faker->numberBetween($min=1, $max=50)
     ];
 });

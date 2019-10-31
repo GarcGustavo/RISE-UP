@@ -5973,3 +5973,6 @@ vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php
 vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Property.php
 vendor/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Processor.php
 vendor/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Rule.php
+vendor/bin/carbon
+vendor/bin/php-parse
+vendor/bin/phpunit

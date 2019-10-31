@@ -39,6 +39,16 @@ Auth::routes();
 //Show case
 //Route::get('/case_study/{id}', 'CaseController@show');
 
+Route::get('/caseBodyTest', function () {
+    return view('case_study_body');
+});
+//Case item routes
+Route::get('/case/{id}/items','ItemController@showCaseItems');
+//Route::post('case/{id}/items','ItemController@store');
+Route::patch('/case/{id}/updateItems', 'ItemController@updateItemOrder');
+//Route::delete('case/{id}/items/{id}','ItemController@delete');
+Route::put('/case/{id}/items/updateAll', 'ItemController@updateItemOrder');
+
 //List users
 Route::get('/users', 'UserController@index');
 

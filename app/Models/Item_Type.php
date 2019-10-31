@@ -17,7 +17,7 @@ class item_type extends Model
 {
     public $table = 'Item_Type';
 
-    protected $dates = false;
+    //protected $dates = false;
 
     public $timestamps = false;
 

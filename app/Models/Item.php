@@ -20,14 +20,15 @@ class item extends Model
 {
     public $table = 'Item';
 
-    protected $dates = false;
+    //protected $dates = false;
 
     public $timestamps = false;
 
     public $fillable = [
         'i_content',
         'i_case',
-        'i_type'
+        'i_type',
+        'order'
     ];
 
     /**
@@ -39,7 +40,8 @@ class item extends Model
         'iid' => 'integer',
         'i_content' => 'string',
         'i_case' => 'integer',
-        'i_type' => 'integer'
+        'i_type' => 'integer',
+        'order' => 'integer'
     ];
 
     /**
@@ -50,7 +52,8 @@ class item extends Model
     public static $rules = [
         'i_content' => 'required',
         'i_case' => 'required',
-        'i_type' => 'required'
+        'i_type' => 'required',
+        'order' => 'required'
     ];
 
     /**

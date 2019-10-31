@@ -26,7 +26,7 @@ class case_study extends Model
 {
     public $table = 'Case';
 
-    protected $dates = false;
+    //protected $dates = false;
 
     public $timestamps = false;
 

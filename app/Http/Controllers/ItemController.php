@@ -3,9 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Case_Study;
+use App\Models\Item;
+use App\Http\Resources\Item as ItemResource;
 
 class ItemController extends Controller
 {
+
+    public function showCaseItems($id)
+    {
+        $cid = $id;
+        $caseItems = Item:: orderBy('Item.order')
+        ->where('Item.i_case', $cid)
+        ->select('Item.*')
+        ->get();
+
+        return view('case_study_body',compact('caseItems'));//ItemResource::collection($caseItems);
+    }
+
+    public function updateItemOrder(Request $request, $id)
+    {
+        $this->validate($request, [
+            'items.*.order' => 'required|numeric',
+        ]);
+
+        $caseItems = Item::all();
+
+        foreach ($caseItems as $item) {
+            $cid = $item->i_case;
+            foreach ($request->caseItems as $itemsNew) {
+                if ($caseItemsNew['i_case'] == $cid) {
+                    $caseItems->update(['order' => $caseItemsNew['order']]);
+                }
+            }
+        }
+
+        return response('Updated Successfully.', 200);
+    }
+
     /**
      * Display a listing of the resource.
      *
