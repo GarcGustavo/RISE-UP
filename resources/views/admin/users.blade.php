@@ -18,21 +18,21 @@
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
-                            <tr>
+                            <tr class="text-center">
                                 <th>Name</th>
                                 <th>Activity</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Creation date</th>
+                                <th>Since</th>
                             </tr>
                             </thead>
                             <tfoot>
-                            <tr>
+                            <tr class="text-center">
                                 <th>Name</th>
                                 <th>Activity</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Creation date</th>
+                                <th>Since</th>
                             </tr>
                             </tfoot>
                             <tbody>
@@ -44,7 +44,7 @@
                                 <td> xxx </td>
                                 <td> {{$user->contact_email }} </td>
                                 <td> {{$user->r_name }} </td>
-                                <td> {{$user->u_creation_date }} </td>
+                                <td> {{ \Carbon\Carbon::parse($user->u_creation_date)->format('d F Y')}} </td>
                             </tr>
                             @empty
                                 <tr>

@@ -20,7 +20,6 @@ class AdminController extends Controller
             ->select('user.*', 'r_name')
             ->orderBy('u_creation_date', 'desc')
             ->get();
-
 		return view('admin.users', ['users' => $users]);
 	}
 }
