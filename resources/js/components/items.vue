@@ -42,8 +42,48 @@ export default {
         { id: 3, name: "Courtenay", sport: "volley" },
         { id: 4, name: "David", sport: "rugby" }
       ],
-      dragging: false
+      dragging: false,
+      ready: false,
+      groups: [],
+      pageOfGroups: [],
+      users: [],
+      uid: "",
+      action: "",
+      actor: "",
+      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
+  },
+  components: {},
+  created() {
+    this.fetchGroups();
+  },
+
+  methods: {
+    onChangePage(pageOfGroups) {
+      // update page of Groups
+      this.pageOfGroups = pageOfGroups;
+    },
+
+    fetchUsers() {
+      fetch("/users")
+        .then(res => res.json())
+        .then(res => {
+          this.users = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+
+    fetchGroups() {
+      this.path = window.location.pathname.split("/");
+      this.uid = this.path[this.path.length - 2];
+      fetch("/user_groups/" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.groups = res.data;
+          this.ready = true;
+        })
+        .catch(err => console.log(err));
+    }
   }
 };
 </script>
