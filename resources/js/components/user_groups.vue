@@ -1,3 +1,4 @@
+
 <template>
   <div class="body mb-5 mt-5">
     <!-- Page Heading/Breadcrumbs -->
@@ -17,7 +18,7 @@
         data-target="#mg_action_table"
         @click="gname_box_show=true,
         action='Create',
-        actor='group'"
+        actor='group', fetchUsers()"
       >
         <i class="material-icons">add_circle_outline</i>
       </a>
@@ -27,7 +28,12 @@
         <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
       </div>
 
-      <mg_action_table :action="action" :actor="actor" :gname_box_show="gname_box_show"></mg_action_table>
+      <mg_action_table
+        :action="action"
+        :actor="actor"
+        :gname_box_show="gname_box_show"
+        :users="users"
+      ></mg_action_table>
 
       <p>My groups</p>
     </h1>
@@ -42,47 +48,73 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in pageOfItems" :key="item.id">
+        <tr v-for="(group,index) in pageOfGroups" :key="index">
           <td>
             <div class="check-box">
-              <input class="checkbox" type="checkbox" id="'checkbox' item.id" v-model="checked">
-              <label for="'checkbox' item.id">{{ item.id}}</label>
+              <input class="checkbox" type="checkbox" id="'checkbox' + index" v-model="checked">
+              <label for="'checkbox' + index">{{index+1}}</label>
             </div>
           </td>
           <td>
-            <a href="#">{{item.name}}</a>
+            <a :href="'/group/' + group.gid">{{group.g_name}}</a>
           </td>
         </tr>
       </tbody>
     </table>
-    <paginator :items="exampleItems" @changePage="onChangePage" class="pagination"></paginator>
+    <div v-if="ready">
+      <paginator :items="groups" @changePage="onChangePage" class="pagination"></paginator>
+    </div>
   </div>
 </template>
 
 <script>
-const exampleItems = [...Array(150).keys()].map(i => ({
-  id: i + 1,
-  name: "Name of group  " + (i + 1)
-}));
 export default {
   data() {
     return {
-      exampleItems,
-      pageOfItems: [],
+      ready: false,
+      groups: [],
+      pageOfGroups: [],
+      users: [],
+      uid: "",
       action: "",
       actor: "",
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
+  components: {},
+  created() {
+    this.fetchGroups();
+  },
+
   methods: {
-    onChangePage(pageOfItems) {
-      // update page of items
-      this.pageOfItems = pageOfItems;
+    onChangePage(pageOfGroups) {
+      // update page of Groups
+      this.pageOfGroups = pageOfGroups;
+    },
+
+    fetchUsers() {
+      fetch("/users")
+        .then(res => res.json())
+        .then(res => {
+          this.users = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+
+    fetchGroups() {
+      this.path = window.location.pathname.split("/");
+      this.uid = this.path[this.path.length - 2];
+      fetch("/user_groups/" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.groups = res.data;
+          this.ready = true;
+        })
+        .catch(err => console.log(err));
     }
   }
 };
 </script>
-
 
 
 <style lang="scss" scoped>
