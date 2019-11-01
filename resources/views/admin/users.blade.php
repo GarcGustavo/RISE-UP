@@ -37,7 +37,6 @@
                             </tfoot>
                             <tbody>
 
-
                             @forelse($users as $user)
                             <tr>
                                 <td> {{$user->first_name }} {{$user->last_name }} </td>
@@ -56,8 +55,6 @@
                                 </tr>
                             @endforelse
 
-
-
                             </tbody>
                         </table>
                     </div>
@@ -75,50 +72,39 @@
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
-                            <tr>
+                            <tr class="text-center">
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Expiration date</th>
+                                <th>Since</th>
                             </tr>
                             </thead>
                             <tfoot>
-                            <tr>
+                            <tr class="text-center">
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Expiration date</th>
+                                <th>Since</th>
                             </tr>
                             </tfoot>
                             <tbody>
 
-                            <tr>
-                                <td>Donna Snider</td>
-                                <td>donna.snider@gmail.com</td>
-                                <td>Viewer</td>
-                                <td>2011/01/25</td>
-                            </tr>
-
-                            <tr>
-                                <td>Tiger Nixon</td>
-                                <td>tiger.nixon@gmail.com</td>
-                                <td>Viewer</td>
-                                <td>2011/04/25</td>
-                            </tr>
-
-                            <tr>
-                                <td>Garrett Winters</td>
-                                <td>garret.winters@gmail.com</td>
-                                <td>Viewer</td>
-                                <td>2011/07/25</td>
-                            </tr>
-
-                            <tr>
-                                <td>Brielle Williamson</td>
-                                <td>brielle.williamson@gmail.com</td>
-                                <td>Viewer</td>
-                                <td>2012/12/02</td>
-                            </tr>
+                            @forelse($requests as $request)
+                                <tr>
+                                    <td> {{$request->first_name }} {{$request->last_name }} </td>
+                                    <td> {{$request->contact_email }} </td>
+                                    <td> {{$request->r_name }} </td>
+                                    <td> {{ \Carbon\Carbon::parse($request->u_creation_date)->format('d F Y')}} </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td>Nadie</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            @endforelse
 
                             </tbody>
                         </table>

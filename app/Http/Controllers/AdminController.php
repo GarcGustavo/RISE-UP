@@ -20,7 +20,16 @@ class AdminController extends Controller
             ->select('user.*', 'r_name')
             ->orderBy('u_creation_date', 'desc')
             ->get();
-		return view('admin.users', ['users' => $users]);
+
+        $requests = DB::table('user')
+            ->join('role', 'user.u_role', '=', 'role.rid')
+            ->select('user.*', 'r_name')
+            ->where('u_role_upgrade', 1)
+            ->where('u_role', 1)
+            ->where('u_ban_status', 0)
+            ->orderBy('u_creation_date', 'desc')
+            ->get();
+		return view('admin.users', ['users' => $users, 'requests' => $requests]);
 	}
 }
 ?>

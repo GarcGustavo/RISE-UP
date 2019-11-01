@@ -66,11 +66,17 @@ Route::get('group/{id}/cases', 'GroupController@show_group_cases');
 Route::get('/admin/create', 'AdminController@create');
 //List users with recent activities or requests
 
+//List user's activities and requests
+Route::get('/admin/users', 'AdminController@users')->name('admin.users');
+
+//List activity log
+Route::get('/admin/log', 'AdminController@log')->name('admin.log');
+
+//List filters
+Route::get('/admin/filters', 'AdminController@filters')->name('admin.filters');
+
 //Post an admin
 Route::post('/admin', 'AdminController@store');
-
-//List user's activities and requests
-Route::get('/admin/users', 'AdminController@users');
 
 //Show an admin
 Route::get('/admin/{id}', 'AdminController@show');
