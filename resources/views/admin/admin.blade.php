@@ -34,7 +34,9 @@
             </nav>
 
             <div class="container-fluid">
-                <div class="mt-4">@yield('adminMainContent')</div>
+                <div class="mt-4">
+                    @yield('adminMainContent')
+                </div>
             </div>
         </div>
         <!-- page-content-->

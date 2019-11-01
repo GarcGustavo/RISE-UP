@@ -57,7 +57,28 @@ Route::get('user_groups/{id}', 'GroupController@show_groups');
 //List cases of a group
 Route::get('group/{id}/cases', 'GroupController@show_group_cases');
 
+
+
+
+
+//Falta index y update
+//Create an admin
+Route::get('/admin/create', 'AdminController@create');
 //List users with recent activities or requests
-Route::get('/admin/users', 'AdminUsersController@index');
-//Route::get('/admin/users/{}', 'AdminUsersController@users');
+
+//Post an admin
+Route::post('/admin', 'AdminController@store');
+
+//List user's activities and requests
+Route::get('/admin/users', 'AdminController@users');
+
+//Show an admin
+Route::get('/admin/{id}', 'AdminController@show');
+//Route::get('/admin/users/{}', 'AdminController@users');
+
+//Edit an admin
+Route::get('/admin/{id}/edit', 'AdminController@edit');
+
+//Delete an admin
+Route::delete('/admin/{id}', 'AdminController@destroy');
 

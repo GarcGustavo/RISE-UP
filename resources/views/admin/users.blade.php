@@ -20,50 +20,44 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Activity</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Expiration date</th>
-                                <th>Activity</th>
+                                <th>Creation date</th>
                             </tr>
                             </thead>
                             <tfoot>
                             <tr>
                                 <th>Name</th>
+                                <th>Activity</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Expiration date</th>
-                                <th>Activity</th>
+                                <th>Creation date</th>
                             </tr>
                             </tfoot>
                             <tbody>
+
+
+                            @forelse($users as $user)
                             <tr>
-                                <td>Tiger Nixon</td>
-                                <td>tiger.nixon@gmail.com</td>
-                                <td>Admin</td>
-                                <td>2011/04/25</td>
-                                <td>Created Group</td>
+                                <td> {{$user->first_name }} {{$user->last_name }} </td>
+                                <td> xxx </td>
+                                <td> {{$user->contact_email }} </td>
+                                <td> {{$user->r_name }} </td>
+                                <td> {{$user->u_creation_date }} </td>
                             </tr>
-                            <tr>
-                                <td>Garrett Winters</td>
-                                <td>garret.winters@gmail.com</td>
-                                <td>Collaborator</td>
-                                <td>2011/07/25</td>
-                                <td>Edited Group</td>
-                            </tr>
-                            <tr>
-                                <td>Brielle Williamson</td>
-                                <td>brielle.williamson@gmail.com</td>
-                                <td>Collaborator</td>
-                                <td>2012/12/02</td>
-                                <td>Created Case</td>
-                            </tr>
-                            <tr>
-                                <td>Donna Snider</td>
-                                <td>donna.snider@gmail.com</td>
-                                <td>Collaborator</td>
-                                <td>2011/01/25</td>
-                                <td>Edited Case</td>
-                            </tr>
+                            @empty
+                                <tr>
+                                    <td>Nadie</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            @endforelse
+
+
+
                             </tbody>
                         </table>
                     </div>
