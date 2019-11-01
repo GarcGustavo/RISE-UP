@@ -11,10 +11,8 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    //public function index
+    //public function users
 	public function users(){
-	    //$users = user::all();
-
         $users = DB::table('user')
             ->join('role', 'user.u_role', '=', 'role.rid')
             ->select('user.*', 'r_name')
@@ -29,7 +27,46 @@ class AdminController extends Controller
             ->where('u_ban_status', 0)
             ->orderBy('u_creation_date', 'desc')
             ->get();
+
 		return view('admin.users', ['users' => $users, 'requests' => $requests]);
 	}
+
+
+
+    //public function log
+    public function log(){
+        $userActions = DB::table('user')
+            ->join('role', 'user.u_role', '=', 'role.rid')
+            ->select('user.*', 'r_name')
+            ->where('u_role_upgrade', 1)
+            ->where('u_role', 1)
+            ->where('u_ban_status', 0)
+            ->orderBy('u_creation_date', 'desc')
+            ->get();
+
+        return view('admin.log', ['userActions' => $userActions]);
+    }
+
+
+
+    //public function filters
+    public function filters(){
+        $users = DB::table('user')
+            ->join('role', 'user.u_role', '=', 'role.rid')
+            ->select('user.*', 'r_name')
+            ->orderBy('u_creation_date', 'desc')
+            ->get();
+
+        $requests = DB::table('user')
+            ->join('role', 'user.u_role', '=', 'role.rid')
+            ->select('user.*', 'r_name')
+            ->where('u_role_upgrade', 1)
+            ->where('u_role', 1)
+            ->where('u_ban_status', 0)
+            ->orderBy('u_creation_date', 'desc')
+            ->get();
+
+        return view('admin.users', ['users' => $users, 'requests' => $requests]);
+    }
 }
 ?>

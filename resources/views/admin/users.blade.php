@@ -9,18 +9,17 @@
     </nav>
     <div class="tab-content" id="nav-tabContent">
         <div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
-            <!-- Activities Table -->
+            <!-- Users Table -->
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
-                    Activities</div>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Activity</th>
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Since</th>
@@ -29,7 +28,6 @@
                             <tfoot>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Activity</th>
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Since</th>
@@ -40,7 +38,6 @@
                             @forelse($users as $user)
                             <tr>
                                 <td> {{$user->first_name }} {{$user->last_name }} </td>
-                                <td> xxx </td>
                                 <td> {{$user->contact_email }} </td>
                                 <td> {{$user->r_name }} </td>
                                 <td> {{ \Carbon\Carbon::parse($user->u_creation_date)->format('d F Y')}} </td>
