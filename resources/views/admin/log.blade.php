@@ -1,7 +1,7 @@
 @extends('admin.admin')
 
 @section('adminMainContent')
-            <!-- Requests Table -->
+            <!-- User Actions Table -->
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>User Actions:</div>
@@ -31,7 +31,7 @@
                             @forelse($userActions as $userAction)
                                 <tr>
                                     <td> {{$userAction->first_name }} {{$userAction->last_name }} </td>
-                                    <td> xxx </td>
+                                    <td> <a href="/admin/log/actions/{{$userAction->uid }}">View</a> </td>
                                     <td> {{$userAction->contact_email }} </td>
                                     <td> {{$userAction->r_name }} </td>
                                     <td> {{ \Carbon\Carbon::parse($userAction->u_creation_date)->format('d F Y')}} </td>

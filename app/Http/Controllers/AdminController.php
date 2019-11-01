@@ -38,9 +38,6 @@ class AdminController extends Controller
         $userActions = DB::table('user')
             ->join('role', 'user.u_role', '=', 'role.rid')
             ->select('user.*', 'r_name')
-            ->where('u_role_upgrade', 1)
-            ->where('u_role', 1)
-            ->where('u_ban_status', 0)
             ->orderBy('u_creation_date', 'desc')
             ->get();
 
@@ -49,15 +46,31 @@ class AdminController extends Controller
 
 
 
+    //public function actions
+    public function actions($userId){
+        $actions = DB::table('user')
+            ->join('action', 'user.uid', '=', 'action.a_user')
+            ->join('action_type', 'action.a_type', '=', 'action_type.act_id')
+            ->select('user.*',  'action.a_date', 'action_type.act_name')
+            ->where('uid', '=', $userId)
+            ->orderBy('action.a_date', 'desc')
+            ->get();
+
+        return view('admin.actions', ['actions' => $actions]);
+    }
+
+
+
     //public function filters
     public function filters(){
+	 /*
         $users = DB::table('user')
             ->join('role', 'user.u_role', '=', 'role.rid')
             ->select('user.*', 'r_name')
             ->orderBy('u_creation_date', 'desc')
             ->get();
-
-        $requests = DB::table('user')
+    */
+        $filters = DB::table('user')
             ->join('role', 'user.u_role', '=', 'role.rid')
             ->select('user.*', 'r_name')
             ->where('u_role_upgrade', 1)
@@ -66,7 +79,7 @@ class AdminController extends Controller
             ->orderBy('u_creation_date', 'desc')
             ->get();
 
-        return view('admin.users', ['users' => $users, 'requests' => $requests]);
+        return view('admin.filters', ['filters' => $filters]);
     }
 }
 ?>

@@ -70,6 +70,9 @@ Route::get('/admin/create', 'AdminController@create');
 Route::get('/admin/users', 'AdminController@users')->name('admin.users');
 
 //List activity log
+Route::get('/admin/log/actions/{id}', 'AdminController@actions');
+
+//List activity log
 Route::get('/admin/log', 'AdminController@log')->name('admin.log');
 
 //List filters
