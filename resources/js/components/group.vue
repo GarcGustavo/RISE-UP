@@ -39,12 +39,13 @@
         :action="action"
         :actor="actor"
         :users="users"
+        @addUsers="addUsers"
       ></mg_action_table>
 
       <p style="margin-left:90px;">Members</p>
     </h1>
 
-<!-- Members --> 
+    <!-- Members -->
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
         <div class="card h-100 text-center shadow">
@@ -96,7 +97,8 @@ export default {
       gid: "",
       members: [],
       users: [],
-      cases: []
+      cases: [],
+      members_to_add: []
     };
   },
 
@@ -117,25 +119,46 @@ export default {
 
     fetchMembers() {
       this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.gid = Number(this.path[this.path.length - 1]);
+
       fetch("/group/" + this.gid + "/members")
         .then(res => res.json())
         .then(res => {
           this.users = res.data; //to send to modal
-          this.members = res.data;//to render in view
+          this.members = res.data; //to render in view
         })
         .catch(err => console.log(err));
     },
 
     fetchCases() {
       this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.gid = Number(this.path[this.path.length - 1]);
       fetch("/group/" + this.gid + "/cases")
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
         })
         .catch(err => console.log(err));
+    },
+
+    addUsers(users_to_add) {
+      fetch("/group/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_add[0])
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          this.fetchMembers();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     }
   }
 };

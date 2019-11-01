@@ -2231,6 +2231,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2240,7 +2241,8 @@ __webpack_require__.r(__webpack_exports__);
       gid: "",
       members: [],
       users: [],
-      cases: []
+      cases: [],
+      members_to_add: []
     };
   },
   created: function created() {
@@ -2263,7 +2265,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.gid = Number(this.path[this.path.length - 1]);
       fetch("/group/" + this.gid + "/members").then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -2278,13 +2280,34 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.gid = Number(this.path[this.path.length - 1]);
       fetch("/group/" + this.gid + "/cases").then(function (res) {
         return res.json();
       }).then(function (res) {
         _this3.cases = res.data;
       })["catch"](function (err) {
         return console.log(err);
+      });
+    },
+    addUsers: function addUsers(users_to_add) {
+      var _this4 = this;
+
+      fetch("/group/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }),
+        body: JSON.stringify(users_to_add[0])
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+
+        _this4.fetchMembers();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
       });
     }
   }
@@ -2662,6 +2685,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2681,18 +2719,28 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       showModal: false,
+      uids: [],
       user: {
         first_name: "",
         last_name: "",
         email: ""
       },
-      data: [{
+      user_to_add: [{
         uid: "",
         gid: ""
       }],
-      success: false,
-      uids: []
+      group_to_create: {
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
+      total_groups: [],
+      success: false
     };
+  },
+  created: function created() {
+    this.totalGroups();
   },
   methods: {
     uncheck: function uncheck() {
@@ -2702,17 +2750,62 @@ __webpack_require__.r(__webpack_exports__);
         this.uids.push(this.uids[i].uid);
       }
     },
-    addUsers: function addUsers() {
+    totalGroups: function totalGroups() {
+      var _this = this;
+
+      fetch("/groups").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.total_groups = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    sendUsers: function sendUsers() {
+      //send selected users to parent component to add users
       this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.gid = Number(this.path[this.path.length - 1]);
 
       for (var i in this.uids) {
-        this.data[i].uid = this.uids[i];
-        this.data[i].gid = this.gid;
+        this.user_to_add[i].uid = this.uids[i];
+        this.user_to_add[i].gid = this.gid;
+      } //emit data to parent(Group vue)
+
+
+      this.success = true;
+      this.$emit("addUsers", this.user_to_add);
+      console.log(this.user_to_add);
+    },
+    sendGroupData: function sendGroupData() {
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
+      this.new_group_gid = this.total_groups.length + 1;
+      this.group_to_create.gid = this.new_group_gid;
+      this.group_to_create.g_name = this.g_name;
+      this.group_to_create.g_status = "lol";
+      this.group_to_create.g_creation_date = new Date().toJSON().slice(0, 10); //new Date().toLocaleString();
+
+      console.log(this.group_to_create);
+      this.group_to_create.g_owner = this.uid;
+
+      for (var i in this.uids) {
+        this.user_to_add[i].uid = this.uids[i];
+        this.user_to_add[i].gid = this.new_group_gid;
+      }
+      /*append owner to group*/
+
+
+      if (this.uids != 0) {
+        this.user_to_add.push({
+          uid: this.uid,
+          gid: this.new_group_gid
+        });
+      } else {
+        this.user_to_add[0].uid = this.uid;
+        this.user_to_add[0].gid = this.new_group_gid;
       }
 
-      console.log(this.data);
-      this.success = true;
+      this.$emit("createGroup", this.group_to_create, this.user_to_add);
     }
   }
 });
@@ -3107,11 +3200,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       ready: false,
+      gids: [],
       groups: [],
+      group: {
+        gid: "",
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
       pageOfGroups: [],
       users: [],
       uid: "",
@@ -3121,7 +3229,6 @@ __webpack_require__.r(__webpack_exports__);
 
     };
   },
-  components: {},
   created: function created() {
     this.fetchGroups();
   },
@@ -3145,7 +3252,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
+      this.uid = Number(this.path[this.path.length - 2]);
       fetch("/user_groups/" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -3153,6 +3260,51 @@ __webpack_require__.r(__webpack_exports__);
         _this2.ready = true;
       })["catch"](function (err) {
         return console.log(err);
+      });
+    },
+    addUsers: function addUsers(users_to_add) {
+      var _this3 = this;
+
+      console.log(users_to_add);
+      fetch("/group/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_add[0])
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+
+        _this3.fetchGroups();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    createGroup: function createGroup(group, members) {
+      var _this4 = this;
+
+      console.log(JSON.stringify(group));
+      console.log(JSON.stringify(members));
+      fetch("/group/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(group)
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+
+        _this4.addUsers(members);
+      })["catch"](function (err) {
+        console.error("Error: ", err);
       });
     }
   }
@@ -40023,7 +40175,8 @@ var render = function() {
               on: {
                 close: function($event) {
                   _vm.showModal = false
-                }
+                },
+                addUsers: _vm.addUsers
               }
             })
           : _vm._e(),
@@ -40173,9 +40326,14 @@ var render = function() {
               _vm._v("Profile")
             ]),
             _vm._v(" "),
-            _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-              _vm._v("Cases")
-            ]),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "/user/" + _vm.uid + "/cases" }
+              },
+              [_vm._v("Cases")]
+            ),
             _vm._v(" "),
             _c(
               "a",
@@ -40519,7 +40677,7 @@ var render = function() {
               ? _c("div", [
                   _c("p", [
                     _vm._v(
-                      _vm._s(_vm.action_confirm) + " " + _vm._s(_vm.actor) + "?"
+                      _vm._s(_vm.action_confirm) + "d " + _vm._s(_vm.actor)
                     )
                   ])
                 ])
@@ -40538,7 +40696,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "modal-footer" }, [
-            _vm.action_confirm == "Add"
+            _vm.action_confirm == "Add" || _vm.action_confirm == "Create"
               ? _c("div", [
                   _c(
                     "button",
@@ -40671,7 +40829,24 @@ var render = function() {
                         _vm._v(" "),
                         _c("div", { staticClass: "input-group-append" }, [
                           _c("input", {
-                            attrs: { type: "text", placeholder: "Name..." }
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.g_name,
+                                expression: "g_name"
+                              }
+                            ],
+                            attrs: { type: "text", placeholder: "Name..." },
+                            domProps: { value: _vm.g_name },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.g_name = $event.target.value
+                              }
+                            }
                           })
                         ])
                       ])
@@ -40794,6 +40969,27 @@ var render = function() {
                           [_vm._v(_vm._s(_vm.action))]
                         )
                       ])
+                    : _vm.action == "Add" && _vm.actor == "member(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: {
+                              type: "button",
+                              "data-dismiss": "modal",
+                              "data-toggle": "modal",
+                              "data-target": "#mg_action_confirm"
+                            },
+                            on: {
+                              click: function($event) {
+                                _vm.sendUsers(), _vm.uncheck()
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.action))]
+                        )
+                      ])
                     : _c("div", [
                         _c(
                           "button",
@@ -40807,7 +41003,7 @@ var render = function() {
                             },
                             on: {
                               click: function($event) {
-                                return _vm.addUsers()
+                                _vm.sendGroupData(), _vm.uncheck()
                               }
                             }
                           },
@@ -40842,7 +41038,7 @@ var render = function() {
               _c("mg_action_confirm", {
                 attrs: {
                   message: "Added user(s) to group",
-                  action_confirm: "Add"
+                  action_confirm: _vm.action
                 }
               })
             ],
@@ -41350,7 +41546,8 @@ var render = function() {
             actor: _vm.actor,
             gname_box_show: _vm.gname_box_show,
             users: _vm.users
-          }
+          },
+          on: { createGroup: _vm.createGroup }
         }),
         _vm._v(" "),
         _c("p", [_vm._v("My groups")])
@@ -41380,35 +41577,36 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.checked,
-                        expression: "checked"
+                        value: _vm.gids,
+                        expression: "gids"
                       }
                     ],
                     staticClass: "checkbox",
                     attrs: { type: "checkbox", id: "'checkbox' + index" },
                     domProps: {
-                      checked: Array.isArray(_vm.checked)
-                        ? _vm._i(_vm.checked, null) > -1
-                        : _vm.checked
+                      value: group.gid,
+                      checked: Array.isArray(_vm.gids)
+                        ? _vm._i(_vm.gids, group.gid) > -1
+                        : _vm.gids
                     },
                     on: {
                       change: function($event) {
-                        var $$a = _vm.checked,
+                        var $$a = _vm.gids,
                           $$el = $event.target,
                           $$c = $$el.checked ? true : false
                         if (Array.isArray($$a)) {
-                          var $$v = null,
+                          var $$v = group.gid,
                             $$i = _vm._i($$a, $$v)
                           if ($$el.checked) {
-                            $$i < 0 && (_vm.checked = $$a.concat([$$v]))
+                            $$i < 0 && (_vm.gids = $$a.concat([$$v]))
                           } else {
                             $$i > -1 &&
-                              (_vm.checked = $$a
+                              (_vm.gids = $$a
                                 .slice(0, $$i)
                                 .concat($$a.slice($$i + 1)))
                           }
                         } else {
-                          _vm.checked = $$c
+                          _vm.gids = $$c
                         }
                       }
                     }

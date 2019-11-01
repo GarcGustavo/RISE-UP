@@ -20,11 +20,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class group extends Model
 {
-    use SoftDeletes;
+   // use SoftDeletes;
 
     public $table = 'Group';
 
-    protected $dates = ['deleted_at'];
+   // protected $dates = ['deleted_at'];
 
     public $timestamps = false;
 

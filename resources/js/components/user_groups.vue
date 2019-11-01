@@ -33,6 +33,7 @@
         :actor="actor"
         :gname_box_show="gname_box_show"
         :users="users"
+        @createGroup="createGroup"
       ></mg_action_table>
 
       <p>My groups</p>
@@ -51,7 +52,13 @@
         <tr v-for="(group,index) in pageOfGroups" :key="index">
           <td>
             <div class="check-box">
-              <input class="checkbox" type="checkbox" id="'checkbox' + index" v-model="checked">
+              <input
+                class="checkbox"
+                type="checkbox"
+                id="'checkbox' + index"
+                v-model="gids"
+                :value="group.gid"
+              >
               <label for="'checkbox' + index">{{index+1}}</label>
             </div>
           </td>
@@ -72,7 +79,16 @@ export default {
   data() {
     return {
       ready: false,
+      gids: [],
       groups: [],
+      group: {
+        gid: "",
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
+
       pageOfGroups: [],
       users: [],
       uid: "",
@@ -81,7 +97,7 @@ export default {
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
-  components: {},
+
   created() {
     this.fetchGroups();
   },
@@ -103,7 +119,7 @@ export default {
 
     fetchGroups() {
       this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
+      this.uid = Number(this.path[this.path.length - 2]);
       fetch("/user_groups/" + this.uid)
         .then(res => res.json())
         .then(res => {
@@ -111,6 +127,49 @@ export default {
           this.ready = true;
         })
         .catch(err => console.log(err));
+    },
+
+    addUsers(users_to_add) {
+      console.log(users_to_add);
+      fetch("/group/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_add[0])
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          this.fetchGroups();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    createGroup(group, members) {
+      console.log(JSON.stringify(group));
+      console.log(JSON.stringify(members));
+      fetch("/group/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(group)
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          this.addUsers(members);
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     }
   }
 };

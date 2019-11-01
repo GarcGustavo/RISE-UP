@@ -37,10 +37,11 @@ class User_GroupsController extends Controller
      */
     public function store(Request $request)
     {
-        $user_group = new UserGroups;
+        $user_group = new User_Groups;
 
         $user_group->gid = $request -> input('gid');
         $user_group->uid = $request -> input('uid');
+    
 
         if ($user_group->save()) {
             return new User_GroupsResource($user_group);
@@ -63,8 +64,8 @@ class User_GroupsController extends Controller
         ->select('User.*')
         ->get();
 
-       return UserResource::collection($members);
-       // return view('group')->with('gid',$gid);
+        return UserResource::collection($members);
+        // return view('group')->with('gid',$gid);
     }
 
     /**

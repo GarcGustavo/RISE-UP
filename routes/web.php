@@ -52,14 +52,26 @@ Route::get('/home', 'HomeController@index')->name('home');
 //List users
 Route::get('/users', 'UserController@index');
 
+//List groups
+Route::get('/groups', 'GroupController@index');
+
 //List members of a group
 Route::get('/group/{id}/members', 'User_GroupsController@show_members');
 
 //List groups of a user
-Route::get('user_groups/{id}', 'GroupController@show_groups');
+Route::get('/user_groups/{id}', 'GroupController@show_groups');
 
 //List cases of a group
-Route::get('group/{id}/cases', 'CaseController@show_group_cases');
+Route::get('/group/{id}/cases', 'CaseController@show_group_cases');
 
 //List all cases of a user(author and group cases)
-Route::get('user_cases/{id}', 'CaseController@show_all_user_cases');
+Route::get('/user_cases/{id}', 'CaseController@show_all_user_cases');
+
+//Add users to group
+Route::post('/group/add', 'User_GroupsController@store');
+
+//Create a group
+Route::post('/group/create', 'GroupController@store');
+
+//Get total of groups
+Route::get('/group/count', 'GroupController@count');

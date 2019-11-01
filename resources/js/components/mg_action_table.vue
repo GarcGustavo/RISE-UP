@@ -27,7 +27,7 @@
               <div class="input-group" v-if="gname_box_show==true">
                 <label>Group name</label>
                 <div class="input-group-append">
-                  <input type="text" placeholder="Name...">
+                  <input type="text" v-model="g_name" placeholder="Name...">
                 </div>
               </div>
               <!-- Search box for table -->
@@ -64,6 +64,7 @@
               </div>
             </div>
             <div class="modal-footer">
+              <!--Remove will change -->
               <div v-if="action=='Remove'">
                 <button
                   type="button"
@@ -72,6 +73,18 @@
                   data-target="#mg_action_confirm"
                 >{{action}}</button>
               </div>
+              <div v-else-if="action=='Add'  && actor=='member(s)'">
+                <!--add user to group -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-dismiss="modal"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                  @click="sendUsers(), uncheck()"
+                >{{action}}</button>
+              </div>
+              <!-- create group -->
               <div v-else>
                 <button
                   type="button"
@@ -79,9 +92,11 @@
                   data-dismiss="modal"
                   data-toggle="modal"
                   data-target="#mg_action_confirm"
-                  @click="addUsers()"
+                  @click="sendGroupData(), uncheck()"
                 >{{action}}</button>
               </div>
+
+              <!-- close button -->
               <button
                 type="button"
                 class="btn btn-secondary"
@@ -95,7 +110,7 @@
       <!--confirmation dialogue box -->
 
       <div v-if="action=='Add'">
-        <mg_action_confirm :message="'Added user(s) to group'" :action_confirm="'Add'"></mg_action_confirm>
+        <mg_action_confirm :message="'Added user(s) to group'" :action_confirm="action"></mg_action_confirm>
       </div>
       <div v-else>
         <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
@@ -125,22 +140,32 @@ export default {
   data() {
     return {
       showModal: false,
+      uids: [],
       user: {
         first_name: "",
         last_name: "",
         email: ""
       },
-      data: [
+      user_to_add: [
         {
           uid: "",
           gid: ""
         }
       ],
-      success: false,
-      uids: []
+      group_to_create: {
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
+      total_groups: [],
+
+      success: false
     };
   },
-
+  created() {
+    this.totalGroups();
+  },
   methods: {
     uncheck() {
       this.uids = [];
@@ -149,16 +174,54 @@ export default {
         this.uids.push(this.uids[i].uid);
       }
     },
-    addUsers() {
+
+    totalGroups() {
+      fetch("/groups")
+        .then(res => res.json())
+        .then(res => {
+          this.total_groups = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+
+    sendUsers() {
+      //send selected users to parent component to add users
       this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.gid = Number(this.path[this.path.length - 1]);
 
       for (let i in this.uids) {
-        this.data[i].uid = this.uids[i];
-        this.data[i].gid = this.gid;
+        this.user_to_add[i].uid = this.uids[i];
+        this.user_to_add[i].gid = this.gid;
       }
-      console.log(this.data);
+      //emit data to parent(Group vue)
       this.success = true;
+      this.$emit("addUsers", this.user_to_add);
+      console.log(this.user_to_add);
+    },
+
+    sendGroupData() {
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
+
+      this.new_group_gid = this.total_groups.length + 1;
+      this.group_to_create.gid = this.new_group_gid;
+      this.group_to_create.g_name = this.g_name;
+      this.group_to_create.g_status = "lol";
+      this.group_to_create.g_creation_date = new Date().toJSON().slice(0, 10); //new Date().toLocaleString();
+      this.group_to_create.g_owner = this.uid;
+
+      for (let i in this.uids) {
+        this.user_to_add[i].uid = this.uids[i];
+        this.user_to_add[i].gid = this.new_group_gid;
+      }
+      /*append owner to group*/
+      if (this.uids != 0) {
+        this.user_to_add.push({ uid: this.uid, gid: this.new_group_gid });
+      } else {
+        this.user_to_add[0].uid = this.uid;
+        this.user_to_add[0].gid = this.new_group_gid;
+      }
+      this.$emit("createGroup", this.group_to_create, this.user_to_add);
     }
   }
 };

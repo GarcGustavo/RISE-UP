@@ -18,10 +18,10 @@
         </div>
         <div class="modal-body text-center">
           <div v-if="action_confirm=='Create'">
-            <!-- dialogue content to confirm when user creates group dialogue -->
-            <p>{{action_confirm}} {{actor}}?</p>
+            <!-- alert content to confirm when user creates group, dialogue -->
+            <p>{{action_confirm}}d {{actor}}</p>
           </div>
-          <div v-else-if="action_confirm=='Add'">
+          <div v-else-if="action_confirm=='Add'"> <!-- alert content to confirm when user adds a member to a group -->
             <p>{{message}}</p>
           </div>
           <!-- Dialogue content when user selects a member to add/remove from group or to delete a group -->
@@ -31,7 +31,7 @@
         </div>
 
         <div class="modal-footer">
-          <div v-if="action_confirm=='Add'">
+          <div v-if="action_confirm=='Add'||action_confirm=='Create'">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
           </div>
           <div v-else>

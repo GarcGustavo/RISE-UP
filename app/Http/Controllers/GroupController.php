@@ -19,6 +19,7 @@ class GroupController extends Controller
     {
         $groups = Group::all();
 
+
         return GroupResource::collection($groups);
     }
 
@@ -40,10 +41,9 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        $group = $request->isMethod('put') ? group::findOrFail($request->gid): new group;
-
+        $group = new Group;
         $group->gid = $request -> input('gid');
-        $group->gname = $request -> input('gname');
+        $group->g_name = $request -> input('g_name');
         $group->g_status = $request -> input('g_status');
         $group->g_creation_date = $request -> input('g_creation_date');
         $group->g_owner = $request -> input('g_owner');
@@ -115,5 +115,11 @@ class GroupController extends Controller
         if ($group->delete()) {
             return new GroupResource($group);
         }
+    }
+
+    public function count()
+    {
+        $count = Group::count();
+        return $count;
     }
 }
