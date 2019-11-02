@@ -7,7 +7,12 @@
             <a class="nav-item nav-link" id="nav-requests-tab" data-toggle="tab" href="#nav-requests" role="tab" aria-controls="nav-requests" aria-selected="false">Requests</a>
         </div>
     </nav>
+
+
+
     <div class="tab-content" id="nav-tabContent">
+
+
         <div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
             <!-- Users Table -->
             <div class="card mb-3">
@@ -56,11 +61,14 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                <div class="card-footer small text-muted">
+                    Updated yesterday at 11:59 PM
+                </div>
             </div>
-        </div>
-        <div class="tab-pane fade" id="nav-requests" role="tabpanel" aria-labelledby="nav-requests-tab">
+        </div> <!-- id nav user -->
 
+
+        <div class="tab-pane fade" id="nav-requests" role="tabpanel" aria-labelledby="nav-requests-tab">
             <!-- Requests Table -->
             <div class="card mb-3">
                 <div class="card-header">
@@ -107,8 +115,12 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                <div class="card-footer small text-muted">
+                    Updated yesterday at 11:59 PM
+                </div>
             </div>
-        </div>
-    </div>
+        </div> <!-- id nav requests -->
+
+
+    </div>  <!-- nav-tabContent  -->
 @endsection
