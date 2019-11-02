@@ -69,20 +69,9 @@ class AdminController extends Controller
 
     //public function filters
     public function filters(){
-	 /*
-        $users = DB::table('user')
-            ->join('role', 'user.u_role', '=', 'role.rid')
-            ->select('user.*', 'r_name')
-            ->orderBy('u_creation_date', 'desc')
-            ->get();
-    */
-        $filters = DB::table('user')
-            ->join('role', 'user.u_role', '=', 'role.rid')
-            ->select('user.*', 'r_name')
-            ->where('u_role_upgrade', 1)
-            ->where('u_role', 1)
-            ->where('u_ban_status', 0)
-            ->orderBy('u_creation_date', 'desc')
+
+        $filters = DB::table('cs_parameter')
+            ->select('cs_parameter.*')
             ->get();
 
         return view('admin.filters', ['filters' => $filters]);
