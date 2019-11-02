@@ -48,6 +48,12 @@ class AdminController extends Controller
 
     //public function actions
     public function actions($userId){
+
+        $usersName = DB::table('user')
+            ->select('first_name', 'last_name')
+            ->where('uid', '=', $userId)
+            ->get();
+
         $actions = DB::table('user')
             ->join('action', 'user.uid', '=', 'action.a_user')
             ->join('action_type', 'action.a_type', '=', 'action_type.act_id')
@@ -56,7 +62,7 @@ class AdminController extends Controller
             ->orderBy('action.a_date', 'desc')
             ->get();
 
-        return view('admin.actions', ['actions' => $actions]);
+        return view('admin.actions', ['usersName' => $usersName, 'actions' => $actions]);
     }
 
 
