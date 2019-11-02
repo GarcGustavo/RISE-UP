@@ -6,7 +6,6 @@
 //import JwPagination from 'jw-vue-pagination';
 
 
-
 require('./bootstrap');
 
 

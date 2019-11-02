@@ -1,94 +1,48 @@
 <template>
-  <div class="row">
-    <div class="col-8">
-      <h3>Draggable table</h3>
+  <div id="app">
 
-      <table class="table table-striped">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Name</th>
-            <th scope="col">Sport</th>
-          </tr>
-        </thead>
-        <draggable v-model="list" tag="tbody">
-          <tr v-for="item in list" :key="item.name">
-            <td scope="row">{{ item.id }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.sport }}</td>
-          </tr>
-        </draggable>
-      </table>
-    </div>
+    <markdown-editor toolbar="bold italic heading | image link | numlist bullist code quote | preview fullscreen"></markdown-editor>
+    <markdown-editor v-model="data" :options="options"></markdown-editor>
+    <markdown-editor name="html"></markdown-editor>
+    <button type="button" @click="clickHandler">Reset</button>
 
-    <rawDisplayer class="col-3" :value="list" title="List" />
+    <div>{{ data }}</div>
   </div>
 </template>
 
 <script>
-import draggable from "vuedraggable";
+//import Editor from '@tinymce/tinymce-vue';
+import Editor from 'v-markdown-editor'
+import 'v-markdown-editor/dist/index.css';
+//Vue.use(Editor);
 export default {
-  name: "table-example",
-  display: "Table",
-  order: 8,
+  name: 'app',
   components: {
-    draggable
+    //Editor
   },
-  data() {
-    return {
-      list: [
-        { id: 1, name: "Abby", sport: "basket" },
-        { id: 2, name: "Brooke", sport: "foot" },
-        { id: 3, name: "Courtenay", sport: "volley" },
-        { id: 4, name: "David", sport: "rugby" }
-      ],
-      dragging: false,
-      ready: false,
-      groups: [],
-      pageOfGroups: [],
-      users: [],
-      uid: "",
-      action: "",
-      actor: "",
-      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
-    };
+  data(){
+      return {
+          data : 'Hello'
+      };
   },
-  components: {},
-  created() {
-    this.fetchGroups();
+  mounted(){
+     
   },
-
   methods: {
-    onChangePage(pageOfGroups) {
-      // update page of Groups
-      this.pageOfGroups = pageOfGroups;
-    },
-
-    fetchUsers() {
-      fetch("/users")
-        .then(res => res.json())
-        .then(res => {
-          this.users = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-
-    fetchGroups() {
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/user_groups/" + this.uid)
-        .then(res => res.json())
-        .then(res => {
-          this.groups = res.data;
-          this.ready = true;
-        })
-        .catch(err => console.log(err));
-    }
+      clickHandler(){
+          this.data = 'You reseted tinymce\'s content';
+      }
   }
-};
+  
+}
 </script>
-<style scoped>
-.buttons {
-  margin-top: 35px;
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
 }
 </style>
