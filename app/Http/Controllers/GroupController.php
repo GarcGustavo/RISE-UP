@@ -19,7 +19,6 @@ class GroupController extends Controller
     {
         $groups = Group::all();
 
-
         return GroupResource::collection($groups);
     }
 
@@ -107,19 +106,10 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $group = Group::findOrFail($id);
-
-
-        if ($group->delete()) {
-            return new GroupResource($group);
-        }
-    }
-
-    public function count()
-    {
-        $count = Group::count();
-        return $count;
+        $gid = $request->input('gid');
+        Group::findOrFail($gid)->delete();
+        return response()->json(['message'=>'Group has been removed']);
     }
 }

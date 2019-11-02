@@ -41,7 +41,7 @@ class User_GroupsController extends Controller
 
         $user_group->gid = $request -> input('gid');
         $user_group->uid = $request -> input('uid');
-    
+
 
         if ($user_group->save()) {
             return new User_GroupsResource($user_group);
@@ -97,8 +97,11 @@ class User_GroupsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $gid = $request->input('gid');
+        $uid = $request->input('uid');
+        User_Groups::where('gid', $gid)->where('uid', $uid)->delete();
+        return response()->json(['message'=>'User removed from group']);
     }
 }

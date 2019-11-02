@@ -28,10 +28,7 @@
         <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
       </div>
 
-      <case_create_dbox
-        :action="action"
-        :actor="actor"
-      ></case_create_dbox>
+      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy"></case_create_dbox>
 
       <p>My cases</p>
     </h1>
@@ -46,7 +43,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(cases,index) in pageOfCases" :key="index">
+        <tr v-for="(cases,index) in cases" :key="index">
           <td>
             <div class="check-box">
               <input class="checkbox" type="checkbox" id="'checkbox' + index" v-model="checked">
@@ -109,6 +106,27 @@ export default {
           this.ready = true;
         })
         .catch(err => console.log(err));
+    },
+
+    createCaseStudy(case_study) {
+        console.log(JSON.stringify(case_study));
+      fetch("/case/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          this.fetchCases();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     }
   }
 };

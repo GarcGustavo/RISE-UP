@@ -25,7 +25,7 @@
 
       <div v-if="action=='Remove'">
         <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
+        <mg_action_confirm :action_confirm="action" :actor="actor" @removeGroups="removeGroups"></mg_action_confirm>
       </div>
 
       <mg_action_table
@@ -49,17 +49,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(group,index) in pageOfGroups" :key="index">
+        <tr v-for="(group,index) in groups" :key="index">
           <td>
             <div class="check-box">
               <input
                 class="checkbox"
                 type="checkbox"
-                id="'checkbox' + index"
+                id="checkbox"
                 v-model="gids"
                 :value="group.gid"
               >
-              <label for="'checkbox' + index">{{index+1}}</label>
+              <label for="checkbox">{{index+1}}</label>
             </div>
           </td>
           <td>
@@ -88,7 +88,7 @@ export default {
         g_creation_date: "",
         g_owner: ""
       },
-
+      groups_to_remove: [{ gid: "" }],
       pageOfGroups: [],
       users: [],
       uid: "",
@@ -106,6 +106,14 @@ export default {
     onChangePage(pageOfGroups) {
       // update page of Groups
       this.pageOfGroups = pageOfGroups;
+    },
+
+    uncheck() {
+      this.gids = [];
+
+      for (let i in this.gids) {
+        this.gids.push(this.gids[i].gid);
+      }
     },
 
     fetchUsers() {
@@ -129,9 +137,31 @@ export default {
         .catch(err => console.log(err));
     },
 
+    createGroup(group, members) {
+      // console.log(JSON.stringify(group));
+      // console.log(JSON.stringify(members));
+      fetch("/group/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(group)
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          this.addUsers(members);
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
     addUsers(users_to_add) {
-      console.log(users_to_add);
-      fetch("/group/add", {
+      console.log(JSON.stringify(users_to_add));
+      fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -150,22 +180,27 @@ export default {
         });
     },
 
-    createGroup(group, members) {
-      console.log(JSON.stringify(group));
-      console.log(JSON.stringify(members));
-      fetch("/group/create", {
-        method: "post",
+    removeGroups() {
+      console.log(JSON.stringify(this.gids));
+
+      for (let i in this.gids) {
+        this.groups_to_remove[i].gid = this.gids[i];
+      }
+
+      fetch("/user_groups/remove", {
+        method: "delete",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(group)
+        body: JSON.stringify(this.groups_to_remove[0])
       })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
-          this.addUsers(members);
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+          this.fetchGroups();
+          this.uncheck();
         })
         .catch(err => {
           console.error("Error: ", err);

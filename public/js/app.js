@@ -2007,14 +2007,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2027,16 +2019,76 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       showModal: false,
+      title: "",
+      uid: "",
+      gid: "",
+      description: "",
+      case_study: {
+        cid: "",
+        c_title: "",
+        c_description: "",
+        c_thumbnail: "",
+        c_status: "",
+        c_date: "",
+        c_owner: "",
+        c_group: ""
+      },
+      cases: [],
+      groups: [],
       maxCount: 255,
       remainingCount: 255,
       message: "",
       hasError: false
     };
   },
+  created: function created() {
+    this.fetchGroups();
+    this.totalCases();
+  },
   methods: {
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.message.length;
       this.hasError = this.remainingCount < 0;
+    },
+    totalCases: function totalCases() {
+      var _this = this;
+
+      fetch("/cases").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.cases = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    fetchGroups: function fetchGroups() {
+      var _this2 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
+      fetch("/user_groups/" + this.uid).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.groups = res.data;
+        console.log(_this2.groups);
+        _this2.ready = true;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    sendCaseStudyData: function sendCaseStudyData() {
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
+      this.date = new Date().toJSON().slice(0, 10);
+      this.case_study.cid = this.cases.length + 1;
+      this.case_study.c_title = this.title;
+      this.case_study.c_description = this.description;
+      this.case_study.c_thumbnail = "empty";
+      this.case_study.c_status = "lol";
+      this.case_study.c_date = this.date;
+      this.case_study.c_owner = this.uid;
+      this.case_study.c_group = this.gid;
+      this.$emit("createCaseStudy", this.case_study);
     }
   }
 });
@@ -2232,6 +2284,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2292,20 +2346,42 @@ __webpack_require__.r(__webpack_exports__);
     addUsers: function addUsers(users_to_add) {
       var _this4 = this;
 
-      fetch("/group/add", {
+      fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add[0])
+        body: JSON.stringify(users_to_add)
       }).then(function (res) {
         return res.json();
       }).then(function (data) {
         console.log(data);
 
         _this4.fetchMembers();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    removeUsers: function removeUsers(users_to_remove) {
+      var _this5 = this;
+
+      console.log(JSON.stringify(users_to_remove[0]));
+      fetch("/group/members/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_remove[0])
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+
+        _this5.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -2554,6 +2630,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action_confirm: {
@@ -2564,6 +2655,14 @@ __webpack_require__.r(__webpack_exports__);
     },
     message: {
       type: String
+    }
+  },
+  methods: {
+    confirmRemoveMembers: function confirmRemoveMembers() {
+      this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.
+    },
+    confirmRemoveGroups: function confirmRemoveGroups() {
+      this.$emit("removeGroups"); //call to parent (user_groups vue) 
     }
   }
 });
@@ -2579,6 +2678,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2725,7 +2836,7 @@ __webpack_require__.r(__webpack_exports__);
         last_name: "",
         email: ""
       },
-      user_to_add: [{
+      user_to_add_remove: [{
         uid: "",
         gid: ""
       }],
@@ -2735,12 +2846,23 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
-      total_groups: [],
+      g_name: "",
+      groups: [],
+      search: "",
       success: false
     };
   },
   created: function created() {
     this.totalGroups();
+  },
+  computed: {
+    filterUsers: function filterUsers() {
+      var _this = this;
+
+      return this.users.filter(function (user) {
+        return user.email.includes(_this.search);
+      });
+    }
   },
   methods: {
     uncheck: function uncheck() {
@@ -2751,12 +2873,12 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     totalGroups: function totalGroups() {
-      var _this = this;
+      var _this2 = this;
 
       fetch("/groups").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.total_groups = res.data;
+        _this2.groups = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2767,45 +2889,50 @@ __webpack_require__.r(__webpack_exports__);
       this.gid = Number(this.path[this.path.length - 1]);
 
       for (var i in this.uids) {
-        this.user_to_add[i].uid = this.uids[i];
-        this.user_to_add[i].gid = this.gid;
-      } //emit data to parent(Group vue)
+        this.user_to_add_remove[i].uid = this.uids[i];
+        this.user_to_add_remove[i].gid = this.gid;
+      } //emit data to parent
 
 
       this.success = true;
-      this.$emit("addUsers", this.user_to_add);
-      console.log(this.user_to_add);
+
+      if (this.action == "Add") {
+        this.$emit("addUsers", this.user_to_add_remove);
+      } else {
+        this.$emit("removeUsers", this.user_to_add_remove);
+        this.uncheck(); // uncheck all values when finished
+      }
     },
     sendGroupData: function sendGroupData() {
       this.path = window.location.pathname.split("/");
       this.uid = Number(this.path[this.path.length - 2]);
-      this.new_group_gid = this.total_groups.length + 1;
+      this.date = new Date().toJSON().slice(0, 10);
+      this.new_group_gid = this.groups.length + 1;
       this.group_to_create.gid = this.new_group_gid;
       this.group_to_create.g_name = this.g_name;
       this.group_to_create.g_status = "lol";
-      this.group_to_create.g_creation_date = new Date().toJSON().slice(0, 10); //new Date().toLocaleString();
+      this.group_to_create.g_creation_date = this.date; //new Date().toLocaleString();
 
-      console.log(this.group_to_create);
       this.group_to_create.g_owner = this.uid;
 
       for (var i in this.uids) {
-        this.user_to_add[i].uid = this.uids[i];
-        this.user_to_add[i].gid = this.new_group_gid;
+        this.user_to_add_remove[i].uid = this.uids[i];
+        this.user_to_add_remove[i].gid = this.new_group_gid;
       }
       /*append owner to group*/
 
 
       if (this.uids != 0) {
-        this.user_to_add.push({
+        this.user_to_add_remove.push({
           uid: this.uid,
           gid: this.new_group_gid
         });
       } else {
-        this.user_to_add[0].uid = this.uid;
-        this.user_to_add[0].gid = this.new_group_gid;
+        this.user_to_add_remove[0].uid = this.uid;
+        this.user_to_add_remove[0].gid = this.new_group_gid;
       }
 
-      this.$emit("createGroup", this.group_to_create, this.user_to_add);
+      this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
     }
   }
 });
@@ -3066,9 +3193,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3115,6 +3239,28 @@ __webpack_require__.r(__webpack_exports__);
         _this2.ready = true;
       })["catch"](function (err) {
         return console.log(err);
+      });
+    },
+    createCaseStudy: function createCaseStudy(case_study) {
+      var _this3 = this;
+
+      console.log(JSON.stringify(case_study));
+      fetch("/case/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+
+        _this3.fetchCases();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
       });
     }
   }
@@ -3220,6 +3366,9 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
+      groups_to_remove: [{
+        gid: ""
+      }],
       pageOfGroups: [],
       users: [],
       uid: "",
@@ -3236,6 +3385,13 @@ __webpack_require__.r(__webpack_exports__);
     onChangePage: function onChangePage(pageOfGroups) {
       // update page of Groups
       this.pageOfGroups = pageOfGroups;
+    },
+    uncheck: function uncheck() {
+      this.gids = [];
+
+      for (var i in this.gids) {
+        this.gids.push(this.gids[i].gid);
+      }
     },
     fetchUsers: function fetchUsers() {
       var _this = this;
@@ -3262,33 +3418,11 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(err);
       });
     },
-    addUsers: function addUsers(users_to_add) {
+    createGroup: function createGroup(group, members) {
       var _this3 = this;
 
-      console.log(users_to_add);
-      fetch("/group/add", {
-        method: "post",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        body: JSON.stringify(users_to_add[0])
-      }).then(function (res) {
-        return res.json();
-      }).then(function (data) {
-        console.log(data);
-
-        _this3.fetchGroups();
-      })["catch"](function (err) {
-        console.error("Error: ", err);
-      });
-    },
-    createGroup: function createGroup(group, members) {
-      var _this4 = this;
-
-      console.log(JSON.stringify(group));
-      console.log(JSON.stringify(members));
+      // console.log(JSON.stringify(group));
+      // console.log(JSON.stringify(members));
       fetch("/group/create", {
         method: "post",
         headers: new Headers({
@@ -3302,7 +3436,58 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (data) {
         console.log(data);
 
-        _this4.addUsers(members);
+        _this3.addUsers(members);
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    addUsers: function addUsers(users_to_add) {
+      var _this4 = this;
+
+      console.log(JSON.stringify(users_to_add));
+      fetch("/group/members/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_add[0])
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+
+        _this4.fetchGroups();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    removeGroups: function removeGroups() {
+      var _this5 = this;
+
+      console.log(JSON.stringify(this.gids));
+
+      for (var i in this.gids) {
+        this.groups_to_remove[i].gid = this.gids[i];
+      }
+
+      fetch("/user_groups/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.groups_to_remove[0])
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+
+        _this5.fetchGroups();
+
+        _this5.uncheck();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -39851,7 +40036,24 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "input-group-append" }, [
                     _c("input", {
-                      attrs: { type: "text", placeholder: "Name..." }
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.title,
+                          expression: "title"
+                        }
+                      ],
+                      attrs: { type: "text", placeholder: "Name..." },
+                      domProps: { value: _vm.title },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.title = $event.target.value
+                        }
+                      }
                     })
                   ]),
                   _vm._v(" "),
@@ -39865,24 +40067,40 @@ var render = function() {
                     _c(
                       "select",
                       {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.gid,
+                            expression: "gid"
+                          }
+                        ],
                         staticClass: "form-control",
-                        attrs: { multiple: "", id: "exampleFormControlSelect2" }
+                        attrs: { id: "exampleFormControlSelect2" },
+                        on: {
+                          change: function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.gid = $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          }
+                        }
                       },
-                      [
-                        _c("option", [_vm._v("1")]),
-                        _vm._v(" "),
-                        _c("option", [_vm._v("2")]),
-                        _vm._v(" "),
-                        _c("option", [_vm._v("3")]),
-                        _vm._v(" "),
-                        _c("option", [_vm._v("4")]),
-                        _vm._v(" "),
-                        _c("option", [_vm._v("5")]),
-                        _vm._v(" "),
-                        _c("option", [_vm._v("6")]),
-                        _vm._v(" "),
-                        _c("option", [_vm._v("7")])
-                      ]
+                      _vm._l(_vm.groups, function(group) {
+                        return _c(
+                          "option",
+                          { key: group.gid, domProps: { value: group.gid } },
+                          [_vm._v(" " + _vm._s(group.g_name))]
+                        )
+                      }),
+                      0
                     )
                   ]),
                   _vm._v(" "),
@@ -39896,20 +40114,20 @@ var render = function() {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.message,
-                          expression: "message"
+                          value: _vm.description,
+                          expression: "description"
                         }
                       ],
                       staticClass: "form-control",
                       attrs: { id: "description", maxlength: "255" },
-                      domProps: { value: _vm.message },
+                      domProps: { value: _vm.description },
                       on: {
                         keyup: _vm.countdown,
                         input: function($event) {
                           if ($event.target.composing) {
                             return
                           }
-                          _vm.message = $event.target.value
+                          _vm.description = $event.target.value
                         }
                       }
                     })
@@ -39934,6 +40152,11 @@ var render = function() {
                         type: "button",
                         "data-toggle": "modal",
                         "data-target": "#mg_action_confirm"
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.sendCaseStudyData()
+                        }
                       }
                     },
                     [_vm._v(_vm._s(_vm.action))]
@@ -40176,7 +40399,8 @@ var render = function() {
                 close: function($event) {
                   _vm.showModal = false
                 },
-                addUsers: _vm.addUsers
+                addUsers: _vm.addUsers,
+                removeUsers: _vm.removeUsers
               }
             })
           : _vm._e(),
@@ -40212,7 +40436,7 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "card-footer" }, [
-              _c("a", { attrs: { href: "#" } }, [_vm._v(_vm._s(member.email))])
+              _c("label", [_vm._v(_vm._s(member.email))])
             ])
           ])
         ])
@@ -40682,7 +40906,7 @@ var render = function() {
                   ])
                 ])
               : _vm.action_confirm == "Add"
-              ? _c("div", [_c("p", [_vm._v(_vm._s(_vm.message))])])
+              ? _c("div", [_c("p", [_vm._v("Added user(s) to group")])])
               : _c("div", [
                   _c("p", [
                     _vm._v(
@@ -40707,25 +40931,48 @@ var render = function() {
                     [_vm._v("Ok")]
                   )
                 ])
-              : _c("div", [
+              : _vm.action_confirm == "Remove" && _vm.actor == "member(s)"
+              ? _c("div", [
                   _c(
                     "button",
                     {
                       staticClass: "btn btn-primary",
-                      attrs: { type: "button" }
+                      attrs: { type: "button", "data-dismiss": "modal" },
+                      on: {
+                        click: function($event) {
+                          return _vm.confirmRemoveMembers()
+                        }
+                      }
                     },
                     [_vm._v("Yes")]
-                  ),
-                  _vm._v(" "),
+                  )
+                ])
+              : _vm.action_confirm == "Remove" && _vm.actor == "group(s)"
+              ? _c("div", [
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-secondary",
-                      attrs: { type: "button", "data-dismiss": "modal" }
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "button", "data-dismiss": "modal" },
+                      on: {
+                        click: function($event) {
+                          return _vm.confirmRemoveGroups()
+                        }
+                      }
                     },
-                    [_vm._v("No")]
+                    [_vm._v("Yes")]
                   )
                 ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button", "data-dismiss": "modal" }
+              },
+              [_vm._v("No")]
+            )
           ])
         ])
       ])
@@ -40857,7 +41104,24 @@ var render = function() {
                     _vm._v(" "),
                     _c("div", { staticClass: "input-group-append search" }, [
                       _c("input", {
-                        attrs: { type: "text", placeholder: "User email.." }
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.search,
+                            expression: "search"
+                          }
+                        ],
+                        attrs: { type: "text", placeholder: "User email.." },
+                        domProps: { value: _vm.search },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.search = $event.target.value
+                          }
+                        }
                       })
                     ])
                   ]),
@@ -40884,7 +41148,7 @@ var render = function() {
                         _vm._v(" "),
                         _c(
                           "tbody",
-                          _vm._l(_vm.users, function(user, index) {
+                          _vm._l(_vm.filterUsers, function(user, index) {
                             return _c("tr", { key: index }, [
                               _c("td", [
                                 _c("div", { staticClass: "check-box" }, [
@@ -40990,7 +41254,8 @@ var render = function() {
                           [_vm._v(_vm._s(_vm.action))]
                         )
                       ])
-                    : _c("div", [
+                    : _vm.action == "Create" && _vm.actor == "group"
+                    ? _c("div", [
                         _c(
                           "button",
                           {
@@ -41009,7 +41274,24 @@ var render = function() {
                           },
                           [_vm._v(_vm._s(_vm.action))]
                         )
-                      ]),
+                      ])
+                    : _vm.action == "Remove" && _vm.actor == "member(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: {
+                              type: "button",
+                              "data-dismiss": "modal",
+                              "data-toggle": "modal",
+                              "data-target": "#mg_action_confirm"
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.action))]
+                        )
+                      ])
+                    : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "button",
@@ -41031,28 +41313,16 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _vm.action == "Add"
-        ? _c(
-            "div",
-            [
-              _c("mg_action_confirm", {
-                attrs: {
-                  message: "Added user(s) to group",
-                  action_confirm: _vm.action
-                }
-              })
-            ],
-            1
-          )
-        : _c(
-            "div",
-            [
-              _c("mg_action_confirm", {
-                attrs: { action_confirm: _vm.action, actor: _vm.actor }
-              })
-            ],
-            1
-          )
+      _c(
+        "div",
+        [
+          _c("mg_action_confirm", {
+            attrs: { action_confirm: _vm.action, actor: _vm.actor },
+            on: { sendUsers: _vm.sendUsers, sendGroupData: _vm.sendGroupData }
+          })
+        ],
+        1
+      )
     ])
   ])
 }
@@ -41346,7 +41616,8 @@ var render = function() {
           : _vm._e(),
         _vm._v(" "),
         _c("case_create_dbox", {
-          attrs: { action: _vm.action, actor: _vm.actor }
+          attrs: { action: _vm.action, actor: _vm.actor },
+          on: { createCaseStudy: _vm.createCaseStudy }
         }),
         _vm._v(" "),
         _c("p", [_vm._v("My cases")])
@@ -41367,7 +41638,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.pageOfCases, function(cases, index) {
+          _vm._l(_vm.cases, function(cases, index) {
             return _c("tr", { key: index }, [
               _c("td", [
                 _c("div", { staticClass: "check-box" }, [
@@ -41533,7 +41804,8 @@ var render = function() {
               "div",
               [
                 _c("mg_action_confirm", {
-                  attrs: { action_confirm: _vm.action, actor: _vm.actor }
+                  attrs: { action_confirm: _vm.action, actor: _vm.actor },
+                  on: { removeGroups: _vm.removeGroups }
                 })
               ],
               1
@@ -41568,7 +41840,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.pageOfGroups, function(group, index) {
+          _vm._l(_vm.groups, function(group, index) {
             return _c("tr", { key: index }, [
               _c("td", [
                 _c("div", { staticClass: "check-box" }, [
@@ -41582,7 +41854,7 @@ var render = function() {
                       }
                     ],
                     staticClass: "checkbox",
-                    attrs: { type: "checkbox", id: "'checkbox' + index" },
+                    attrs: { type: "checkbox", id: "checkbox" },
                     domProps: {
                       value: group.gid,
                       checked: Array.isArray(_vm.gids)
@@ -41612,7 +41884,7 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
-                  _c("label", { attrs: { for: "'checkbox' + index" } }, [
+                  _c("label", { attrs: { for: "checkbox" } }, [
                     _vm._v(_vm._s(index + 1))
                   ])
                 ])

@@ -18,13 +18,14 @@
         </div>
         <div class="modal-body text-center">
           <div v-if="action_confirm=='Create'">
-            <!-- alert content to confirm when user creates group, dialogue -->
+            <!-- alert content to confirm when user creates group  -->
             <p>{{action_confirm}}d {{actor}}</p>
           </div>
-          <div v-else-if="action_confirm=='Add'"> <!-- alert content to confirm when user adds a member to a group -->
-            <p>{{message}}</p>
+          <div v-else-if="action_confirm=='Add'">
+            <!-- alert content to confirm when user adds a member to a group -->
+            <p>Added user(s) to group</p>
           </div>
-          <!-- Dialogue content when user selects a member to add/remove from group or to delete a group -->
+          <!-- Dialogue content when user selects a member to remove from group or to delete a group -->
           <div v-else>
             <p>{{action_confirm}} selected {{actor}}?</p>
           </div>
@@ -34,10 +35,24 @@
           <div v-if="action_confirm=='Add'||action_confirm=='Create'">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
           </div>
-          <div v-else>
-            <button type="button" class="btn btn-primary">Yes</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <div v-else-if="action_confirm=='Remove' && actor=='member(s)'">
+            <!--Remove member action -->
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-dismiss="modal"
+              @click="confirmRemoveMembers()"
+            >Yes</button>
           </div>
+          <div v-else-if="action_confirm=='Remove' && actor=='group(s)'">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-dismiss="modal"
+              @click="confirmRemoveGroups()"
+            >Yes</button>
+          </div>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
         </div>
       </div>
     </div>
@@ -55,6 +70,14 @@ export default {
     },
     message: {
       type: String
+    }
+  },
+  methods: {
+    confirmRemoveMembers() {
+      this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.
+    },
+    confirmRemoveGroups() {
+      this.$emit("removeGroups"); //call to parent (user_groups vue) 
     }
   }
 };

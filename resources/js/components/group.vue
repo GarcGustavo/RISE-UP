@@ -33,6 +33,7 @@
       >
         <i class="material-icons">add_circle_outline</i>
       </a>
+
       <mg_action_table
         v-if="showModal"
         @close="showModal = false"
@@ -40,6 +41,7 @@
         :actor="actor"
         :users="users"
         @addUsers="addUsers"
+        @removeUsers="removeUsers"
       ></mg_action_table>
 
       <p style="margin-left:90px;">Members</p>
@@ -55,7 +57,7 @@
             <h6 class="card-subtitle text-muted"></h6>
           </div>
           <div class="card-footer">
-            <a href="#">{{member.email}}</a>
+            <label>{{member.email}}</label>
           </div>
         </div>
       </div>
@@ -142,14 +144,14 @@ export default {
     },
 
     addUsers(users_to_add) {
-      fetch("/group/add", {
+      fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add[0])
+        body: JSON.stringify(users_to_add)
       })
         .then(res => res.json())
         .then(data => {
@@ -159,6 +161,30 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
+    },
+
+    removeUsers(users_to_remove) {
+
+     console.log(JSON.stringify(users_to_remove[0]));
+      fetch("/group/members/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_remove[0])
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          this.fetchMembers();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+
+
     }
   }
 };

@@ -26,20 +26,14 @@
             <div class="modal-body">
               <label>Title</label>
               <div class="input-group-append">
-                <input type="text" placeholder="Name...">
+                <input type="text" v-model="title" placeholder="Name...">
               </div>
 
               <!-- group selection for table -->
               <div class="form-group">
                 <label for="exampleFormControlSelect2">Assign to a group(optional)</label>
-                <select multiple class="form-control" id="exampleFormControlSelect2">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                  <option>6</option>
-                  <option>7</option>
+                <select class="form-control" id="exampleFormControlSelect2" v-model="gid">
+                  <option v-for="group in groups" v-bind:key="group.gid" :value="group.gid"> {{group.g_name}}</option>
                 </select>
               </div>
               <!-- case description -->
@@ -48,15 +42,12 @@
                 <textarea
                   class="form-control"
                   id="description"
-                  maxlength = "255"
-                  v-model="message"
+                  maxlength="255"
+                  v-model="description"
                   v-on:keyup="countdown"
                 ></textarea>
               </div>
-              <p
-                class="text-right h6"
-                v-bind:class="{'text-danger': hasError }"
-              >{{remainingCount}}</p>
+              <p class="text-right h6" v-bind:class="{'text-danger': hasError }">{{remainingCount}}</p>
             </div>
             <div class="modal-footer">
               <button
@@ -64,6 +55,7 @@
                 class="btn btn-primary"
                 data-toggle="modal"
                 data-target="#mg_action_confirm"
+                @click="sendCaseStudyData()"
               >{{action}}</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
@@ -92,17 +84,76 @@ export default {
   data() {
     return {
       showModal: false,
+      title: "",
+      uid:"",
+      gid: "",
+      description: "",
+      case_study: {
+        cid: "",
+        c_title: "",
+        c_description: "",
+        c_thumbnail: "",
+        c_status: "",
+        c_date: "",
+        c_owner: "",
+        c_group: ""
+      },
+      cases:[],
+      groups:[],
       maxCount: 255,
       remainingCount: 255,
       message: "",
       hasError: false
     };
   },
+  created() {
+    this.fetchGroups();
+    this.totalCases();
+  },
 
   methods: {
-    countdown: function() {
+    countdown() {
       this.remainingCount = this.maxCount - this.message.length;
       this.hasError = this.remainingCount < 0;
+    },
+
+    totalCases() {
+      fetch("/cases")
+        .then(res => res.json())
+        .then(res => {
+          this.cases = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+
+    fetchGroups() {
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
+      fetch("/user_groups/" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.groups = res.data;
+          console.log(this.groups);
+          this.ready = true;
+        })
+        .catch(err => console.log(err));
+    },
+
+    sendCaseStudyData() {
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
+      this.date = new Date().toJSON().slice(0, 10);
+
+      this.case_study.cid = this.cases.length + 1;
+      this.case_study.c_title = this.title;
+      this.case_study.c_description = this.description;
+      this.case_study.c_thumbnail = "empty";
+      this.case_study.c_status = "lol";
+      this.case_study.c_date = this.date;
+      this.case_study.c_owner = this.uid;
+      this.case_study.c_group = this.gid;
+
+      this.$emit("createCaseStudy", this.case_study);
     }
   }
 };

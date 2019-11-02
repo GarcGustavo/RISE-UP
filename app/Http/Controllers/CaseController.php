@@ -16,7 +16,9 @@ class CaseController extends Controller
      */
     public function index()
     {
-        //
+        $cases = case_study::all();
+
+        return Case_StudyResource::collection($cases);
     }
 
     /**
@@ -37,7 +39,18 @@ class CaseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $case_study = $request->isMethod('put') ? case_study::findOrFail($request->cid) : new case_study;
+        $case_study->cid = $request->input('cid');
+        $case_study->c_title = $request->input('c_title');
+        $case_study->c_description = $request->input('c_description');
+        $case_study->c_thumbnail = $request->input('c_thumbnail');
+        $case_study->c_status = $request->input('c_status');
+        $case_study->c_date = $request->input('c_date');
+        $case_study->c_owner = $request->input('c_owner');
+        $case_study->c_group = $request->input('c_group');
+        if ($case_study->save()) {
+            return new Case_StudyResource($case_study);
+        }
     }
 
     /**

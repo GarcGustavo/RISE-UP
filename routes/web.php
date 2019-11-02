@@ -55,6 +55,9 @@ Route::get('/users', 'UserController@index');
 //List groups
 Route::get('/groups', 'GroupController@index');
 
+//List cases
+Route::get('/cases', 'CaseController@index');
+
 //List members of a group
 Route::get('/group/{id}/members', 'User_GroupsController@show_members');
 
@@ -68,10 +71,18 @@ Route::get('/group/{id}/cases', 'CaseController@show_group_cases');
 Route::get('/user_cases/{id}', 'CaseController@show_all_user_cases');
 
 //Add users to group
-Route::post('/group/add', 'User_GroupsController@store');
+Route::post('/group/members/add', 'User_GroupsController@store');
+
+//Remove users from group
+Route::delete('/group/members/remove', 'User_GroupsController@destroy');
+
+//Delete group
+Route::delete('user_groups/remove', 'GroupController@destroy');
+
 
 //Create a group
 Route::post('/group/create', 'GroupController@store');
 
-//Get total of groups
-Route::get('/group/count', 'GroupController@count');
+//Create a case
+Route::post('/case/create', 'CaseController@store');
+

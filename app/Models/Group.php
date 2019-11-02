@@ -22,6 +22,8 @@ class group extends Model
 {
    // use SoftDeletes;
 
+   protected $primaryKey = 'gid';
+
     public $table = 'Group';
 
    // protected $dates = ['deleted_at'];
@@ -83,4 +85,5 @@ class group extends Model
     {
         return $this->belongsToMany(\App\Models\User::class, 'user_groups');
     }
+
 }
