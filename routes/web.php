@@ -61,31 +61,38 @@ Route::get('group/{id}/cases', 'GroupController@show_group_cases');
 
 
 
-//Falta index y update
-//Create an admin
-Route::get('/admin/create', 'AdminController@create');
+
 
 //List user's activities and requests
 Route::get('/admin/users', 'AdminController@users')->name('admin.users');
 
 //List activity log
-Route::get('/admin/log/actions/{id}', 'AdminController@actions');
+Route::get('/admin/log', 'AdminController@log')->name('admin.log');
 
 //List activity log
-Route::get('/admin/log', 'AdminController@log')->name('admin.log');
+Route::get('/admin/log/actions/{id}', 'AdminController@actions');
 
 //List filters
 Route::get('/admin/filters', 'AdminController@filters')->name('admin.filters');
 
-//List filters
+//List groups
 Route::get('/admin/groups', 'AdminController@groups')->name('admin.groups');
+
+//admin edits a user
+Route::get('/admin/user/{id}/edit', 'AdminController@userEdit');
+
+//admin edits a group
+Route::get('/admin/group/{id}/edit', 'AdminController@groupEdit');
+
+//Falta index y update
+//Create an admin
+Route::get('/admin/create', 'AdminController@create');
 
 //Post an admin
 Route::post('/admin', 'AdminController@store');
 
 //Show an admin
 Route::get('/admin/{id}', 'AdminController@show');
-//Route::get('/admin/users/{}', 'AdminController@users');
 
 //Edit an admin
 Route::get('/admin/{id}/edit', 'AdminController@edit');
