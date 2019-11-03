@@ -108,8 +108,18 @@ class GroupController extends Controller
      */
     public function destroy(Request $request)
     {
-        $gid = $request->input('gid');
-        Group::findOrFail($gid)->delete();
-        return response()->json(['message'=>'Group has been removed']);
+        $to_delete = $request->all();
+        $gids_to_delete = array_map(function ($item) {
+            return $item['gid'];
+        }, $to_delete);
+        Group::whereIn('gid', $gids_to_delete)->delete();
+        return response()->json(['message'=>'Group(s) has been removed']);
+    }
+    public function getIndex()
+    {
+//$group = Group::orderBy('gid', 'desc')->where('gid', '>','1')->select('Group.*')->first();
+     //  return GroupResource::collection($group);
+
+
     }
 }

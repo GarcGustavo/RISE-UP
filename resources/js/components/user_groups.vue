@@ -88,7 +88,7 @@ export default {
         g_creation_date: "",
         g_owner: ""
       },
-      groups_to_remove: [{ gid: "" }],
+      groups_to_remove: [],
       pageOfGroups: [],
       users: [],
       uid: "",
@@ -149,10 +149,11 @@ export default {
         }),
         body: JSON.stringify(group)
       })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
           this.addUsers(members);
+          this.fetchGroups();
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -168,11 +169,11 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add[0])
+        body: JSON.stringify(users_to_add)
       })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
           this.fetchGroups();
         })
         .catch(err => {
@@ -184,7 +185,9 @@ export default {
       console.log(JSON.stringify(this.gids));
 
       for (let i in this.gids) {
-        this.groups_to_remove[i].gid = this.gids[i];
+        this.groups_to_remove.push({
+          gid: this.gids[i]
+        });
       }
 
       fetch("/user_groups/remove", {
@@ -194,13 +197,14 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.groups_to_remove[0])
+        body: JSON.stringify(this.groups_to_remove)
       })
         .then(res => res.text())
         .then(text => {
           console.log(text);
           this.fetchGroups();
           this.uncheck();
+          this.groups_to_remove = [];
         })
         .catch(err => {
           console.error("Error: ", err);

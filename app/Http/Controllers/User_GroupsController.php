@@ -37,15 +37,15 @@ class User_GroupsController extends Controller
      */
     public function store(Request $request)
     {
-        $user_group = new User_Groups;
-
-        $user_group->gid = $request -> input('gid');
-        $user_group->uid = $request -> input('uid');
-
-
-        if ($user_group->save()) {
-            return new User_GroupsResource($user_group);
+        $data = $request->all();
+        $user_group = [];
+        foreach ($data as $key=>$value) {
+            array_push($user_group, [
+            'gid' => $value['gid'],
+            'uid' => $value['uid']]);
         }
+        User_Groups::insert($user_group);
+        return response()->json(['message'=>'User have been added to group']);
     }
 
 
@@ -99,9 +99,12 @@ class User_GroupsController extends Controller
      */
     public function destroy(Request $request)
     {
-        $gid = $request->input('gid');
-        $uid = $request->input('uid');
-        User_Groups::where('gid', $gid)->where('uid', $uid)->delete();
-        return response()->json(['message'=>'User removed from group']);
+        $to_delete = $request->all();
+        $gids_to_delete = array_map(function($item){ return $item['gid']; }, $to_delete);
+        $uids_to_delete = array_map(function($item){ return $item['uid']; }, $to_delete);
+       User_Groups::whereIn('gid', $gids_to_delete)->whereIn('uid', $uids_to_delete)->delete();
+        return response()->json(['message'=>'User(s) has been removed from group']);
     }
+
+    
 }

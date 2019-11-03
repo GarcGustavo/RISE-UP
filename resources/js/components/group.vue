@@ -144,6 +144,7 @@ export default {
     },
 
     addUsers(users_to_add) {
+        console.log((users_to_add));
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -151,12 +152,13 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body:(JSON.stringify(users_to_add))
       })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
           this.fetchMembers();
+
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -165,7 +167,7 @@ export default {
 
     removeUsers(users_to_remove) {
 
-     console.log(JSON.stringify(users_to_remove[0]));
+     console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
         method: "delete",
         headers: new Headers({
@@ -173,12 +175,13 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_remove[0])
+        body: JSON.stringify(users_to_remove)
       })
         .then(res => res.json())
         .then(data => {
           console.log(data);
           this.fetchMembers();
+          
         })
         .catch(err => {
           console.error("Error: ", err);

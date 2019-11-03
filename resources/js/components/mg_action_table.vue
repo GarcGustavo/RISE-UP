@@ -158,12 +158,7 @@ export default {
         last_name: "",
         email: ""
       },
-      user_to_add_remove: [
-        {
-          uid: "",
-          gid: ""
-        }
-      ],
+      user_to_add_remove: [],
       group_to_create: {
         g_name: "",
         g_status: "",
@@ -201,8 +196,10 @@ export default {
     totalGroups() {
       fetch("/groups")
         .then(res => res.json())
-        .then(res => {
+        .then(res=> {
           this.groups = res.data;
+          console.log(this.groups[this.groups.length-1].gid);
+
         })
         .catch(err => console.log(err));
     },
@@ -213,16 +210,22 @@ export default {
       this.gid = Number(this.path[this.path.length - 1]);
 
       for (let i in this.uids) {
-        this.user_to_add_remove[i].uid = this.uids[i];
-        this.user_to_add_remove[i].gid = this.gid;
+        // this.user_to_add_remove[i].uid = this.uids[i];
+        // this.user_to_add_remove[i].gid = this.gid;
+        this.user_to_add_remove.push({
+          uid: this.uids[i],
+          gid: this.gid
+        });
       }
       //emit data to parent
-      this.success = true;
+
       if (this.action == "Add") {
         this.$emit("addUsers", this.user_to_add_remove);
+        this.user_to_add_remove = []; //reset variable
       } else {
         this.$emit("removeUsers", this.user_to_add_remove);
-        this.uncheck(); // uncheck all values when finished
+        this.user_to_add_remove = []; //reset variable
+        // this.uncheck(); // uncheck all values when finished
       }
     },
 
@@ -230,28 +233,34 @@ export default {
       this.path = window.location.pathname.split("/");
       this.uid = Number(this.path[this.path.length - 2]);
       this.date = new Date().toJSON().slice(0, 10);
-      this.new_group_gid = this.groups.length + 1;
-      this.group_to_create.gid = this.new_group_gid;
+      this.new_group_gid = this.groups.length;
+      this.group_to_create.gid =this.groups[this.groups.length-1].gid+1;
       this.group_to_create.g_name = this.g_name;
       this.group_to_create.g_status = "lol";
       this.group_to_create.g_creation_date = this.date; //new Date().toLocaleString();
       this.group_to_create.g_owner = this.uid;
 
       for (let i in this.uids) {
-        this.user_to_add_remove[i].uid = this.uids[i];
-        this.user_to_add_remove[i].gid = this.new_group_gid;
+        this.user_to_add_remove.push({
+          uid: this.uids[i],
+          gid: this.group_to_create.gid
+        });
       }
       /*append owner to group*/
-      if (this.uids != 0) {
-        this.user_to_add_remove.push({
-          uid: this.uid,
-          gid: this.new_group_gid
-        });
-      } else {
-        this.user_to_add_remove[0].uid = this.uid;
-        this.user_to_add_remove[0].gid = this.new_group_gid;
-      }
+      this.user_to_add_remove.push({
+        uid: this.uid,
+        gid: this.group_to_create.gid
+      });
+    console.log(this.group_to_create);
       this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
+      this.totalGroups();
+       this.group_to_create= {
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
+      this.user_to_add_remove=[];
     }
   }
 };

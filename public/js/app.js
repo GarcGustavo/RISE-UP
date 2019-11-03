@@ -2346,6 +2346,7 @@ __webpack_require__.r(__webpack_exports__);
     addUsers: function addUsers(users_to_add) {
       var _this4 = this;
 
+      console.log(users_to_add);
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -2355,9 +2356,9 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(users_to_add)
       }).then(function (res) {
-        return res.json();
-      }).then(function (data) {
-        console.log(data);
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
 
         _this4.fetchMembers();
       })["catch"](function (err) {
@@ -2367,7 +2368,7 @@ __webpack_require__.r(__webpack_exports__);
     removeUsers: function removeUsers(users_to_remove) {
       var _this5 = this;
 
-      console.log(JSON.stringify(users_to_remove[0]));
+      console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
         method: "delete",
         headers: new Headers({
@@ -2375,7 +2376,7 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_remove[0])
+        body: JSON.stringify(users_to_remove)
       }).then(function (res) {
         return res.json();
       }).then(function (data) {
@@ -2836,10 +2837,7 @@ __webpack_require__.r(__webpack_exports__);
         last_name: "",
         email: ""
       },
-      user_to_add_remove: [{
-        uid: "",
-        gid: ""
-      }],
+      user_to_add_remove: [],
       group_to_create: {
         g_name: "",
         g_status: "",
@@ -2879,6 +2877,7 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this2.groups = res.data;
+        console.log(_this2.groups[_this2.groups.length - 1].gid);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2889,26 +2888,30 @@ __webpack_require__.r(__webpack_exports__);
       this.gid = Number(this.path[this.path.length - 1]);
 
       for (var i in this.uids) {
-        this.user_to_add_remove[i].uid = this.uids[i];
-        this.user_to_add_remove[i].gid = this.gid;
+        // this.user_to_add_remove[i].uid = this.uids[i];
+        // this.user_to_add_remove[i].gid = this.gid;
+        this.user_to_add_remove.push({
+          uid: this.uids[i],
+          gid: this.gid
+        });
       } //emit data to parent
 
 
-      this.success = true;
-
       if (this.action == "Add") {
         this.$emit("addUsers", this.user_to_add_remove);
+        this.user_to_add_remove = []; //reset variable
       } else {
         this.$emit("removeUsers", this.user_to_add_remove);
-        this.uncheck(); // uncheck all values when finished
+        this.user_to_add_remove = []; //reset variable
+        // this.uncheck(); // uncheck all values when finished
       }
     },
     sendGroupData: function sendGroupData() {
       this.path = window.location.pathname.split("/");
       this.uid = Number(this.path[this.path.length - 2]);
       this.date = new Date().toJSON().slice(0, 10);
-      this.new_group_gid = this.groups.length + 1;
-      this.group_to_create.gid = this.new_group_gid;
+      this.new_group_gid = this.groups.length;
+      this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
       this.group_to_create.g_name = this.g_name;
       this.group_to_create.g_status = "lol";
       this.group_to_create.g_creation_date = this.date; //new Date().toLocaleString();
@@ -2916,23 +2919,27 @@ __webpack_require__.r(__webpack_exports__);
       this.group_to_create.g_owner = this.uid;
 
       for (var i in this.uids) {
-        this.user_to_add_remove[i].uid = this.uids[i];
-        this.user_to_add_remove[i].gid = this.new_group_gid;
+        this.user_to_add_remove.push({
+          uid: this.uids[i],
+          gid: this.group_to_create.gid
+        });
       }
       /*append owner to group*/
 
 
-      if (this.uids != 0) {
-        this.user_to_add_remove.push({
-          uid: this.uid,
-          gid: this.new_group_gid
-        });
-      } else {
-        this.user_to_add_remove[0].uid = this.uid;
-        this.user_to_add_remove[0].gid = this.new_group_gid;
-      }
-
+      this.user_to_add_remove.push({
+        uid: this.uid,
+        gid: this.group_to_create.gid
+      });
+      console.log(this.group_to_create);
       this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
+      this.totalGroups();
+      this.group_to_create = {
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      }, this.user_to_add_remove = [];
     }
   }
 });
@@ -3366,9 +3373,7 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
-      groups_to_remove: [{
-        gid: ""
-      }],
+      groups_to_remove: [],
       pageOfGroups: [],
       users: [],
       uid: "",
@@ -3432,11 +3437,13 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(group)
       }).then(function (res) {
-        return res.json();
-      }).then(function (data) {
-        console.log(data);
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
 
         _this3.addUsers(members);
+
+        _this3.fetchGroups();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -3452,11 +3459,11 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add[0])
+        body: JSON.stringify(users_to_add)
       }).then(function (res) {
-        return res.json();
-      }).then(function (data) {
-        console.log(data);
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
 
         _this4.fetchGroups();
       })["catch"](function (err) {
@@ -3469,7 +3476,9 @@ __webpack_require__.r(__webpack_exports__);
       console.log(JSON.stringify(this.gids));
 
       for (var i in this.gids) {
-        this.groups_to_remove[i].gid = this.gids[i];
+        this.groups_to_remove.push({
+          gid: this.gids[i]
+        });
       }
 
       fetch("/user_groups/remove", {
@@ -3479,7 +3488,7 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.groups_to_remove[0])
+        body: JSON.stringify(this.groups_to_remove)
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -3488,6 +3497,8 @@ __webpack_require__.r(__webpack_exports__);
         _this5.fetchGroups();
 
         _this5.uncheck();
+
+        _this5.groups_to_remove = [];
       })["catch"](function (err) {
         console.error("Error: ", err);
       });

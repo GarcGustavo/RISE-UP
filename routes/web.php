@@ -86,3 +86,5 @@ Route::post('/group/create', 'GroupController@store');
 //Create a case
 Route::post('/case/create', 'CaseController@store');
 
+//get last inserted row
+Route::get('/group/latest', 'GroupController@getIndex');
