@@ -78,6 +78,9 @@ Route::get('/admin/log', 'AdminController@log')->name('admin.log');
 //List filters
 Route::get('/admin/filters', 'AdminController@filters')->name('admin.filters');
 
+//List filters
+Route::get('/admin/groups', 'AdminController@groups')->name('admin.groups');
+
 //Post an admin
 Route::post('/admin', 'AdminController@store');
 
