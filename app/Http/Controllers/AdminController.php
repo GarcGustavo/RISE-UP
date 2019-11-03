@@ -80,5 +80,18 @@ class AdminController extends Controller
 
         return view('admin.filters', ['filters' => $filters, 'options' => $options]);
     }
+
+
+    //public function userEdit
+    public function userEdit($id){
+
+        $users = DB::table('user')
+            ->select('user.*')
+            ->where('uid', '=', $id)
+            ->get();
+        return view('admin.userEdit', ['user' => $users[0]]);
+    }
+
+
 }
 ?>

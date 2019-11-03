@@ -44,7 +44,7 @@
 
                             @forelse($users as $user)
                             <tr>
-                                <td> {{$user->first_name }} {{$user->last_name }} </td>
+                                <td>  <a href="/admin/user/{{$user->uid}}/edit">{{$user->first_name }} {{$user->last_name }}</a>  </td>
                                 <td> {{$user->contact_email }} </td>
                                 <td> {{$user->r_name }} </td>
                                 <td> {{ \Carbon\Carbon::parse($user->u_creation_date)->format('d F Y')}} </td>
