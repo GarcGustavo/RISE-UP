@@ -74,7 +74,11 @@ class AdminController extends Controller
             ->select('cs_parameter.*')
             ->get();
 
-        return view('admin.filters', ['filters' => $filters]);
+        $options = DB::table('option')
+            ->select('option.*')
+            ->get();
+
+        return view('admin.filters', ['filters' => $filters, 'options' => $options]);
     }
 }
 ?>
