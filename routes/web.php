@@ -64,7 +64,6 @@ Route::get('group/{id}/cases', 'GroupController@show_group_cases');
 //Falta index y update
 //Create an admin
 Route::get('/admin/create', 'AdminController@create');
-//List users with recent activities or requests
 
 //List user's activities and requests
 Route::get('/admin/users', 'AdminController@users')->name('admin.users');

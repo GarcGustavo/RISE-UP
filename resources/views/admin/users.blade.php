@@ -28,6 +28,7 @@
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Since</th>
+                                <th>Until</th>
                             </tr>
                             </thead>
                             <tfoot>
@@ -36,6 +37,7 @@
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Since</th>
+                                <th>Until</th>
                             </tr>
                             </tfoot>
                             <tbody>
@@ -46,6 +48,7 @@
                                 <td> {{$user->contact_email }} </td>
                                 <td> {{$user->r_name }} </td>
                                 <td> {{ \Carbon\Carbon::parse($user->u_creation_date)->format('d F Y')}} </td>
+                                <td> {{ \Carbon\Carbon::parse($user->u_expiration_date)->format('d F Y')}} </td>
                             </tr>
                             @empty
                                 <tr>
@@ -81,7 +84,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Since</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tfoot>
@@ -89,7 +92,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Since</th>
+                                <th></th>
                             </tr>
                             </tfoot>
                             <tbody>
@@ -99,7 +102,11 @@
                                     <td> {{$request->first_name }} {{$request->last_name }} </td>
                                     <td> {{$request->contact_email }} </td>
                                     <td> {{$request->r_name }} </td>
-                                    <td> {{ \Carbon\Carbon::parse($request->u_creation_date)->format('d F Y')}} </td>
+                                    <td>
+
+                                        <button type="submit" class="btn btn-primary">Approve</button>
+
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
