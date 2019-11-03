@@ -79,6 +79,8 @@ Route::delete('/group/members/remove', 'User_GroupsController@destroy');
 //Delete group
 Route::delete('user_groups/remove', 'GroupController@destroy');
 
+//Delete case study
+Route::delete('user_cases/remove', 'CaseController@destroy');
 
 //Create a group
 Route::post('/group/create', 'GroupController@store');
@@ -86,5 +88,3 @@ Route::post('/group/create', 'GroupController@store');
 //Create a case
 Route::post('/case/create', 'CaseController@store');
 
-//get last inserted row
-Route::get('/group/latest', 'GroupController@getIndex');

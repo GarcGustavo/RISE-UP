@@ -115,11 +115,5 @@ class GroupController extends Controller
         Group::whereIn('gid', $gids_to_delete)->delete();
         return response()->json(['message'=>'Group(s) has been removed']);
     }
-    public function getIndex()
-    {
-//$group = Group::orderBy('gid', 'desc')->where('gid', '>','1')->select('Group.*')->first();
-     //  return GroupResource::collection($group);
-
-
-    }
+   
 }

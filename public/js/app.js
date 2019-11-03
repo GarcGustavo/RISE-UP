@@ -2007,6 +2007,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2057,6 +2061,7 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this.cases = res.data;
+        console.log(_this.cases);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2080,7 +2085,8 @@ __webpack_require__.r(__webpack_exports__);
       this.path = window.location.pathname.split("/");
       this.uid = Number(this.path[this.path.length - 2]);
       this.date = new Date().toJSON().slice(0, 10);
-      this.case_study.cid = this.cases.length + 1;
+      this.case_study.cid = this.cases[this.cases.length - 1].cid + 1;
+      console.log(this.case_study.cid);
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
@@ -2089,6 +2095,19 @@ __webpack_require__.r(__webpack_exports__);
       this.case_study.c_owner = this.uid;
       this.case_study.c_group = this.gid;
       this.$emit("createCaseStudy", this.case_study);
+      this.totalCases(); //update total cases
+      //reset variable
+
+      this.case_study = {
+        cid: "",
+        c_title: "",
+        c_description: "",
+        c_thumbnail: "",
+        c_status: "",
+        c_date: "",
+        c_owner: "",
+        c_group: ""
+      };
     }
   }
 });
@@ -2646,6 +2665,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action_confirm: {
@@ -2663,7 +2691,10 @@ __webpack_require__.r(__webpack_exports__);
       this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.
     },
     confirmRemoveGroups: function confirmRemoveGroups() {
-      this.$emit("removeGroups"); //call to parent (user_groups vue) 
+      this.$emit("removeGroups"); //call to parent (user_groups vue)
+    },
+    confirmRemoveCases: function confirmRemoveCases() {
+      this.$emit("removeCases"); //call to parent (user_cases vue)
     }
   }
 });
@@ -3200,11 +3231,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       ready: false,
       cases: [],
+      cids: [],
+      cases_to_remove: [],
+      case_study: {
+        cid: "",
+        c_title: ""
+      },
       pageOfCases: [],
       users: [],
       uid: "",
@@ -3214,7 +3257,6 @@ __webpack_require__.r(__webpack_exports__);
 
     };
   },
-  components: {},
   created: function created() {
     this.fetchCases();
   },
@@ -3222,6 +3264,13 @@ __webpack_require__.r(__webpack_exports__);
     onChangePage: function onChangePage(pageOfCases) {
       // update page of Casess
       this.pageOfCases = pageOfCases;
+    },
+    uncheck: function uncheck() {
+      this.cids = [];
+
+      for (var i in this.cids) {
+        this.cids.push(this.cids[i].cid);
+      }
     },
     fetchUsers: function fetchUsers() {
       var _this = this;
@@ -3243,6 +3292,7 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this2.cases = res.data;
+        console.log(_this2.cases);
         _this2.ready = true;
       })["catch"](function (err) {
         return console.log(err);
@@ -3261,11 +3311,44 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(case_study)
       }).then(function (res) {
-        return res.json();
-      }).then(function (data) {
-        console.log(data);
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
 
         _this3.fetchCases();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    removeCases: function removeCases() {
+      var _this4 = this;
+
+      console.log(JSON.stringify(this.cids));
+
+      for (var i in this.cids) {
+        this.cases_to_remove.push({
+          cid: this.cids[i]
+        });
+      }
+
+      fetch("/user_cases/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.cases_to_remove)
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+
+        _this4.fetchCases();
+
+        _this4.uncheck();
+
+        _this4.cases_to_remove = [];
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -40108,7 +40191,7 @@ var render = function() {
                         return _c(
                           "option",
                           { key: group.gid, domProps: { value: group.gid } },
-                          [_vm._v(" " + _vm._s(group.g_name))]
+                          [_vm._v(_vm._s(group.g_name))]
                         )
                       }),
                       0
@@ -40974,6 +41057,22 @@ var render = function() {
                     [_vm._v("Yes")]
                   )
                 ])
+              : _vm.action_confirm == "Remove" && _vm.actor == "case study(s)"
+              ? _c("div", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "button", "data-dismiss": "modal" },
+                      on: {
+                        click: function($event) {
+                          return _vm.confirmRemoveCases()
+                        }
+                      }
+                    },
+                    [_vm._v("Yes")]
+                  )
+                ])
               : _vm._e(),
             _vm._v(" "),
             _c(
@@ -41619,7 +41718,8 @@ var render = function() {
               "div",
               [
                 _c("mg_action_confirm", {
-                  attrs: { action_confirm: _vm.action, actor: _vm.actor }
+                  attrs: { action_confirm: _vm.action, actor: _vm.actor },
+                  on: { removeCases: _vm.removeCases }
                 })
               ],
               1
@@ -41649,7 +41749,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.cases, function(cases, index) {
+          _vm._l(_vm.cases, function(case_study, index) {
             return _c("tr", { key: index }, [
               _c("td", [
                 _c("div", { staticClass: "check-box" }, [
@@ -41658,41 +41758,42 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.checked,
-                        expression: "checked"
+                        value: _vm.cids,
+                        expression: "cids"
                       }
                     ],
                     staticClass: "checkbox",
-                    attrs: { type: "checkbox", id: "'checkbox' + index" },
+                    attrs: { type: "checkbox", id: "checkbox" },
                     domProps: {
-                      checked: Array.isArray(_vm.checked)
-                        ? _vm._i(_vm.checked, null) > -1
-                        : _vm.checked
+                      value: case_study.cid,
+                      checked: Array.isArray(_vm.cids)
+                        ? _vm._i(_vm.cids, case_study.cid) > -1
+                        : _vm.cids
                     },
                     on: {
                       change: function($event) {
-                        var $$a = _vm.checked,
+                        var $$a = _vm.cids,
                           $$el = $event.target,
                           $$c = $$el.checked ? true : false
                         if (Array.isArray($$a)) {
-                          var $$v = null,
+                          var $$v = case_study.cid,
                             $$i = _vm._i($$a, $$v)
                           if ($$el.checked) {
-                            $$i < 0 && (_vm.checked = $$a.concat([$$v]))
+                            $$i < 0 && (_vm.cids = $$a.concat([$$v]))
                           } else {
                             $$i > -1 &&
-                              (_vm.checked = $$a
+                              (_vm.cids = $$a
                                 .slice(0, $$i)
                                 .concat($$a.slice($$i + 1)))
                           }
                         } else {
-                          _vm.checked = $$c
+                          _vm.cids = $$c
                         }
                       }
                     }
                   }),
                   _vm._v(" "),
-                  _c("label", { attrs: { for: "'checkbox' + index" } }, [
+                  _c("label", { attrs: { for: "checkbox" } }, [
                     _vm._v(_vm._s(index + 1))
                   ])
                 ])
@@ -41700,7 +41801,7 @@ var render = function() {
               _vm._v(" "),
               _c("td", [
                 _c("a", { attrs: { href: "#" } }, [
-                  _vm._v(_vm._s(cases.c_title))
+                  _vm._v(_vm._s(case_study.c_title))
                 ])
               ])
             ])

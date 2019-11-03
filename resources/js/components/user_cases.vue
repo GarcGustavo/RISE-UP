@@ -25,7 +25,7 @@
 
       <div v-if="action=='Remove'">
         <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
+        <mg_action_confirm :action_confirm="action" :actor="actor" @removeCases="removeCases"></mg_action_confirm>
       </div>
 
       <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy"></case_create_dbox>
@@ -43,15 +43,21 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(cases,index) in cases" :key="index">
+        <tr v-for="(case_study,index) in cases" :key="index">
           <td>
             <div class="check-box">
-              <input class="checkbox" type="checkbox" id="'checkbox' + index" v-model="checked">
-              <label for="'checkbox' + index">{{index+1}}</label>
+              <input
+                class="checkbox"
+                type="checkbox"
+                id="checkbox"
+                v-model="cids"
+                :value="case_study.cid"
+              >
+              <label for="checkbox">{{index+1}}</label>
             </div>
           </td>
           <td>
-            <a href="#">{{cases.c_title}}</a>
+            <a href="#">{{case_study.c_title}}</a>
           </td>
         </tr>
       </tbody>
@@ -68,6 +74,9 @@ export default {
     return {
       ready: false,
       cases: [],
+      cids: [],
+      cases_to_remove: [],
+      case_study: { cid: "", c_title: "" },
       pageOfCases: [],
       users: [],
       uid: "",
@@ -76,7 +85,6 @@ export default {
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
-  components: {},
   created() {
     this.fetchCases();
   },
@@ -85,6 +93,14 @@ export default {
     onChangePage(pageOfCases) {
       // update page of Casess
       this.pageOfCases = pageOfCases;
+    },
+
+    uncheck() {
+      this.cids = [];
+
+      for (let i in this.cids) {
+        this.cids.push(this.cids[i].cid);
+      }
     },
 
     fetchUsers() {
@@ -103,13 +119,14 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
+          console.log(this.cases);
           this.ready = true;
         })
         .catch(err => console.log(err));
     },
 
     createCaseStudy(case_study) {
-        console.log(JSON.stringify(case_study));
+      console.log(JSON.stringify(case_study));
       fetch("/case/create", {
         method: "post",
         headers: new Headers({
@@ -119,10 +136,39 @@ export default {
         }),
         body: JSON.stringify(case_study)
       })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
           this.fetchCases();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+    removeCases() {
+      console.log(JSON.stringify(this.cids));
+
+      for (let i in this.cids) {
+        this.cases_to_remove.push({
+          cid: this.cids[i]
+        });
+      }
+
+      fetch("/user_cases/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.cases_to_remove)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+          this.fetchCases();
+          this.uncheck();
+          this.cases_to_remove = [];
         })
         .catch(err => {
           console.error("Error: ", err);

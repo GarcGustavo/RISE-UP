@@ -52,6 +52,15 @@
               @click="confirmRemoveGroups()"
             >Yes</button>
           </div>
+ <div v-else-if="action_confirm=='Remove' && actor=='case study(s)'">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-dismiss="modal"
+              @click="confirmRemoveCases()"
+            >Yes</button>
+          </div>
+
           <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
         </div>
       </div>
@@ -77,7 +86,10 @@ export default {
       this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.
     },
     confirmRemoveGroups() {
-      this.$emit("removeGroups"); //call to parent (user_groups vue) 
+      this.$emit("removeGroups"); //call to parent (user_groups vue)
+    },
+     confirmRemoveCases() {
+      this.$emit("removeCases"); //call to parent (user_cases vue)
     }
   }
 };

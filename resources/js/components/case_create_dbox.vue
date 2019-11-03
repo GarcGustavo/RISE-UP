@@ -33,7 +33,11 @@
               <div class="form-group">
                 <label for="exampleFormControlSelect2">Assign to a group(optional)</label>
                 <select class="form-control" id="exampleFormControlSelect2" v-model="gid">
-                  <option v-for="group in groups" v-bind:key="group.gid" :value="group.gid"> {{group.g_name}}</option>
+                  <option
+                    v-for="group in groups"
+                    v-bind:key="group.gid"
+                    :value="group.gid"
+                  >{{group.g_name}}</option>
                 </select>
               </div>
               <!-- case description -->
@@ -85,7 +89,7 @@ export default {
     return {
       showModal: false,
       title: "",
-      uid:"",
+      uid: "",
       gid: "",
       description: "",
       case_study: {
@@ -98,8 +102,8 @@ export default {
         c_owner: "",
         c_group: ""
       },
-      cases:[],
-      groups:[],
+      cases: [],
+      groups: [],
       maxCount: 255,
       remainingCount: 255,
       message: "",
@@ -122,6 +126,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
+console.log(this.cases);
         })
         .catch(err => console.log(err));
     },
@@ -144,7 +149,8 @@ export default {
       this.uid = Number(this.path[this.path.length - 2]);
       this.date = new Date().toJSON().slice(0, 10);
 
-      this.case_study.cid = this.cases.length + 1;
+      this.case_study.cid = this.cases[this.cases.length - 1].cid + 1;
+      console.log(this.case_study.cid);
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
@@ -154,6 +160,18 @@ export default {
       this.case_study.c_group = this.gid;
 
       this.$emit("createCaseStudy", this.case_study);
+      this.totalCases(); //update total cases
+      //reset variable
+      this.case_study = {
+        cid: "",
+        c_title: "",
+        c_description: "",
+        c_thumbnail: "",
+        c_status: "",
+        c_date: "",
+        c_owner: "",
+        c_group: ""
+      };
     }
   }
 };

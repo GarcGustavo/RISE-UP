@@ -16,7 +16,7 @@ class CaseController extends Controller
      */
     public function index()
     {
-        $cases = case_study::all();
+        $cases = case_study::withTrashed()->get();
 
         return Case_StudyResource::collection($cases);
     }
@@ -80,11 +80,14 @@ class CaseController extends Controller
         $group_cases = User_Groups::
         where('User_Groups.uid', $uid)
         ->join('Case', 'Case.c_group', '=', 'User_Groups.gid')
+        ->whereNull('deleted_at')
         ->select('Case.*')
         ->get();
-        $all_cases = $cases->concat($group_cases);
 
-        return Case_StudyResource::collection($all_cases);
+        $all_cases = $cases->concat($group_cases);
+        $unique_data = $all_cases->unique('cid');
+
+        return Case_StudyResource::collection($unique_data);
     }
 
 
@@ -121,8 +124,13 @@ class CaseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $to_delete = $request->all();
+        $cids_to_delete = array_map(function ($item) {
+            return $item['cid'];
+        }, $to_delete);
+        case_study::whereIn('cid', $cids_to_delete)->delete();
+        return response()->json(['message'=>'Case(s) have been removed']);
     }
 }

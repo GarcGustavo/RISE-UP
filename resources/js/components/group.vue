@@ -139,6 +139,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
+          
         })
         .catch(err => console.log(err));
     },
@@ -181,7 +182,7 @@ export default {
         .then(data => {
           console.log(data);
           this.fetchMembers();
-          
+
         })
         .catch(err => {
           console.error("Error: ", err);
