@@ -2041,7 +2041,6 @@ __webpack_require__.r(__webpack_exports__);
       groups: [],
       maxCount: 255,
       remainingCount: 255,
-      message: "",
       hasError: false
     };
   },
@@ -2051,7 +2050,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     countdown: function countdown() {
-      this.remainingCount = this.maxCount - this.message.length;
+      this.remainingCount = this.maxCount - this.description.length;
       this.hasError = this.remainingCount < 0;
     },
     totalCases: function totalCases() {
@@ -2674,6 +2673,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action_confirm: {
@@ -2710,6 +2710,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2970,7 +2982,8 @@ __webpack_require__.r(__webpack_exports__);
         g_status: "",
         g_creation_date: "",
         g_owner: ""
-      }, this.user_to_add_remove = [];
+      };
+      this.user_to_add_remove = [];
     }
   }
 });
@@ -40138,6 +40151,8 @@ var render = function() {
                           expression: "title"
                         }
                       ],
+                      staticClass: "form-control input-sm",
+                      staticStyle: { width: "350px" },
                       attrs: { type: "text", placeholder: "Name..." },
                       domProps: { value: _vm.title },
                       on: {
@@ -41075,14 +41090,7 @@ var render = function() {
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-secondary",
-                attrs: { type: "button", "data-dismiss": "modal" }
-              },
-              [_vm._v("No")]
-            )
+            _vm._m(1)
           ])
         ])
       ])
@@ -41108,6 +41116,21 @@ var staticRenderFns = [
           }
         },
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-secondary",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("No")]
       )
     ])
   }
@@ -41194,6 +41217,8 @@ var render = function() {
                                 expression: "g_name"
                               }
                             ],
+                            staticClass: "form-control input-sm",
+                            staticStyle: { width: "250px" },
                             attrs: { type: "text", placeholder: "Name..." },
                             domProps: { value: _vm.g_name },
                             on: {
@@ -41222,6 +41247,8 @@ var render = function() {
                             expression: "search"
                           }
                         ],
+                        staticClass: "form-control input-sm",
+                        staticStyle: { width: "250px" },
                         attrs: { type: "text", placeholder: "User email.." },
                         domProps: { value: _vm.search },
                         on: {

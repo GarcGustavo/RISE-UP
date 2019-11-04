@@ -52,7 +52,7 @@
               @click="confirmRemoveGroups()"
             >Yes</button>
           </div>
- <div v-else-if="action_confirm=='Remove' && actor=='case study(s)'">
+          <div v-else-if="action_confirm=='Remove' && actor=='case study(s)'">
             <button
               type="button"
               class="btn btn-primary"
@@ -60,8 +60,9 @@
               @click="confirmRemoveCases()"
             >Yes</button>
           </div>
-
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <div >
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          </div>
         </div>
       </div>
     </div>
@@ -88,7 +89,7 @@ export default {
     confirmRemoveGroups() {
       this.$emit("removeGroups"); //call to parent (user_groups vue)
     },
-     confirmRemoveCases() {
+    confirmRemoveCases() {
       this.$emit("removeCases"); //call to parent (user_cases vue)
     }
   }

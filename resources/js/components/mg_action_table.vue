@@ -27,14 +27,26 @@
               <div class="input-group" v-if="gname_box_show==true">
                 <label>Group name</label>
                 <div class="input-group-append">
-                  <input type="text" v-model="g_name" placeholder="Name...">
+                  <input
+                    type="text"
+                    class="form-control input-sm"
+                    style="width:250px;"
+                    v-model="g_name"
+                    placeholder="Name..."
+                  >
                 </div>
               </div>
               <!-- Search box for table -->
               <div class="input-group">
                 <label>Search</label>
                 <div class="input-group-append search">
-                  <input type="text" v-model="search" placeholder="User email..">
+                  <input
+                    type="text"
+                    class="form-control input-sm"
+                    style="width:250px;"
+                    v-model="search"
+                    placeholder="User email.."
+                  >
                 </div>
               </div>
               <!-- table -->
@@ -253,13 +265,13 @@ export default {
       console.log(this.group_to_create);
       this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
       this.totalGroups();
-      (this.group_to_create = {
+      this.group_to_create = {
         g_name: "",
         g_status: "",
         g_creation_date: "",
         g_owner: ""
-      }),
-        (this.user_to_add_remove = []);
+      };
+      this.user_to_add_remove = [];
     }
   }
 };

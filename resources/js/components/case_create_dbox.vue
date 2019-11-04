@@ -26,7 +26,7 @@
             <div class="modal-body">
               <label>Title</label>
               <div class="input-group-append">
-                <input type="text" v-model="title" placeholder="Name...">
+                <input  class="form-control input-sm" style="width:350px;" type="text" v-model="title" placeholder="Name...">
               </div>
 
               <!-- group selection for table -->
@@ -106,7 +106,6 @@ export default {
       groups: [],
       maxCount: 255,
       remainingCount: 255,
-      message: "",
       hasError: false
     };
   },
@@ -115,9 +114,10 @@ export default {
     this.totalCases();
   },
 
+
   methods: {
     countdown() {
-      this.remainingCount = this.maxCount - this.message.length;
+      this.remainingCount = this.maxCount - this.description.length;
       this.hasError = this.remainingCount < 0;
     },
 
@@ -126,7 +126,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
-console.log(this.cases);
+          console.log(this.cases);
         })
         .catch(err => console.log(err));
     },
