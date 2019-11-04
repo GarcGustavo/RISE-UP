@@ -40,10 +40,9 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        $group = $request->isMethod('put') ? group::findOrFail($request->gid): new group;
-
+        $group = new Group;
         $group->gid = $request -> input('gid');
-        $group->gname = $request -> input('gname');
+        $group->g_name = $request -> input('g_name');
         $group->g_status = $request -> input('g_status');
         $group->g_creation_date = $request -> input('g_creation_date');
         $group->g_owner = $request -> input('g_owner');
@@ -77,6 +76,7 @@ class GroupController extends Controller
         return GroupResource::collection($groups);
     }
 
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -106,13 +106,14 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $group = Group::findOrFail($id);
-
-
-        if ($group->delete()) {
-            return new GroupResource($group);
-        }
+        $to_delete = $request->all();
+        $gids_to_delete = array_map(function ($item) {
+            return $item['gid'];
+        }, $to_delete);
+        Group::whereIn('gid', $gids_to_delete)->delete();
+        return response()->json(['message'=>'Group(s) has been removed']);
     }
+   
 }
