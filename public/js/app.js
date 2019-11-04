@@ -2594,23 +2594,125 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//import Editor from '@tinymce/tinymce-vue';
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
- //Vue.use(Editor);
 
+Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'app',
-  components: {//Editor
-  },
+  components: {},
   data: function data() {
     return {
-      data: 'Hello'
+      data: "Hi",
+      ready: false,
+      cid: [],
+      items: []
     };
+  },
+  created: function created() {
+    this.fetchCaseItems();
   },
   mounted: function mounted() {},
   methods: {
     clickHandler: function clickHandler() {
       this.data = 'You reseted tinymce\'s content';
+    },
+    fetchCaseItems: function fetchCaseItems() {
+      var _this = this;
+
+      fetch("/case/" + this.i_case + "/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.items = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    updateItemOrder: function updateItemOrder() {
+      var _this2 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.uid = this.path[this.path.length - 2];
+      fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.groups = res.data;
+        _this2.ready = true;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     }
   }
 });
@@ -54409,42 +54511,221 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { attrs: { id: "app" } },
-    [
-      _c("markdown-editor", {
-        attrs: {
-          toolbar:
-            "bold italic heading | image link | numlist bullist code quote | preview fullscreen"
-        }
-      }),
-      _vm._v(" "),
-      _c("markdown-editor", {
-        attrs: { options: _vm.options },
-        model: {
-          value: _vm.data,
-          callback: function($$v) {
-            _vm.data = $$v
-          },
-          expression: "data"
-        }
-      }),
-      _vm._v(" "),
-      _c("markdown-editor", { attrs: { name: "html" } }),
-      _vm._v(" "),
+  return _c("div", { attrs: { id: "app" } }, [
+    _c("div", { staticClass: "body mb-5 mt-5" }, [
       _c(
-        "button",
-        { attrs: { type: "button" }, on: { click: _vm.clickHandler } },
-        [_vm._v("Reset")]
+        "h1",
+        { staticClass: "mb-3" },
+        [
+          _c(
+            "a",
+            {
+              attrs: {
+                href: "#mg_action_confirm",
+                "data-toggle": "modal",
+                "data-target": "#mg_action_confirm"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.action = "Remove"), (_vm.actor = "group(s)")
+                }
+              }
+            },
+            [
+              _c("i", { staticClass: "material-icons" }, [
+                _vm._v("remove_circle_outline")
+              ])
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              attrs: {
+                href: "#mg_action_table",
+                "data-toggle": "modal",
+                "data-target": "#mg_action_table"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.gname_box_show = true),
+                    (_vm.action = "Create"),
+                    (_vm.actor = "group"),
+                    _vm.fetchUsers()
+                }
+              }
+            },
+            [
+              _c("i", { staticClass: "material-icons" }, [
+                _vm._v("add_circle_outline")
+              ])
+            ]
+          ),
+          _vm._v(" "),
+          _vm.action == "Remove"
+            ? _c(
+                "div",
+                [
+                  _c("mg_action_confirm", {
+                    attrs: { action_confirm: _vm.action, actor: _vm.actor }
+                  })
+                ],
+                1
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _c("mg_action_table", {
+            attrs: {
+              action: _vm.action,
+              actor: _vm.actor,
+              gname_box_show: _vm.gname_box_show,
+              users: _vm.users
+            }
+          }),
+          _vm._v(" "),
+          _c("p", [_vm._v("My groups")])
+        ],
+        1
       ),
       _vm._v(" "),
-      _c("div", [_vm._v(_vm._s(_vm.data))])
-    ],
-    1
-  )
+      _c(
+        "div",
+        { staticClass: "col-md-4 col-md-offset-2" },
+        _vm._l(_vm.items, function(item) {
+          return _c(
+            "article",
+            {
+              key: item.iid,
+              staticClass: "card",
+              attrs: { "data-id": item.iid }
+            },
+            [
+              _c("header", [
+                _vm._v(
+                  "\n                          " +
+                    _vm._s(item.i_content) +
+                    "\n                      "
+                )
+              ]),
+              _vm._v(" "),
+              _c("markdown-editor", {
+                attrs: {
+                  toolbar: "",
+                  "v-model": _vm.data,
+                  options: _vm.options
+                }
+              })
+            ],
+            1
+          )
+        }),
+        0
+      ),
+      _vm._v(" "),
+      _c("hr"),
+      _vm._v(" "),
+      _c(
+        "table",
+        {
+          staticClass: "table table-hover table-bordered table-sm",
+          attrs: { id: "group-table", cellspacing: "0" }
+        },
+        [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.pageOfGroups, function(group, index) {
+              return _c("tr", { key: index }, [
+                _c("td", [
+                  _c("div", { staticClass: "check-box" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.checked,
+                          expression: "checked"
+                        }
+                      ],
+                      staticClass: "checkbox",
+                      attrs: { type: "checkbox", id: "'checkbox' + index" },
+                      domProps: {
+                        checked: Array.isArray(_vm.checked)
+                          ? _vm._i(_vm.checked, null) > -1
+                          : _vm.checked
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$a = _vm.checked,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 && (_vm.checked = $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                (_vm.checked = $$a
+                                  .slice(0, $$i)
+                                  .concat($$a.slice($$i + 1)))
+                            }
+                          } else {
+                            _vm.checked = $$c
+                          }
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("label", { attrs: { for: "'checkbox' + index" } }, [
+                      _vm._v(_vm._s(index + 1))
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  _c("a", { attrs: { href: "/group/" + group.gid } }, [
+                    _vm._v(_vm._s(group.g_name))
+                  ])
+                ])
+              ])
+            }),
+            0
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _vm.ready
+        ? _c(
+            "div",
+            [
+              _c("paginator", {
+                staticClass: "pagination",
+                attrs: { items: _vm.groups },
+                on: { changePage: _vm.onChangePage }
+              })
+            ],
+            1
+          )
+        : _vm._e()
+    ])
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", { staticClass: "thead-dark" }, [
+      _c("tr", [
+        _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
