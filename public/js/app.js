@@ -2687,15 +2687,15 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
   mounted: function mounted() {},
   methods: {
     clickHandler: function clickHandler() {
-      this.data = 'You reseted tinymce\'s content';
+      this.text = 'You reseted tinymce\'s content';
     },
     fetchCaseItems: function fetchCaseItems() {
       var _this = this;
 
       fetch("/case/" + this.i_case + "/items").then(function (res) {
-        return res.json();
+        return res.text();
       }).then(function (res) {
-        _this.items = res.data;
+        _this.items = res.text;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2706,9 +2706,9 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
       this.path = window.location.pathname.split("/");
       this.uid = this.path[this.path.length - 2];
       fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
-        return res.json();
+        return res.text();
       }).then(function (res) {
-        _this2.groups = res.data;
+        _this2.groups = res.text;
         _this2.ready = true;
       })["catch"](function (err) {
         return console.log(err);
