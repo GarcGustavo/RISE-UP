@@ -13,7 +13,6 @@ class ItemController extends Controller
     public function getCaseItems($id)
     {
         $cid = $id;
-        $item = ItemResource::
         $caseItems = Item:: orderBy('Item.order')
         ->where('Item.i_case', $cid)
         ->select('Item.*')

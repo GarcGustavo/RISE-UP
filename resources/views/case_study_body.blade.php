@@ -2,5 +2,5 @@
 
 @section('content')
 <!--<case_study></case_study>-->
-  <items :caseItems="caseItems" ></items>
+  <items></items>
 @endsection

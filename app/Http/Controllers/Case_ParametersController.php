@@ -3,9 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Case_Study;
+use App\Models\Case_Parameters;
+use App\Models\CS_Parameter;
+use App\Models\Option;
+use App\Http\Resources\Parameter as ParameterResource;
 
 class Case_ParametersController extends Controller
 {
+    public function getCaseParameters($id)
+    {
+        $cid = $id;
+        $caseParams = Parameter::
+        ->where('.i_case', $cid)
+        ->select('Item.*')
+        ->get();
+
+        return ItemResource::collection($caseItems);
+    }
     /**
      * Display a listing of the resource.
      *

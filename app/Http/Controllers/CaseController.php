@@ -61,7 +61,10 @@ class CaseController extends Controller
      */
     public function show($id)
     {
-        //
+        $cid = $id;
+
+        $case = Case_Study::where('Case.cid', $cid)->get();
+        return Case_StudyResource::collection($case);
     }
 
     public function show_group_cases($id)

@@ -2695,93 +2695,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -2791,45 +2704,161 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
   components: {},
   data: function data() {
     return {
-      data: "Hi",
+      showModal: false,
+      action: "",
+      actor: "",
+      case_title: "",
+      users: [],
+      items: [],
       ready: false,
-      cid: [],
-      items: []
+      cid: "",
+      case_to_show: [],
+      //item: { iid: "", i_content:"", order:"", i_name: "" },
+      case_parameters: []
     };
   },
-  created: function created() {//this.fetchCaseItems();
+  created: function created() {
+    this.fetchCaseItems();
+    this.fetchCase();
   },
-  mounted: function mounted() {},
   methods: {
-    clickHandler: function clickHandler() {
-      this.text = 'You reseted tinymce\'s content';
-    },
     fetchCaseItems: function fetchCaseItems() {
       var _this = this;
 
       this.path = window.location.pathname.split("/");
-      this.i_case = this.path[this.path.length - 2];
-      fetch("/case/" + this.i_case + "/items").then(function (res) {
-        return res.text();
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items").then(function (res) {
+        return res.json();
       }).then(function (res) {
-        _this.items = res.text;
+        _this.items = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
-    updateItemOrder: function updateItemOrder() {
+    fetchCase: function fetchCase() {
       var _this2 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.case_to_show = res.data;
+        _this2.case_title = _this2.case_to_show[0].c_title;
+        _this2.ready = true;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+      console.log(this.case_to_show);
+    },
+    updateItemOrder: function updateItemOrder() {
+      var _this3 = this;
 
       this.path = window.location.pathname.split("/");
       this.uid = this.path[this.path.length - 2];
       fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
         return res.text();
       }).then(function (res) {
-        _this2.groups = res.text;
-        _this2.ready = true;
+        //this.groups = res.text;
+        _this3.ready = true;
       })["catch"](function (err) {
         return console.log(err);
       });
+    },
+    addItem: function addItem(users_to_add) {
+      var _this4 = this;
+
+      console.log(users_to_add);
+      fetch("/group/members/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_add)
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+
+        _this4.fetchMembers();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    removeItem: function removeItem(users_to_remove) {
+      var _this5 = this;
+
+      console.log(JSON.stringify(users_to_remove));
+      fetch("/group/members/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_remove)
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+
+        _this5.fetchMembers();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    fetchCaseParameters: function fetchCaseParameters() {
+      var _this6 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this6.items = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    updateCaseParameters: function updateCaseParameters() {
+      var _this7 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this7.items = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    onClick: function onClick() {
+      // update page of Casess
+      this.pageOfCases = pageOfCases;
+    },
+    onEdit: function onEdit() {
+      this.cids = [];
+
+      for (var i in this.cids) {
+        this.cids.push(this.cids[i].cid);
+      }
+    },
+    onSubmit: function onSubmit() {
+      this.cids = [];
+
+      for (var i in this.cids) {
+        this.cids.push(this.cids[i].cid);
+      }
+    },
+    draggable: function draggable() {
+      this.cids = [];
+
+      for (var i in this.cids) {
+        this.cids.push(this.cids[i].cid);
+      }
     }
   }
 });
@@ -58443,7 +58472,9 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { attrs: { id: "app" } }, [
     _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "text-center" }, [_vm._v("Our Group")]),
+      _c("h1", { staticClass: "text-center" }, [
+        _vm._v(_vm._s(_vm.case_title))
+      ]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -58457,13 +58488,15 @@ var render = function() {
               attrs: {
                 href: "#mg_action_table",
                 "data-toggle": "modal",
-                "data-target": "#mg_action_table"
+                "data-target": "#mg_action_table",
+                "data-dismiss": "modal"
               },
               on: {
                 click: function($event) {
                   ;(_vm.showModal = true),
                     (_vm.action = "Remove"),
-                    (_vm.actor = "member(s)")
+                    (_vm.actor = "member(s)"),
+                    _vm.fetchMembers()
                 }
               }
             },
@@ -58480,13 +58513,15 @@ var render = function() {
               attrs: {
                 href: "#mg_action_table",
                 "data-toggle": "modal",
-                "data-target": "#mg_action_table"
+                "data-target": "#mg_action_table",
+                "data-dismiss": "modal"
               },
               on: {
                 click: function($event) {
                   ;(_vm.showModal = true),
                     (_vm.action = "Add"),
-                    (_vm.actor = "member(s)")
+                    (_vm.actor = "member(s)"),
+                    _vm.fetchUsers()
                 }
               }
             },
@@ -58499,29 +58534,58 @@ var render = function() {
           _vm._v(" "),
           _vm.showModal
             ? _c("mg_action_table", {
-                attrs: { action: _vm.action, actor: _vm.actor },
+                attrs: {
+                  action: _vm.action,
+                  actor: _vm.actor,
+                  users: _vm.users
+                },
                 on: {
                   close: function($event) {
                     _vm.showModal = false
-                  }
+                  },
+                  addUsers: _vm.addUsers,
+                  removeUsers: _vm.removeUsers
                 }
               })
-            : _vm._e(),
-          _vm._v(" "),
-          _c("p", { staticStyle: { "margin-left": "90px" } }, [
-            _vm._v("Members")
-          ])
+            : _vm._e()
         ],
         1
       ),
       _vm._v(" "),
       _vm._m(0),
       _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      _vm._m(1),
-      _vm._v(" "),
-      _vm._m(2)
+      _c("div", { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } }, [
+        _c("div", { staticClass: "col-sm-12 mb-3" }, [
+          _c(
+            "ul",
+            { staticClass: "list-group list-group-flush border-0" },
+            _vm._l(_vm.items, function(item) {
+              return _c(
+                "li",
+                { key: item.iid, staticClass: "list-group-item" },
+                [
+                  _c("div", { staticClass: "card-body" }, [
+                    _c("h5", { staticClass: "card-title" }, [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v(_vm._s(item.i_name))
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
+                      _vm._v(_vm._s(item.i_order))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "card-text" }, [
+                      _vm._v(_vm._s(item.i_content))
+                    ])
+                  ])
+                ]
+              )
+            }),
+            0
+          )
+        ])
+      ])
     ])
   ])
 }
@@ -58531,198 +58595,9 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c(
-      "div",
-      { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
-      [
-        _c("div", { staticClass: "col-lg-4 mb-4" }, [
-          _c("div", { staticClass: "card h-100 text-center shadow" }, [
-            _c(
-              "i",
-              {
-                staticClass: "material-icons pt-2",
-                staticStyle: { "font-size": "125px" }
-              },
-              [_vm._v("person")]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [_vm._v("Team Member")]),
-              _vm._v(" "),
-              _c("h6", { staticClass: "card-subtitle text-muted" }, [
-                _vm._v("Position")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-footer" }, [
-              _c("a", { attrs: { href: "#" } }, [_vm._v("name@example.com")])
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-lg-4 mb-4" }, [
-          _c("div", { staticClass: "card h-100 text-center shadow" }, [
-            _c(
-              "i",
-              {
-                staticClass: "material-icons pt-2",
-                staticStyle: { "font-size": "125px" }
-              },
-              [_vm._v("person")]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [_vm._v("Team Member")]),
-              _vm._v(" "),
-              _c("h6", { staticClass: "card-subtitle text-muted" }, [
-                _vm._v("Position")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-footer" }, [
-              _c("a", { attrs: { href: "#" } }, [_vm._v("name@example.com")])
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-lg-4 mb-4" }, [
-          _c("div", { staticClass: "card h-100 text-center shadow" }, [
-            _c(
-              "i",
-              {
-                staticClass: "material-icons pt-2",
-                staticStyle: { "font-size": "125px" }
-              },
-              [_vm._v("person")]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [_vm._v("Team Member")]),
-              _vm._v(" "),
-              _c("h6", { staticClass: "card-subtitle text-muted" }, [
-                _vm._v("Position")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-footer" }, [
-              _c("a", { attrs: { href: "#" } }, [_vm._v("name@example.com")])
-            ])
-          ])
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
       "h1",
       { staticClass: "mt-5 text-center", attrs: { id: "cases_header" } },
-      [
-        _c("a", { attrs: { href: "#" } }, [_vm._v("Create case study")]),
-        _vm._v(" "),
-        _c("p", { staticStyle: { "margin-left": "170px" } }, [
-          _vm._v("Our Cases")
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } },
-      [
-        _c("div", { staticClass: "col-sm-12 mb-3" }, [
-          _c("ul", { staticClass: "list-group list-group-flush border-0" }, [
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "list-group-item" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("h5", { staticClass: "card-title" }, [
-                  _c("a", { attrs: { href: "#" } }, [_vm._v("Card One")])
-                ]),
-                _vm._v(" "),
-                _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                  _vm._v("Card subtitle")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "card-text" }, [_vm._v("Some text.")])
-              ])
-            ])
-          ])
-        ])
-      ]
+      [_c("a", { attrs: { href: "#" } }, [_vm._v("Edit")])]
     )
   }
 ]
