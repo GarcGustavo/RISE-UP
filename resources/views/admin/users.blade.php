@@ -88,7 +88,6 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th></th>
                             </tr>
                             </thead>
                             <tfoot>
@@ -96,27 +95,19 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th></th>
                             </tr>
                             </tfoot>
                             <tbody>
 
                             @forelse($requests as $request)
                                 <tr>
-                                    <td> {{$request->first_name }} {{$request->last_name }} </td>
+                                    <td class="font-weight-bold">  <a href="/admin/user/{{$request->uid}}/edit">{{$request->first_name }} {{$request->last_name }}</a>  </td>
                                     <td> {{$request->contact_email }} </td>
                                     <td> {{$request->r_name }} </td>
-                                    <td>
-
-                                        <button type="submit" class="btn btn-primary">Approve</button>
-
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td>Nadie</td>
-                                    <td></td>
-                                    <td></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
