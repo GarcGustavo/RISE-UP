@@ -19,7 +19,7 @@
         @click="gname_box_show=true,
         action='Create',
         actor='group', fetchUsers()"
-      > 
+      >
         <i class="material-icons">add_circle_outline</i>
       </a>
 
@@ -64,7 +64,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(group,index) in groups" :key="index">
+        <tr v-for="(group,index) in pageOfGroups" :key="index">
           <td>
             <div class="check-box">
               <input

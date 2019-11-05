@@ -58,8 +58,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(case_study,index) in cases" :key="index">
-          <td>
+        <tr v-for="(case_study,index) in pageOfCases" :key="index">
+          <td v-if="case_study.c_owner == uid">
             <div class="check-box">
               <input
                 class="checkbox"
@@ -69,6 +69,11 @@
                 :value="case_study.cid"
               >
               <label for="checkbox">{{index+1}}</label>
+            </div>
+          </td>
+          <td v-else>
+            <div>
+              <label style="padding-top:18px;padding-left:18px;">{{index+1}}</label>
             </div>
           </td>
           <td>

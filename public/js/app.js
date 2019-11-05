@@ -3466,6 +3466,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -42209,55 +42214,70 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.cases, function(case_study, index) {
+          _vm._l(_vm.pageOfCases, function(case_study, index) {
             return _c("tr", { key: index }, [
-              _c("td", [
-                _c("div", { staticClass: "check-box" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.cids,
-                        expression: "cids"
-                      }
-                    ],
-                    staticClass: "checkbox",
-                    attrs: { type: "checkbox", id: "checkbox" },
-                    domProps: {
-                      value: case_study.cid,
-                      checked: Array.isArray(_vm.cids)
-                        ? _vm._i(_vm.cids, case_study.cid) > -1
-                        : _vm.cids
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.cids,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = case_study.cid,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 && (_vm.cids = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.cids = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
+              case_study.c_owner == _vm.uid
+                ? _c("td", [
+                    _c("div", { staticClass: "check-box" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.cids,
+                            expression: "cids"
                           }
-                        } else {
-                          _vm.cids = $$c
+                        ],
+                        staticClass: "checkbox",
+                        attrs: { type: "checkbox", id: "checkbox" },
+                        domProps: {
+                          value: case_study.cid,
+                          checked: Array.isArray(_vm.cids)
+                            ? _vm._i(_vm.cids, case_study.cid) > -1
+                            : _vm.cids
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.cids,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = case_study.cid,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 && (_vm.cids = $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  (_vm.cids = $$a
+                                    .slice(0, $$i)
+                                    .concat($$a.slice($$i + 1)))
+                              }
+                            } else {
+                              _vm.cids = $$c
+                            }
+                          }
                         }
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "checkbox" } }, [
-                    _vm._v(_vm._s(index + 1))
+                      }),
+                      _vm._v(" "),
+                      _c("label", { attrs: { for: "checkbox" } }, [
+                        _vm._v(_vm._s(index + 1))
+                      ])
+                    ])
                   ])
-                ])
-              ]),
+                : _c("td", [
+                    _c("div", [
+                      _c(
+                        "label",
+                        {
+                          staticStyle: {
+                            "padding-top": "18px",
+                            "padding-left": "18px"
+                          }
+                        },
+                        [_vm._v(_vm._s(index + 1))]
+                      )
+                    ])
+                  ]),
               _vm._v(" "),
               _c("td", [
                 _c("a", { attrs: { href: "#" } }, [
@@ -42435,7 +42455,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.groups, function(group, index) {
+          _vm._l(_vm.pageOfGroups, function(group, index) {
             return _c("tr", { key: index }, [
               _c("td", [
                 _c("div", { staticClass: "check-box" }, [
