@@ -2357,10 +2357,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       showModal: false,
+      old_name: "",
       group_name: "",
       group_data: "",
       action: "",
@@ -2370,9 +2375,10 @@ __webpack_require__.r(__webpack_exports__);
       users: [],
       cases: [],
       members_to_add: [],
-      value: "lol",
+      errors: [],
       tempValue: null,
-      editing: false
+      editing: false,
+      error: false
     };
   },
   created: function created() {
@@ -2388,12 +2394,25 @@ __webpack_require__.r(__webpack_exports__);
     disableEditing: function disableEditing() {
       this.tempValue = null;
       this.editing = false;
+      this.error = false;
     },
     saveEdit: function saveEdit() {
-      // However we want to save it to the database
-      this.group_name = this.tempValue;
-      this.changeGroupName();
-      this.disableEditing();
+      this.old_name = this.group_name;
+      this.group_name = this.tempValue.trim(); // However we want to save it to the database
+
+      if (this.group_name) {
+        this.changeGroupName();
+        this.disableEditing();
+      } else {
+        this.errors = [];
+
+        if (!this.group_name) {
+          this.errors.push("Group name required.");
+        }
+
+        this.group_name = this.old_name;
+        this.error = true;
+      }
     },
     fetchUsers: function fetchUsers() {
       var _this = this;
@@ -3065,15 +3084,19 @@ __webpack_require__.r(__webpack_exports__);
       if (this.uids.length == 0) {
         this.isSelected = false;
       } else {
-        return this.isSelected = true;
+        this.isSelected = true;
+
+        if (this.action == "Add") {
+          this.sendUsers();
+        }
       }
     },
     validateInput: function validateInput() {
-      if (this.g_name.length) {
+      if (this.g_name) {
         this.sendGroupData();
         this.modal = "modal";
         this.valid_input = true;
-        this.errors = [];
+        this.errors = []; //reset
       } else {
         this.modal = "";
         this.valid_input = false;
@@ -3103,8 +3126,6 @@ __webpack_require__.r(__webpack_exports__);
       this.gid = Number(this.path[this.path.length - 1]);
 
       for (var i in this.uids) {
-        // this.user_to_add_remove[i].uid = this.uids[i];
-        // this.user_to_add_remove[i].gid = this.gid;
         this.user_to_add_remove.push({
           uid: this.uids[i],
           gid: this.gid
@@ -3120,9 +3141,9 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         this.uncheck(); // uncheck all values when finished
-      }
 
-      this.user_to_add_remove = []; //reset variable
+        this.user_to_add_remove = []; //reset variable
+      }
     },
     sendGroupData: function sendGroupData() {
       this.path = window.location.pathname.split("/");
@@ -3132,8 +3153,7 @@ __webpack_require__.r(__webpack_exports__);
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
       this.group_to_create.g_name = this.g_name;
       this.group_to_create.g_status = "lol";
-      this.group_to_create.g_creation_date = this.date; //new Date().toLocaleString();
-
+      this.group_to_create.g_creation_date = this.date;
       this.group_to_create.g_owner = this.uid;
 
       for (var i in this.uids) {
@@ -3151,7 +3171,7 @@ __webpack_require__.r(__webpack_exports__);
       });
       console.log(this.group_to_create);
 
-      if (this.isSelected || this.action == 'Create') {
+      if (this.isSelected || this.action == "Create") {
         this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
       }
 
@@ -40738,7 +40758,17 @@ var render = function() {
             _vm._v("Cancel")
           ]),
           _vm._v(" "),
-          _c("button", { on: { click: _vm.saveEdit } }, [_vm._v("Save")])
+          _c(
+            "button",
+            {
+              attrs: {
+                "data-toggle": "modal",
+                "data-target": "#mg_action_confirm"
+              },
+              on: { click: _vm.saveEdit }
+            },
+            [_vm._v("Save")]
+          )
         ])
       : _vm._e(),
     _vm._v(" "),
@@ -40809,6 +40839,14 @@ var render = function() {
                 removeUsers: _vm.removeUsers
               }
             })
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.error
+          ? _c(
+              "div",
+              [_c("mg_action_confirm", { attrs: { errors: _vm.errors } })],
+              1
+            )
           : _vm._e(),
         _vm._v(" "),
         _c("p", { staticStyle: { "margin-left": "90px" } }, [_vm._v("Members")])
@@ -41741,7 +41779,7 @@ var render = function() {
                             },
                             on: {
                               click: function($event) {
-                                _vm.isUserSelected(), _vm.sendUsers()
+                                return _vm.isUserSelected()
                               }
                             }
                           },

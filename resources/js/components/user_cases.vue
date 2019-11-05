@@ -28,7 +28,7 @@
         <mg_action_confirm
           :action_confirm="action"
           :actor="actor"
-:errors="[]"
+          :errors="[]"
           :isSelected="isSelected"
           @removeCases="removeCases"
         ></mg_action_confirm>
@@ -43,7 +43,7 @@
         ></mg_action_confirm>
       </div>
 
-      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy" ></case_create_dbox>
+      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy"></case_create_dbox>
 
       <p>My cases</p>
     </h1>
@@ -96,9 +96,9 @@ export default {
       uid: "",
       action: "",
       actor: "",
-showModal:false,
+      showModal: false,
       isSelected: false,
-      ready:false,
+      ready: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },

@@ -11,7 +11,7 @@
     <div v-if="editing">
       <input v-model="tempValue" class="input">
       <button @click="disableEditing">Cancel</button>
-      <button @click="saveEdit">Save</button>
+      <button data-toggle="modal" data-target="#mg_action_confirm" @click="saveEdit">Save</button>
     </div>
     <!--
     <ol class="breadcrumb">
@@ -53,6 +53,10 @@
         @addUsers="addUsers"
         @removeUsers="removeUsers"
       ></mg_action_table>
+
+      <div v-if="error">
+        <mg_action_confirm :errors="errors"></mg_action_confirm>
+      </div>
 
       <p style="margin-left:90px;">Members</p>
     </h1>
@@ -104,6 +108,7 @@ export default {
   data() {
     return {
       showModal: false,
+      old_name:"",
       group_name: "",
       group_data: "",
       action: "",
@@ -113,9 +118,10 @@ export default {
       users: [],
       cases: [],
       members_to_add: [],
-      value: "lol",
+      errors: [],
       tempValue: null,
-      editing: false
+      editing: false,
+      error:false,
     };
   },
 
@@ -133,12 +139,24 @@ export default {
     disableEditing() {
       this.tempValue = null;
       this.editing = false;
+      this.error=false;
     },
     saveEdit() {
+      this.old_name = this.group_name;
+      this.group_name = this.tempValue.trim();
       // However we want to save it to the database
-      this.group_name = this.tempValue;
-      this.changeGroupName();
-      this.disableEditing();
+      if (this.group_name) {
+        this.changeGroupName();
+        this.disableEditing();
+      } else {
+        this.errors = [];
+
+        if (!this.group_name) {
+          this.errors.push("Group name required.");
+        }
+        this.group_name = this.old_name;
+         this.error=true;
+      }
     },
 
     fetchUsers() {

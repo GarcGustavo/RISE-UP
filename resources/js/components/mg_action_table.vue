@@ -94,7 +94,7 @@
                   data-dismiss="modal"
                   data-toggle="modal"
                   data-target="#mg_action_confirm"
-                  @click="isUserSelected(), sendUsers()"
+                  @click="isUserSelected()"
                 >{{action}}</button>
               </div>
 
@@ -187,7 +187,7 @@ export default {
 
       g_name: "",
       search: "",
-      modal:"",
+      modal: "",
       errors: [],
       valid_input: false,
       isSelected: false,
@@ -218,16 +218,19 @@ export default {
       if (this.uids.length == 0) {
         this.isSelected = false;
       } else {
-        return (this.isSelected = true);
+        this.isSelected = true;
+        if (this.action == "Add") {
+          this.sendUsers();
+        }
       }
     },
 
     validateInput() {
-      if (this.g_name.length) {
+      if (this.g_name) {
         this.sendGroupData();
-         this.modal = "modal";
+        this.modal = "modal";
         this.valid_input = true;
-        this.errors = [];
+        this.errors = []; //reset
       } else {
         this.modal = "";
         this.valid_input = false;
@@ -257,8 +260,6 @@ export default {
       this.gid = Number(this.path[this.path.length - 1]);
 
       for (let i in this.uids) {
-        // this.user_to_add_remove[i].uid = this.uids[i];
-        // this.user_to_add_remove[i].gid = this.gid;
         this.user_to_add_remove.push({
           uid: this.uids[i],
           gid: this.gid
@@ -272,8 +273,8 @@ export default {
           this.$emit("removeUsers", this.user_to_add_remove);
         }
         this.uncheck(); // uncheck all values when finished
+        this.user_to_add_remove = []; //reset variable
       }
-      this.user_to_add_remove = []; //reset variable
     },
 
     sendGroupData() {
@@ -284,7 +285,7 @@ export default {
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
       this.group_to_create.g_name = this.g_name;
       this.group_to_create.g_status = "lol";
-      this.group_to_create.g_creation_date = this.date; //new Date().toLocaleString();
+      this.group_to_create.g_creation_date = this.date;
       this.group_to_create.g_owner = this.uid;
 
       for (let i in this.uids) {
@@ -299,7 +300,7 @@ export default {
         gid: this.group_to_create.gid
       });
       console.log(this.group_to_create);
-      if (this.isSelected||this.action=='Create') {
+      if (this.isSelected || this.action == "Create") {
         this.$emit(
           "createGroup",
           this.group_to_create,
@@ -313,7 +314,7 @@ export default {
         g_creation_date: "",
         g_owner: ""
       };
-      this.g_name="";
+      this.g_name = "";
       this.user_to_add_remove = [];
       this.uncheck();
     }
