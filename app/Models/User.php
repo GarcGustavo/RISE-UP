@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class user extends Model
 {
+    protected $primaryKey = 'uid';
+
    // use SoftDeletes;
 
     public $table = 'User';

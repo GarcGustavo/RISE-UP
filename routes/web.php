@@ -81,6 +81,8 @@ Route::get('/admin/groups', 'AdminController@groups')->name('admin.groups');
 //admin edits a user
 Route::get('/admin/user/{id}/edit', 'AdminController@userEdit');
 
+Route::put('/admin/user/{id}', 'AdminController@userUpdate');
+
 //admin edits a group
 Route::get('/admin/group/{id}/edit', 'AdminController@groupEdit');
 
