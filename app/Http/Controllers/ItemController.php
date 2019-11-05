@@ -19,12 +19,12 @@ class ItemController extends Controller
         ->select('Item.*')
         ->get();
 
-        return GroupResource::collection($caseItems);
+        return ItemResource::collection($caseItems);
     }
 
     public function addCaseItem($id)
     {
-        $caseItem = $request->isMethod('put') ? group::findOrFail($request->gid): new group;
+        $caseItem = $request->isMethod('put') ? Item::findOrFail($request->gid): new group;
 
         $caseItem->gid = $request -> input('gid');
         $caseItem->gname = $request -> input('gname');
@@ -33,18 +33,17 @@ class ItemController extends Controller
         $caseItem->g_owner = $request -> input('g_owner');
 
         if ($caseItem->save()) {
-            return new GroupResource($caseItem);
+            return new ItemResource($caseItem);
         }
     }
 
     public function removeCaseItem($id)
     {
-        $group = Group::findOrFail($id);
-
-
-        if ($group->delete()) {
-            return new GroupResource($group);
-        }
+        $to_delete = $request->all();
+        $cids_to_delete = array_map(function($item){ return $item['gid']; }, $to_delete);
+        $iids_to_delete = array_map(function($item){ return $item['uid']; }, $to_delete);
+        User_Groups::whereIn('gid', $gids_to_delete)->whereIn('uid', $uids_to_delete)->delete();
+        return response()->json(['message'=>'User(s) has been removed from group']);
     }
 
     public function updateItemOrder(Request $request, $id)

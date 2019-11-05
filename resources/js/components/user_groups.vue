@@ -25,7 +25,7 @@
 
       <div v-if="action=='Remove'">
         <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
+        <mg_action_confirm :action_confirm="action" :actor="actor" @removeGroups="removeGroups"></mg_action_confirm>
       </div>
 
       <mg_action_table
@@ -33,6 +33,7 @@
         :actor="actor"
         :gname_box_show="gname_box_show"
         :users="users"
+        @createGroup="createGroup"
       ></mg_action_table>
 
       <p>My groups</p>
@@ -48,11 +49,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(group,index) in pageOfGroups" :key="index">
+        <tr v-for="(group,index) in groups" :key="index">
           <td>
             <div class="check-box">
-              <input class="checkbox" type="checkbox" id="'checkbox' + index" v-model="checked">
-              <label for="'checkbox' + index">{{index+1}}</label>
+              <input
+                class="checkbox"
+                type="checkbox"
+                id="checkbox"
+                v-model="gids"
+                :value="group.gid"
+              >
+              <label for="checkbox">{{index+1}}</label>
             </div>
           </td>
           <td>
@@ -72,7 +79,16 @@ export default {
   data() {
     return {
       ready: false,
+      gids: [],
       groups: [],
+      group: {
+        gid: "",
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
+      groups_to_remove: [],
       pageOfGroups: [],
       users: [],
       uid: "",
@@ -81,7 +97,7 @@ export default {
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
-  components: {},
+
   created() {
     this.fetchGroups();
   },
@@ -90,6 +106,14 @@ export default {
     onChangePage(pageOfGroups) {
       // update page of Groups
       this.pageOfGroups = pageOfGroups;
+    },
+
+    uncheck() {
+      this.gids = [];
+
+      for (let i in this.gids) {
+        this.gids.push(this.gids[i].gid);
+      }
     },
 
     fetchUsers() {
@@ -103,7 +127,7 @@ export default {
 
     fetchGroups() {
       this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
+      this.uid = Number(this.path[this.path.length - 2]);
       fetch("/user_groups/" + this.uid)
         .then(res => res.json())
         .then(res => {
@@ -111,6 +135,80 @@ export default {
           this.ready = true;
         })
         .catch(err => console.log(err));
+    },
+
+    createGroup(group, members) {
+      // console.log(JSON.stringify(group));
+      // console.log(JSON.stringify(members));
+      fetch("/group/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(group)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+          this.addUsers(members);
+          this.fetchGroups();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    addUsers(users_to_add) {
+      console.log(JSON.stringify(users_to_add));
+      fetch("/group/members/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_add)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+          this.fetchGroups();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    removeGroups() {
+      console.log(JSON.stringify(this.gids));
+
+      for (let i in this.gids) {
+        this.groups_to_remove.push({
+          gid: this.gids[i]
+        });
+      }
+
+      fetch("/user_groups/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.groups_to_remove)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+          this.fetchGroups();
+          this.uncheck();
+          this.groups_to_remove = [];
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     }
   }
 };
