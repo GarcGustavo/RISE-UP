@@ -22,6 +22,15 @@ class GroupController extends Controller
         return GroupResource::collection($groups);
     }
 
+    public function info($id)
+    {
+        $group = Group::where('gid',$id)->get();
+
+        return GroupResource::collection($group);
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -59,7 +68,7 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show_groups($id)
+    public function showGroups($id)
     {
         //$group = Group::findOrFail($id);
 
@@ -97,7 +106,10 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $group = Group::where('gid',$id)->first();
+        $group->g_name=$request->input('g_name');
+        $group->save();
+        return response()->json(['message'=>'Changed group name successfully']);
     }
 
     /**
@@ -115,5 +127,5 @@ class GroupController extends Controller
         Group::whereIn('gid', $gids_to_delete)->delete();
         return response()->json(['message'=>'Group(s) has been removed']);
     }
-   
+
 }

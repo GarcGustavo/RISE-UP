@@ -8,7 +8,7 @@
         data-toggle="modal"
         data-target="#mg_action_confirm"
         @click="action='Remove',
-        actor='group(s)'"
+        actor='group(s)',isGroupSelected()"
       >
         <i class="material-icons">remove_circle_outline</i>
       </a>
@@ -19,13 +19,28 @@
         @click="gname_box_show=true,
         action='Create',
         actor='group', fetchUsers()"
-      >
+      > 
         <i class="material-icons">add_circle_outline</i>
       </a>
 
-      <div v-if="action=='Remove'">
+      <div v-if="action=='Remove' && isSelected  ">
         <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm :action_confirm="action" :actor="actor" @removeGroups="removeGroups"></mg_action_confirm>
+        <mg_action_confirm
+          :action_confirm="action"
+          :actor="actor"
+          :errors="[]"
+          :isSelected="isSelected"
+          @removeGroups="removeGroups"
+        ></mg_action_confirm>
+      </div>
+      <div v-else-if="action=='Remove' && !isSelected ">
+        <mg_action_confirm
+          :action_confirm="action"
+          :actor="actor"
+          :errors="[]"
+          :isSelected="isSelected"
+          @removeGroups="removeGroups"
+        ></mg_action_confirm>
       </div>
 
       <mg_action_table
@@ -88,12 +103,14 @@ export default {
         g_creation_date: "",
         g_owner: ""
       },
+
       groups_to_remove: [],
       pageOfGroups: [],
       users: [],
       uid: "",
       action: "",
       actor: "",
+      isSelected: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
@@ -102,12 +119,20 @@ export default {
     this.fetchGroups();
   },
 
+  computed: {},
   methods: {
     onChangePage(pageOfGroups) {
       // update page of Groups
       this.pageOfGroups = pageOfGroups;
     },
+    isGroupSelected() {
+      if (this.gids.length == 0) {
+        this.isSelected = false;
+      } else {
+        this.isSelected = true;
+      }
 
+    },
     uncheck() {
       this.gids = [];
 

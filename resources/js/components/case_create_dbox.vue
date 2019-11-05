@@ -26,7 +26,13 @@
             <div class="modal-body">
               <label>Title</label>
               <div class="input-group-append">
-                <input  class="form-control input-sm" style="width:350px;" type="text" v-model="title" placeholder="Name...">
+                <input
+                  class="form-control input-sm"
+                  style="width:350px;"
+                  type="text"
+                  v-model="title"
+                  placeholder="Name..."
+                >
               </div>
 
               <!-- group selection for table -->
@@ -58,8 +64,9 @@
                 type="button"
                 class="btn btn-primary"
                 data-toggle="modal"
+                :data-dismiss="modal"
                 data-target="#mg_action_confirm"
-                @click="sendCaseStudyData()"
+                @click="validateInput()"
               >{{action}}</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
@@ -67,8 +74,17 @@
         </div>
       </div>
       <!--confirmation dialogue box -->
-      <div>
-        <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
+      <div v-if="valid_input">
+        <mg_action_confirm
+          :action_confirm="action"
+          :actor="actor"
+          :errors="errors"
+          @close="close=true"
+          @revalidate="validateInput"
+        ></mg_action_confirm>
+      </div>
+      <div v-else>
+        <mg_action_confirm :action_confirm="action" :actor="actor" :errors="errors"></mg_action_confirm>
       </div>
     </div>
   </transition>
@@ -88,6 +104,7 @@ export default {
   data() {
     return {
       showModal: false,
+      modal: "",
       title: "",
       uid: "",
       gid: "",
@@ -102,11 +119,16 @@ export default {
         c_owner: "",
         c_group: ""
       },
+
       cases: [],
       groups: [],
+      errors: [],
+
       maxCount: 255,
       remainingCount: 255,
-      hasError: false
+      close: false,
+      hasError: false,
+      valid_input: false
     };
   },
   created() {
@@ -114,8 +136,29 @@ export default {
     this.totalCases();
   },
 
-
   methods: {
+    validateInput() {
+      if (this.title && this.description) {
+        this.sendCaseStudyData();
+        this.valid_input = true;
+        this.modal = "modal";
+        this.errors = [];
+      } else {
+        this.modal = "";
+        this.valid_input = false;
+
+        this.errors = [];
+
+        if (!this.title) {
+          this.errors.push("title required.");
+        }
+        if (!this.description) {
+          this.errors.push("description required.");
+        }
+      }
+      //  this.valid_input = false;
+    },
+
     countdown() {
       this.remainingCount = this.maxCount - this.description.length;
       this.hasError = this.remainingCount < 0;
@@ -172,6 +215,8 @@ export default {
         c_owner: "",
         c_group: ""
       };
+      this.title = "";
+      this.description = "";
     }
   }
 };

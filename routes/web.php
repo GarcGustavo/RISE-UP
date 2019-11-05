@@ -55,20 +55,20 @@ Route::get('/users', 'UserController@index');
 //List groups
 Route::get('/groups', 'GroupController@index');
 
-//List cases
-Route::get('/cases', 'CaseController@index');
+//List group info
+Route::get('/group/{id}/info', 'GroupController@info');
 
 //List members of a group
-Route::get('/group/{id}/members', 'User_GroupsController@show_members');
-
-//List groups of a user
-Route::get('/user_groups/{id}', 'GroupController@show_groups');
+Route::get('/group/{id}/members', 'User_GroupsController@showMembers');
 
 //List cases of a group
-Route::get('/group/{id}/cases', 'CaseController@show_group_cases');
+Route::get('/group/{id}/cases', 'CaseController@showGroupCases');
 
-//List all cases of a user(author and group cases)
-Route::get('/user_cases/{id}', 'CaseController@show_all_user_cases');
+//Create a group
+Route::post('/group/create', 'GroupController@store');
+
+//Update group name
+Route::post('/group/{id}/update', 'GroupController@update');
 
 //Add users to group
 Route::post('/group/members/add', 'User_GroupsController@store');
@@ -76,14 +76,22 @@ Route::post('/group/members/add', 'User_GroupsController@store');
 //Remove users from group
 Route::delete('/group/members/remove', 'User_GroupsController@destroy');
 
+
+
+//List cases
+Route::get('/cases', 'CaseController@index');
+
+//List groups of a user
+Route::get('/user_groups/{id}', 'GroupController@showGroups');
+
+//List all cases of a user(author and group cases)
+Route::get('/user_cases/{id}', 'CaseController@showAllUserCases');
+
 //Delete group
 Route::delete('user_groups/remove', 'GroupController@destroy');
 
 //Delete case study
 Route::delete('user_cases/remove', 'CaseController@destroy');
-
-//Create a group
-Route::post('/group/create', 'GroupController@store');
 
 //Create a case
 Route::post('/case/create', 'CaseController@store');

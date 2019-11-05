@@ -64,7 +64,7 @@ class CaseController extends Controller
         //
     }
 
-    public function show_group_cases($id)
+    public function showGroupCases($id)
     {
         $gid = $id;
 
@@ -72,7 +72,7 @@ class CaseController extends Controller
         return Case_StudyResource::collection($cases);
     }
 
-    public function show_all_user_cases($id)
+    public function showAllUserCases($id)
     {
         $uid = $id;
 
@@ -131,6 +131,6 @@ class CaseController extends Controller
             return $item['cid'];
         }, $to_delete);
         case_study::whereIn('cid', $cids_to_delete)->delete();
-        return response()->json(['message'=>'Case(s) have been removed']);
+        return response()->json(['message'=>'Case(s) has been removed']);
     }
 }

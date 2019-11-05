@@ -83,9 +83,10 @@
                   class="btn btn-primary"
                   data-toggle="modal"
                   data-target="#mg_action_confirm"
+                  @click="isUserSelected()"
                 >{{action}}</button>
               </div>
-              <div v-else-if="action=='Add'  && actor=='member(s)'">
+              <div v-else-if="action=='Add'  && actor=='member(s)' && isSelected">
                 <!--add user to group -->
                 <button
                   type="button"
@@ -93,7 +94,18 @@
                   data-dismiss="modal"
                   data-toggle="modal"
                   data-target="#mg_action_confirm"
-                  @click="sendUsers(), uncheck()"
+                  @click="isUserSelected(), sendUsers()"
+                >{{action}}</button>
+              </div>
+
+              <div v-else-if="action=='Add'  && actor=='member(s)' && !isSelected">
+                <!--add user to group -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                  @click="isUserSelected()"
                 >{{action}}</button>
               </div>
               <!-- create group -->
@@ -101,30 +113,22 @@
                 <button
                   type="button"
                   class="btn btn-primary"
-                  data-dismiss="modal"
+                  :data-dismiss="modal"
                   data-toggle="modal"
                   data-target="#mg_action_confirm"
-                  @click="sendGroupData(), uncheck()"
-                >{{action}}</button>
-              </div>
-              <!--Remove member(s) -->
-              <div v-else-if="action=='Remove' && actor=='member(s)'">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-dismiss="modal"
-                  data-toggle="modal"
-                  data-target="#mg_action_confirm"
+                  @click="isUserSelected(), validateInput()"
                 >{{action}}</button>
               </div>
 
               <!-- close button -->
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
-                @click="uncheck()"
-              >Close</button>
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                  @click="uncheck()"
+                >Close</button>
+              </div>
             </div>
           </div>
         </div>
@@ -135,6 +139,8 @@
         <mg_action_confirm
           :action_confirm="action"
           :actor="actor"
+          :isSelected="isSelected"
+          :errors="errors"
           @sendUsers="sendUsers"
           @sendGroupData="sendGroupData"
         ></mg_action_confirm>
@@ -171,6 +177,7 @@ export default {
         email: ""
       },
       user_to_add_remove: [],
+      groups: [],
       group_to_create: {
         g_name: "",
         g_status: "",
@@ -179,8 +186,11 @@ export default {
       },
 
       g_name: "",
-      groups: [],
       search: "",
+      modal:"",
+      errors: [],
+      valid_input: false,
+      isSelected: false,
       success: false
     };
   },
@@ -203,6 +213,32 @@ export default {
       for (let i in this.uids) {
         this.uids.push(this.uids[i].uid);
       }
+    },
+    isUserSelected() {
+      if (this.uids.length == 0) {
+        this.isSelected = false;
+      } else {
+        return (this.isSelected = true);
+      }
+    },
+
+    validateInput() {
+      if (this.g_name.length) {
+        this.sendGroupData();
+         this.modal = "modal";
+        this.valid_input = true;
+        this.errors = [];
+      } else {
+        this.modal = "";
+        this.valid_input = false;
+
+        this.errors = [];
+
+        if (!this.g_name) {
+          this.errors.push("Group name required.");
+        }
+      }
+      //  this.valid_input = false;
     },
 
     totalGroups() {
@@ -229,15 +265,15 @@ export default {
         });
       }
       //emit data to parent
-
-      if (this.action == "Add") {
-        this.$emit("addUsers", this.user_to_add_remove);
-        this.user_to_add_remove = []; //reset variable
-      } else {
-        this.$emit("removeUsers", this.user_to_add_remove);
-        this.user_to_add_remove = []; //reset variable
-        // this.uncheck(); // uncheck all values when finished
+      if (this.isSelected) {
+        if (this.action == "Add") {
+          this.$emit("addUsers", this.user_to_add_remove);
+        } else {
+          this.$emit("removeUsers", this.user_to_add_remove);
+        }
+        this.uncheck(); // uncheck all values when finished
       }
+      this.user_to_add_remove = []; //reset variable
     },
 
     sendGroupData() {
@@ -263,7 +299,13 @@ export default {
         gid: this.group_to_create.gid
       });
       console.log(this.group_to_create);
-      this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
+      if (this.isSelected||this.action=='Create') {
+        this.$emit(
+          "createGroup",
+          this.group_to_create,
+          this.user_to_add_remove
+        );
+      }
       this.totalGroups();
       this.group_to_create = {
         g_name: "",
@@ -271,7 +313,9 @@ export default {
         g_creation_date: "",
         g_owner: ""
       };
+      this.g_name="";
       this.user_to_add_remove = [];
+      this.uncheck();
     }
   }
 };

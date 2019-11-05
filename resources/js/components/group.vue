@@ -1,8 +1,18 @@
 <template>
   <!-- Team Members -->
   <div class="body mb-5 mt-5">
-    <h1 class="text-center">Our Group</h1>
+    <!-- <h1 class="text-center">Our Group</h1>-->
 
+    <div v-if="!editing">
+      <span class="text" @click="enableEditing">
+        <h1 class="text-center">{{group_name}}</h1>
+      </span>
+    </div>
+    <div v-if="editing">
+      <input v-model="tempValue" class="input">
+      <button @click="disableEditing">Cancel</button>
+      <button @click="saveEdit">Save</button>
+    </div>
     <!--
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -64,8 +74,8 @@
     </div>
 
     <hr>
-    <!-- Case view -->
 
+    <!-- Case view -->
     <h1 id="cases_header" class="mt-5 text-center">
       <a href="#">Create case study</a>
       <p style="margin-left:170px;">Our Cases</p>
@@ -94,22 +104,43 @@ export default {
   data() {
     return {
       showModal: false,
+      group_name: "",
+      group_data: "",
       action: "",
       actor: "",
       gid: "",
       members: [],
       users: [],
       cases: [],
-      members_to_add: []
+      members_to_add: [],
+      value: "lol",
+      tempValue: null,
+      editing: false
     };
   },
 
   created() {
+    this.fetchGroupInfo();
     this.fetchMembers();
     this.fetchCases();
   },
 
   methods: {
+    enableEditing() {
+      this.tempValue = this.group_name;
+      this.editing = true;
+    },
+    disableEditing() {
+      this.tempValue = null;
+      this.editing = false;
+    },
+    saveEdit() {
+      // However we want to save it to the database
+      this.group_name = this.tempValue;
+      this.changeGroupName();
+      this.disableEditing();
+    },
+
     fetchUsers() {
       fetch("/users")
         .then(res => res.json())
@@ -133,19 +164,50 @@ export default {
     },
 
     fetchCases() {
-      this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
       fetch("/group/" + this.gid + "/cases")
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
-          
         })
         .catch(err => console.log(err));
     },
 
+    fetchGroupInfo() {
+      this.path = window.location.pathname.split("/");
+      this.gid = Number(this.path[this.path.length - 1]);
+      fetch("/group/" + this.gid + "/info")
+        .then(res => res.json())
+        .then(res => {
+          this.group_data = res.data;
+          this.group_name = this.group_data[0].g_name;
+        })
+        .catch(err => console.log(err));
+    },
+
+    changeGroupName() {
+      this.path = window.location.pathname.split("/");
+      this.gid = Number(this.path[this.path.length - 1]);
+      fetch("/group/" + this.gid + "/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({ g_name: this.group_name })
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+          this.fetchMembers();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
     addUsers(users_to_add) {
-        console.log((users_to_add));
+      console.log(users_to_add);
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -153,13 +215,12 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body:(JSON.stringify(users_to_add))
+        body: JSON.stringify(users_to_add)
       })
         .then(res => res.text())
         .then(text => {
           console.log(text);
           this.fetchMembers();
-
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -167,8 +228,7 @@ export default {
     },
 
     removeUsers(users_to_remove) {
-
-     console.log(JSON.stringify(users_to_remove));
+      console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
         method: "delete",
         headers: new Headers({
@@ -182,13 +242,10 @@ export default {
         .then(data => {
           console.log(data);
           this.fetchMembers();
-
         })
         .catch(err => {
           console.error("Error: ", err);
         });
-
-
     }
   }
 };

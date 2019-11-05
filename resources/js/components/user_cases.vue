@@ -8,7 +8,7 @@
         data-toggle="modal"
         data-target="#mg_action_confirm"
         @click="action='Remove',
-        actor='case study(s)'"
+        actor='case study(s)', isCaseSelected()"
       >
         <i class="material-icons">remove_circle_outline</i>
       </a>
@@ -16,19 +16,34 @@
         href="#case_create_dbox"
         data-toggle="modal"
         data-target="#case_create_dbox"
-        @click="
+        @click="showModal=true,
         action='Create',
         actor='case study'"
       >
         <i class="material-icons">add_circle_outline</i>
       </a>
 
-      <div v-if="action=='Remove'">
+      <div v-if="action=='Remove' && isSelected">
         <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm :action_confirm="action" :actor="actor" @removeCases="removeCases"></mg_action_confirm>
+        <mg_action_confirm
+          :action_confirm="action"
+          :actor="actor"
+:errors="[]"
+          :isSelected="isSelected"
+          @removeCases="removeCases"
+        ></mg_action_confirm>
+      </div>
+      <div v-else-if="action=='Remove' && !isSelected">
+        <mg_action_confirm
+          :action_confirm="action"
+          :actor="actor"
+          :errors="[]"
+          :isSelected="isSelected"
+          @removeCases="removeCases"
+        ></mg_action_confirm>
       </div>
 
-      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy"></case_create_dbox>
+      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy" ></case_create_dbox>
 
       <p>My cases</p>
     </h1>
@@ -72,7 +87,6 @@
 export default {
   data() {
     return {
-      ready: false,
       cases: [],
       cids: [],
       cases_to_remove: [],
@@ -82,6 +96,9 @@ export default {
       uid: "",
       action: "",
       actor: "",
+showModal:false,
+      isSelected: false,
+      ready:false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
@@ -93,6 +110,14 @@ export default {
     onChangePage(pageOfCases) {
       // update page of Casess
       this.pageOfCases = pageOfCases;
+    },
+
+    isCaseSelected() {
+      if (this.cids.length == 0) {
+        this.isSelected = false;
+      } else {
+        this.isSelected = true;
+      }
     },
 
     uncheck() {

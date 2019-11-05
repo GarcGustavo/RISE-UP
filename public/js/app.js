@@ -2011,6 +2011,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2023,6 +2039,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       showModal: false,
+      modal: "",
       title: "",
       uid: "",
       gid: "",
@@ -2039,9 +2056,12 @@ __webpack_require__.r(__webpack_exports__);
       },
       cases: [],
       groups: [],
+      errors: [],
       maxCount: 255,
       remainingCount: 255,
-      hasError: false
+      close: false,
+      hasError: false,
+      valid_input: false
     };
   },
   created: function created() {
@@ -2049,6 +2069,27 @@ __webpack_require__.r(__webpack_exports__);
     this.totalCases();
   },
   methods: {
+    validateInput: function validateInput() {
+      if (this.title && this.description) {
+        this.sendCaseStudyData();
+        this.valid_input = true;
+        this.modal = "modal";
+        this.errors = [];
+      } else {
+        this.modal = "";
+        this.valid_input = false;
+        this.errors = [];
+
+        if (!this.title) {
+          this.errors.push("title required.");
+        }
+
+        if (!this.description) {
+          this.errors.push("description required.");
+        }
+      } //  this.valid_input = false;
+
+    },
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.description.length;
       this.hasError = this.remainingCount < 0;
@@ -2107,6 +2148,8 @@ __webpack_require__.r(__webpack_exports__);
         c_owner: "",
         c_group: ""
       };
+      this.title = "";
+      this.description = "";
     }
   }
 });
@@ -2304,24 +2347,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       showModal: false,
+      group_name: "",
+      group_data: "",
       action: "",
       actor: "",
       gid: "",
       members: [],
       users: [],
       cases: [],
-      members_to_add: []
+      members_to_add: [],
+      value: "lol",
+      tempValue: null,
+      editing: false
     };
   },
   created: function created() {
+    this.fetchGroupInfo();
     this.fetchMembers();
     this.fetchCases();
   },
   methods: {
+    enableEditing: function enableEditing() {
+      this.tempValue = this.group_name;
+      this.editing = true;
+    },
+    disableEditing: function disableEditing() {
+      this.tempValue = null;
+      this.editing = false;
+    },
+    saveEdit: function saveEdit() {
+      // However we want to save it to the database
+      this.group_name = this.tempValue;
+      this.changeGroupName();
+      this.disableEditing();
+    },
     fetchUsers: function fetchUsers() {
       var _this = this;
 
@@ -2351,8 +2424,6 @@ __webpack_require__.r(__webpack_exports__);
     fetchCases: function fetchCases() {
       var _this3 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
       fetch("/group/" + this.gid + "/cases").then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -2361,8 +2432,47 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(err);
       });
     },
-    addUsers: function addUsers(users_to_add) {
+    fetchGroupInfo: function fetchGroupInfo() {
       var _this4 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.gid = Number(this.path[this.path.length - 1]);
+      fetch("/group/" + this.gid + "/info").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this4.group_data = res.data;
+        _this4.group_name = _this4.group_data[0].g_name;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    changeGroupName: function changeGroupName() {
+      var _this5 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.gid = Number(this.path[this.path.length - 1]);
+      fetch("/group/" + this.gid + "/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          g_name: this.group_name
+        })
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+
+        _this5.fetchMembers();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    addUsers: function addUsers(users_to_add) {
+      var _this6 = this;
 
       console.log(users_to_add);
       fetch("/group/members/add", {
@@ -2378,13 +2488,13 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (text) {
         console.log(text);
 
-        _this4.fetchMembers();
+        _this6.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     removeUsers: function removeUsers(users_to_remove) {
-      var _this5 = this;
+      var _this7 = this;
 
       console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
@@ -2400,7 +2510,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (data) {
         console.log(data);
 
-        _this5.fetchMembers();
+        _this7.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -2674,6 +2784,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action_confirm: {
@@ -2684,9 +2812,19 @@ __webpack_require__.r(__webpack_exports__);
     },
     message: {
       type: String
+    },
+    isSelected: {
+      type: Boolean
+    },
+    errors: {
+      type: Array
     }
   },
   methods: {
+    test: function test() {
+      this.$emit("close");
+      this.$emit("revalidate");
+    },
     confirmRemoveMembers: function confirmRemoveMembers() {
       this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.
     },
@@ -2710,6 +2848,12 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2881,6 +3025,7 @@ __webpack_require__.r(__webpack_exports__);
         email: ""
       },
       user_to_add_remove: [],
+      groups: [],
       group_to_create: {
         g_name: "",
         g_status: "",
@@ -2888,8 +3033,11 @@ __webpack_require__.r(__webpack_exports__);
         g_owner: ""
       },
       g_name: "",
-      groups: [],
       search: "",
+      modal: "",
+      errors: [],
+      valid_input: false,
+      isSelected: false,
       success: false
     };
   },
@@ -2912,6 +3060,30 @@ __webpack_require__.r(__webpack_exports__);
       for (var i in this.uids) {
         this.uids.push(this.uids[i].uid);
       }
+    },
+    isUserSelected: function isUserSelected() {
+      if (this.uids.length == 0) {
+        this.isSelected = false;
+      } else {
+        return this.isSelected = true;
+      }
+    },
+    validateInput: function validateInput() {
+      if (this.g_name.length) {
+        this.sendGroupData();
+        this.modal = "modal";
+        this.valid_input = true;
+        this.errors = [];
+      } else {
+        this.modal = "";
+        this.valid_input = false;
+        this.errors = [];
+
+        if (!this.g_name) {
+          this.errors.push("Group name required.");
+        }
+      } //  this.valid_input = false;
+
     },
     totalGroups: function totalGroups() {
       var _this2 = this;
@@ -2940,14 +3112,17 @@ __webpack_require__.r(__webpack_exports__);
       } //emit data to parent
 
 
-      if (this.action == "Add") {
-        this.$emit("addUsers", this.user_to_add_remove);
-        this.user_to_add_remove = []; //reset variable
-      } else {
-        this.$emit("removeUsers", this.user_to_add_remove);
-        this.user_to_add_remove = []; //reset variable
-        // this.uncheck(); // uncheck all values when finished
+      if (this.isSelected) {
+        if (this.action == "Add") {
+          this.$emit("addUsers", this.user_to_add_remove);
+        } else {
+          this.$emit("removeUsers", this.user_to_add_remove);
+        }
+
+        this.uncheck(); // uncheck all values when finished
       }
+
+      this.user_to_add_remove = []; //reset variable
     },
     sendGroupData: function sendGroupData() {
       this.path = window.location.pathname.split("/");
@@ -2975,7 +3150,11 @@ __webpack_require__.r(__webpack_exports__);
         gid: this.group_to_create.gid
       });
       console.log(this.group_to_create);
-      this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
+
+      if (this.isSelected || this.action == 'Create') {
+        this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
+      }
+
       this.totalGroups();
       this.group_to_create = {
         g_name: "",
@@ -2983,7 +3162,9 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       };
+      this.g_name = "";
       this.user_to_add_remove = [];
+      this.uncheck();
     }
   }
 });
@@ -3250,10 +3431,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      ready: false,
       cases: [],
       cids: [],
       cases_to_remove: [],
@@ -3266,6 +3461,9 @@ __webpack_require__.r(__webpack_exports__);
       uid: "",
       action: "",
       actor: "",
+      showModal: false,
+      isSelected: false,
+      ready: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
@@ -3277,6 +3475,13 @@ __webpack_require__.r(__webpack_exports__);
     onChangePage: function onChangePage(pageOfCases) {
       // update page of Casess
       this.pageOfCases = pageOfCases;
+    },
+    isCaseSelected: function isCaseSelected() {
+      if (this.cids.length == 0) {
+        this.isSelected = false;
+      } else {
+        this.isSelected = true;
+      }
     },
     uncheck: function uncheck() {
       this.cids = [];
@@ -3456,6 +3661,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3475,6 +3695,7 @@ __webpack_require__.r(__webpack_exports__);
       uid: "",
       action: "",
       actor: "",
+      isSelected: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
@@ -3482,10 +3703,18 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.fetchGroups();
   },
+  computed: {},
   methods: {
     onChangePage: function onChangePage(pageOfGroups) {
       // update page of Groups
       this.pageOfGroups = pageOfGroups;
+    },
+    isGroupSelected: function isGroupSelected() {
+      if (this.gids.length == 0) {
+        this.isSelected = false;
+      } else {
+        this.isSelected = true;
+      }
     },
     uncheck: function uncheck() {
       this.gids = [];
@@ -40260,11 +40489,12 @@ var render = function() {
                       attrs: {
                         type: "button",
                         "data-toggle": "modal",
+                        "data-dismiss": _vm.modal,
                         "data-target": "#mg_action_confirm"
                       },
                       on: {
                         click: function($event) {
-                          return _vm.sendCaseStudyData()
+                          return _vm.validateInput()
                         }
                       }
                     },
@@ -40286,15 +40516,39 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _c(
-        "div",
-        [
-          _c("mg_action_confirm", {
-            attrs: { action_confirm: _vm.action, actor: _vm.actor }
-          })
-        ],
-        1
-      )
+      _vm.valid_input
+        ? _c(
+            "div",
+            [
+              _c("mg_action_confirm", {
+                attrs: {
+                  action_confirm: _vm.action,
+                  actor: _vm.actor,
+                  errors: _vm.errors
+                },
+                on: {
+                  close: function($event) {
+                    _vm.close = true
+                  },
+                  revalidate: _vm.validateInput
+                }
+              })
+            ],
+            1
+          )
+        : _c(
+            "div",
+            [
+              _c("mg_action_confirm", {
+                attrs: {
+                  action_confirm: _vm.action,
+                  actor: _vm.actor,
+                  errors: _vm.errors
+                }
+              })
+            ],
+            1
+          )
     ])
   ])
 }
@@ -40443,7 +40697,50 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "body mb-5 mt-5" }, [
-    _c("h1", { staticClass: "text-center" }, [_vm._v("Our Group")]),
+    !_vm.editing
+      ? _c("div", [
+          _c(
+            "span",
+            { staticClass: "text", on: { click: _vm.enableEditing } },
+            [
+              _c("h1", { staticClass: "text-center" }, [
+                _vm._v(_vm._s(_vm.group_name))
+              ])
+            ]
+          )
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.editing
+      ? _c("div", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.tempValue,
+                expression: "tempValue"
+              }
+            ],
+            staticClass: "input",
+            domProps: { value: _vm.tempValue },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.tempValue = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("button", { on: { click: _vm.disableEditing } }, [
+            _vm._v("Cancel")
+          ]),
+          _vm._v(" "),
+          _c("button", { on: { click: _vm.saveEdit } }, [_vm._v("Save")])
+        ])
+      : _vm._e(),
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
@@ -41006,7 +41303,7 @@ var render = function() {
           _vm._m(0),
           _vm._v(" "),
           _c("div", { staticClass: "modal-body text-center" }, [
-            _vm.action_confirm == "Create"
+            _vm.action_confirm == "Create" && !_vm.errors.length
               ? _c("div", [
                   _c("p", [
                     _vm._v(
@@ -41014,8 +41311,41 @@ var render = function() {
                     )
                   ])
                 ])
-              : _vm.action_confirm == "Add"
+              : _vm.action_confirm == "Add" && _vm.isSelected
               ? _c("div", [_c("p", [_vm._v("Added user(s) to group")])])
+              : _vm.errors.length
+              ? _c("div", [
+                  _c("div", [
+                    _c("p", [
+                      _vm._v(
+                        "Please correct the following error(s):\n            "
+                      ),
+                      _c(
+                        "ul",
+                        { staticStyle: { margin: "10px" } },
+                        _vm._l(_vm.errors, function(error, index) {
+                          return _c(
+                            "li",
+                            { key: index, staticStyle: { margin: "10px" } },
+                            [_vm._v(_vm._s(error))]
+                          )
+                        }),
+                        0
+                      )
+                    ])
+                  ])
+                ])
+              : !_vm.isSelected
+              ? _c("div", [
+                  _c("p", [
+                    _vm._v(
+                      "Please select " +
+                        _vm._s(_vm.actor) +
+                        " to " +
+                        _vm._s(_vm.action_confirm)
+                    )
+                  ])
+                ])
               : _c("div", [
                   _c("p", [
                     _vm._v(
@@ -41029,7 +41359,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "modal-footer" }, [
-            _vm.action_confirm == "Add" || _vm.action_confirm == "Create"
+            _vm.errors.length
               ? _c("div", [
                   _c(
                     "button",
@@ -41040,57 +41370,77 @@ var render = function() {
                     [_vm._v("Ok")]
                   )
                 ])
-              : _vm.action_confirm == "Remove" && _vm.actor == "member(s)"
+              : _vm.action_confirm == "Add" ||
+                _vm.action_confirm == "Create" ||
+                !_vm.isSelected
               ? _c("div", [
                   _c(
                     "button",
                     {
                       staticClass: "btn btn-primary",
-                      attrs: { type: "button", "data-dismiss": "modal" },
-                      on: {
-                        click: function($event) {
-                          return _vm.confirmRemoveMembers()
-                        }
-                      }
+                      attrs: { type: "button", "data-dismiss": "modal" }
                     },
-                    [_vm._v("Yes")]
-                  )
-                ])
-              : _vm.action_confirm == "Remove" && _vm.actor == "group(s)"
-              ? _c("div", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "button", "data-dismiss": "modal" },
-                      on: {
-                        click: function($event) {
-                          return _vm.confirmRemoveGroups()
-                        }
-                      }
-                    },
-                    [_vm._v("Yes")]
-                  )
-                ])
-              : _vm.action_confirm == "Remove" && _vm.actor == "case study(s)"
-              ? _c("div", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "button", "data-dismiss": "modal" },
-                      on: {
-                        click: function($event) {
-                          return _vm.confirmRemoveCases()
-                        }
-                      }
-                    },
-                    [_vm._v("Yes")]
+                    [_vm._v("Ok")]
                   )
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _vm._m(1)
+            _vm.isSelected
+              ? _c("div", [
+                  _vm.action_confirm == "Remove" && _vm.actor == "member(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button", "data-dismiss": "modal" },
+                            on: {
+                              click: function($event) {
+                                return _vm.confirmRemoveMembers()
+                              }
+                            }
+                          },
+                          [_vm._v("Yes")]
+                        )
+                      ])
+                    : _vm.action_confirm == "Remove" && _vm.actor == "group(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button", "data-dismiss": "modal" },
+                            on: {
+                              click: function($event) {
+                                return _vm.confirmRemoveGroups()
+                              }
+                            }
+                          },
+                          [_vm._v("Yes")]
+                        )
+                      ])
+                    : _vm.action_confirm == "Remove" &&
+                      _vm.actor == "case study(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button", "data-dismiss": "modal" },
+                            on: {
+                              click: function($event) {
+                                return _vm.confirmRemoveCases()
+                              }
+                            }
+                          },
+                          [_vm._v("Yes")]
+                        )
+                      ])
+                    : _vm._e()
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.isSelected ? _c("div", [_vm._m(1)]) : _vm._e()
           ])
         ])
       ])
@@ -41365,12 +41715,19 @@ var render = function() {
                               type: "button",
                               "data-toggle": "modal",
                               "data-target": "#mg_action_confirm"
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.isUserSelected()
+                              }
                             }
                           },
                           [_vm._v(_vm._s(_vm.action))]
                         )
                       ])
-                    : _vm.action == "Add" && _vm.actor == "member(s)"
+                    : _vm.action == "Add" &&
+                      _vm.actor == "member(s)" &&
+                      _vm.isSelected
                     ? _c("div", [
                         _c(
                           "button",
@@ -41384,7 +41741,29 @@ var render = function() {
                             },
                             on: {
                               click: function($event) {
-                                _vm.sendUsers(), _vm.uncheck()
+                                _vm.isUserSelected(), _vm.sendUsers()
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.action))]
+                        )
+                      ])
+                    : _vm.action == "Add" &&
+                      _vm.actor == "member(s)" &&
+                      !_vm.isSelected
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: {
+                              type: "button",
+                              "data-toggle": "modal",
+                              "data-target": "#mg_action_confirm"
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.isUserSelected()
                               }
                             }
                           },
@@ -41399,30 +41778,14 @@ var render = function() {
                             staticClass: "btn btn-primary",
                             attrs: {
                               type: "button",
-                              "data-dismiss": "modal",
+                              "data-dismiss": _vm.modal,
                               "data-toggle": "modal",
                               "data-target": "#mg_action_confirm"
                             },
                             on: {
                               click: function($event) {
-                                _vm.sendGroupData(), _vm.uncheck()
+                                _vm.isUserSelected(), _vm.validateInput()
                               }
-                            }
-                          },
-                          [_vm._v(_vm._s(_vm.action))]
-                        )
-                      ])
-                    : _vm.action == "Remove" && _vm.actor == "member(s)"
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: {
-                              type: "button",
-                              "data-dismiss": "modal",
-                              "data-toggle": "modal",
-                              "data-target": "#mg_action_confirm"
                             }
                           },
                           [_vm._v(_vm._s(_vm.action))]
@@ -41430,19 +41793,21 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-secondary",
-                      attrs: { type: "button", "data-dismiss": "modal" },
-                      on: {
-                        click: function($event) {
-                          return _vm.uncheck()
+                  _c("div", [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button", "data-dismiss": "modal" },
+                        on: {
+                          click: function($event) {
+                            return _vm.uncheck()
+                          }
                         }
-                      }
-                    },
-                    [_vm._v("Close")]
-                  )
+                      },
+                      [_vm._v("Close")]
+                    )
+                  ])
                 ])
               ])
             ]
@@ -41454,7 +41819,12 @@ var render = function() {
         "div",
         [
           _c("mg_action_confirm", {
-            attrs: { action_confirm: _vm.action, actor: _vm.actor },
+            attrs: {
+              action_confirm: _vm.action,
+              actor: _vm.actor,
+              isSelected: _vm.isSelected,
+              errors: _vm.errors
+            },
             on: { sendUsers: _vm.sendUsers, sendGroupData: _vm.sendGroupData }
           })
         ],
@@ -41708,7 +42078,9 @@ var render = function() {
             },
             on: {
               click: function($event) {
-                ;(_vm.action = "Remove"), (_vm.actor = "case study(s)")
+                ;(_vm.action = "Remove"),
+                  (_vm.actor = "case study(s)"),
+                  _vm.isCaseSelected()
               }
             }
           },
@@ -41729,7 +42101,9 @@ var render = function() {
             },
             on: {
               click: function($event) {
-                ;(_vm.action = "Create"), (_vm.actor = "case study")
+                ;(_vm.showModal = true),
+                  (_vm.action = "Create"),
+                  (_vm.actor = "case study")
               }
             }
           },
@@ -41740,12 +42114,33 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm.action == "Remove"
+        _vm.action == "Remove" && _vm.isSelected
           ? _c(
               "div",
               [
                 _c("mg_action_confirm", {
-                  attrs: { action_confirm: _vm.action, actor: _vm.actor },
+                  attrs: {
+                    action_confirm: _vm.action,
+                    actor: _vm.actor,
+                    errors: [],
+                    isSelected: _vm.isSelected
+                  },
+                  on: { removeCases: _vm.removeCases }
+                })
+              ],
+              1
+            )
+          : _vm.action == "Remove" && !_vm.isSelected
+          ? _c(
+              "div",
+              [
+                _c("mg_action_confirm", {
+                  attrs: {
+                    action_confirm: _vm.action,
+                    actor: _vm.actor,
+                    errors: [],
+                    isSelected: _vm.isSelected
+                  },
                   on: { removeCases: _vm.removeCases }
                 })
               ],
@@ -41903,7 +42298,9 @@ var render = function() {
             },
             on: {
               click: function($event) {
-                ;(_vm.action = "Remove"), (_vm.actor = "group(s)")
+                ;(_vm.action = "Remove"),
+                  (_vm.actor = "group(s)"),
+                  _vm.isGroupSelected()
               }
             }
           },
@@ -41938,12 +42335,33 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm.action == "Remove"
+        _vm.action == "Remove" && _vm.isSelected
           ? _c(
               "div",
               [
                 _c("mg_action_confirm", {
-                  attrs: { action_confirm: _vm.action, actor: _vm.actor },
+                  attrs: {
+                    action_confirm: _vm.action,
+                    actor: _vm.actor,
+                    errors: [],
+                    isSelected: _vm.isSelected
+                  },
+                  on: { removeGroups: _vm.removeGroups }
+                })
+              ],
+              1
+            )
+          : _vm.action == "Remove" && !_vm.isSelected
+          ? _c(
+              "div",
+              [
+                _c("mg_action_confirm", {
+                  attrs: {
+                    action_confirm: _vm.action,
+                    actor: _vm.actor,
+                    errors: [],
+                    isSelected: _vm.isSelected
+                  },
                   on: { removeGroups: _vm.removeGroups }
                 })
               ],
