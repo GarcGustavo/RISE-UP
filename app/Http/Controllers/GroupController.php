@@ -76,7 +76,7 @@ class GroupController extends Controller
         return GroupResource::collection($groups);
     }
 
-
+    
     /**
      * Show the form for editing the specified resource.
      *

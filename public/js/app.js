@@ -2632,6 +2632,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vuedraggable__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var v_markdown_editor_dist_index_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! v-markdown-editor/dist/index.css */ "./node_modules/v-markdown-editor/dist/index.css");
 /* harmony import */ var v_markdown_editor_dist_index_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(v_markdown_editor_dist_index_css__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var vue_sortable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-sortable */ "./node_modules/vue-sortable/vue-sortable.js");
+/* harmony import */ var vue_sortable__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vue_sortable__WEBPACK_IMPORTED_MODULE_3__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -2695,27 +2699,75 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
+Vue.use(vue_sortable__WEBPACK_IMPORTED_MODULE_3___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'app',
+  //name: 'app',
   components: {},
   data: function data() {
-    return {
+    var _ref;
+
+    return _ref = {
       showModal: false,
       action: "",
       actor: "",
-      case_title: "",
+      case_study: {
+        cid: "",
+        c_title: "",
+        c_description: "",
+        c_thumbnail: "",
+        c_status: "",
+        c_date: "",
+        c_owner: "",
+        c_group: ""
+      },
       users: [],
       items: [],
       ready: false,
       cid: "",
-      case_to_show: [],
-      //item: { iid: "", i_content:"", order:"", i_name: "" },
-      case_parameters: []
-    };
+      gid: "",
+      case_to_show: []
+    }, _defineProperty(_ref, "users", []), _defineProperty(_ref, "user", {
+      uid: "",
+      first_name: "",
+      last_name: ""
+    }), _defineProperty(_ref, "groups", []), _defineProperty(_ref, "group", {
+      g_name: ""
+    }), _defineProperty(_ref, "uid", ""), _defineProperty(_ref, "item", {
+      iid: "",
+      i_content: "",
+      i_case: "",
+      i_type: "",
+      order: "",
+      i_name: ""
+    }), _defineProperty(_ref, "case_parameters", []), _ref;
   },
   created: function created() {
     this.fetchCaseItems();
@@ -2726,11 +2778,12 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
       var _this = this;
 
       this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
+      this.cid = Number(this.path[this.path.length - 2]);
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
         _this.items = res.data;
+        console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2739,20 +2792,47 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
       var _this2 = this;
 
       this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
+      this.cid = Number(this.path[this.path.length - 2]);
       fetch("/case/" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this2.case_to_show = res.data;
-        _this2.case_title = _this2.case_to_show[0].c_title;
-        _this2.ready = true;
+        _this2.uid = Number(_this2.case_to_show[0].c_owner);
+        _this2.gid = Number(_this2.case_to_show[0].c_group);
+
+        _this2.fetchUser(_this2.uid);
+
+        _this2.fetchGroup(_this2.gid);
+
+        console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
-      console.log(this.case_to_show);
+    },
+    fetchUser: function fetchUser(uid) {
+      var _this3 = this;
+
+      fetch("/user/" + this.uid).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this3.users = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    fetchGroup: function fetchGroup(gid) {
+      var _this4 = this;
+
+      fetch("/case/group/" + this.gid).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this4.groups = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     },
     updateItemOrder: function updateItemOrder() {
-      var _this3 = this;
+      var _this5 = this;
 
       this.path = window.location.pathname.split("/");
       this.uid = this.path[this.path.length - 2];
@@ -2760,13 +2840,13 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
         return res.text();
       }).then(function (res) {
         //this.groups = res.text;
-        _this3.ready = true;
+        _this5.ready = true;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     addItem: function addItem(users_to_add) {
-      var _this4 = this;
+      var _this6 = this;
 
       console.log(users_to_add);
       fetch("/group/members/add", {
@@ -2782,13 +2862,13 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
       }).then(function (text) {
         console.log(text);
 
-        _this4.fetchMembers();
+        _this6.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     removeItem: function removeItem(users_to_remove) {
-      var _this5 = this;
+      var _this7 = this;
 
       console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
@@ -2804,33 +2884,33 @@ Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
       }).then(function (data) {
         console.log(data);
 
-        _this5.fetchMembers();
+        _this7.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this6 = this;
+      var _this8 = this;
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 1]);
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this6.items = res.data;
+        _this8.items = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     updateCaseParameters: function updateCaseParameters() {
-      var _this7 = this;
+      var _this9 = this;
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 1]);
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this7.items = res.data;
+        _this9.items = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -58470,13 +58550,39 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "app" } }, [
-    _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "text-center" }, [
-        _vm._v(_vm._s(_vm.case_title))
-      ]),
-      _vm._v(" "),
-      _c("hr"),
+  return _c(
+    "div",
+    { staticClass: "body mb-5 mt-5" },
+    [
+      _vm.case_to_show
+        ? [
+            _vm._l(_vm.case_to_show, function(case_study, index) {
+              return _c("h1", { key: index, staticClass: "text-center mt-3" }, [
+                _c("h1", { staticClass: "text-capitalize" }, [
+                  _vm._v(_vm._s(case_study.c_title))
+                ])
+              ])
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.users, function(user, uid) {
+              return _c("h5", { key: uid, staticClass: "text-center mt-3" }, [
+                _vm._v(
+                  "\n      Created by: " +
+                    _vm._s(user.first_name) +
+                    " " +
+                    _vm._s(user.last_name) +
+                    "\n    "
+                )
+              ])
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.groups, function(group, gid) {
+              return _c("h5", { key: gid, staticClass: "text-center mt-3" }, [
+                _vm._v("\n      Group: " + _vm._s(group.g_name) + "\n    ")
+              ])
+            })
+          ]
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "h1",
@@ -58552,6 +58658,47 @@ var render = function() {
         1
       ),
       _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
+        _vm._l(_vm.items, function(item) {
+          return _c("div", { key: item.iid, staticClass: "col-sm-12 mb-3" }, [
+            _c(
+              "ul",
+              {
+                directives: [
+                  {
+                    name: "sortable",
+                    rawName: "v-sortable",
+                    value: _vm.items,
+                    expression: "items"
+                  }
+                ],
+                staticClass: "list-items"
+              },
+              [
+                _c("div", { staticClass: "card h-100 text-left shadow" }, [
+                  _c("div", { staticClass: "card-body" }, [
+                    _c("h4", { staticClass: "card-title" }, [
+                      _vm._v(_vm._s(item.i_name))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "card-text" }, [
+                      _vm._v(_vm._s(item.i_content))
+                    ]),
+                    _vm._v(" "),
+                    _c("h6", { staticClass: "card-subtitle text-muted" })
+                  ])
+                ])
+              ]
+            )
+          ])
+        }),
+        0
+      ),
+      _vm._v(" "),
+      _c("hr"),
+      _vm._v(" "),
       _vm._m(0),
       _vm._v(" "),
       _c("div", { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } }, [
@@ -58575,7 +58722,7 @@ var render = function() {
                       _vm._v(_vm._s(item.i_order))
                     ]),
                     _vm._v(" "),
-                    _c("p", { staticClass: "card-text" }, [
+                    _c("p", { staticClass: "card-text align-right" }, [
                       _vm._v(_vm._s(item.i_content))
                     ])
                   ])
@@ -58586,8 +58733,9 @@ var render = function() {
           )
         ])
       ])
-    ])
-  ])
+    ],
+    2
+  )
 }
 var staticRenderFns = [
   function() {
@@ -59436,6 +59584,55 @@ function normalizeComponent (
     options: options
   }
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-sortable/vue-sortable.js":
+/*!***************************************************!*\
+  !*** ./node_modules/vue-sortable/vue-sortable.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function () {
+
+  var vSortable = {}
+  var Sortable =  true
+      ? __webpack_require__(/*! sortablejs */ "./node_modules/sortablejs/modular/sortable.esm.js")
+      : undefined
+
+  if (!Sortable) {
+    throw new Error('[vue-sortable] cannot locate Sortable.js.')
+  }
+
+  // exposed global options
+  vSortable.config = {}
+
+  vSortable.install = function (Vue) {
+    Vue.directive('sortable', function (options) {
+      options = options || {}
+
+      var sortable = new Sortable(this.el, options)
+
+      if (this.arg && !this.vm.sortable) {
+        this.vm.sortable = {}
+      }
+
+      //  Throw an error if the given ID is not unique
+      if (this.arg && this.vm.sortable[this.arg]) {
+        console.warn('[vue-sortable] cannot set already defined sortable id: \'' + this.arg + '\'')
+      } else if( this.arg ) {
+        this.vm.sortable[this.arg] = sortable
+      }
+    })
+  }
+
+  if (true) {
+    module.exports = vSortable
+  } else {}
+
+})()
 
 
 /***/ }),

@@ -62,6 +62,12 @@ Route::get('/cases', 'CaseController@index');
 //List specific case
 Route::get('/case/{id}', 'CaseController@show');
 
+//List specific user
+Route::get('/user/{id}', 'UserController@show');
+
+//List case study group
+Route::get('/case/group/{id}', 'CaseController@show_case_group');
+
 //List case items
 Route::get('/case/{id}/items','ItemController@getCaseItems');
 

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\case_study;
 use App\Models\User_Groups;
+use App\Models\Group;
 use App\Http\Resources\Case_Study as Case_StudyResource;
+use App\Http\Resources\Group as GroupResource;
+
 
 class CaseController extends Controller
 {
@@ -73,6 +76,21 @@ class CaseController extends Controller
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
         return Case_StudyResource::collection($cases);
+    }
+
+    public function show_case_group($id)
+    {
+        $gid = $id;
+
+        $cases = Case_Study::where('Case.c_group', $gid)->get();
+        $case_group = Group::
+        where('Group.gid', $gid)
+        ->join('Case', 'Case.c_group', '=', 'Group.gid')
+        ->select('Group.*')
+        ->get();
+        $unique_data = $case_group->unique('gid');
+
+        return GroupResource::collection($unique_data);
     }
 
     public function show_all_user_cases($id)

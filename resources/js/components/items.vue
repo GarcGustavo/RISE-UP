@@ -1,9 +1,17 @@
 <template>
-  <div id="app">
     <!-- Team Members -->
     <div class="body mb-5 mt-5">
-      <h1 class="text-center">{{case_title}}</h1>
-      <hr>
+      <template v-if="case_to_show">
+        <h1 class="text-center mt-3" v-for="(case_study,index) in case_to_show" :key="index">
+          <h1 class="text-capitalize">{{case_study.c_title}}</h1>
+        </h1>
+        <h5 class="text-center mt-3" v-for="(user,uid) in users" :key="uid">
+          Created by: {{user.first_name}} {{user.last_name}}
+        </h5>
+        <h5 class="text-center mt-3" v-for="(group,gid) in groups" :key="gid">
+          Group: {{group.g_name}}
+        </h5>
+      </template>
       <h1 class="text-center mt-5">
         <a
           href="#mg_action_table"
@@ -36,6 +44,22 @@
           @removeUsers="removeUsers"
         ></mg_action_table>
       </h1>
+    <!-- Members -->
+    <div class="row mt-1 mb-5" id="members">
+      <div class="col-sm-12 mb-3" v-for="item in items" :key="item.iid">
+        <ul class="list-items" v-sortable="items">
+          <div class="card h-100 text-left shadow">
+            <div class="card-body">
+              <h4 class="card-title">{{item.i_name}}</h4>
+              <p class="card-text">{{item.i_content}}</p>
+              <h6 class="card-subtitle text-muted"></h6>
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div>
+
+    <hr>      
       <!-- Case view -->
 
       <h1 id="cases_header" class="mt-5 text-center">
@@ -51,23 +75,24 @@
                   <a href="#">{{item.i_name}}</a>
                 </h5>
                 <h6 class="card-subtitle mb-2 text-muted">{{item.i_order}}</h6>
-                <p class="card-text">{{item.i_content}}</p>
+                <p class="card-text align-right">{{item.i_content}}</p>
               </div>
             </li>
           </ul>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
 import Editor from 'v-markdown-editor'
 import draggable from 'vuedraggable'
-import 'v-markdown-editor/dist/index.css';
+import 'v-markdown-editor/dist/index.css'
+import Sortable from 'vue-sortable'
 Vue.use(Editor);
+Vue.use(Sortable);
 export default {
-  name: 'app',
+  //name: 'app',
   components: {
   },
   data(){
@@ -75,13 +100,35 @@ export default {
         showModal: false,
         action: "",
         actor: "",
-        case_title: "",
+        case_study: {
+          cid:"",
+          c_title:"",
+          c_description:"",
+          c_thumbnail:"",
+          c_status:"",
+          c_date:"",
+          c_owner:"",
+          c_group:""
+          },
         users:[],
         items:[],
         ready: false,
         cid: "",
+        gid: "",
         case_to_show: [],
-        //item: { iid: "", i_content:"", order:"", i_name: "" },
+        users: [],
+        user:{uid:"", first_name:"", last_name:""},
+        groups: [],
+        group:{g_name:""},
+        uid:"",
+        item: {
+          iid:"",
+          i_content:"",
+          i_case:"",
+          i_type:"",
+          order:"",
+          i_name:""
+          },
         case_parameters: []
     };
   },
@@ -92,26 +139,45 @@ export default {
   methods: {
     fetchCaseItems() {
       this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/"+ this.cid+ "/items")
+      this.cid = Number(this.path[this.path.length - 2]);
+      fetch("/case/"+ this.cid + "/items")
         .then(res => res.json())
         .then(res => {
           this.items = res.data;
+          console.log(res.data);
         })
       .catch(err => console.log(err));
     },
     fetchCase() {
       this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
+      this.cid = Number(this.path[this.path.length - 2]);
       fetch("/case/"+ this.cid)
         .then(res => res.json())
         .then(res => {
           this.case_to_show = res.data;
-          this.case_title = this.case_to_show[0].c_title;
-          this.ready = true;
+          this.uid = Number(this.case_to_show[0].c_owner);
+          this.gid = Number(this.case_to_show[0].c_group);
+          this.fetchUser(this.uid);
+          this.fetchGroup(this.gid);
+          console.log(res.data);
         })
       .catch(err => console.log(err));
-      console.log(this.case_to_show);
+    },
+    fetchUser(uid) {
+      fetch("/user/" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.users = res.data;
+        })
+      .catch(err => console.log(err));
+    },
+    fetchGroup(gid) {
+      fetch("/case/group/" + this.gid)
+        .then(res => res.json())
+        .then(res => {
+          this.groups = res.data;
+        })
+      .catch(err => console.log(err));
     },
     updateItemOrder() {
         this.path = window.location.pathname.split("/");
