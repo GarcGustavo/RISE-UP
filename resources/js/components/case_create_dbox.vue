@@ -18,9 +18,9 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">{{action}} {{actor}}</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-              </button>
+              </button>-->
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
@@ -38,7 +38,7 @@
               <!-- group selection for table -->
               <div class="form-group">
                 <label for="exampleFormControlSelect2">Assign to a group(optional)</label>
-                <select class="form-control" id="exampleFormControlSelect2" v-model="gid">
+                <select class="form-control" id="exampleFormControlSelect2" style="height:40px" v-model="gid">
                   <option
                     v-for="group in groups"
                     v-bind:key="group.gid"
@@ -68,7 +68,12 @@
                 data-target="#mg_action_confirm"
                 @click="validateInput()"
               >{{action}}</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+                @click="resetInputFields()"
+              >Close</button>
             </div>
           </div>
         </div>
@@ -98,6 +103,9 @@ export default {
     },
     actor: {
       type: String
+    },
+    group_selection: {
+      type: Number
     }
   },
 
@@ -137,6 +145,17 @@ export default {
   },
 
   methods: {
+    countdown() {
+      this.remainingCount = this.maxCount - this.description.length;
+      this.hasError = this.remainingCount < 0;
+    },
+    resetInputFields() {
+      this.title = "";
+      this.description = "";
+      this.gid = "";
+      this.remainingCount = 255;
+    },
+
     validateInput() {
       if (this.title && this.description) {
         this.sendCaseStudyData();
@@ -159,11 +178,6 @@ export default {
       //  this.valid_input = false;
     },
 
-    countdown() {
-      this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0;
-    },
-
     totalCases() {
       fetch("/cases")
         .then(res => res.json())
@@ -176,11 +190,18 @@ export default {
 
     fetchGroups() {
       this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
+      if (this.group_selection) {
+        this.uid = Number(this.path[this.path.length - 3]);
+        this.gid=this.group_selection;
+      } else {
+        this.uid = Number(this.path[this.path.length - 2]);
+      }
+
       fetch("/user_groups/" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
+
           console.log(this.groups);
           this.ready = true;
         })
@@ -197,7 +218,7 @@ export default {
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
-      this.case_study.c_status = "lol";
+      this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
       this.case_study.c_owner = this.uid;
       this.case_study.c_group = this.gid;
@@ -215,8 +236,7 @@ export default {
         c_owner: "",
         c_group: ""
       };
-      this.title = "";
-      this.description = "";
+      this.resetInputFields();
     }
   }
 };

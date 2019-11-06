@@ -10,7 +10,10 @@
         @click="action='Remove',
         actor='case study(s)', isCaseSelected()"
       >
-        <i class="material-icons">remove_circle_outline</i>
+        <div class="add_icon" style="display:inline-block;float:right;">
+          <a style="font-size:18px;margin-left:15px">Remove</a>
+          <i class="material-icons">remove_circle_outline</i>
+        </div>
       </a>
       <a
         href="#case_create_dbox"
@@ -20,7 +23,10 @@
         action='Create',
         actor='case study'"
       >
-        <i class="material-icons">add_circle_outline</i>
+        <div class="remove_icon" style="display:inline-block;float:right;">
+          <a style="font-size:18px">Create</a>
+          <i class="material-icons">add_circle_outline</i>
+        </div>
       </a>
 
       <div v-if="action=='Remove' && isSelected">
@@ -125,6 +131,16 @@ export default {
       }
     },
 
+    updatePaginator() {
+      // Remove paginator from the DOM
+      this.ready = false;
+
+      this.$nextTick().then(() => {
+        // Add the paginator back in
+        this.ready = true;
+      });
+    },
+
     uncheck() {
       this.cids = [];
 
@@ -149,8 +165,9 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
-          console.log(this.cases);
-          this.ready = true;
+          this.pageOfCases = this.cases;
+          this.uncheck();
+          this.updatePaginator();
         })
         .catch(err => console.log(err));
     },
@@ -175,6 +192,7 @@ export default {
           console.error("Error: ", err);
         });
     },
+
     removeCases() {
       console.log(JSON.stringify(this.cids));
 
@@ -183,7 +201,6 @@ export default {
           cid: this.cids[i]
         });
       }
-
       fetch("/user_cases/remove", {
         method: "delete",
         headers: new Headers({
@@ -198,6 +215,7 @@ export default {
           console.log(text);
           this.fetchCases();
           this.uncheck();
+
           this.cases_to_remove = [];
         })
         .catch(err => {
@@ -268,7 +286,8 @@ h1 i {
   margin-top: 20px;
 }
 /* change icon background when hovered */
-h1 i:hover {
+h1 i:hover,
+h1 a:hover {
   color: blue;
 }
 /* icon initial color */

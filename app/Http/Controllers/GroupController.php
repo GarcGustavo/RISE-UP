@@ -17,14 +17,14 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups = Group::all();
+        $groups = Group::withTrashed()->get();
 
         return GroupResource::collection($groups);
     }
 
     public function info($id)
     {
-        $group = Group::where('gid',$id)->get();
+        $group = Group::where('gid', $id)->get();
 
         return GroupResource::collection($group);
     }
@@ -79,7 +79,9 @@ class GroupController extends Controller
         where('User_Groups.uid', $uid)
         ->join('User', 'User_Groups.uid', '=', 'User.uid')
         ->join('Group', 'User_Groups.gid', '=', 'Group.gid')
+        ->whereNull('Group.deleted_at')
         ->select('Group.*')
+        ->orderBy('gid','DESC')
         ->get();
 
         return GroupResource::collection($groups);
@@ -106,7 +108,7 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $group = Group::where('gid',$id)->first();
+        $group = Group::where('gid', $id)->first();
         $group->g_name=$request->input('g_name');
         $group->save();
         return response()->json(['message'=>'Changed group name successfully']);
@@ -124,8 +126,9 @@ class GroupController extends Controller
         $gids_to_delete = array_map(function ($item) {
             return $item['gid'];
         }, $to_delete);
+        Group::whereIn('gid', $gids_to_delete)->update(['g_status'=>'disabled']);
         Group::whereIn('gid', $gids_to_delete)->delete();
+
         return response()->json(['message'=>'Group(s) has been removed']);
     }
-
 }

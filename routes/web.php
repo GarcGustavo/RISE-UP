@@ -22,7 +22,7 @@ Route::get('/help', function () {
     return view('help');
 });
 
-Route::get('/group/{id}', function () {
+Route::get('/user/{uid}/group/{gid}', function () {
    return view('group');
 })->name('group');
 

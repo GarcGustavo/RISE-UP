@@ -10,19 +10,26 @@
         @click="action='Remove',
         actor='group(s)',isGroupSelected()"
       >
-        <i class="material-icons">remove_circle_outline</i>
+        <div class="add_icon" style="display:inline-block;float:right;">
+          <a style="font-size:18px;margin-left:15px">Remove</a>
+          <i class="material-icons">remove_circle_outline</i>
+        </div>
       </a>
-      <a
-        href="#mg_action_table"
-        data-toggle="modal"
-        data-target="#mg_action_table"
-        @click="gname_box_show=true,
+      <div>
+        <a
+          href="#mg_action_table"
+          data-toggle="modal"
+          data-target="#mg_action_table"
+          @click="gname_box_show=true,
         action='Create',
         actor='group', fetchUsers()"
-      >
-        <i class="material-icons">add_circle_outline</i>
-      </a>
-
+        >
+          <div class="remove_icon" style="display:inline-block;float:right;">
+            <a style="font-size:18px">Create</a>
+            <i class="material-icons">add_circle_outline</i>
+          </div>
+        </a>
+      </div>
       <div v-if="action=='Remove' && isSelected  ">
         <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
         <mg_action_confirm
@@ -65,7 +72,7 @@
       </thead>
       <tbody>
         <tr v-for="(group,index) in pageOfGroups" :key="index">
-          <td>
+          <td v-if="group.g_owner==uid">
             <div class="check-box">
               <input
                 class="checkbox"
@@ -77,8 +84,13 @@
               <label for="checkbox">{{index+1}}</label>
             </div>
           </td>
+          <td v-else>
+            <div>
+              <label style="padding-top:18px;padding-left:18px;">{{index+1}}</label>
+            </div>
+          </td>
           <td>
-            <a :href="'/group/' + group.gid">{{group.g_name}}</a>
+            <a :href="'/user/'+uid+'/group/' + group.gid">{{group.g_name}}</a>
           </td>
         </tr>
       </tbody>
@@ -131,8 +143,18 @@ export default {
       } else {
         this.isSelected = true;
       }
-
     },
+
+    forceRerender() {
+      // Remove paginator from the DOM
+      this.ready = false;
+
+      this.$nextTick().then(() => {
+        // Add the paginator back in
+        this.ready = true;
+      });
+    },
+
     uncheck() {
       this.gids = [];
 
@@ -157,7 +179,9 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
-          this.ready = true;
+          this.pageOfGroups = this.groups;
+          this.uncheck();
+          this.forceRerender();
         })
         .catch(err => console.log(err));
     },
@@ -228,7 +252,6 @@ export default {
         .then(text => {
           console.log(text);
           this.fetchGroups();
-          this.uncheck();
           this.groups_to_remove = [];
         })
         .catch(err => {
@@ -299,7 +322,7 @@ h1 i {
   margin-top: 20px;
 }
 /* change icon background when hovered */
-h1 i:hover {
+h1 i:hover, h1 a:hover {
   color: blue;
 }
 /* icon initial color */

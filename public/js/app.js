@@ -2027,6 +2027,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2034,6 +2039,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     actor: {
       type: String
+    },
+    group_selection: {
+      type: Number
     }
   },
   data: function data() {
@@ -2069,6 +2077,16 @@ __webpack_require__.r(__webpack_exports__);
     this.totalCases();
   },
   methods: {
+    countdown: function countdown() {
+      this.remainingCount = this.maxCount - this.description.length;
+      this.hasError = this.remainingCount < 0;
+    },
+    resetInputFields: function resetInputFields() {
+      this.title = "";
+      this.description = "";
+      this.gid = "";
+      this.remainingCount = 255;
+    },
     validateInput: function validateInput() {
       if (this.title && this.description) {
         this.sendCaseStudyData();
@@ -2090,10 +2108,6 @@ __webpack_require__.r(__webpack_exports__);
       } //  this.valid_input = false;
 
     },
-    countdown: function countdown() {
-      this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0;
-    },
     totalCases: function totalCases() {
       var _this = this;
 
@@ -2110,7 +2124,14 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
+
+      if (this.group_selection) {
+        this.uid = Number(this.path[this.path.length - 3]);
+        this.gid = this.group_selection;
+      } else {
+        this.uid = Number(this.path[this.path.length - 2]);
+      }
+
       fetch("/user_groups/" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -2130,7 +2151,7 @@ __webpack_require__.r(__webpack_exports__);
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
-      this.case_study.c_status = "lol";
+      this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
       this.case_study.c_owner = this.uid;
       this.case_study.c_group = this.gid;
@@ -2148,8 +2169,7 @@ __webpack_require__.r(__webpack_exports__);
         c_owner: "",
         c_group: ""
       };
-      this.title = "";
-      this.description = "";
+      this.resetInputFields();
     }
   }
 });
@@ -2361,6 +2381,41 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2368,6 +2423,8 @@ __webpack_require__.r(__webpack_exports__);
       old_name: "",
       group_name: "",
       group_data: "",
+      group_owner: "",
+      group_user: "",
       action: "",
       actor: "",
       gid: "",
@@ -2377,23 +2434,62 @@ __webpack_require__.r(__webpack_exports__);
       members_to_add: [],
       errors: [],
       tempValue: null,
-      editing: false,
+      is_owner: false,
+      is_member: false,
+      edit_members: false,
+      edit_title: false,
+      create_group_case: false,
       error: false
     };
   },
   created: function created() {
-    this.fetchGroupInfo();
     this.fetchMembers();
+    this.fetchGroupInfo();
     this.fetchCases();
   },
   methods: {
-    enableEditing: function enableEditing() {
-      this.tempValue = this.group_name;
-      this.editing = true;
+    userPriveleges: function userPriveleges() {
+      this.isUserOwner();
+      this.isUserMember();
+
+      if (this.is_owner) {
+        this.edit_members = true;
+        this.create_group_case = true;
+      } else if (this.is_member && !this.is_owner) {
+        this.edit_members = false;
+        this.create_group_case = true;
+      } else {
+        this.edit_members = false;
+        this.create_group_case = false;
+      }
+
+      console.log(this.edit_members);
+      console.log(this.create_group_case);
     },
-    disableEditing: function disableEditing() {
+    isUserOwner: function isUserOwner() {
+      if (this.group_user == this.group_owner) {
+        this.is_owner = true;
+      } else {
+        this.is_owner = false;
+      }
+    },
+    isUserMember: function isUserMember() {
+      for (var i = 0; i < this.members.length; i++) {
+        if (this.group_user == this.members[i].uid) {
+          this.is_member = true;
+          return;
+        }
+      }
+
+      this.is_member = false;
+    },
+    enableEditTitle: function enableEditTitle() {
+      this.tempValue = this.group_name;
+      this.edit_title = true;
+    },
+    disableEditTitle: function disableEditTitle() {
       this.tempValue = null;
-      this.editing = false;
+      this.edit_title = false;
       this.error = false;
     },
     saveEdit: function saveEdit() {
@@ -2402,7 +2498,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.group_name) {
         this.changeGroupName();
-        this.disableEditing();
+        this.disableEditTitle();
       } else {
         this.errors = [];
 
@@ -2429,6 +2525,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.path = window.location.pathname.split("/");
+      this.group_user = Number(this.path[this.path.length - 3]);
       this.gid = Number(this.path[this.path.length - 1]);
       fetch("/group/" + this.gid + "/members").then(function (res) {
         return res.json();
@@ -2461,6 +2558,9 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         _this4.group_data = res.data;
         _this4.group_name = _this4.group_data[0].g_name;
+        _this4.group_owner = _this4.group_data[0].g_owner;
+
+        _this4.userPriveleges();
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2530,6 +2630,28 @@ __webpack_require__.r(__webpack_exports__);
         console.log(data);
 
         _this7.fetchMembers();
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    createCaseStudy: function createCaseStudy(case_study) {
+      var _this8 = this;
+
+      console.log(JSON.stringify(case_study));
+      fetch("/case/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+
+        _this8.fetchCases();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -2840,10 +2962,6 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    test: function test() {
-      this.$emit("close");
-      this.$emit("revalidate");
-    },
     confirmRemoveMembers: function confirmRemoveMembers() {
       this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.
     },
@@ -2867,6 +2985,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -3105,8 +3224,7 @@ __webpack_require__.r(__webpack_exports__);
         if (!this.g_name) {
           this.errors.push("Group name required.");
         }
-      } //  this.valid_input = false;
-
+      }
     },
     totalGroups: function totalGroups() {
       var _this2 = this;
@@ -3177,6 +3295,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.totalGroups();
       this.group_to_create = {
+        gid: "",
         g_name: "",
         g_status: "",
         g_creation_date: "",
@@ -3471,6 +3590,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3508,6 +3633,16 @@ __webpack_require__.r(__webpack_exports__);
         this.isSelected = true;
       }
     },
+    updatePaginator: function updatePaginator() {
+      var _this = this;
+
+      // Remove paginator from the DOM
+      this.ready = false;
+      this.$nextTick().then(function () {
+        // Add the paginator back in
+        _this.ready = true;
+      });
+    },
     uncheck: function uncheck() {
       this.cids = [];
 
@@ -3516,33 +3651,36 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     fetchUsers: function fetchUsers() {
-      var _this = this;
+      var _this2 = this;
 
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.users = res.data;
+        _this2.users = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchCases: function fetchCases() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.path = window.location.pathname.split("/");
       this.uid = this.path[this.path.length - 2];
       fetch("/user_cases/" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.cases = res.data;
-        console.log(_this2.cases);
-        _this2.ready = true;
+        _this3.cases = res.data;
+        _this3.pageOfCases = _this3.cases;
+
+        _this3.uncheck();
+
+        _this3.updatePaginator();
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     createCaseStudy: function createCaseStudy(case_study) {
-      var _this3 = this;
+      var _this4 = this;
 
       console.log(JSON.stringify(case_study));
       fetch("/case/create", {
@@ -3558,13 +3696,13 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (text) {
         console.log(text);
 
-        _this3.fetchCases();
+        _this4.fetchCases();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     removeCases: function removeCases() {
-      var _this4 = this;
+      var _this5 = this;
 
       console.log(JSON.stringify(this.cids));
 
@@ -3587,11 +3725,11 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (text) {
         console.log(text);
 
-        _this4.fetchCases();
+        _this5.fetchCases();
 
-        _this4.uncheck();
+        _this5.uncheck();
 
-        _this4.cases_to_remove = [];
+        _this5.cases_to_remove = [];
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -3610,6 +3748,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3741,6 +3891,16 @@ __webpack_require__.r(__webpack_exports__);
         this.isSelected = true;
       }
     },
+    forceRerender: function forceRerender() {
+      var _this = this;
+
+      // Remove paginator from the DOM
+      this.ready = false;
+      this.$nextTick().then(function () {
+        // Add the paginator back in
+        _this.ready = true;
+      });
+    },
     uncheck: function uncheck() {
       this.gids = [];
 
@@ -3749,32 +3909,36 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     fetchUsers: function fetchUsers() {
-      var _this = this;
+      var _this2 = this;
 
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.users = res.data;
+        _this2.users = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchGroups: function fetchGroups() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.path = window.location.pathname.split("/");
       this.uid = Number(this.path[this.path.length - 2]);
       fetch("/user_groups/" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.groups = res.data;
-        _this2.ready = true;
+        _this3.groups = res.data;
+        _this3.pageOfGroups = _this3.groups;
+
+        _this3.uncheck();
+
+        _this3.forceRerender();
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     createGroup: function createGroup(group, members) {
-      var _this3 = this;
+      var _this4 = this;
 
       // console.log(JSON.stringify(group));
       // console.log(JSON.stringify(members));
@@ -3791,15 +3955,15 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (text) {
         console.log(text);
 
-        _this3.addUsers(members);
+        _this4.addUsers(members);
 
-        _this3.fetchGroups();
+        _this4.fetchGroups();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     addUsers: function addUsers(users_to_add) {
-      var _this4 = this;
+      var _this5 = this;
 
       console.log(JSON.stringify(users_to_add));
       fetch("/group/members/add", {
@@ -3815,13 +3979,13 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (text) {
         console.log(text);
 
-        _this4.fetchGroups();
+        _this5.fetchGroups();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     removeGroups: function removeGroups() {
-      var _this5 = this;
+      var _this6 = this;
 
       console.log(JSON.stringify(this.gids));
 
@@ -3844,11 +4008,9 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (text) {
         console.log(text);
 
-        _this5.fetchGroups();
+        _this6.fetchGroups();
 
-        _this5.uncheck();
-
-        _this5.groups_to_remove = [];
+        _this6.groups_to_remove = [];
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -8372,7 +8534,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 450px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 450px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
 
 // exports
 
@@ -8448,7 +8610,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover,\nh1 a[data-v-4dce56da]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}", ""]);
 
 // exports
 
@@ -8467,7 +8629,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover, h1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}", ""]);
 
 // exports
 
@@ -40372,24 +40534,7 @@ var render = function() {
                 _c("div", { staticClass: "modal-header" }, [
                   _c("h5", { staticClass: "modal-title" }, [
                     _vm._v(_vm._s(_vm.action) + " " + _vm._s(_vm.actor))
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "close",
-                      attrs: {
-                        type: "button",
-                        "data-dismiss": "modal",
-                        "aria-label": "Close"
-                      }
-                    },
-                    [
-                      _c("span", { attrs: { "aria-hidden": "true" } }, [
-                        _vm._v("×")
-                      ])
-                    ]
-                  )
+                  ])
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-body" }, [
@@ -40439,6 +40584,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
+                        staticStyle: { height: "40px" },
                         attrs: { id: "exampleFormControlSelect2" },
                         on: {
                           change: function($event) {
@@ -40530,7 +40676,12 @@ var render = function() {
                     "button",
                     {
                       staticClass: "btn btn-secondary",
-                      attrs: { type: "button", "data-dismiss": "modal" }
+                      attrs: { type: "button", "data-dismiss": "modal" },
+                      on: {
+                        click: function($event) {
+                          return _vm.resetInputFields()
+                        }
+                      }
                     },
                     [_vm._v("Close")]
                   )
@@ -40722,21 +40873,40 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "body mb-5 mt-5" }, [
-    !_vm.editing
+    !_vm.edit_title
       ? _c("div", [
-          _c(
-            "span",
-            { staticClass: "text", on: { click: _vm.enableEditing } },
-            [
-              _c("h1", { staticClass: "text-center" }, [
-                _vm._v(_vm._s(_vm.group_name))
-              ])
-            ]
-          )
+          _c("span", { staticClass: "text" }, [
+            _c(
+              "h1",
+              {
+                staticClass: "text-center",
+                style: _vm.is_owner ? "margin-left:35px;" : ""
+              },
+              [
+                _vm._v(
+                  "\n          " + _vm._s(_vm.group_name) + "\n          "
+                ),
+                _vm.is_owner
+                  ? _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: { click: _vm.enableEditTitle }
+                      },
+                      [
+                        _c("i", { staticClass: "material-icons" }, [
+                          _vm._v("create")
+                        ])
+                      ]
+                    )
+                  : _vm._e()
+              ]
+            )
+          ])
         ])
       : _vm._e(),
     _vm._v(" "),
-    _vm.editing
+    _vm.edit_title
       ? _c("div", [
           _c("input", {
             directives: [
@@ -40759,7 +40929,7 @@ var render = function() {
             }
           }),
           _vm._v(" "),
-          _c("button", { on: { click: _vm.disableEditing } }, [
+          _c("button", { on: { click: _vm.disableEditTitle } }, [
             _vm._v("Cancel")
           ]),
           _vm._v(" "),
@@ -40781,57 +40951,53 @@ var render = function() {
     _vm._v(" "),
     _c(
       "h1",
-      { staticClass: "text-center mt-5" },
+      { staticClass: "text-center mt-5 col-sm" },
       [
-        _c(
-          "a",
-          {
-            attrs: {
-              href: "#mg_action_table",
-              "data-toggle": "modal",
-              "data-target": "#mg_action_table",
-              "data-dismiss": "modal"
-            },
-            on: {
-              click: function($event) {
-                ;(_vm.showModal = true),
-                  (_vm.action = "Remove"),
-                  (_vm.actor = "member(s)"),
-                  _vm.fetchMembers()
-              }
-            }
-          },
-          [
-            _c("i", { staticClass: "material-icons" }, [
-              _vm._v("remove_circle_outline")
-            ])
-          ]
-        ),
+        _vm.edit_members
+          ? _c(
+              "a",
+              {
+                attrs: {
+                  href: "#mg_action_table",
+                  "data-toggle": "modal",
+                  "data-target": "#mg_action_table",
+                  "data-dismiss": "modal"
+                },
+                on: {
+                  click: function($event) {
+                    ;(_vm.showModal = true),
+                      (_vm.action = "Remove"),
+                      (_vm.actor = "member(s)"),
+                      _vm.fetchMembers()
+                  }
+                }
+              },
+              [_vm._m(0)]
+            )
+          : _vm._e(),
         _vm._v(" "),
-        _c(
-          "a",
-          {
-            attrs: {
-              href: "#mg_action_table",
-              "data-toggle": "modal",
-              "data-target": "#mg_action_table",
-              "data-dismiss": "modal"
-            },
-            on: {
-              click: function($event) {
-                ;(_vm.showModal = true),
-                  (_vm.action = "Add"),
-                  (_vm.actor = "member(s)"),
-                  _vm.fetchUsers()
-              }
-            }
-          },
-          [
-            _c("i", { staticClass: "material-icons" }, [
-              _vm._v("add_circle_outline")
-            ])
-          ]
-        ),
+        _vm.edit_members
+          ? _c(
+              "a",
+              {
+                attrs: {
+                  href: "#mg_action_table",
+                  "data-toggle": "modal",
+                  "data-target": "#mg_action_table",
+                  "data-dismiss": "modal"
+                },
+                on: {
+                  click: function($event) {
+                    ;(_vm.showModal = true),
+                      (_vm.action = "Add"),
+                      (_vm.actor = "member(s)"),
+                      _vm.fetchUsers()
+                  }
+                }
+              },
+              [_vm._m(1)]
+            )
+          : _vm._e(),
         _vm._v(" "),
         _vm.showModal
           ? _c("mg_action_table", {
@@ -40854,7 +41020,24 @@ var render = function() {
             )
           : _vm._e(),
         _vm._v(" "),
-        _c("p", { staticStyle: { "margin-left": "90px" } }, [_vm._v("Members")])
+        _c("p", { style: _vm.edit_members ? "margin-left:205px;" : "" }, [
+          _vm._v("Members")
+        ])
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      [
+        _c("case_create_dbox", {
+          attrs: {
+            action: "Create",
+            actor: "case study",
+            group_selection: _vm.gid
+          },
+          on: { createCaseStudy: _vm.createCaseStudy }
+        })
       ],
       1
     ),
@@ -40895,7 +41078,32 @@ var render = function() {
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
-    _vm._m(0),
+    _c(
+      "h1",
+      { staticClass: "mt-5 text-center", attrs: { id: "cases_header" } },
+      [
+        _vm.create_group_case
+          ? _c("div", [
+              _c(
+                "a",
+                {
+                  staticStyle: { "padding-top": "5px" },
+                  attrs: {
+                    href: "#case_create_dbox",
+                    "data-toggle": "modal",
+                    "data-target": "#case_create_dbox"
+                  }
+                },
+                [_vm._v("Create case study")]
+              )
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _c("p", { style: _vm.create_group_case ? "margin-left:170px;" : "" }, [
+          _vm._v("Our Cases")
+        ])
+      ]
+    ),
     _vm._v(" "),
     _c("div", { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } }, [
       _c("div", { staticClass: "col-sm-12 mb-3" }, [
@@ -40933,13 +41141,57 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c(
-      "h1",
-      { staticClass: "mt-5 text-center", attrs: { id: "cases_header" } },
+      "div",
+      {
+        staticClass: "add_icon",
+        staticStyle: {
+          display: "inline-flex",
+          float: "right",
+          "padding-top": "5px"
+        }
+      },
       [
-        _c("a", { attrs: { href: "#" } }, [_vm._v("Create case study")]),
+        _c(
+          "a",
+          {
+            staticStyle: {
+              "font-size": "18px",
+              "margin-left": "15px",
+              "padding-top": "11px"
+            }
+          },
+          [_vm._v("Remove")]
+        ),
         _vm._v(" "),
-        _c("p", { staticStyle: { "margin-left": "170px" } }, [
-          _vm._v("Our Cases")
+        _c("i", { staticClass: "material-icons" }, [
+          _vm._v("remove_circle_outline")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "remove_icon",
+        staticStyle: {
+          display: "inline-flex",
+          float: "right",
+          "padding-top": "5px"
+        }
+      },
+      [
+        _c(
+          "a",
+          { staticStyle: { "font-size": "18px", "padding-top": "11px" } },
+          [_vm._v("Add")]
+        ),
+        _vm._v(" "),
+        _c("i", { staticClass: "material-icons" }, [
+          _vm._v("add_circle_outline")
         ])
       ]
     )
@@ -41575,24 +41827,7 @@ var render = function() {
                 _c("div", { staticClass: "modal-header" }, [
                   _c("h5", { staticClass: "modal-title" }, [
                     _vm._v(_vm._s(_vm.action) + " " + _vm._s(_vm.actor))
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "close",
-                      attrs: {
-                        type: "button",
-                        "data-dismiss": "modal",
-                        "aria-label": "Close"
-                      }
-                    },
-                    [
-                      _c("span", { attrs: { "aria-hidden": "true" } }, [
-                        _vm._v("×")
-                      ])
-                    ]
-                  )
+                  ])
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-body" }, [
@@ -41612,7 +41847,11 @@ var render = function() {
                             ],
                             staticClass: "form-control input-sm",
                             staticStyle: { width: "250px" },
-                            attrs: { type: "text", placeholder: "Name..." },
+                            attrs: {
+                              type: "text",
+                              maxlength: "35",
+                              placeholder: "Name..."
+                            },
                             domProps: { value: _vm.g_name },
                             on: {
                               input: function($event) {
@@ -42127,11 +42366,7 @@ var render = function() {
               }
             }
           },
-          [
-            _c("i", { staticClass: "material-icons" }, [
-              _vm._v("remove_circle_outline")
-            ])
-          ]
+          [_vm._m(0)]
         ),
         _vm._v(" "),
         _c(
@@ -42150,11 +42385,7 @@ var render = function() {
               }
             }
           },
-          [
-            _c("i", { staticClass: "material-icons" }, [
-              _vm._v("add_circle_outline")
-            ])
-          ]
+          [_vm._m(1)]
         ),
         _vm._v(" "),
         _vm.action == "Remove" && _vm.isSelected
@@ -42210,7 +42441,7 @@ var render = function() {
         attrs: { id: "group-table", cellspacing: "0" }
       },
       [
-        _vm._m(0),
+        _vm._m(2),
         _vm._v(" "),
         _c(
           "tbody",
@@ -42311,6 +42542,48 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "add_icon",
+        staticStyle: { display: "inline-block", float: "right" }
+      },
+      [
+        _c(
+          "a",
+          { staticStyle: { "font-size": "18px", "margin-left": "15px" } },
+          [_vm._v("Remove")]
+        ),
+        _vm._v(" "),
+        _c("i", { staticClass: "material-icons" }, [
+          _vm._v("remove_circle_outline")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "remove_icon",
+        staticStyle: { display: "inline-block", float: "right" }
+      },
+      [
+        _c("a", { staticStyle: { "font-size": "18px" } }, [_vm._v("Create")]),
+        _vm._v(" "),
+        _c("i", { staticClass: "material-icons" }, [
+          _vm._v("add_circle_outline")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("thead", { staticClass: "thead-dark" }, [
       _c("tr", [
         _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
@@ -42362,36 +42635,30 @@ var render = function() {
               }
             }
           },
-          [
-            _c("i", { staticClass: "material-icons" }, [
-              _vm._v("remove_circle_outline")
-            ])
-          ]
+          [_vm._m(0)]
         ),
         _vm._v(" "),
-        _c(
-          "a",
-          {
-            attrs: {
-              href: "#mg_action_table",
-              "data-toggle": "modal",
-              "data-target": "#mg_action_table"
-            },
-            on: {
-              click: function($event) {
-                ;(_vm.gname_box_show = true),
-                  (_vm.action = "Create"),
-                  (_vm.actor = "group"),
-                  _vm.fetchUsers()
+        _c("div", [
+          _c(
+            "a",
+            {
+              attrs: {
+                href: "#mg_action_table",
+                "data-toggle": "modal",
+                "data-target": "#mg_action_table"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.gname_box_show = true),
+                    (_vm.action = "Create"),
+                    (_vm.actor = "group"),
+                    _vm.fetchUsers()
+                }
               }
-            }
-          },
-          [
-            _c("i", { staticClass: "material-icons" }, [
-              _vm._v("add_circle_outline")
-            ])
-          ]
-        ),
+            },
+            [_vm._m(1)]
+          )
+        ]),
         _vm._v(" "),
         _vm.action == "Remove" && _vm.isSelected
           ? _c(
@@ -42451,64 +42718,83 @@ var render = function() {
         attrs: { id: "group-table", cellspacing: "0" }
       },
       [
-        _vm._m(0),
+        _vm._m(2),
         _vm._v(" "),
         _c(
           "tbody",
           _vm._l(_vm.pageOfGroups, function(group, index) {
             return _c("tr", { key: index }, [
-              _c("td", [
-                _c("div", { staticClass: "check-box" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.gids,
-                        expression: "gids"
-                      }
-                    ],
-                    staticClass: "checkbox",
-                    attrs: { type: "checkbox", id: "checkbox" },
-                    domProps: {
-                      value: group.gid,
-                      checked: Array.isArray(_vm.gids)
-                        ? _vm._i(_vm.gids, group.gid) > -1
-                        : _vm.gids
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.gids,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = group.gid,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 && (_vm.gids = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.gids = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
+              group.g_owner == _vm.uid
+                ? _c("td", [
+                    _c("div", { staticClass: "check-box" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.gids,
+                            expression: "gids"
                           }
-                        } else {
-                          _vm.gids = $$c
+                        ],
+                        staticClass: "checkbox",
+                        attrs: { type: "checkbox", id: "checkbox" },
+                        domProps: {
+                          value: group.gid,
+                          checked: Array.isArray(_vm.gids)
+                            ? _vm._i(_vm.gids, group.gid) > -1
+                            : _vm.gids
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.gids,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = group.gid,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 && (_vm.gids = $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  (_vm.gids = $$a
+                                    .slice(0, $$i)
+                                    .concat($$a.slice($$i + 1)))
+                              }
+                            } else {
+                              _vm.gids = $$c
+                            }
+                          }
                         }
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "checkbox" } }, [
-                    _vm._v(_vm._s(index + 1))
+                      }),
+                      _vm._v(" "),
+                      _c("label", { attrs: { for: "checkbox" } }, [
+                        _vm._v(_vm._s(index + 1))
+                      ])
+                    ])
                   ])
-                ])
-              ]),
+                : _c("td", [
+                    _c("div", [
+                      _c(
+                        "label",
+                        {
+                          staticStyle: {
+                            "padding-top": "18px",
+                            "padding-left": "18px"
+                          }
+                        },
+                        [_vm._v(_vm._s(index + 1))]
+                      )
+                    ])
+                  ]),
               _vm._v(" "),
               _c("td", [
-                _c("a", { attrs: { href: "/group/" + group.gid } }, [
-                  _vm._v(_vm._s(group.g_name))
-                ])
+                _c(
+                  "a",
+                  {
+                    attrs: { href: "/user/" + _vm.uid + "/group/" + group.gid }
+                  },
+                  [_vm._v(_vm._s(group.g_name))]
+                )
               ])
             ])
           }),
@@ -42533,6 +42819,48 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "add_icon",
+        staticStyle: { display: "inline-block", float: "right" }
+      },
+      [
+        _c(
+          "a",
+          { staticStyle: { "font-size": "18px", "margin-left": "15px" } },
+          [_vm._v("Remove")]
+        ),
+        _vm._v(" "),
+        _c("i", { staticClass: "material-icons" }, [
+          _vm._v("remove_circle_outline")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "remove_icon",
+        staticStyle: { display: "inline-block", float: "right" }
+      },
+      [
+        _c("a", { staticStyle: { "font-size": "18px" } }, [_vm._v("Create")]),
+        _vm._v(" "),
+        _c("i", { staticClass: "material-icons" }, [
+          _vm._v("add_circle_outline")
+        ])
+      ]
+    )
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

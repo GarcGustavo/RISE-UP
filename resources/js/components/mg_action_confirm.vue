@@ -107,10 +107,6 @@ export default {
     }
   },
   methods: {
-      test(){
-          this.$emit("close");
-          this.$emit("revalidate");
-      },
 
     confirmRemoveMembers() {
       this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.

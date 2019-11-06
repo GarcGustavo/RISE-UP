@@ -3,16 +3,22 @@
   <div class="body mb-5 mt-5">
     <!-- <h1 class="text-center">Our Group</h1>-->
 
-    <div v-if="!editing">
-      <span class="text" @click="enableEditing">
-        <h1 class="text-center">{{group_name}}</h1>
+    <div v-if="!edit_title">
+      <span class="text">
+        <h1 class="text-center" :style=" is_owner ? 'margin-left:35px;' : ''">
+          {{group_name}}
+          <a href="#" @click="enableEditTitle" v-if="is_owner">
+            <i class="material-icons">create</i>
+          </a>
+        </h1>
       </span>
     </div>
-    <div v-if="editing">
+    <div v-if="edit_title">
       <input v-model="tempValue" class="input">
-      <button @click="disableEditing">Cancel</button>
+      <button @click="disableEditTitle">Cancel</button>
       <button data-toggle="modal" data-target="#mg_action_confirm" @click="saveEdit">Save</button>
     </div>
+
     <!--
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -21,9 +27,11 @@
         <li class="breadcrumb-item active">About</li>
     </ol>
     -->
+
     <hr>
-    <h1 class="text-center mt-5">
+    <h1 class="text-center mt-5 col-sm">
       <a
+        v-if="edit_members"
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
@@ -31,9 +39,13 @@
         @click="showModal=true, action='Remove',
         actor='member(s)', fetchMembers()"
       >
-        <i class="material-icons">remove_circle_outline</i>
+        <div class="add_icon" style="display:inline-flex;float:right;padding-top:5px;">
+          <a style="font-size:18px;margin-left:15px;padding-top:11px;">Remove</a>
+          <i class="material-icons">remove_circle_outline</i>
+        </div>
       </a>
       <a
+        v-if="edit_members"
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
@@ -41,7 +53,10 @@
         @click="showModal=true, action='Add',
         actor='member(s)', fetchUsers()"
       >
-        <i class="material-icons">add_circle_outline</i>
+        <div class="remove_icon" style="display:inline-flex;float:right;padding-top:5px;">
+          <a style="font-size:18px;padding-top:11px;">Add</a>
+          <i class="material-icons">add_circle_outline</i>
+        </div>
       </a>
 
       <mg_action_table
@@ -58,9 +73,20 @@
         <mg_action_confirm :errors="errors"></mg_action_confirm>
       </div>
 
-      <p style="margin-left:90px;">Members</p>
+
+      <p :style=" edit_members ? 'margin-left:205px;' : ''">Members</p>
     </h1>
 
+
+
+<div>
+    <case_create_dbox
+          :action="'Create'"
+          :actor="'case study'"
+          :group_selection="gid"
+          @createCaseStudy="createCaseStudy"
+        ></case_create_dbox>
+</div>
     <!-- Members -->
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
@@ -81,8 +107,17 @@
 
     <!-- Case view -->
     <h1 id="cases_header" class="mt-5 text-center">
-      <a href="#">Create case study</a>
-      <p style="margin-left:170px;">Our Cases</p>
+      <div v-if="create_group_case">
+        <a
+          href="#case_create_dbox"
+          style="padding-top:5px;"
+          data-toggle="modal"
+          data-target="#case_create_dbox"
+        >Create case study</a>
+      </div>
+      <p :style="create_group_case ? 'margin-left:170px;' : ''">Our Cases</p>
+
+
     </h1>
 
     <div class="mt-1 card mb-5" id="cases">
@@ -108,9 +143,11 @@ export default {
   data() {
     return {
       showModal: false,
-      old_name:"",
+      old_name: "",
       group_name: "",
       group_data: "",
+      group_owner: "",
+      group_user: "",
       action: "",
       actor: "",
       gid: "",
@@ -120,26 +157,65 @@ export default {
       members_to_add: [],
       errors: [],
       tempValue: null,
-      editing: false,
-      error:false,
+      is_owner: false,
+      is_member: false,
+      edit_members: false,
+      edit_title: false,
+      create_group_case: false,
+      error: false
     };
   },
 
   created() {
-    this.fetchGroupInfo();
     this.fetchMembers();
+    this.fetchGroupInfo();
     this.fetchCases();
   },
 
   methods: {
-    enableEditing() {
-      this.tempValue = this.group_name;
-      this.editing = true;
+    userPriveleges() {
+      this.isUserOwner();
+      this.isUserMember();
+      if (this.is_owner) {
+        this.edit_members = true;
+        this.create_group_case = true;
+      } else if (this.is_member && !this.is_owner) {
+        this.edit_members = false;
+        this.create_group_case = true;
+      } else {
+        this.edit_members = false;
+        this.create_group_case = false;
+      }
+      console.log(this.edit_members);
+      console.log(this.create_group_case);
     },
-    disableEditing() {
+
+    isUserOwner() {
+      if (this.group_user == this.group_owner) {
+        this.is_owner = true;
+      } else {
+        this.is_owner = false;
+      }
+    },
+
+    isUserMember() {
+      for (let i = 0; i < this.members.length; i++) {
+        if (this.group_user == this.members[i].uid) {
+          this.is_member = true;
+          return;
+        }
+      }
+      this.is_member = false;
+    },
+
+    enableEditTitle() {
+      this.tempValue = this.group_name;
+      this.edit_title = true;
+    },
+    disableEditTitle() {
       this.tempValue = null;
-      this.editing = false;
-      this.error=false;
+      this.edit_title = false;
+      this.error = false;
     },
     saveEdit() {
       this.old_name = this.group_name;
@@ -147,7 +223,7 @@ export default {
       // However we want to save it to the database
       if (this.group_name) {
         this.changeGroupName();
-        this.disableEditing();
+        this.disableEditTitle();
       } else {
         this.errors = [];
 
@@ -155,7 +231,7 @@ export default {
           this.errors.push("Group name required.");
         }
         this.group_name = this.old_name;
-         this.error=true;
+        this.error = true;
       }
     },
 
@@ -170,6 +246,7 @@ export default {
 
     fetchMembers() {
       this.path = window.location.pathname.split("/");
+      this.group_user = Number(this.path[this.path.length - 3]);
       this.gid = Number(this.path[this.path.length - 1]);
 
       fetch("/group/" + this.gid + "/members")
@@ -198,6 +275,8 @@ export default {
         .then(res => {
           this.group_data = res.data;
           this.group_name = this.group_data[0].g_name;
+          this.group_owner = this.group_data[0].g_owner;
+          this.userPriveleges();
         })
         .catch(err => console.log(err));
     },
@@ -264,6 +343,27 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
+    },
+
+    createCaseStudy(case_study) {
+      console.log(JSON.stringify(case_study));
+      fetch("/case/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+          this.fetchCases();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     }
   }
 };
@@ -290,7 +390,8 @@ h1 i {
 }
 
 /* change icon background when hovered */
-h1 i:hover {
+h1 i:hover,
+h1 a:hover {
   color: blue;
 }
 
@@ -300,7 +401,8 @@ a {
 }
 
 /* position create case study button */
-#cases_header a {
+#cases_header a,
+#edit_btn a {
   float: right;
   font-size: 18px;
   margin-top: 10px;

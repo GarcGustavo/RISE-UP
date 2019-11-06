@@ -18,9 +18,9 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">{{action}} {{actor}}</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-              </button>
+              </button> -->
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
@@ -29,6 +29,7 @@
                 <div class="input-group-append">
                   <input
                     type="text"
+                    maxlength="35"
                     class="form-control input-sm"
                     style="width:250px;"
                     v-model="g_name"
@@ -241,7 +242,6 @@ export default {
           this.errors.push("Group name required.");
         }
       }
-      //  this.valid_input = false;
     },
 
     totalGroups() {
@@ -309,6 +309,7 @@ export default {
       }
       this.totalGroups();
       this.group_to_create = {
+        gid: "",
         g_name: "",
         g_status: "",
         g_creation_date: "",

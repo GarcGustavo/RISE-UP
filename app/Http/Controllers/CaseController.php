@@ -85,7 +85,7 @@ class CaseController extends Controller
         ->get();
 
         $all_cases = $cases->concat($group_cases);
-        $unique_data = $all_cases->unique('cid');
+        $unique_data = $all_cases->unique('cid')->sortByDesc('cid');
 
         return Case_StudyResource::collection($unique_data);
     }
@@ -130,6 +130,7 @@ class CaseController extends Controller
         $cids_to_delete = array_map(function ($item) {
             return $item['cid'];
         }, $to_delete);
+        case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
         case_study::whereIn('cid', $cids_to_delete)->delete();
         return response()->json(['message'=>'Case(s) has been removed']);
     }
