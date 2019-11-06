@@ -63,7 +63,12 @@ Route::get('group/{id}/cases', 'GroupController@show_group_cases');
 
 
 
-//List user's activities and requests
+
+// 1: Provides the admin with a list of users and with a list of users
+//requesting their role to be upgraded from Viewer to Collaborator.
+//
+//Section 1.62 on Software Requirement Specifications Documents
+//Section 1.64 on Software Requirement Specifications Documents
 Route::get('/admin/users', 'AdminController@users')->name('admin.users');
 
 //List activity log

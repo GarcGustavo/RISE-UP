@@ -12,9 +12,8 @@
 
     <div class="tab-content" id="nav-tabContent">
 
-
+        <!-- nav-users : Section to present users -->
         <div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
-            <!-- Users Table -->
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
@@ -74,9 +73,8 @@
             </div>
         </div> <!-- id nav user -->
 
-
+        <!-- nav-requests : Section to present requests to collaborate -->
         <div class="tab-pane fade" id="nav-requests" role="tabpanel" aria-labelledby="nav-requests-tab">
-            <!-- Requests Table -->
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>Requesting to Collaborate:</div>
