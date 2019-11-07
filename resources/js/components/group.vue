@@ -69,6 +69,7 @@
         :action="action"
         :actor="actor"
         :users="users"
+        :curr_user_id="group_user"
         @addUsers="addUsers"
         @removeUsers="removeUsers"
       ></mg_action_table>
@@ -247,7 +248,10 @@ export default {
           for (let i = 0; i < this.users.length; i++) {
             for (let k = 0; k < this.members.length; k++) {
               if (this.users[i].uid == this.members[k].uid) {
+
                 this.users.splice(i, 1);
+                i=0;
+
               }
             }
           }
@@ -263,7 +267,7 @@ export default {
       fetch("/group/" + this.gid + "/members")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data;
+          this.users = res.data; //to send to modal when deleting
           this.members = res.data; //to render in view
         })
         .catch(err => console.log(err));

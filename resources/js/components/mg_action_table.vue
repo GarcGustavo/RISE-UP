@@ -64,16 +64,20 @@
                   </thead>
                   <tbody>
                     <tr v-for="(user,index) in filterUsers" v-bind:key="index">
-                      <td>
-                        <div class="check-box">
+                      <td v-if="user.uid != curr_user_id">
+                        <div class="check-box" v-if="action!='Remove'">
                           <input class="checkbox" type="checkbox" v-model="uids" :value="user.uid">
                           <label for="checkbox">{{index+1}}</label>
                         </div>
+                        <div class="check-box" v-else>
+                          <input class="checkbox" type="checkbox" v-model="uids" :value="user.uid">
+                          <label for="checkbox">{{index}}</label>
+                        </div>
                       </td>
-                      <td>
+                      <td v-if="user.uid!=curr_user_id">
                         <label>{{user.email}}</label>
                       </td>
-                      <td>
+                      <td v-if="user.uid!=curr_user_id">
                         <label>{{user.first_name}} {{user.last_name}}</label>
                       </td>
                     </tr>
@@ -281,7 +285,7 @@ export default {
         }
         this.uncheck(); // uncheck all values when finished
         this.user_to_add_remove = []; //reset variable
-        this.search="";
+        this.search = "";
       }
     },
 
@@ -324,7 +328,7 @@ export default {
         g_owner: ""
       };
       this.g_name = "";
-      this.search="";
+      this.search = "";
       this.user_to_add_remove = [];
       this.uncheck();
     }

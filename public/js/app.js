@@ -2423,6 +2423,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2527,6 +2528,8 @@ __webpack_require__.r(__webpack_exports__);
           for (var k = 0; k < _this.members.length; k++) {
             if (_this.users[i].uid == _this.members[k].uid) {
               _this.users.splice(i, 1);
+
+              i = 0;
             }
           }
         }
@@ -2543,7 +2546,8 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/group/" + this.gid + "/members").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data;
+        _this2.users = res.data; //to send to modal when deleting
+
         _this2.members = res.data; //to render in view
       })["catch"](function (err) {
         return console.log(err);
@@ -3002,6 +3006,10 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
 //
 //
 //
@@ -41111,7 +41119,12 @@ var render = function() {
         _vm._v(" "),
         _vm.showModal
           ? _c("mg_action_table", {
-              attrs: { action: _vm.action, actor: _vm.actor, users: _vm.users },
+              attrs: {
+                action: _vm.action,
+                actor: _vm.actor,
+                users: _vm.users,
+                curr_user_id: _vm.group_user
+              },
               on: {
                 close: function($event) {
                   _vm.showModal = false
@@ -42046,68 +42059,147 @@ var render = function() {
                           "tbody",
                           _vm._l(_vm.filterUsers, function(user, index) {
                             return _c("tr", { key: index }, [
-                              _c("td", [
-                                _c("div", { staticClass: "check-box" }, [
-                                  _c("input", {
-                                    directives: [
-                                      {
-                                        name: "model",
-                                        rawName: "v-model",
-                                        value: _vm.uids,
-                                        expression: "uids"
-                                      }
-                                    ],
-                                    staticClass: "checkbox",
-                                    attrs: { type: "checkbox" },
-                                    domProps: {
-                                      value: user.uid,
-                                      checked: Array.isArray(_vm.uids)
-                                        ? _vm._i(_vm.uids, user.uid) > -1
-                                        : _vm.uids
-                                    },
-                                    on: {
-                                      change: function($event) {
-                                        var $$a = _vm.uids,
-                                          $$el = $event.target,
-                                          $$c = $$el.checked ? true : false
-                                        if (Array.isArray($$a)) {
-                                          var $$v = user.uid,
-                                            $$i = _vm._i($$a, $$v)
-                                          if ($$el.checked) {
-                                            $$i < 0 &&
-                                              (_vm.uids = $$a.concat([$$v]))
-                                          } else {
-                                            $$i > -1 &&
-                                              (_vm.uids = $$a
-                                                .slice(0, $$i)
-                                                .concat($$a.slice($$i + 1)))
-                                          }
-                                        } else {
-                                          _vm.uids = $$c
-                                        }
-                                      }
-                                    }
-                                  }),
-                                  _vm._v(" "),
-                                  _c("label", { attrs: { for: "checkbox" } }, [
-                                    _vm._v(_vm._s(index + 1))
+                              user.uid != _vm.curr_user_id
+                                ? _c("td", [
+                                    _vm.action != "Remove"
+                                      ? _c(
+                                          "div",
+                                          { staticClass: "check-box" },
+                                          [
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value: _vm.uids,
+                                                  expression: "uids"
+                                                }
+                                              ],
+                                              staticClass: "checkbox",
+                                              attrs: { type: "checkbox" },
+                                              domProps: {
+                                                value: user.uid,
+                                                checked: Array.isArray(_vm.uids)
+                                                  ? _vm._i(_vm.uids, user.uid) >
+                                                    -1
+                                                  : _vm.uids
+                                              },
+                                              on: {
+                                                change: function($event) {
+                                                  var $$a = _vm.uids,
+                                                    $$el = $event.target,
+                                                    $$c = $$el.checked
+                                                      ? true
+                                                      : false
+                                                  if (Array.isArray($$a)) {
+                                                    var $$v = user.uid,
+                                                      $$i = _vm._i($$a, $$v)
+                                                    if ($$el.checked) {
+                                                      $$i < 0 &&
+                                                        (_vm.uids = $$a.concat([
+                                                          $$v
+                                                        ]))
+                                                    } else {
+                                                      $$i > -1 &&
+                                                        (_vm.uids = $$a
+                                                          .slice(0, $$i)
+                                                          .concat(
+                                                            $$a.slice($$i + 1)
+                                                          ))
+                                                    }
+                                                  } else {
+                                                    _vm.uids = $$c
+                                                  }
+                                                }
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            _c(
+                                              "label",
+                                              { attrs: { for: "checkbox" } },
+                                              [_vm._v(_vm._s(index + 1))]
+                                            )
+                                          ]
+                                        )
+                                      : _c(
+                                          "div",
+                                          { staticClass: "check-box" },
+                                          [
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value: _vm.uids,
+                                                  expression: "uids"
+                                                }
+                                              ],
+                                              staticClass: "checkbox",
+                                              attrs: { type: "checkbox" },
+                                              domProps: {
+                                                value: user.uid,
+                                                checked: Array.isArray(_vm.uids)
+                                                  ? _vm._i(_vm.uids, user.uid) >
+                                                    -1
+                                                  : _vm.uids
+                                              },
+                                              on: {
+                                                change: function($event) {
+                                                  var $$a = _vm.uids,
+                                                    $$el = $event.target,
+                                                    $$c = $$el.checked
+                                                      ? true
+                                                      : false
+                                                  if (Array.isArray($$a)) {
+                                                    var $$v = user.uid,
+                                                      $$i = _vm._i($$a, $$v)
+                                                    if ($$el.checked) {
+                                                      $$i < 0 &&
+                                                        (_vm.uids = $$a.concat([
+                                                          $$v
+                                                        ]))
+                                                    } else {
+                                                      $$i > -1 &&
+                                                        (_vm.uids = $$a
+                                                          .slice(0, $$i)
+                                                          .concat(
+                                                            $$a.slice($$i + 1)
+                                                          ))
+                                                    }
+                                                  } else {
+                                                    _vm.uids = $$c
+                                                  }
+                                                }
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            _c(
+                                              "label",
+                                              { attrs: { for: "checkbox" } },
+                                              [_vm._v(_vm._s(index))]
+                                            )
+                                          ]
+                                        )
                                   ])
-                                ])
-                              ]),
+                                : _vm._e(),
                               _vm._v(" "),
-                              _c("td", [
-                                _c("label", [_vm._v(_vm._s(user.email))])
-                              ]),
+                              user.uid != _vm.curr_user_id
+                                ? _c("td", [
+                                    _c("label", [_vm._v(_vm._s(user.email))])
+                                  ])
+                                : _vm._e(),
                               _vm._v(" "),
-                              _c("td", [
-                                _c("label", [
-                                  _vm._v(
-                                    _vm._s(user.first_name) +
-                                      " " +
-                                      _vm._s(user.last_name)
-                                  )
-                                ])
-                              ])
+                              user.uid != _vm.curr_user_id
+                                ? _c("td", [
+                                    _c("label", [
+                                      _vm._v(
+                                        _vm._s(user.first_name) +
+                                          " " +
+                                          _vm._s(user.last_name)
+                                      )
+                                    ])
+                                  ])
+                                : _vm._e()
                             ])
                           }),
                           0
