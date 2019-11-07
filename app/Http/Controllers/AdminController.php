@@ -46,6 +46,8 @@ class AdminController extends Controller
 
 
 
+
+
     //public function log
     public function log(){
         $userActions = DB::table('user')
@@ -59,6 +61,26 @@ class AdminController extends Controller
 
 
 
+
+
+    //public function filters
+    public function filters(){
+
+        $filters = DB::table('cs_parameter')
+            ->select('cs_parameter.*')
+            ->get();
+
+        $options = DB::table('option')
+            ->select('option.*')
+            ->get();
+
+        return view('admin.filters', ['filters' => $filters, 'options' => $options]);
+    }
+
+
+
+
+
     //public function groups
     public function groups(){
         $groups = DB::table('group')
@@ -69,7 +91,6 @@ class AdminController extends Controller
 
         return view('admin.groups', ['groups' => $groups]);
     }
-
 
 
 
@@ -96,19 +117,6 @@ class AdminController extends Controller
 
 
 
-    //public function filters
-    public function filters(){
-
-        $filters = DB::table('cs_parameter')
-            ->select('cs_parameter.*')
-            ->get();
-
-        $options = DB::table('option')
-            ->select('option.*')
-            ->get();
-
-        return view('admin.filters', ['filters' => $filters, 'options' => $options]);
-    }
 
 
     //public function userEdit
@@ -121,6 +129,10 @@ class AdminController extends Controller
         return view('admin.userEdit', ['user' => $users[0]]);
     }
 
+
+
+
+    
     //public function userUpdate
     public function userUpdate($uid){
         $validatedData = request()->validate([

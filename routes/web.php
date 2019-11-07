@@ -21,16 +21,12 @@ Route::get('/about', function () {
 Route::get('/help', function () {
     return view('help');
 });
-
 Route::get('/group/{id}', function () {
    return view('group');
 })->name('group');
-
-
 Route::get('/user/{id}/groups', function () {
     return view('user_groups');
 });
-
 Route::get('/Home', function () {
     return view('home');
 });
@@ -94,11 +90,6 @@ Route::put('/admin/user/{id}', 'AdminController@userUpdate');
 Route::get('/admin/group/{id}/edit', 'AdminController@groupEdit');
 
 Route::put('/admin/group/{id}', 'AdminController@groupUpdate');
-
-
-
-
-
 
 /*
 //Falta index y update
