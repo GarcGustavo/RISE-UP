@@ -21,7 +21,7 @@ class CreateCaseTable extends Migration
             $table->string('c_status', 255);
             $table->date('c_date');
             $table->unsignedBigInteger('c_owner');
-            $table->unsignedBigInteger('c_group');
+            $table->unsignedBigInteger('c_group')->nullable();
             $table->foreign('c_owner')->references('uid')->on('User');
             $table->foreign('c_group')->references('gid')->on('Group')->onDelete('cascade')->onUpdate('cascade');
             $table->softDeletes();

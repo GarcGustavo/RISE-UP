@@ -14,7 +14,7 @@
       </span>
     </div>
     <div v-if="edit_title">
-      <input v-model="tempValue" class="input">
+      <input v-model="tempValue" maxlength="32" class="input">
       <button @click="disableEditTitle">Cancel</button>
       <button data-toggle="modal" data-target="#mg_action_confirm" @click="saveEdit">Save</button>
     </div>
@@ -73,20 +73,17 @@
         <mg_action_confirm :errors="errors"></mg_action_confirm>
       </div>
 
-
       <p :style=" edit_members ? 'margin-left:205px;' : ''">Members</p>
     </h1>
 
-
-
-<div>
-    <case_create_dbox
-          :action="'Create'"
-          :actor="'case study'"
-          :group_selection="gid"
-          @createCaseStudy="createCaseStudy"
-        ></case_create_dbox>
-</div>
+    <div>
+      <case_create_dbox
+        :action="'Create'"
+        :actor="'case study'"
+        :group_selection="gid"
+        @createCaseStudy="createCaseStudy"
+      ></case_create_dbox>
+    </div>
     <!-- Members -->
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
@@ -116,8 +113,6 @@
         >Create case study</a>
       </div>
       <p :style="create_group_case ? 'margin-left:170px;' : ''">Our Cases</p>
-
-
     </h1>
 
     <div class="mt-1 card mb-5" id="cases">
@@ -186,8 +181,6 @@ export default {
         this.edit_members = false;
         this.create_group_case = false;
       }
-      console.log(this.edit_members);
-      console.log(this.create_group_case);
     },
 
     isUserOwner() {
@@ -240,6 +233,14 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.users = res.data; //to send to modal
+          //filter users from list to show in table
+          for (let i = 0; i < this.users.length; i++) {
+            for (let k = 0; k < this.members.length; k++) {
+              if (this.users[i].uid == this.members[k].uid) {
+                this.users.splice(i, 1);
+              }
+            }
+          }
         })
         .catch(err => console.log(err));
     },
@@ -252,7 +253,7 @@ export default {
       fetch("/group/" + this.gid + "/members")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data; //to send to modal
+          this.users = res.data;
           this.members = res.data; //to render in view
         })
         .catch(err => console.log(err));
@@ -276,6 +277,7 @@ export default {
           this.group_data = res.data;
           this.group_name = this.group_data[0].g_name;
           this.group_owner = this.group_data[0].g_owner;
+          //Verify if use is owner
           this.userPriveleges();
         })
         .catch(err => console.log(err));
@@ -293,10 +295,9 @@ export default {
         }),
         body: JSON.stringify({ g_name: this.group_name })
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
-          this.fetchMembers();
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -304,7 +305,6 @@ export default {
     },
 
     addUsers(users_to_add) {
-      console.log(users_to_add);
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -314,9 +314,11 @@ export default {
         }),
         body: JSON.stringify(users_to_add)
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(users_to_add);
+          this.fetchUsers();
           this.fetchMembers();
         })
         .catch(err => {
@@ -325,7 +327,6 @@ export default {
     },
 
     removeUsers(users_to_remove) {
-      console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
         method: "delete",
         headers: new Headers({
@@ -336,8 +337,10 @@ export default {
         body: JSON.stringify(users_to_remove)
       })
         .then(res => res.json())
-        .then(data => {
-          console.log(data);
+        .then(res => {
+          console.log(res);
+          console.log(users_to_remove);
+          this.fetchUsers();
           this.fetchMembers();
         })
         .catch(err => {
@@ -346,7 +349,6 @@ export default {
     },
 
     createCaseStudy(case_study) {
-      console.log(JSON.stringify(case_study));
       fetch("/case/create", {
         method: "post",
         headers: new Headers({
@@ -356,9 +358,10 @@ export default {
         }),
         body: JSON.stringify(case_study)
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(case_study);
           this.fetchCases();
         })
         .catch(err => {

@@ -81,18 +81,20 @@ Route::delete('/group/members/remove', 'User_GroupsController@destroy');
 //List cases
 Route::get('/cases', 'CaseController@index');
 
+//Create a case
+Route::post('/case/create', 'CaseController@store');
+
 //List groups of a user
 Route::get('/user_groups/{id}', 'GroupController@showGroups');
-
-//List all cases of a user(author and group cases)
-Route::get('/user_cases/{id}', 'CaseController@showAllUserCases');
 
 //Delete group
 Route::delete('user_groups/remove', 'GroupController@destroy');
 
+//List all cases of a user(author and group cases)
+Route::get('/user_cases/{id}', 'CaseController@showAllUserCases');
+
+
 //Delete case study
 Route::delete('user_cases/remove', 'CaseController@destroy');
 
-//Create a case
-Route::post('/case/create', 'CaseController@store');
 

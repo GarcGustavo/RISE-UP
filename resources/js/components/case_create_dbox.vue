@@ -30,6 +30,7 @@
                   class="form-control input-sm"
                   style="width:350px;"
                   type="text"
+                  maxlength="32"
                   v-model="title"
                   placeholder="Name..."
                 >
@@ -52,7 +53,7 @@
                 <textarea
                   class="form-control"
                   id="description"
-                  maxlength="255"
+                  maxlength="140"
                   v-model="description"
                   v-on:keyup="countdown"
                 ></textarea>
@@ -132,8 +133,8 @@ export default {
       groups: [],
       errors: [],
 
-      maxCount: 255,
-      remainingCount: 255,
+      maxCount: 140,
+      remainingCount: 140,
       close: false,
       hasError: false,
       valid_input: false
@@ -153,7 +154,7 @@ export default {
       this.title = "";
       this.description = "";
       this.gid = "";
-      this.remainingCount = 255;
+      this.remainingCount = 140;
     },
 
     validateInput() {
@@ -183,7 +184,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
-          console.log(this.cases);
+
         })
         .catch(err => console.log(err));
     },
@@ -201,9 +202,6 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
-
-          console.log(this.groups);
-          this.ready = true;
         })
         .catch(err => console.log(err));
     },
@@ -214,7 +212,6 @@ export default {
       this.date = new Date().toJSON().slice(0, 10);
 
       this.case_study.cid = this.cases[this.cases.length - 1].cid + 1;
-      console.log(this.case_study.cid);
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";

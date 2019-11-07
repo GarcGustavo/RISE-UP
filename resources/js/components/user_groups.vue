@@ -95,7 +95,7 @@
         </tr>
       </tbody>
     </table>
-    <div v-if="ready">
+    <div v-if="reload_paginator">
       <paginator :items="groups" @changePage="onChangePage" class="pagination"></paginator>
     </div>
   </div>
@@ -105,7 +105,7 @@
 export default {
   data() {
     return {
-      ready: false,
+      reload_paginator: false,
       gids: [],
       groups: [],
       group: {
@@ -122,7 +122,7 @@ export default {
       uid: "",
       action: "",
       actor: "",
-      isSelected: false,
+      isSelected: false, //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
@@ -147,11 +147,11 @@ export default {
 
     forceRerender() {
       // Remove paginator from the DOM
-      this.ready = false;
+      this.reload_paginator = false;
 
       this.$nextTick().then(() => {
         // Add the paginator back in
-        this.ready = true;
+        this.reload_paginator = true;
       });
     },
 
@@ -164,10 +164,19 @@ export default {
     },
 
     fetchUsers() {
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
       fetch("/users")
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
+          //filter user from list to show in table
+          for (let i = 0; i < this.users.length; i++) {
+            if (this.users[i].uid == this.uid) {
+              this.users.splice(i, 1);
+              return;
+            }
+          }
         })
         .catch(err => console.log(err));
     },
@@ -198,9 +207,10 @@ export default {
         }),
         body: JSON.stringify(group)
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(group);
           this.addUsers(members);
           this.fetchGroups();
         })
@@ -210,7 +220,6 @@ export default {
     },
 
     addUsers(users_to_add) {
-      console.log(JSON.stringify(users_to_add));
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -220,9 +229,10 @@ export default {
         }),
         body: JSON.stringify(users_to_add)
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(users_to_add);
           this.fetchGroups();
         })
         .catch(err => {
@@ -231,8 +241,6 @@ export default {
     },
 
     removeGroups() {
-      console.log(JSON.stringify(this.gids));
-
       for (let i in this.gids) {
         this.groups_to_remove.push({
           gid: this.gids[i]
@@ -248,9 +256,11 @@ export default {
         }),
         body: JSON.stringify(this.groups_to_remove)
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(this.groups_to_remove);
+
           this.fetchGroups();
           this.groups_to_remove = [];
         })
@@ -322,7 +332,8 @@ h1 i {
   margin-top: 20px;
 }
 /* change icon background when hovered */
-h1 i:hover, h1 a:hover {
+h1 i:hover,
+h1 a:hover {
   color: blue;
 }
 /* icon initial color */

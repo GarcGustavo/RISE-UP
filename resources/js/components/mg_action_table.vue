@@ -20,7 +20,7 @@
               <h5 class="modal-title">{{action}} {{actor}}</h5>
               <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-              </button> -->
+              </button>-->
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
@@ -29,7 +29,7 @@
                 <div class="input-group-append">
                   <input
                     type="text"
-                    maxlength="35"
+                    maxlength="32"
                     class="form-control input-sm"
                     style="width:250px;"
                     v-model="g_name"
@@ -45,6 +45,7 @@
                     type="text"
                     class="form-control input-sm"
                     style="width:250px;"
+                    maxlength="32"
                     v-model="search"
                     placeholder="User email.."
                   >
@@ -69,8 +70,12 @@
                           <label for="checkbox">{{index+1}}</label>
                         </div>
                       </td>
-                      <td>{{user.email}}</td>
-                      <td>{{user.first_name}} {{user.last_name}}</td>
+                      <td>
+                        <label>{{user.email}}</label>
+                      </td>
+                      <td>
+                        <label>{{user.first_name}} {{user.last_name}}</label>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -127,7 +132,7 @@
                   type="button"
                   class="btn btn-secondary"
                   data-dismiss="modal"
-                  @click="uncheck()"
+                  @click="uncheck(), search=''"
                 >Close</button>
               </div>
             </div>
@@ -165,6 +170,9 @@ export default {
     },
     users: {
       type: Array
+    },
+    curr_user_id: {
+      type: Number
     }
   },
 
@@ -249,7 +257,6 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
-          console.log(this.groups[this.groups.length - 1].gid);
         })
         .catch(err => console.log(err));
     },
@@ -274,6 +281,7 @@ export default {
         }
         this.uncheck(); // uncheck all values when finished
         this.user_to_add_remove = []; //reset variable
+        this.search="";
       }
     },
 
@@ -299,7 +307,7 @@ export default {
         uid: this.uid,
         gid: this.group_to_create.gid
       });
-      console.log(this.group_to_create);
+
       if (this.isSelected || this.action == "Create") {
         this.$emit(
           "createGroup",
@@ -316,6 +324,7 @@ export default {
         g_owner: ""
       };
       this.g_name = "";
+      this.search="";
       this.user_to_add_remove = [];
       this.uncheck();
     }

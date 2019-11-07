@@ -173,7 +173,6 @@ export default {
     },
 
     createCaseStudy(case_study) {
-      console.log(JSON.stringify(case_study));
       fetch("/case/create", {
         method: "post",
         headers: new Headers({
@@ -183,9 +182,10 @@ export default {
         }),
         body: JSON.stringify(case_study)
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(case_study);
           this.fetchCases();
         })
         .catch(err => {
@@ -210,12 +210,11 @@ export default {
         }),
         body: JSON.stringify(this.cases_to_remove)
       })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(this.cases_to_remove);
           this.fetchCases();
-          this.uncheck();
-
           this.cases_to_remove = [];
         })
         .catch(err => {

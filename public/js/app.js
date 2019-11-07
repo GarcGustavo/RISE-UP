@@ -2032,6 +2032,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2065,8 +2066,8 @@ __webpack_require__.r(__webpack_exports__);
       cases: [],
       groups: [],
       errors: [],
-      maxCount: 255,
-      remainingCount: 255,
+      maxCount: 140,
+      remainingCount: 140,
       close: false,
       hasError: false,
       valid_input: false
@@ -2085,7 +2086,7 @@ __webpack_require__.r(__webpack_exports__);
       this.title = "";
       this.description = "";
       this.gid = "";
-      this.remainingCount = 255;
+      this.remainingCount = 140;
     },
     validateInput: function validateInput() {
       if (this.title && this.description) {
@@ -2115,7 +2116,6 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this.cases = res.data;
-        console.log(_this.cases);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2136,8 +2136,6 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this2.groups = res.data;
-        console.log(_this2.groups);
-        _this2.ready = true;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2147,7 +2145,6 @@ __webpack_require__.r(__webpack_exports__);
       this.uid = Number(this.path[this.path.length - 2]);
       this.date = new Date().toJSON().slice(0, 10);
       this.case_study.cid = this.cases[this.cases.length - 1].cid + 1;
-      console.log(this.case_study.cid);
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
@@ -2411,11 +2408,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2462,9 +2454,6 @@ __webpack_require__.r(__webpack_exports__);
         this.edit_members = false;
         this.create_group_case = false;
       }
-
-      console.log(this.edit_members);
-      console.log(this.create_group_case);
     },
     isUserOwner: function isUserOwner() {
       if (this.group_user == this.group_owner) {
@@ -2517,6 +2506,15 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this.users = res.data; //to send to modal
+        //filter users from list to show in table
+
+        for (var i = 0; i < _this.users.length; i++) {
+          for (var k = 0; k < _this.members.length; k++) {
+            if (_this.users[i].uid == _this.members[k].uid) {
+              _this.users.splice(i, 1);
+            }
+          }
+        }
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2530,8 +2528,7 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/group/" + this.gid + "/members").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data; //to send to modal
-
+        _this2.users = res.data;
         _this2.members = res.data; //to render in view
       })["catch"](function (err) {
         return console.log(err);
@@ -2558,7 +2555,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         _this4.group_data = res.data;
         _this4.group_name = _this4.group_data[0].g_name;
-        _this4.group_owner = _this4.group_data[0].g_owner;
+        _this4.group_owner = _this4.group_data[0].g_owner; //Verify if use is owner
 
         _this4.userPriveleges();
       })["catch"](function (err) {
@@ -2566,8 +2563,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     changeGroupName: function changeGroupName() {
-      var _this5 = this;
-
       this.path = window.location.pathname.split("/");
       this.gid = Number(this.path[this.path.length - 1]);
       fetch("/group/" + this.gid + "/update", {
@@ -2581,19 +2576,16 @@ __webpack_require__.r(__webpack_exports__);
           g_name: this.group_name
         })
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
-
-        _this5.fetchMembers();
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     addUsers: function addUsers(users_to_add) {
-      var _this6 = this;
+      var _this5 = this;
 
-      console.log(users_to_add);
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -2603,19 +2595,21 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(users_to_add)
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        console.log(users_to_add);
 
-        _this6.fetchMembers();
+        _this5.fetchUsers();
+
+        _this5.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     removeUsers: function removeUsers(users_to_remove) {
-      var _this7 = this;
+      var _this6 = this;
 
-      console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
         method: "delete",
         headers: new Headers({
@@ -2626,18 +2620,20 @@ __webpack_require__.r(__webpack_exports__);
         body: JSON.stringify(users_to_remove)
       }).then(function (res) {
         return res.json();
-      }).then(function (data) {
-        console.log(data);
+      }).then(function (res) {
+        console.log(res);
+        console.log(users_to_remove);
 
-        _this7.fetchMembers();
+        _this6.fetchUsers();
+
+        _this6.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     createCaseStudy: function createCaseStudy(case_study) {
-      var _this8 = this;
+      var _this7 = this;
 
-      console.log(JSON.stringify(case_study));
       fetch("/case/create", {
         method: "post",
         headers: new Headers({
@@ -2647,11 +2643,12 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(case_study)
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        console.log(case_study);
 
-        _this8.fetchCases();
+        _this7.fetchCases();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -3137,6 +3134,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -3151,6 +3153,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     users: {
       type: Array
+    },
+    curr_user_id: {
+      type: Number
     }
   },
   data: function data() {
@@ -3233,7 +3238,6 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this2.groups = res.data;
-        console.log(_this2.groups[_this2.groups.length - 1].gid);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -3261,6 +3265,8 @@ __webpack_require__.r(__webpack_exports__);
         this.uncheck(); // uncheck all values when finished
 
         this.user_to_add_remove = []; //reset variable
+
+        this.search = "";
       }
     },
     sendGroupData: function sendGroupData() {
@@ -3287,7 +3293,6 @@ __webpack_require__.r(__webpack_exports__);
         uid: this.uid,
         gid: this.group_to_create.gid
       });
-      console.log(this.group_to_create);
 
       if (this.isSelected || this.action == "Create") {
         this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
@@ -3302,6 +3307,7 @@ __webpack_require__.r(__webpack_exports__);
         g_owner: ""
       };
       this.g_name = "";
+      this.search = "";
       this.user_to_add_remove = [];
       this.uncheck();
     }
@@ -3682,7 +3688,6 @@ __webpack_require__.r(__webpack_exports__);
     createCaseStudy: function createCaseStudy(case_study) {
       var _this4 = this;
 
-      console.log(JSON.stringify(case_study));
       fetch("/case/create", {
         method: "post",
         headers: new Headers({
@@ -3692,9 +3697,10 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(case_study)
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        console.log(case_study);
 
         _this4.fetchCases();
       })["catch"](function (err) {
@@ -3721,13 +3727,12 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(this.cases_to_remove)
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        console.log(_this5.cases_to_remove);
 
         _this5.fetchCases();
-
-        _this5.uncheck();
 
         _this5.cases_to_remove = [];
       })["catch"](function (err) {
@@ -3854,7 +3859,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      ready: false,
+      reload_paginator: false,
       gids: [],
       groups: [],
       group: {
@@ -3871,6 +3876,7 @@ __webpack_require__.r(__webpack_exports__);
       action: "",
       actor: "",
       isSelected: false,
+      //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
@@ -3895,10 +3901,10 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       // Remove paginator from the DOM
-      this.ready = false;
+      this.reload_paginator = false;
       this.$nextTick().then(function () {
         // Add the paginator back in
-        _this.ready = true;
+        _this.reload_paginator = true;
       });
     },
     uncheck: function uncheck() {
@@ -3911,10 +3917,20 @@ __webpack_require__.r(__webpack_exports__);
     fetchUsers: function fetchUsers() {
       var _this2 = this;
 
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data;
+        _this2.users = res.data; //filter user from list to show in table
+
+        for (var i = 0; i < _this2.users.length; i++) {
+          if (_this2.users[i].uid == _this2.uid) {
+            _this2.users.splice(i, 1);
+
+            return;
+          }
+        }
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -3951,9 +3967,10 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(group)
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        console.log(group);
 
         _this4.addUsers(members);
 
@@ -3965,7 +3982,6 @@ __webpack_require__.r(__webpack_exports__);
     addUsers: function addUsers(users_to_add) {
       var _this5 = this;
 
-      console.log(JSON.stringify(users_to_add));
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -3975,9 +3991,10 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(users_to_add)
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        console.log(users_to_add);
 
         _this5.fetchGroups();
       })["catch"](function (err) {
@@ -3986,8 +4003,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     removeGroups: function removeGroups() {
       var _this6 = this;
-
-      console.log(JSON.stringify(this.gids));
 
       for (var i in this.gids) {
         this.groups_to_remove.push({
@@ -4004,9 +4019,10 @@ __webpack_require__.r(__webpack_exports__);
         }),
         body: JSON.stringify(this.groups_to_remove)
       }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        console.log(_this6.groups_to_remove);
 
         _this6.fetchGroups();
 
@@ -8629,7 +8645,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover, h1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover,\nh1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}", ""]);
 
 // exports
 
@@ -40552,7 +40568,11 @@ var render = function() {
                       ],
                       staticClass: "form-control input-sm",
                       staticStyle: { width: "350px" },
-                      attrs: { type: "text", placeholder: "Name..." },
+                      attrs: {
+                        type: "text",
+                        maxlength: "32",
+                        placeholder: "Name..."
+                      },
                       domProps: { value: _vm.title },
                       on: {
                         input: function($event) {
@@ -40628,7 +40648,7 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control",
-                      attrs: { id: "description", maxlength: "255" },
+                      attrs: { id: "description", maxlength: "140" },
                       domProps: { value: _vm.description },
                       on: {
                         keyup: _vm.countdown,
@@ -40883,9 +40903,7 @@ var render = function() {
                 style: _vm.is_owner ? "margin-left:35px;" : ""
               },
               [
-                _vm._v(
-                  "\n          " + _vm._s(_vm.group_name) + "\n          "
-                ),
+                _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
                 _vm.is_owner
                   ? _c(
                       "a",
@@ -40918,6 +40936,7 @@ var render = function() {
               }
             ],
             staticClass: "input",
+            attrs: { maxlength: "32" },
             domProps: { value: _vm.tempValue },
             on: {
               input: function($event) {
@@ -41849,7 +41868,7 @@ var render = function() {
                             staticStyle: { width: "250px" },
                             attrs: {
                               type: "text",
-                              maxlength: "35",
+                              maxlength: "32",
                               placeholder: "Name..."
                             },
                             domProps: { value: _vm.g_name },
@@ -41881,7 +41900,11 @@ var render = function() {
                         ],
                         staticClass: "form-control input-sm",
                         staticStyle: { width: "250px" },
-                        attrs: { type: "text", placeholder: "User email.." },
+                        attrs: {
+                          type: "text",
+                          maxlength: "32",
+                          placeholder: "User email.."
+                        },
                         domProps: { value: _vm.search },
                         on: {
                           input: function($event) {
@@ -41968,14 +41991,18 @@ var render = function() {
                                 ])
                               ]),
                               _vm._v(" "),
-                              _c("td", [_vm._v(_vm._s(user.email))]),
+                              _c("td", [
+                                _c("label", [_vm._v(_vm._s(user.email))])
+                              ]),
                               _vm._v(" "),
                               _c("td", [
-                                _vm._v(
-                                  _vm._s(user.first_name) +
-                                    " " +
-                                    _vm._s(user.last_name)
-                                )
+                                _c("label", [
+                                  _vm._v(
+                                    _vm._s(user.first_name) +
+                                      " " +
+                                      _vm._s(user.last_name)
+                                  )
+                                ])
                               ])
                             ])
                           }),
@@ -42083,7 +42110,7 @@ var render = function() {
                         attrs: { type: "button", "data-dismiss": "modal" },
                         on: {
                           click: function($event) {
-                            return _vm.uncheck()
+                            _vm.uncheck(), (_vm.search = "")
                           }
                         }
                       },
@@ -42803,7 +42830,7 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm.ready
+    _vm.reload_paginator
       ? _c(
           "div",
           [

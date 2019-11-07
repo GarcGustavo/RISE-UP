@@ -57,7 +57,7 @@ class GroupController extends Controller
         $group->g_owner = $request -> input('g_owner');
 
         if ($group->save()) {
-            return new GroupResource($group);
+           return response()->json(['message'=>'Group has been created']);
         }
     }
 
