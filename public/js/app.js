@@ -2826,8 +2826,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    addItem: function addItem(new_item, cid) {
+    updateItems: function updateItems() {
       var _this6 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.uid = this.path[this.path.length - 2];
+      fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
+        return res.text();
+      }).then(function (res) {
+        //this.groups = res.text;
+        _this6.ready = true;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    addItem: function addItem(new_item, cid) {
+      var _this7 = this;
 
       this.new_item = {
         iid: "",
@@ -2850,13 +2864,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }).then(function (text) {
         console.log(text);
 
-        _this6.fetchCaseItems();
+        _this7.fetchCaseItems();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     removeItem: function removeItem(users_to_remove) {
-      var _this7 = this;
+      var _this8 = this;
 
       console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
@@ -2872,25 +2886,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }).then(function (data) {
         console.log(data);
 
-        _this7.fetchMembers();
+        _this8.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this8 = this;
-
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this8.items = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-    updateCaseParameters: function updateCaseParameters() {
       var _this9 = this;
 
       this.path = window.location.pathname.split("/");
@@ -2903,10 +2904,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    onClick: function onClick() {
-      // update page of Casess
-      this.pageOfCases = pageOfCases;
+    updateCaseParameters: function updateCaseParameters() {
+      var _this10 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this10.items = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     },
+    languageToggle: function languageToggle() {},
     onEdit: function onEdit() {
       this.cids = [];
 

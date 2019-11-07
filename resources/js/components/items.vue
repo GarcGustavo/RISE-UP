@@ -177,6 +177,17 @@ export default {
           })
           .catch(err => console.log(err));
     },
+    updateItems() {
+        this.path = window.location.pathname.split("/");
+        this.uid = this.path[this.path.length - 2];
+        fetch("/case/"+ this.i_case + "/updateItems/")
+          .then(res => res.text())
+          .then(res => {
+            //this.groups = res.text;
+            this.ready = true;
+          })
+          .catch(err => console.log(err));
+    },
     addItem(new_item, cid) {
         this.new_item = {
           iid:"",
@@ -245,9 +256,7 @@ export default {
         })
       .catch(err => console.log(err));
     },
-    onClick() {
-      // update page of Casess
-      this.pageOfCases = pageOfCases;
+    languageToggle() {
     },
     onEdit() {
       this.cids = [];
