@@ -70,6 +70,19 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function find($email)
+    {
+        $user = User::findOrFail($email);
+
+        return new UserResource($user);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id

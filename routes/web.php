@@ -26,28 +26,26 @@ Route::get('/user/{uid}/group/{gid}', function () {
    return view('group');
 })->name('group');
 
-
 Route::get('/user/{id}/groups', function () {
     return view('user_groups');
 });
-
 
 Route::get('/user/{id}/cases', function () {
     return view('user_cases');
 });
 
-Route::get('/Home', function () {
+Route::get('/home', function () {
     return view('home');
 });
 
-Auth::routes();
+// Route::get('/login', function () {
+//     return view('login');
+// });
 
-Route::get('/home', 'HomeController@index')->name('home');
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-
+//Auth::routes();
+//Route::get('/home', 'HomeController@index')->name('home');
+//Auth::routes();
+//Route::get('/home', 'HomeController@index')->name('home');
 
 //List users
 Route::get('/users', 'UserController@index');
@@ -76,8 +74,6 @@ Route::post('/group/members/add', 'User_GroupsController@store');
 //Remove users from group
 Route::delete('/group/members/remove', 'User_GroupsController@destroy');
 
-
-
 //List cases
 Route::get('/cases', 'CaseController@index');
 
@@ -93,8 +89,13 @@ Route::delete('user_groups/remove', 'GroupController@destroy');
 //List all cases of a user(author and group cases)
 Route::get('/user_cases/{id}', 'CaseController@showAllUserCases');
 
-
 //Delete case study
 Route::delete('user_cases/remove', 'CaseController@destroy');
+
+//List of login choices
+Route::get('/login', 'LoginController@list_of_choices');
+
+Route::put('/profile_creation', 'UserController@store');
+
 
 

@@ -5,13 +5,9 @@
  */
 //import JwPagination from 'jw-vue-pagination';
 
-
-
 require('./bootstrap');
 
-
 window.Vue = require('vue');
-
 
 /**
  * The following block of code may be used to automatically register your
@@ -37,6 +33,9 @@ Vue.component('iren_about', require('./components/about.vue').default);
 Vue.component('iren_group', require('./components/group.vue').default);
 Vue.component('iren_user_groups', require('./components/user_groups.vue').default);
 Vue.component('iren_user_cases', require('./components/user_cases.vue').default);
+Vue.component('iren_login', require('./components/login.vue').default);
+Vue.component('iren_home', require('./components/home.vue').default);
+Vue.component('iren_profile', require('./components/profile.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
