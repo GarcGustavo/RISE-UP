@@ -59,6 +59,22 @@ class AdminController extends Controller
 
 
 
+    //public function groups
+    public function groups(){
+        $groups = DB::table('group')
+            ->join('user', 'group.g_owner', '=', 'user.uid')
+            ->select('group.*', 'user.first_name', 'user.last_name')
+            ->orderBy('group.g_creation_date', 'desc')
+            ->get();
+
+        return view('admin.groups', ['groups' => $groups]);
+    }
+
+
+
+
+
+
     //public function actions
     public function actions($userId){
 

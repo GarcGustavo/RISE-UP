@@ -74,14 +74,16 @@ Route::get('/admin/users', 'AdminController@users')->name('admin.users');
 //List activity log
 Route::get('/admin/log', 'AdminController@log')->name('admin.log');
 
-//List activity log
-Route::get('/admin/log/actions/{id}', 'AdminController@actions');
-
 //List filters
 Route::get('/admin/filters', 'AdminController@filters')->name('admin.filters');
 
 //List groups
 Route::get('/admin/groups', 'AdminController@groups')->name('admin.groups');
+
+
+
+//List activity log
+Route::get('/admin/log/actions/{id}', 'AdminController@actions');
 
 //admin edits a user
 Route::get('/admin/user/{id}/edit', 'AdminController@userEdit');
@@ -91,6 +93,14 @@ Route::put('/admin/user/{id}', 'AdminController@userUpdate');
 //admin edits a group
 Route::get('/admin/group/{id}/edit', 'AdminController@groupEdit');
 
+Route::put('/admin/group/{id}', 'AdminController@groupUpdate');
+
+
+
+
+
+
+/*
 //Falta index y update
 //Create an admin
 Route::get('/admin/create', 'AdminController@create');
@@ -106,4 +116,4 @@ Route::get('/admin/{id}/edit', 'AdminController@edit');
 
 //Delete an admin
 Route::delete('/admin/{id}', 'AdminController@destroy');
-
+*/

@@ -5,7 +5,7 @@
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
-                    {{$usersName[0]->first_name }} {{$usersName[0]->last_name }} Actions
+                    {{$usersName[0]->first_name }} {{$usersName[0]->last_name }} actions:
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
