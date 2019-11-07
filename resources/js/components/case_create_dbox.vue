@@ -30,7 +30,7 @@
                   class="form-control input-sm"
                   style="width:350px;"
                   type="text"
-                  maxlength="32"
+                  maxlength="50"
                   v-model="title"
                   placeholder="Name..."
                 >
@@ -39,7 +39,12 @@
               <!-- group selection for table -->
               <div class="form-group">
                 <label for="exampleFormControlSelect2">Assign to a group(optional)</label>
-                <select class="form-control" id="exampleFormControlSelect2" style="height:40px" v-model="gid">
+                <select
+                  class="form-control"
+                  id="exampleFormControlSelect2"
+                  style="height:40px"
+                  v-model="gid"
+                >
                   <option
                     v-for="group in groups"
                     v-bind:key="group.gid"
@@ -158,7 +163,7 @@ export default {
     },
 
     validateInput() {
-      if (this.title && this.description) {
+      if (this.title.trim() && this.description.trim()) {
         this.sendCaseStudyData();
         this.valid_input = true;
         this.modal = "modal";
@@ -169,10 +174,10 @@ export default {
 
         this.errors = [];
 
-        if (!this.title) {
+        if (!this.title.trim()) {
           this.errors.push("title required.");
         }
-        if (!this.description) {
+        if (!this.description.trim()) {
           this.errors.push("description required.");
         }
       }
@@ -184,7 +189,6 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
-
         })
         .catch(err => console.log(err));
     },
@@ -193,7 +197,7 @@ export default {
       this.path = window.location.pathname.split("/");
       if (this.group_selection) {
         this.uid = Number(this.path[this.path.length - 3]);
-        this.gid=this.group_selection;
+        this.gid = this.group_selection;
       } else {
         this.uid = Number(this.path[this.path.length - 2]);
       }
@@ -208,7 +212,7 @@ export default {
 
     sendCaseStudyData() {
       this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
+      //  this.uid = Number(this.path[this.path.length - 2]);
       this.date = new Date().toJSON().slice(0, 10);
 
       this.case_study.cid = this.cases[this.cases.length - 1].cid + 1;

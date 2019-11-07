@@ -88,8 +88,37 @@
         </tr>
       </tbody>
     </table>
-    <div v-if="ready">
-      <paginator :items="cases" @changePage="onChangePage" class="pagination"></paginator>
+
+    <div id="container">
+      <div class="btn-group" style="padding-top:12px;width:100px;">
+        <label style="padding-right:5px;">Entries:</label>
+        <button
+          class="btn btn-primary btn-sm dropdown-toggle"
+          type="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >{{entries}}</button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
+          <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
+          <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
+          <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+        </div>
+      </div>
+
+      <div
+        v-if="reload_paginator"
+        style="width:500px;padding-top:12px;padding-right:10px;float:right;"
+      >
+        <paginator
+          :items="cases"
+          :pageSize="entries"
+          @changePage="onChangePage"
+          class="pagination"
+          style="display:inline-block"
+        ></paginator>
+      </div>
     </div>
   </div>
 </template>
@@ -104,12 +133,13 @@ export default {
       case_study: { cid: "", c_title: "" },
       pageOfCases: [],
       users: [],
+      entries: 4,
       uid: "",
       action: "",
       actor: "",
       showModal: false,
       isSelected: false,
-      ready: false,
+      reload_paginator: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
@@ -131,13 +161,18 @@ export default {
       }
     },
 
+    selectEntries(entry) {
+      this.entries = entry;
+      this.updatePaginator();
+    },
+
     updatePaginator() {
       // Remove paginator from the DOM
-      this.ready = false;
+      this.reload_paginator = false;
 
       this.$nextTick().then(() => {
         // Add the paginator back in
-        this.ready = true;
+        this.reload_paginator = true;
       });
     },
 
@@ -194,8 +229,6 @@ export default {
     },
 
     removeCases() {
-      console.log(JSON.stringify(this.cids));
-
       for (let i in this.cids) {
         this.cases_to_remove.push({
           cid: this.cids[i]

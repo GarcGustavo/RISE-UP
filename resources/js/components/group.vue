@@ -16,7 +16,11 @@
     <div v-if="edit_title">
       <input v-model="tempValue" maxlength="32" class="input">
       <button @click="disableEditTitle">Cancel</button>
-      <button data-toggle="modal" data-target="#mg_action_confirm" @click="saveEdit">Save</button>
+      <button
+        data-toggle="modal"
+        data-target="#mg_action_confirm"
+        @click="saveEdit(), action='Rename'"
+      >Save</button>
     </div>
 
     <!--
@@ -69,9 +73,12 @@
         @removeUsers="removeUsers"
       ></mg_action_table>
 
-      <div v-if="error">
+     <div v-if="error">
         <mg_action_confirm :errors="errors"></mg_action_confirm>
       </div>
+
+
+
 
       <p :style=" edit_members ? 'margin-left:205px;' : ''">Members</p>
     </h1>
@@ -84,6 +91,9 @@
         @createCaseStudy="createCaseStudy"
       ></case_create_dbox>
     </div>
+<div>
+    <mg_action_confirm :action_confirm="action" :errors="errors"></mg_action_confirm>
+</div>
     <!-- Members -->
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
@@ -112,7 +122,7 @@
           data-target="#case_create_dbox"
         >Create case study</a>
       </div>
-      <p :style="create_group_case ? 'margin-left:170px;' : ''">Our Cases</p>
+      <p :style="create_group_case ? 'margin-left:180px;' : ''">Our Cases</p>
     </h1>
 
     <div class="mt-1 card mb-5" id="cases">
@@ -213,7 +223,7 @@ export default {
     saveEdit() {
       this.old_name = this.group_name;
       this.group_name = this.tempValue.trim();
-      // However we want to save it to the database
+
       if (this.group_name) {
         this.changeGroupName();
         this.disableEditTitle();

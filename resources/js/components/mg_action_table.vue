@@ -235,7 +235,7 @@ export default {
     },
 
     validateInput() {
-      if (this.g_name) {
+      if (this.g_name.trim()) {
         this.sendGroupData();
         this.modal = "modal";
         this.valid_input = true;
@@ -246,7 +246,7 @@ export default {
 
         this.errors = [];
 
-        if (!this.g_name) {
+        if (!this.g_name.trim()) {
           this.errors.push("Group name required.");
         }
       }

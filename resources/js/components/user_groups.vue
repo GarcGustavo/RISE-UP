@@ -95,8 +95,36 @@
         </tr>
       </tbody>
     </table>
-    <div v-if="reload_paginator">
-      <paginator :items="groups" @changePage="onChangePage" class="pagination"></paginator>
+    <div id="container">
+      <div class="btn-group" style="padding-top:12px;width:100px;">
+        <label style="padding-right:5px;padding-top:5px;;">Entries:</label>
+        <button
+          class="btn btn-primary btn-sm dropdown-toggle"
+          type="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >{{entries}}</button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
+          <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
+          <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
+          <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+        </div>
+      </div>
+
+      <div
+        v-if="reload_paginator"
+        style="width:500px;padding-top:12px;padding-right:10px;float:right;"
+      >
+        <paginator
+          :items="groups"
+          :pageSize="entries"
+          @changePage="onChangePage"
+          class="pagination"
+          style="display:inline-block"
+        ></paginator>
+      </div>
     </div>
   </div>
 </template>
@@ -122,6 +150,7 @@ export default {
       uid: "",
       action: "",
       actor: "",
+      entries: 4,
       isSelected: false, //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
@@ -145,7 +174,12 @@ export default {
       }
     },
 
-    forceRerender() {
+    selectEntries(entry) {
+      this.entries = entry;
+      this.updatePaginator();
+    },
+
+    updatePaginator() {
       // Remove paginator from the DOM
       this.reload_paginator = false;
 
@@ -190,7 +224,7 @@ export default {
           this.groups = res.data;
           this.pageOfGroups = this.groups;
           this.uncheck();
-          this.forceRerender();
+          this.updatePaginator();
         })
         .catch(err => console.log(err));
     },

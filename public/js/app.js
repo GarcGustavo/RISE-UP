@@ -2033,6 +2033,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2089,7 +2094,7 @@ __webpack_require__.r(__webpack_exports__);
       this.remainingCount = 140;
     },
     validateInput: function validateInput() {
-      if (this.title && this.description) {
+      if (this.title.trim() && this.description.trim()) {
         this.sendCaseStudyData();
         this.valid_input = true;
         this.modal = "modal";
@@ -2099,11 +2104,11 @@ __webpack_require__.r(__webpack_exports__);
         this.valid_input = false;
         this.errors = [];
 
-        if (!this.title) {
+        if (!this.title.trim()) {
           this.errors.push("title required.");
         }
 
-        if (!this.description) {
+        if (!this.description.trim()) {
           this.errors.push("description required.");
         }
       } //  this.valid_input = false;
@@ -2141,8 +2146,8 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     sendCaseStudyData: function sendCaseStudyData() {
-      this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
+      this.path = window.location.pathname.split("/"); //  this.uid = Number(this.path[this.path.length - 2]);
+
       this.date = new Date().toJSON().slice(0, 10);
       this.case_study.cid = this.cases[this.cases.length - 1].cid + 1;
       this.case_study.c_title = this.title;
@@ -2408,6 +2413,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2483,7 +2498,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     saveEdit: function saveEdit() {
       this.old_name = this.group_name;
-      this.group_name = this.tempValue.trim(); // However we want to save it to the database
+      this.group_name = this.tempValue.trim();
 
       if (this.group_name) {
         this.changeGroupName();
@@ -2940,6 +2955,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action_confirm: {
@@ -3216,7 +3236,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     validateInput: function validateInput() {
-      if (this.g_name) {
+      if (this.g_name.trim()) {
         this.sendGroupData();
         this.modal = "modal";
         this.valid_input = true;
@@ -3226,7 +3246,7 @@ __webpack_require__.r(__webpack_exports__);
         this.valid_input = false;
         this.errors = [];
 
-        if (!this.g_name) {
+        if (!this.g_name.trim()) {
           this.errors.push("Group name required.");
         }
       }
@@ -3602,6 +3622,35 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3614,12 +3663,13 @@ __webpack_require__.r(__webpack_exports__);
       },
       pageOfCases: [],
       users: [],
+      entries: 4,
       uid: "",
       action: "",
       actor: "",
       showModal: false,
       isSelected: false,
-      ready: false,
+      reload_paginator: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
@@ -3639,14 +3689,18 @@ __webpack_require__.r(__webpack_exports__);
         this.isSelected = true;
       }
     },
+    selectEntries: function selectEntries(entry) {
+      this.entries = entry;
+      this.updatePaginator();
+    },
     updatePaginator: function updatePaginator() {
       var _this = this;
 
       // Remove paginator from the DOM
-      this.ready = false;
+      this.reload_paginator = false;
       this.$nextTick().then(function () {
         // Add the paginator back in
-        _this.ready = true;
+        _this.reload_paginator = true;
       });
     },
     uncheck: function uncheck() {
@@ -3709,8 +3763,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     removeCases: function removeCases() {
       var _this5 = this;
-
-      console.log(JSON.stringify(this.cids));
 
       for (var i in this.cids) {
         this.cases_to_remove.push({
@@ -3856,6 +3908,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3875,6 +3955,7 @@ __webpack_require__.r(__webpack_exports__);
       uid: "",
       action: "",
       actor: "",
+      entries: 4,
       isSelected: false,
       //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
@@ -3897,7 +3978,11 @@ __webpack_require__.r(__webpack_exports__);
         this.isSelected = true;
       }
     },
-    forceRerender: function forceRerender() {
+    selectEntries: function selectEntries(entry) {
+      this.entries = entry;
+      this.updatePaginator();
+    },
+    updatePaginator: function updatePaginator() {
       var _this = this;
 
       // Remove paginator from the DOM
@@ -3948,7 +4033,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this3.uncheck();
 
-        _this3.forceRerender();
+        _this3.updatePaginator();
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -40570,7 +40655,7 @@ var render = function() {
                       staticStyle: { width: "350px" },
                       attrs: {
                         type: "text",
-                        maxlength: "32",
+                        maxlength: "50",
                         placeholder: "Name..."
                       },
                       domProps: { value: _vm.title },
@@ -40903,7 +40988,9 @@ var render = function() {
                 style: _vm.is_owner ? "margin-left:35px;" : ""
               },
               [
-                _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
+                _vm._v(
+                  "\n          " + _vm._s(_vm.group_name) + "\n          "
+                ),
                 _vm.is_owner
                   ? _c(
                       "a",
@@ -40959,7 +41046,11 @@ var render = function() {
                 "data-toggle": "modal",
                 "data-target": "#mg_action_confirm"
               },
-              on: { click: _vm.saveEdit }
+              on: {
+                click: function($event) {
+                  _vm.saveEdit(), (_vm.action = "Rename")
+                }
+              }
             },
             [_vm._v("Save")]
           )
@@ -41063,6 +41154,16 @@ var render = function() {
     _vm._v(" "),
     _c(
       "div",
+      [
+        _c("mg_action_confirm", {
+          attrs: { action_confirm: _vm.action, errors: _vm.errors }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
       { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
       _vm._l(_vm.members, function(member) {
         return _c("div", { key: member.uid, staticClass: "col-lg-4 mb-4" }, [
@@ -41118,7 +41219,7 @@ var render = function() {
             ])
           : _vm._e(),
         _vm._v(" "),
-        _c("p", { style: _vm.create_group_case ? "margin-left:170px;" : "" }, [
+        _c("p", { style: _vm.create_group_case ? "margin-left:180px;" : "" }, [
           _vm._v("Our Cases")
         ])
       ]
@@ -41627,6 +41728,8 @@ var render = function() {
                 ])
               : _vm.action_confirm == "Add" && _vm.isSelected
               ? _c("div", [_c("p", [_vm._v("Added user(s) to group")])])
+              : _vm.action_confirm == "Rename"
+              ? _c("div", [_c("p", [_vm._v("Renamed group!")])])
               : _vm.errors.length
               ? _c("div", [
                   _c("div", [
@@ -41686,6 +41789,7 @@ var render = function() {
                 ])
               : _vm.action_confirm == "Add" ||
                 _vm.action_confirm == "Create" ||
+                _vm.action_confirm == "Rename" ||
                 !_vm.isSelected
               ? _c("div", [
                   _c(
@@ -42549,19 +42653,115 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm.ready
-      ? _c(
-          "div",
-          [
-            _c("paginator", {
-              staticClass: "pagination",
-              attrs: { items: _vm.cases },
-              on: { changePage: _vm.onChangePage }
-            })
-          ],
-          1
-        )
-      : _vm._e()
+    _c("div", { attrs: { id: "container" } }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group",
+          staticStyle: { "padding-top": "12px", width: "100px" }
+        },
+        [
+          _c("label", { staticStyle: { "padding-right": "5px" } }, [
+            _vm._v("Entries:")
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary btn-sm dropdown-toggle",
+              attrs: {
+                type: "button",
+                "data-toggle": "dropdown",
+                "aria-haspopup": "true",
+                "aria-expanded": "false"
+              }
+            },
+            [_vm._v(_vm._s(_vm.entries))]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "dropdown-menu" }, [
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(4)
+                  }
+                }
+              },
+              [_vm._v("4")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(8)
+                  }
+                }
+              },
+              [_vm._v("8")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(16)
+                  }
+                }
+              },
+              [_vm._v("16")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(32)
+                  }
+                }
+              },
+              [_vm._v("32")]
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _vm.reload_paginator
+        ? _c(
+            "div",
+            {
+              staticStyle: {
+                width: "500px",
+                "padding-top": "12px",
+                "padding-right": "10px",
+                float: "right"
+              }
+            },
+            [
+              _c("paginator", {
+                staticClass: "pagination",
+                staticStyle: { display: "inline-block" },
+                attrs: { items: _vm.cases, pageSize: _vm.entries },
+                on: { changePage: _vm.onChangePage }
+              })
+            ],
+            1
+          )
+        : _vm._e()
+    ])
   ])
 }
 var staticRenderFns = [
@@ -42830,19 +43030,117 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm.reload_paginator
-      ? _c(
-          "div",
-          [
-            _c("paginator", {
-              staticClass: "pagination",
-              attrs: { items: _vm.groups },
-              on: { changePage: _vm.onChangePage }
-            })
-          ],
-          1
-        )
-      : _vm._e()
+    _c("div", { attrs: { id: "container" } }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group",
+          staticStyle: { "padding-top": "12px", width: "100px" }
+        },
+        [
+          _c(
+            "label",
+            { staticStyle: { "padding-right": "5px", "padding-top": "5px" } },
+            [_vm._v("Entries:")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary btn-sm dropdown-toggle",
+              attrs: {
+                type: "button",
+                "data-toggle": "dropdown",
+                "aria-haspopup": "true",
+                "aria-expanded": "false"
+              }
+            },
+            [_vm._v(_vm._s(_vm.entries))]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "dropdown-menu" }, [
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(4)
+                  }
+                }
+              },
+              [_vm._v("4")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(8)
+                  }
+                }
+              },
+              [_vm._v("8")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(16)
+                  }
+                }
+              },
+              [_vm._v("16")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "dropdown-item",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.selectEntries(32)
+                  }
+                }
+              },
+              [_vm._v("32")]
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _vm.reload_paginator
+        ? _c(
+            "div",
+            {
+              staticStyle: {
+                width: "500px",
+                "padding-top": "12px",
+                "padding-right": "10px",
+                float: "right"
+              }
+            },
+            [
+              _c("paginator", {
+                staticClass: "pagination",
+                staticStyle: { display: "inline-block" },
+                attrs: { items: _vm.groups, pageSize: _vm.entries },
+                on: { changePage: _vm.onChangePage }
+              })
+            ],
+            1
+          )
+        : _vm._e()
+    ])
   ])
 }
 var staticRenderFns = [

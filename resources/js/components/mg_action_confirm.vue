@@ -25,6 +25,11 @@
             <!-- alert content to confirm when user adds a member to a group -->
             <p>Added user(s) to group</p>
           </div>
+
+            <div v-else-if="action_confirm=='Rename'">
+            <!-- alert content to confirm when user adds a member to a group -->
+            <p>Renamed group!</p>
+          </div>
           <div v-else-if="errors.length">
             <div>
               <p>Please correct the following error(s):
@@ -46,7 +51,7 @@
              <div v-if="errors.length">
             <button type="button" class="btn btn-primary"  data-dismiss="modal"  >Ok</button>
           </div>
-          <div v-else-if="action_confirm=='Add'||action_confirm=='Create' || !isSelected">
+          <div v-else-if="action_confirm=='Add'||action_confirm=='Create' || action_confirm=='Rename' || !isSelected">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
           </div>
           <div v-if="isSelected">
@@ -103,7 +108,8 @@ export default {
       type: Boolean
     },
     errors: {
-      type: Array
+      type: Array,
+
     }
   },
   methods: {
