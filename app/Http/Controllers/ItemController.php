@@ -23,13 +23,12 @@ class ItemController extends Controller
 
     public function addCaseItem($id)
     {
-        $caseItem = $request->isMethod('put') ? Item::findOrFail($request->gid): new group;
+        $caseItem = $request->isMethod('put') ? Item::findOrFail($request->iid): new item;
 
-        $caseItem->gid = $request -> input('gid');
-        $caseItem->gname = $request -> input('gname');
-        $caseItem->g_status = $request -> input('g_status');
-        $caseItem->g_creation_date = $request -> input('g_creation_date');
-        $caseItem->g_owner = $request -> input('g_owner');
+        $caseItem->iid = $request -> input('iid');
+        $caseItem->i_content = $request -> input('i_content');
+        $caseItem->order = $request -> input('order');
+        $caseItem->i_name = $request -> input('i_name');
 
         if ($caseItem->save()) {
             return new ItemResource($caseItem);

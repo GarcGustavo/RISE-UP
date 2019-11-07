@@ -2632,8 +2632,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vuedraggable__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var v_markdown_editor_dist_index_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! v-markdown-editor/dist/index.css */ "./node_modules/v-markdown-editor/dist/index.css");
 /* harmony import */ var v_markdown_editor_dist_index_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(v_markdown_editor_dist_index_css__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var vue_sortable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-sortable */ "./node_modules/vue-sortable/vue-sortable.js");
-/* harmony import */ var vue_sortable__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vue_sortable__WEBPACK_IMPORTED_MODULE_3__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -2722,15 +2720,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
+ //Vue.use(Editor);
 
-
-Vue.use(v_markdown_editor__WEBPACK_IMPORTED_MODULE_0___default.a);
-Vue.use(vue_sortable__WEBPACK_IMPORTED_MODULE_3___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
-  components: {},
+  components: {
+    draggable: vuedraggable__WEBPACK_IMPORTED_MODULE_1___default.a
+  },
+  events: {},
   data: function data() {
     var _ref;
 
@@ -2845,18 +2851,18 @@ Vue.use(vue_sortable__WEBPACK_IMPORTED_MODULE_3___default.a);
         return console.log(err);
       });
     },
-    addItem: function addItem(users_to_add) {
+    addItem: function addItem(item_to_add) {
       var _this6 = this;
 
-      console.log(users_to_add);
-      fetch("/group/members/add", {
+      console.log(item_to_add);
+      fetch("/case/items/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body: JSON.stringify(item_to_add)
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -58564,22 +58570,28 @@ var render = function() {
               ])
             }),
             _vm._v(" "),
-            _vm._l(_vm.users, function(user, uid) {
-              return _c("h5", { key: uid, staticClass: "text-center mt-3" }, [
-                _vm._v(
-                  "\n      Created by: " +
-                    _vm._s(user.first_name) +
-                    " " +
-                    _vm._s(user.last_name) +
-                    "\n    "
-                )
-              ])
+            _vm._l(_vm.users, function(user, index) {
+              return _c(
+                "h5",
+                { key: index + 10, staticClass: "text-center mt-3" },
+                [
+                  _vm._v(
+                    "\n      Created by: " +
+                      _vm._s(user.first_name) +
+                      " " +
+                      _vm._s(user.last_name) +
+                      "\n    "
+                  )
+                ]
+              )
             }),
             _vm._v(" "),
-            _vm._l(_vm.groups, function(group, gid) {
-              return _c("h5", { key: gid, staticClass: "text-center mt-3" }, [
-                _vm._v("\n      Group: " + _vm._s(group.g_name) + "\n    ")
-              ])
+            _vm._l(_vm.groups, function(group, index) {
+              return _c(
+                "h5",
+                { key: index + 20, staticClass: "text-center mt-3" },
+                [_vm._v("\n      Group: " + _vm._s(group.g_name) + "\n    ")]
+              )
             })
           ]
         : _vm._e(),
@@ -58661,40 +58673,48 @@ var render = function() {
       _c(
         "div",
         { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
-        _vm._l(_vm.items, function(item) {
-          return _c("div", { key: item.iid, staticClass: "col-sm-12 mb-3" }, [
-            _c(
-              "ul",
-              {
-                directives: [
-                  {
-                    name: "sortable",
-                    rawName: "v-sortable",
-                    value: _vm.items,
-                    expression: "items"
-                  }
-                ],
-                staticClass: "list-items"
+        [
+          _c(
+            "draggable",
+            {
+              attrs: { animation: "250", group: "members" },
+              on: {
+                start: function($event) {
+                  _vm.drag = true
+                },
+                end: function($event) {
+                  _vm.drag = false
+                }
               },
-              [
-                _c("div", { staticClass: "card h-100 text-left shadow" }, [
-                  _c("div", { staticClass: "card-body" }, [
-                    _c("h4", { staticClass: "card-title" }, [
-                      _vm._v(_vm._s(item.i_name))
-                    ]),
-                    _vm._v(" "),
-                    _c("p", { staticClass: "card-text" }, [
-                      _vm._v(_vm._s(item.i_content))
-                    ]),
-                    _vm._v(" "),
-                    _c("h6", { staticClass: "card-subtitle text-muted" })
+              model: {
+                value: _vm.items,
+                callback: function($$v) {
+                  _vm.items = $$v
+                },
+                expression: "items"
+              }
+            },
+            _vm._l(_vm.items, function(item, index) {
+              return _c("div", { key: index, staticClass: "col-sm-12 mb-3" }, [
+                _c("ul", { staticClass: "list-items" }, [
+                  _c("div", { staticClass: "card h-100 text-left shadow" }, [
+                    _c("div", { staticClass: "card-body" }, [
+                      _c("h4", { staticClass: "card-title" }, [
+                        _vm._v(_vm._s(item.i_name))
+                      ]),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "card-text" }, [
+                        _vm._v(_vm._s(item.i_content))
+                      ])
+                    ])
                   ])
                 ])
-              ]
-            )
-          ])
-        }),
-        0
+              ])
+            }),
+            0
+          )
+        ],
+        1
       ),
       _vm._v(" "),
       _c("hr"),
@@ -59584,55 +59604,6 @@ function normalizeComponent (
     options: options
   }
 }
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-sortable/vue-sortable.js":
-/*!***************************************************!*\
-  !*** ./node_modules/vue-sortable/vue-sortable.js ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-;(function () {
-
-  var vSortable = {}
-  var Sortable =  true
-      ? __webpack_require__(/*! sortablejs */ "./node_modules/sortablejs/modular/sortable.esm.js")
-      : undefined
-
-  if (!Sortable) {
-    throw new Error('[vue-sortable] cannot locate Sortable.js.')
-  }
-
-  // exposed global options
-  vSortable.config = {}
-
-  vSortable.install = function (Vue) {
-    Vue.directive('sortable', function (options) {
-      options = options || {}
-
-      var sortable = new Sortable(this.el, options)
-
-      if (this.arg && !this.vm.sortable) {
-        this.vm.sortable = {}
-      }
-
-      //  Throw an error if the given ID is not unique
-      if (this.arg && this.vm.sortable[this.arg]) {
-        console.warn('[vue-sortable] cannot set already defined sortable id: \'' + this.arg + '\'')
-      } else if( this.arg ) {
-        this.vm.sortable[this.arg] = sortable
-      }
-    })
-  }
-
-  if (true) {
-    module.exports = vSortable
-  } else {}
-
-})()
 
 
 /***/ }),

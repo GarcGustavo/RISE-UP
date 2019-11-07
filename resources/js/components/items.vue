@@ -5,10 +5,10 @@
         <h1 class="text-center mt-3" v-for="(case_study,index) in case_to_show" :key="index">
           <h1 class="text-capitalize">{{case_study.c_title}}</h1>
         </h1>
-        <h5 class="text-center mt-3" v-for="(user,uid) in users" :key="uid">
+        <h5 class="text-center mt-3" v-for="(user,index) in users" :key="index + 10">
           Created by: {{user.first_name}} {{user.last_name}}
         </h5>
-        <h5 class="text-center mt-3" v-for="(group,gid) in groups" :key="gid">
+        <h5 class="text-center mt-3" v-for="(group,index) in groups" :key="index + 20">
           Group: {{group.g_name}}
         </h5>
       </template>
@@ -44,23 +44,30 @@
           @removeUsers="removeUsers"
         ></mg_action_table>
       </h1>
-    <!-- Members -->
+    <!-- Case Body -->
     <div class="row mt-1 mb-5" id="members">
-      <div class="col-sm-12 mb-3" v-for="item in items" :key="item.iid">
-        <ul class="list-items" v-sortable="items">
-          <div class="card h-100 text-left shadow">
-            <div class="card-body">
-              <h4 class="card-title">{{item.i_name}}</h4>
-              <p class="card-text">{{item.i_content}}</p>
-              <h6 class="card-subtitle text-muted"></h6>
+      <draggable 
+      v-model="items"
+      animation="250"
+      group="members" 
+      @start="drag=true" 
+      @end="drag=false"
+      >
+        <div class="col-sm-12 mb-3" v-for="(item,index) in items" :key="index">
+          <ul class="list-items" >
+            <div class="card h-100 text-left shadow">
+              <div class="card-body">
+                <h4 class="card-title">{{item.i_name}}</h4>
+                <p class="card-text">{{item.i_content}}</p>
+              </div>
             </div>
-          </div>
-        </ul>
-      </div>
+          </ul>
+        </div>
+      </draggable>
     </div>
 
     <hr>      
-      <!-- Case view -->
+      <!-- Table of Contents -->
 
       <h1 id="cases_header" class="mt-5 text-center">
         <a href="#">Edit</a>
@@ -88,12 +95,15 @@
 import Editor from 'v-markdown-editor'
 import draggable from 'vuedraggable'
 import 'v-markdown-editor/dist/index.css'
-import Sortable from 'vue-sortable'
-Vue.use(Editor);
-Vue.use(Sortable);
+//Vue.use(Editor);
 export default {
   //name: 'app',
   components: {
+    draggable,
+  },
+  
+  events: {
+
   },
   data(){
       return {
@@ -135,6 +145,7 @@ export default {
   created() {
     this.fetchCaseItems();
     this.fetchCase();
+    
   },
   methods: {
     fetchCaseItems() {
@@ -190,16 +201,16 @@ export default {
           })
           .catch(err => console.log(err));
     },
-    addItem(users_to_add) {
-        console.log((users_to_add));
-        fetch("/group/members/add", {
+    addItem(item_to_add) {
+        console.log((item_to_add));
+        fetch("/case/items/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body:(JSON.stringify(users_to_add))
+        body:(JSON.stringify(item_to_add))
         })
         .then(res => res.text())
         .then(text => {
@@ -279,6 +290,7 @@ export default {
   }
   
 }
+
 </script>
 
 <style lang="scss" scoped>
