@@ -2695,38 +2695,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
  //Vue.use(Editor);
@@ -2767,6 +2735,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }), _defineProperty(_ref, "groups", []), _defineProperty(_ref, "group", {
       g_name: ""
     }), _defineProperty(_ref, "uid", ""), _defineProperty(_ref, "item", {
+      iid: "",
+      i_content: "",
+      i_case: "",
+      i_type: "",
+      order: "",
+      i_name: ""
+    }), _defineProperty(_ref, "new_item", {
       iid: "",
       i_content: "",
       i_case: "",
@@ -2851,24 +2826,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    addItem: function addItem(item_to_add) {
+    addItem: function addItem(new_item, cid) {
       var _this6 = this;
 
-      console.log(item_to_add);
-      fetch("/case/items/add", {
+      this.new_item = {
+        iid: "",
+        i_content: "",
+        i_case: this.cid,
+        i_type: "",
+        order: "",
+        i_name: ""
+      }, console.log(new_item);
+      fetch("/item/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(item_to_add)
+        body: JSON.stringify(new_item)
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
         console.log(text);
 
-        _this6.fetchMembers();
+        _this6.fetchCaseItems();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -58597,83 +58579,21 @@ var render = function() {
         : _vm._e(),
       _vm._v(" "),
       _c(
-        "h1",
-        { staticClass: "text-center mt-5" },
-        [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#mg_action_table",
-                "data-toggle": "modal",
-                "data-target": "#mg_action_table",
-                "data-dismiss": "modal"
-              },
-              on: {
-                click: function($event) {
-                  ;(_vm.showModal = true),
-                    (_vm.action = "Remove"),
-                    (_vm.actor = "member(s)"),
-                    _vm.fetchMembers()
-                }
-              }
-            },
-            [
-              _c("i", { staticClass: "material-icons" }, [
-                _vm._v("remove_circle_outline")
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#mg_action_table",
-                "data-toggle": "modal",
-                "data-target": "#mg_action_table",
-                "data-dismiss": "modal"
-              },
-              on: {
-                click: function($event) {
-                  ;(_vm.showModal = true),
-                    (_vm.action = "Add"),
-                    (_vm.actor = "member(s)"),
-                    _vm.fetchUsers()
-                }
-              }
-            },
-            [
-              _c("i", { staticClass: "material-icons" }, [
-                _vm._v("add_circle_outline")
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _vm.showModal
-            ? _c("mg_action_table", {
-                attrs: {
-                  action: _vm.action,
-                  actor: _vm.actor,
-                  users: _vm.users
-                },
-                on: {
-                  close: function($event) {
-                    _vm.showModal = false
-                  },
-                  addUsers: _vm.addUsers,
-                  removeUsers: _vm.removeUsers
-                }
-              })
-            : _vm._e()
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
         "div",
         { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
         [
+          _c(
+            "button",
+            {
+              on: {
+                click: function($event) {
+                  return _vm.addItem(_vm.new_item, this.cid)
+                }
+              }
+            },
+            [_vm._v("Add Item")]
+          ),
+          _vm._v(" "),
           _c(
             "draggable",
             {
@@ -58719,8 +58639,6 @@ var render = function() {
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
-      _vm._m(0),
-      _vm._v(" "),
       _c("div", { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } }, [
         _c("div", { staticClass: "col-sm-12 mb-3" }, [
           _c(
@@ -58757,18 +58675,7 @@ var render = function() {
     2
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "h1",
-      { staticClass: "mt-5 text-center", attrs: { id: "cases_header" } },
-      [_c("a", { attrs: { href: "#" } }, [_vm._v("Edit")])]
-    )
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

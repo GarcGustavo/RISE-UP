@@ -12,40 +12,12 @@
           Group: {{group.g_name}}
         </h5>
       </template>
-      <h1 class="text-center mt-5">
-        <a
-          href="#mg_action_table"
-          data-toggle="modal"
-          data-target="#mg_action_table"
-          data-dismiss="modal"
-          @click="showModal=true, action='Remove',
-          actor='member(s)', fetchMembers()"
-        >
-          <i class="material-icons">remove_circle_outline</i>
-        </a>
-        <a
-          href="#mg_action_table"
-          data-toggle="modal"
-          data-target="#mg_action_table"
-          data-dismiss="modal"
-          @click="showModal=true, action='Add',
-          actor='member(s)', fetchUsers()"
-        >
-          <i class="material-icons">add_circle_outline</i>
-        </a>
 
-        <mg_action_table
-          v-if="showModal"
-          @close="showModal = false"
-          :action="action"
-          :actor="actor"
-          :users="users"
-          @addUsers="addUsers"
-          @removeUsers="removeUsers"
-        ></mg_action_table>
-      </h1>
     <!-- Case Body -->
+    
     <div class="row mt-1 mb-5" id="members">
+      <button v-on:click="addItem(new_item, this.cid)">Add Item</button>
+      
       <draggable 
       v-model="items"
       animation="250"
@@ -68,10 +40,6 @@
 
     <hr>      
       <!-- Table of Contents -->
-
-      <h1 id="cases_header" class="mt-5 text-center">
-        <a href="#">Edit</a>
-      </h1>
 
       <div class="mt-1 card mb-5" id="cases">
         <div class="col-sm-12 mb-3">
@@ -132,6 +100,14 @@ export default {
         group:{g_name:""},
         uid:"",
         item: {
+          iid:"",
+          i_content:"",
+          i_case:"",
+          i_type:"",
+          order:"",
+          i_name:""
+          },
+        new_item: {
           iid:"",
           i_content:"",
           i_case:"",
@@ -201,21 +177,29 @@ export default {
           })
           .catch(err => console.log(err));
     },
-    addItem(item_to_add) {
-        console.log((item_to_add));
-        fetch("/case/items/add", {
+    addItem(new_item, cid) {
+        this.new_item = {
+          iid:"",
+          i_content:"",
+          i_case: this.cid,
+          i_type:"",
+          order:"",
+          i_name:""
+          },
+        console.log((new_item));
+        fetch("/item/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body:(JSON.stringify(item_to_add))
+        body:(JSON.stringify(new_item))
         })
         .then(res => res.text())
         .then(text => {
           console.log(text);
-          this.fetchMembers();
+          this.fetchCaseItems();
         })
         .catch(err => {
           console.error("Error: ", err);

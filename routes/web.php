@@ -90,7 +90,7 @@ Route::get('/user_cases/{id}', 'CaseController@show_all_user_cases');
 Route::post('/group/members/add', 'User_GroupsController@store');
 
 //Add items to a case
-Route::post('/case/{id}/items/add', 'ItemController@addCaseItem');
+Route::post('/item/add', 'ItemController@addCaseItem');
 
 //Remove users from group
 Route::delete('/group/members/remove', 'User_GroupsController@destroy');

@@ -21,12 +21,14 @@ class ItemController extends Controller
         return ItemResource::collection($caseItems);
     }
 
-    public function addCaseItem($id)
+    public function addCaseItem(Request $request)
     {
         $caseItem = $request->isMethod('put') ? Item::findOrFail($request->iid): new item;
 
         $caseItem->iid = $request -> input('iid');
         $caseItem->i_content = $request -> input('i_content');
+        $caseItem->i_case = $request -> input('i_case');
+        $caseItem->i_type = $request -> input('i_type');
         $caseItem->order = $request -> input('order');
         $caseItem->i_name = $request -> input('i_name');
 
