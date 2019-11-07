@@ -7,8 +7,7 @@ use App\Models\Group;
 use App\Models\User_Groups;
 use App\Http\Resources\Group as GroupResource;
 use App\Http\Resources\User_Groups as User_GroupsResource;
-use App\Models\case_study;
-use App\Http\Resources\Case_Study as Case_StudyResource;
+
 class GroupController extends Controller
 {
     /**
@@ -18,10 +17,19 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups = Group::all();
+        $groups = Group::withTrashed()->get();
 
         return GroupResource::collection($groups);
     }
+
+    public function info($id)
+    {
+        $group = Group::where('gid', $id)->get();
+
+        return GroupResource::collection($group);
+    }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -41,16 +49,15 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        $group = $request->isMethod('put') ? group::findOrFail($request->gid): new group;
-
+        $group = new Group;
         $group->gid = $request -> input('gid');
-        $group->gname = $request -> input('gname');
+        $group->g_name = $request -> input('g_name');
         $group->g_status = $request -> input('g_status');
         $group->g_creation_date = $request -> input('g_creation_date');
         $group->g_owner = $request -> input('g_owner');
 
         if ($group->save()) {
-            return new GroupResource($group);
+           return response()->json(['message'=>'Group has been created']);
         }
     }
 
@@ -61,7 +68,7 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show_groups($id)
+    public function showGroups($id)
     {
         //$group = Group::findOrFail($id);
 
@@ -72,20 +79,13 @@ class GroupController extends Controller
         where('User_Groups.uid', $uid)
         ->join('User', 'User_Groups.uid', '=', 'User.uid')
         ->join('Group', 'User_Groups.gid', '=', 'Group.gid')
+        ->whereNull('Group.deleted_at')
         ->select('Group.*')
+        ->orderBy('gid','DESC')
         ->get();
 
         return GroupResource::collection($groups);
     }
-
-    public function show_group_cases($id)
-    {
-        $gid = $id;
-
-        $cases = Case_Study::where('Case.c_group', $gid)->get();
-        return Case_StudyResource::collection($cases);
-    }
-
 
 
     /**
@@ -108,7 +108,10 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $group = Group::where('gid', $id)->first();
+        $group->g_name=$request->input('g_name');
+        $group->save();
+        return response()->json(['message'=>'Changed group name successfully']);
     }
 
     /**
@@ -117,13 +120,15 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $group = Group::findOrFail($id);
+        $to_delete = $request->all();
+        $gids_to_delete = array_map(function ($item) {
+            return $item['gid'];
+        }, $to_delete);
+        Group::whereIn('gid', $gids_to_delete)->update(['g_status'=>'disabled']);
+        Group::whereIn('gid', $gids_to_delete)->delete();
 
-
-        if ($group->delete()) {
-            return new GroupResource($group);
-        }
+        return response()->json(['message'=>'Group(s) has been removed']);
     }
 }

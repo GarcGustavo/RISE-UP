@@ -8,57 +8,50 @@
         data-toggle="modal"
         data-target="#mg_action_confirm"
         @click="action='Remove',
-        actor='group(s)',isGroupSelected()"
+        actor='case study(s)', isCaseSelected()"
       >
         <div class="add_icon" style="display:inline-block;float:right;">
           <a style="font-size:18px;margin-left:15px">Remove</a>
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
-      <div>
-        <a
-          href="#mg_action_table"
-          data-toggle="modal"
-          data-target="#mg_action_table"
-          @click="gname_box_show=true,
+      <a
+        href="#case_create_dbox"
+        data-toggle="modal"
+        data-target="#case_create_dbox"
+        @click="showModal=true,
         action='Create',
-        actor='group', fetchUsers()"
-        >
-          <div class="remove_icon" style="display:inline-block;float:right;">
-            <a style="font-size:18px">Create</a>
-            <i class="material-icons">add_circle_outline</i>
-          </div>
-        </a>
-      </div>
-      <div v-if="action=='Remove' && isSelected  ">
+        actor='case study'"
+      >
+        <div class="remove_icon" style="display:inline-block;float:right;">
+          <a style="font-size:18px">Create</a>
+          <i class="material-icons">add_circle_outline</i>
+        </div>
+      </a>
+
+      <div v-if="action=='Remove' && isSelected">
         <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
         <mg_action_confirm
           :action_confirm="action"
           :actor="actor"
           :errors="[]"
           :isSelected="isSelected"
-          @removeGroups="removeGroups"
+          @removeCases="removeCases"
         ></mg_action_confirm>
       </div>
-      <div v-else-if="action=='Remove' && !isSelected ">
+      <div v-else-if="action=='Remove' && !isSelected">
         <mg_action_confirm
           :action_confirm="action"
           :actor="actor"
           :errors="[]"
           :isSelected="isSelected"
-          @removeGroups="removeGroups"
+          @removeCases="removeCases"
         ></mg_action_confirm>
       </div>
 
-      <mg_action_table
-        :action="action"
-        :actor="actor"
-        :gname_box_show="gname_box_show"
-        :users="users"
-        @createGroup="createGroup"
-      ></mg_action_table>
+      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy"></case_create_dbox>
 
-      <p>My groups</p>
+      <p>My cases</p>
     </h1>
 
     <hr>
@@ -71,15 +64,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(group,index) in pageOfGroups" :key="index">
-          <td v-if="group.g_owner==uid">
+        <tr v-for="(case_study,index) in pageOfCases" :key="index">
+          <td v-if="case_study.c_owner == uid">
             <div class="check-box">
               <input
                 class="checkbox"
                 type="checkbox"
                 id="checkbox"
-                v-model="gids"
-                :value="group.gid"
+                v-model="cids"
+                :value="case_study.cid"
               >
               <label for="checkbox">{{index+1}}</label>
             </div>
@@ -90,13 +83,13 @@
             </div>
           </td>
           <td>
-            <a :href="'/user/'+uid+'/group/' + group.gid">{{group.g_name}}</a>
+            <a href="#">{{case_study.c_title}}</a>
           </td>
         </tr>
       </tbody>
     </table>
-    <div v-if="reload_paginator">
-      <paginator :items="groups" @changePage="onChangePage" class="pagination"></paginator>
+    <div v-if="ready">
+      <paginator :items="cases" @changePage="onChangePage" class="pagination"></paginator>
     </div>
   </div>
 </template>
@@ -105,164 +98,124 @@
 export default {
   data() {
     return {
-      reload_paginator: false,
-      gids: [],
-      groups: [],
-      group: {
-        gid: "",
-        g_name: "",
-        g_status: "",
-        g_creation_date: "",
-        g_owner: ""
-      },
-
-      groups_to_remove: [],
-      pageOfGroups: [],
+      cases: [],
+      cids: [],
+      cases_to_remove: [],
+      case_study: { cid: "", c_title: "" },
+      pageOfCases: [],
       users: [],
       uid: "",
       action: "",
       actor: "",
-      isSelected: false, //has user made a selection
+      showModal: false,
+      isSelected: false,
+      ready: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
-
   created() {
-    this.fetchGroups();
+    this.fetchCases();
   },
 
-  computed: {},
   methods: {
-    onChangePage(pageOfGroups) {
-      // update page of Groups
-      this.pageOfGroups = pageOfGroups;
+    onChangePage(pageOfCases) {
+      // update page of Casess
+      this.pageOfCases = pageOfCases;
     },
-    isGroupSelected() {
-      if (this.gids.length == 0) {
+
+    isCaseSelected() {
+      if (this.cids.length == 0) {
         this.isSelected = false;
       } else {
         this.isSelected = true;
       }
     },
 
-    forceRerender() {
+    updatePaginator() {
       // Remove paginator from the DOM
-      this.reload_paginator = false;
+      this.ready = false;
 
       this.$nextTick().then(() => {
         // Add the paginator back in
-        this.reload_paginator = true;
+        this.ready = true;
       });
     },
 
     uncheck() {
-      this.gids = [];
+      this.cids = [];
 
-      for (let i in this.gids) {
-        this.gids.push(this.gids[i].gid);
+      for (let i in this.cids) {
+        this.cids.push(this.cids[i].cid);
       }
     },
 
     fetchUsers() {
-      this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
       fetch("/users")
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
-          //filter user from list to show in table
-          for (let i = 0; i < this.users.length; i++) {
-            if (this.users[i].uid == this.uid) {
-              this.users.splice(i, 1);
-              return;
-            }
-          }
         })
         .catch(err => console.log(err));
     },
 
-    fetchGroups() {
+    fetchCases() {
       this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
-      fetch("/user_groups/" + this.uid)
+      this.uid = this.path[this.path.length - 2];
+      fetch("/user_cases/" + this.uid)
         .then(res => res.json())
         .then(res => {
-          this.groups = res.data;
-          this.pageOfGroups = this.groups;
+          this.cases = res.data;
+          this.pageOfCases = this.cases;
           this.uncheck();
-          this.forceRerender();
+          this.updatePaginator();
         })
         .catch(err => console.log(err));
     },
 
-    createGroup(group, members) {
-      // console.log(JSON.stringify(group));
-      // console.log(JSON.stringify(members));
-      fetch("/group/create", {
+    createCaseStudy(case_study) {
+      fetch("/case/create", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(group)
+        body: JSON.stringify(case_study)
       })
         .then(res => res.json())
         .then(res => {
           console.log(res);
-          console.log(group);
-          this.addUsers(members);
-          this.fetchGroups();
+          console.log(case_study);
+          this.fetchCases();
         })
         .catch(err => {
           console.error("Error: ", err);
         });
     },
 
-    addUsers(users_to_add) {
-      fetch("/group/members/add", {
-        method: "post",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        body: JSON.stringify(users_to_add)
-      })
-        .then(res => res.json())
-        .then(res => {
-          console.log(res);
-          console.log(users_to_add);
-          this.fetchGroups();
-        })
-        .catch(err => {
-          console.error("Error: ", err);
-        });
-    },
+    removeCases() {
+      console.log(JSON.stringify(this.cids));
 
-    removeGroups() {
-      for (let i in this.gids) {
-        this.groups_to_remove.push({
-          gid: this.gids[i]
+      for (let i in this.cids) {
+        this.cases_to_remove.push({
+          cid: this.cids[i]
         });
       }
-
-      fetch("/user_groups/remove", {
+      fetch("/user_cases/remove", {
         method: "delete",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.groups_to_remove)
+        body: JSON.stringify(this.cases_to_remove)
       })
         .then(res => res.json())
         .then(res => {
           console.log(res);
-          console.log(this.groups_to_remove);
-
-          this.fetchGroups();
-          this.groups_to_remove = [];
+          console.log(this.cases_to_remove);
+          this.fetchCases();
+          this.cases_to_remove = [];
         })
         .catch(err => {
           console.error("Error: ", err);

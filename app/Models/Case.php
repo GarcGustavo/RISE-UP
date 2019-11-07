@@ -70,7 +70,7 @@ class case_study extends Model
         'c_status' => 'required',
         'c_date' => 'required',
         'c_owner' => 'required',
-        'c_group' => 'required'
+        'c_group' => 'nullable'
     ];
 
     /**

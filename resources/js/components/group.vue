@@ -1,7 +1,23 @@
 <template>
   <!-- Team Members -->
   <div class="body mb-5 mt-5">
-    <h1 class="text-center">Our Group</h1>
+    <!-- <h1 class="text-center">Our Group</h1>-->
+
+    <div v-if="!edit_title">
+      <span class="text">
+        <h1 class="text-center" :style=" is_owner ? 'margin-left:35px;' : ''">
+          {{group_name}}
+          <a href="#" @click="enableEditTitle" v-if="is_owner">
+            <i class="material-icons">create</i>
+          </a>
+        </h1>
+      </span>
+    </div>
+    <div v-if="edit_title">
+      <input v-model="tempValue" maxlength="32" class="input">
+      <button @click="disableEditTitle">Cancel</button>
+      <button data-toggle="modal" data-target="#mg_action_confirm" @click="saveEdit">Save</button>
+    </div>
 
     <!--
     <ol class="breadcrumb">
@@ -11,9 +27,11 @@
         <li class="breadcrumb-item active">About</li>
     </ol>
     -->
+
     <hr>
-    <h1 class="text-center mt-5">
+    <h1 class="text-center mt-5 col-sm">
       <a
+        v-if="edit_members"
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
@@ -21,9 +39,13 @@
         @click="showModal=true, action='Remove',
         actor='member(s)', fetchMembers()"
       >
-        <i class="material-icons">remove_circle_outline</i>
+        <div class="add_icon" style="display:inline-flex;float:right;padding-top:5px;">
+          <a style="font-size:18px;margin-left:15px;padding-top:11px;">Remove</a>
+          <i class="material-icons">remove_circle_outline</i>
+        </div>
       </a>
       <a
+        v-if="edit_members"
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
@@ -31,20 +53,38 @@
         @click="showModal=true, action='Add',
         actor='member(s)', fetchUsers()"
       >
-        <i class="material-icons">add_circle_outline</i>
+        <div class="remove_icon" style="display:inline-flex;float:right;padding-top:5px;">
+          <a style="font-size:18px;padding-top:11px;">Add</a>
+          <i class="material-icons">add_circle_outline</i>
+        </div>
       </a>
+
       <mg_action_table
         v-if="showModal"
         @close="showModal = false"
         :action="action"
         :actor="actor"
         :users="users"
+        @addUsers="addUsers"
+        @removeUsers="removeUsers"
       ></mg_action_table>
 
-      <p style="margin-left:90px;">Members</p>
+      <div v-if="error">
+        <mg_action_confirm :errors="errors"></mg_action_confirm>
+      </div>
+
+      <p :style=" edit_members ? 'margin-left:205px;' : ''">Members</p>
     </h1>
 
-<!-- Members --> 
+    <div>
+      <case_create_dbox
+        :action="'Create'"
+        :actor="'case study'"
+        :group_selection="gid"
+        @createCaseStudy="createCaseStudy"
+      ></case_create_dbox>
+    </div>
+    <!-- Members -->
     <div class="row mt-1 mb-5" id="members">
       <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
         <div class="card h-100 text-center shadow">
@@ -54,18 +94,25 @@
             <h6 class="card-subtitle text-muted"></h6>
           </div>
           <div class="card-footer">
-            <a href="#">{{member.email}}</a>
+            <label>{{member.email}}</label>
           </div>
         </div>
       </div>
     </div>
 
     <hr>
-    <!-- Case view -->
 
+    <!-- Case view -->
     <h1 id="cases_header" class="mt-5 text-center">
-      <a href="#">Create case study</a>
-      <p style="margin-left:170px;">Our Cases</p>
+      <div v-if="create_group_case">
+        <a
+          href="#case_create_dbox"
+          style="padding-top:5px;"
+          data-toggle="modal"
+          data-target="#case_create_dbox"
+        >Create case study</a>
+      </div>
+      <p :style="create_group_case ? 'margin-left:170px;' : ''">Our Cases</p>
     </h1>
 
     <div class="mt-1 card mb-5" id="cases">
@@ -91,51 +138,235 @@ export default {
   data() {
     return {
       showModal: false,
+      old_name: "",
+      group_name: "",
+      group_data: "",
+      group_owner: "",
+      group_user: "",
       action: "",
       actor: "",
       gid: "",
       members: [],
       users: [],
-      cases: []
+      cases: [],
+      members_to_add: [],
+      errors: [],
+      tempValue: null,
+      is_owner: false,
+      is_member: false,
+      edit_members: false,
+      edit_title: false,
+      create_group_case: false,
+      error: false
     };
   },
 
   created() {
     this.fetchMembers();
+    this.fetchGroupInfo();
     this.fetchCases();
   },
 
   methods: {
+    userPriveleges() {
+      this.isUserOwner();
+      this.isUserMember();
+      if (this.is_owner) {
+        this.edit_members = true;
+        this.create_group_case = true;
+      } else if (this.is_member && !this.is_owner) {
+        this.edit_members = false;
+        this.create_group_case = true;
+      } else {
+        this.edit_members = false;
+        this.create_group_case = false;
+      }
+    },
+
+    isUserOwner() {
+      if (this.group_user == this.group_owner) {
+        this.is_owner = true;
+      } else {
+        this.is_owner = false;
+      }
+    },
+
+    isUserMember() {
+      for (let i = 0; i < this.members.length; i++) {
+        if (this.group_user == this.members[i].uid) {
+          this.is_member = true;
+          return;
+        }
+      }
+      this.is_member = false;
+    },
+
+    enableEditTitle() {
+      this.tempValue = this.group_name;
+      this.edit_title = true;
+    },
+    disableEditTitle() {
+      this.tempValue = null;
+      this.edit_title = false;
+      this.error = false;
+    },
+    saveEdit() {
+      this.old_name = this.group_name;
+      this.group_name = this.tempValue.trim();
+      // However we want to save it to the database
+      if (this.group_name) {
+        this.changeGroupName();
+        this.disableEditTitle();
+      } else {
+        this.errors = [];
+
+        if (!this.group_name) {
+          this.errors.push("Group name required.");
+        }
+        this.group_name = this.old_name;
+        this.error = true;
+      }
+    },
+
     fetchUsers() {
       fetch("/users")
         .then(res => res.json())
         .then(res => {
           this.users = res.data; //to send to modal
+          //filter users from list to show in table
+          for (let i = 0; i < this.users.length; i++) {
+            for (let k = 0; k < this.members.length; k++) {
+              if (this.users[i].uid == this.members[k].uid) {
+                this.users.splice(i, 1);
+              }
+            }
+          }
         })
         .catch(err => console.log(err));
     },
 
     fetchMembers() {
       this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.group_user = Number(this.path[this.path.length - 3]);
+      this.gid = Number(this.path[this.path.length - 1]);
+
       fetch("/group/" + this.gid + "/members")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data; //to send to modal
-          this.members = res.data;//to render in view
+          this.users = res.data;
+          this.members = res.data; //to render in view
         })
         .catch(err => console.log(err));
     },
 
     fetchCases() {
-      this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
       fetch("/group/" + this.gid + "/cases")
         .then(res => res.json())
         .then(res => {
           this.cases = res.data;
         })
         .catch(err => console.log(err));
+    },
+
+    fetchGroupInfo() {
+      this.path = window.location.pathname.split("/");
+      this.gid = Number(this.path[this.path.length - 1]);
+      fetch("/group/" + this.gid + "/info")
+        .then(res => res.json())
+        .then(res => {
+          this.group_data = res.data;
+          this.group_name = this.group_data[0].g_name;
+          this.group_owner = this.group_data[0].g_owner;
+          //Verify if use is owner
+          this.userPriveleges();
+        })
+        .catch(err => console.log(err));
+    },
+
+    changeGroupName() {
+      this.path = window.location.pathname.split("/");
+      this.gid = Number(this.path[this.path.length - 1]);
+      fetch("/group/" + this.gid + "/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({ g_name: this.group_name })
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    addUsers(users_to_add) {
+      fetch("/group/members/add", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_add)
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(users_to_add);
+          this.fetchUsers();
+          this.fetchMembers();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    removeUsers(users_to_remove) {
+      fetch("/group/members/remove", {
+        method: "delete",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(users_to_remove)
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(users_to_remove);
+          this.fetchUsers();
+          this.fetchMembers();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    createCaseStudy(case_study) {
+      fetch("/case/create", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+          console.log(case_study);
+          this.fetchCases();
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     }
   }
 };
@@ -162,7 +393,8 @@ h1 i {
 }
 
 /* change icon background when hovered */
-h1 i:hover {
+h1 i:hover,
+h1 a:hover {
   color: blue;
 }
 
@@ -172,7 +404,8 @@ a {
 }
 
 /* position create case study button */
-#cases_header a {
+#cases_header a,
+#edit_btn a {
   float: right;
   font-size: 18px;
   margin-top: 10px;

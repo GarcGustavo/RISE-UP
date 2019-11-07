@@ -1,68 +1,155 @@
 <template>
+  <!--member group action table
+        this table is used everytime a user wants to remove
+         members of an existing group or to add an existing
+         user to a new group
+  -->
   <transition>
-    <!--member group action table -->
-    <div class="modal fade" id="mg_action_table" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{action}} {{actor}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <!-- Add group name input element to dialogue box when user creates group -->
-          <div class="modal-body">
-            <div class="input-group" v-if="gname_box_show==true">
-              <label>Group name</label>
-              <div class="input-group-append name">
-                <input type="text" placeholder="Name...">
+    <div>
+      <div
+        class="modal fade"
+        id="mg_action_table"
+        tabindex="-1"
+        data-keyboard="false"
+        data-backdrop="static"
+        role="dialog"
+      >
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{action}} {{actor}}</h5>
+              <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>-->
+            </div>
+            <!-- Render group name input element to dialogue box when user creates group -->
+            <div class="modal-body">
+              <div class="input-group" v-if="gname_box_show==true">
+                <label>Group name</label>
+                <div class="input-group-append">
+                  <input
+                    type="text"
+                    maxlength="32"
+                    class="form-control input-sm"
+                    style="width:250px;"
+                    v-model="g_name"
+                    placeholder="Name..."
+                  >
+                </div>
+              </div>
+              <!-- Search box for table -->
+              <div class="input-group">
+                <label>Search</label>
+                <div class="input-group-append search">
+                  <input
+                    type="text"
+                    class="form-control input-sm"
+                    style="width:250px;"
+                    maxlength="32"
+                    v-model="search"
+                    placeholder="User email.."
+                  >
+                </div>
+              </div>
+              <!-- table -->
+              <div class="table-wrapper">
+                <!-- change table id -->
+                <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th id="row-checkbox">#</th>
+                      <th>Email</th>
+                      <th>Name</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(user,index) in filterUsers" v-bind:key="index">
+                      <td>
+                        <div class="check-box">
+                          <input class="checkbox" type="checkbox" v-model="uids" :value="user.uid">
+                          <label for="checkbox">{{index+1}}</label>
+                        </div>
+                      </td>
+                      <td>
+                        <label>{{user.email}}</label>
+                      </td>
+                      <td>
+                        <label>{{user.first_name}} {{user.last_name}}</label>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-            <!-- Search box for table -->
-            <div class="input-group">
-              <label>Search</label>
-              <div class="input-group-append search">
-                <input type="text" placeholder="User email..">
+            <div class="modal-footer">
+              <!--Remove will change -->
+              <div v-if="action=='Remove'">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                  @click="isUserSelected()"
+                >{{action}}</button>
+              </div>
+              <div v-else-if="action=='Add'  && actor=='member(s)' && isSelected">
+                <!--add user to group -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-dismiss="modal"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                  @click="isUserSelected()"
+                >{{action}}</button>
+              </div>
+
+              <div v-else-if="action=='Add'  && actor=='member(s)' && !isSelected">
+                <!--add user to group -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                  @click="isUserSelected()"
+                >{{action}}</button>
+              </div>
+              <!-- create group -->
+              <div v-else-if="action=='Create' && actor=='group'">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  :data-dismiss="modal"
+                  data-toggle="modal"
+                  data-target="#mg_action_confirm"
+                  @click="isUserSelected(), validateInput()"
+                >{{action}}</button>
+              </div>
+
+              <!-- close button -->
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                  @click="uncheck(), search=''"
+                >Close</button>
               </div>
             </div>
-            <!-- table -->
-            <div class="table-wrapper">
-              <!-- change table id -->
-              <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
-                <thead class="thead-dark">
-                  <tr>
-                    <th id="row-checkbox">#</th>
-                    <th>Email</th>
-                    <th>Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(user,index) in users" v-bind:key="index">
-                    <td>
-                      <div class="check-box">
-                        <input class="checkbox" type="checkbox" id="'checkbox1" v-model="checked">
-                        <label for="checkbox1">{{index+1}}</label>
-                      </div>
-                    </td>
-                    <td>{{user.email}}</td>
-                    <td>{{user.first_name}} {{user.last_name}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-toggle="modal"
-              data-target="#mg_action_confirm"
-            >{{action}}</button>
-            <!--confirmation dialogue box -->
-            <mg_action_confirm :action_confirm="action" :actor="actor"></mg_action_confirm>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
+      </div>
+      <!--confirmation dialogue box -->
+
+      <div>
+        <mg_action_confirm
+          :action_confirm="action"
+          :actor="actor"
+          :isSelected="isSelected"
+          :errors="errors"
+          @sendUsers="sendUsers"
+          @sendGroupData="sendGroupData"
+        ></mg_action_confirm>
       </div>
     </div>
   </transition>
@@ -83,21 +170,165 @@ export default {
     },
     users: {
       type: Array
+    },
+    curr_user_id: {
+      type: Number
     }
   },
 
   data() {
     return {
       showModal: false,
+      uids: [],
       user: {
         first_name: "",
         last_name: "",
         email: ""
-      }
+      },
+      user_to_add_remove: [],
+      groups: [],
+      group_to_create: {
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
+
+      g_name: "",
+      search: "",
+      modal: "",
+      errors: [],
+      valid_input: false,
+      isSelected: false,
+      success: false
     };
   },
+  created() {
+    this.totalGroups();
+  },
 
-  methods: {}
+  computed: {
+    filterUsers() {
+      return this.users.filter(user => {
+        return user.email.includes(this.search);
+      });
+    }
+  },
+
+  methods: {
+    uncheck() {
+      this.uids = [];
+
+      for (let i in this.uids) {
+        this.uids.push(this.uids[i].uid);
+      }
+    },
+    isUserSelected() {
+      if (this.uids.length == 0) {
+        this.isSelected = false;
+      } else {
+        this.isSelected = true;
+        if (this.action == "Add") {
+          this.sendUsers();
+        }
+      }
+    },
+
+    validateInput() {
+      if (this.g_name) {
+        this.sendGroupData();
+        this.modal = "modal";
+        this.valid_input = true;
+        this.errors = []; //reset
+      } else {
+        this.modal = "";
+        this.valid_input = false;
+
+        this.errors = [];
+
+        if (!this.g_name) {
+          this.errors.push("Group name required.");
+        }
+      }
+    },
+
+    totalGroups() {
+      fetch("/groups")
+        .then(res => res.json())
+        .then(res => {
+          this.groups = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+
+    sendUsers() {
+      //send selected users to parent component to add users
+      this.path = window.location.pathname.split("/");
+      this.gid = Number(this.path[this.path.length - 1]);
+
+      for (let i in this.uids) {
+        this.user_to_add_remove.push({
+          uid: this.uids[i],
+          gid: this.gid
+        });
+      }
+      //emit data to parent
+      if (this.isSelected) {
+        if (this.action == "Add") {
+          this.$emit("addUsers", this.user_to_add_remove);
+        } else {
+          this.$emit("removeUsers", this.user_to_add_remove);
+        }
+        this.uncheck(); // uncheck all values when finished
+        this.user_to_add_remove = []; //reset variable
+        this.search="";
+      }
+    },
+
+    sendGroupData() {
+      this.path = window.location.pathname.split("/");
+      this.uid = Number(this.path[this.path.length - 2]);
+      this.date = new Date().toJSON().slice(0, 10);
+      this.new_group_gid = this.groups.length;
+      this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
+      this.group_to_create.g_name = this.g_name;
+      this.group_to_create.g_status = "lol";
+      this.group_to_create.g_creation_date = this.date;
+      this.group_to_create.g_owner = this.uid;
+
+      for (let i in this.uids) {
+        this.user_to_add_remove.push({
+          uid: this.uids[i],
+          gid: this.group_to_create.gid
+        });
+      }
+      /*append owner to group*/
+      this.user_to_add_remove.push({
+        uid: this.uid,
+        gid: this.group_to_create.gid
+      });
+
+      if (this.isSelected || this.action == "Create") {
+        this.$emit(
+          "createGroup",
+          this.group_to_create,
+          this.user_to_add_remove
+        );
+      }
+      this.totalGroups();
+      this.group_to_create = {
+        gid: "",
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      };
+      this.g_name = "";
+      this.search="";
+      this.user_to_add_remove = [];
+      this.uncheck();
+    }
+  }
 };
 </script>
 
@@ -145,6 +376,11 @@ table tr td {
 .form-check-input {
   font-size: 20px;
 }
+
+.form-control {
+  height: 30px;
+}
+
 /***********************************************************/
 
 .modal {

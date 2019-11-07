@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+
 class CreateUserGroupsTable extends Migration
 {
 
@@ -16,8 +17,9 @@ class CreateUserGroupsTable extends Migration
         Schema::create('User_Groups', function (Blueprint $table) {
             $table->unsignedBigInteger('gid');
             $table->unsignedBigInteger('uid');
-            $table->foreign('gid')->references('gid')->on('Group');
+            $table->foreign('gid')->references('gid')->on('Group')->onDelete('cascade');
             $table->foreign('uid')->references('uid')->on('User');
+
         });
     }
 

@@ -23,6 +23,8 @@ class user_groups extends Model
 
     //protected $dates = ['deleted_at'];
 
+    protected $primaryKey = 'gid';
+
     public $timestamps = false;
 
     public $fillable = [
