@@ -11,7 +11,7 @@
         <div class="bg-light border-right" id="sidebar-wrapper">
             <div class="sidebar-heading">Menu</div>
             <div class="list-group list-group-flush">
-                <a href="{{route('admin.users')}}" class="list-group-item list-group-item-action bg-light">Users</a>
+                <a href="{{route('admin.users-requests')}}" class="list-group-item list-group-item-action bg-light">Users</a>
                 <a href="{{route('admin.log')}}" class="list-group-item list-group-item-action bg-light">Activity Log</a>
                 <a href="{{route('admin.filters')}}" class="list-group-item list-group-item-action bg-light">Filters</a>
                 <a href="{{route('admin.groups')}}" class="list-group-item list-group-item-action bg-light">Groups</a>

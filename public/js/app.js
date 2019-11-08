@@ -39710,7 +39710,7 @@ var staticRenderFns = [
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "profile-usertitle-role" }, [
-        _c("a", { attrs: { href: "/admin/users" } }, [_vm._v("Admin")])
+        _c("a", { attrs: { href: "/admin/users-requests" } }, [_vm._v("Admin")])
       ])
     ])
   }

@@ -11,38 +11,7 @@ use App\Models\role;
 
 class AdminController extends Controller
 {
-    //public function users
-	public function users(){
 
-        //Creates the list of users to be sent to the view
-        //A join is made with the 'user' and 'role' table in order to provide
-        //the view the role names 'r_name' in addition to 'user' attributes
-        //The method orders the user by creation date and in descending order
-        //before sending them to the view.
-        //Section 1.62 on Software Requirement Specifications Documents
-        $users = DB::table('user')
-            ->join('role', 'user.u_role', '=', 'role.rid')
-            ->select('user.*', 'r_name')
-            ->orderBy('u_creation_date', 'desc')
-            ->get();
-
-        //Creates the list of users who have sent a request to become collaborators
-        //The method selects those users who have:
-            // a user attribute of ban status = zero
-            // a user attribute of role = 1 (Viewer role)
-            // a user attribute of role upgrade request = 1
-        //Section 1.64 on Software Requirement Specifications Documents
-        $requests = DB::table('user')
-            ->join('role', 'user.u_role', '=', 'role.rid')
-            ->select('user.*', 'r_name')
-            ->where('u_role_upgrade_request', 1)
-            ->where('u_role', 1)
-            ->where('u_ban_status', 0)
-            ->orderBy('u_creation_date', 'desc')
-            ->get();
-
-		return view('admin.users', ['users' => $users, 'requests' => $requests]);
-	}
 
 
 
@@ -132,7 +101,7 @@ class AdminController extends Controller
 
 
 
-    
+
     //public function userUpdate
     public function userUpdate($uid){
         $validatedData = request()->validate([
@@ -151,6 +120,20 @@ class AdminController extends Controller
       //dd($user);
          $user->save();
          return redirect('/admin/users');
+    }
+
+
+
+
+
+    //public function groupEdit
+    public function groupEdit($id){
+
+        $users = DB::table('user')
+            ->select('user.*')
+            ->where('uid', '=', $id)
+            ->get();
+        return view('admin.userEdit', ['user' => $users[0]]);
     }
 }
 ?>
