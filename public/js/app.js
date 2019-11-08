@@ -2693,8 +2693,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
  //Vue.use(Editor);
@@ -58655,28 +58653,16 @@ var render = function() {
           _c(
             "ul",
             { staticClass: "list-group list-group-flush border-0" },
-            _vm._l(_vm.items, function(item) {
-              return _c(
-                "li",
-                { key: item.iid, staticClass: "list-group-item" },
-                [
-                  _c("div", { staticClass: "card-body" }, [
-                    _c("h5", { staticClass: "card-title" }, [
-                      _c("a", { attrs: { href: "#" } }, [
-                        _vm._v(_vm._s(item.i_name))
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-                      _vm._v(_vm._s(item.i_order))
-                    ]),
-                    _vm._v(" "),
-                    _c("p", { staticClass: "card-text align-right" }, [
-                      _vm._v(_vm._s(item.i_content))
+            _vm._l(_vm.items, function(item, index) {
+              return _c("li", { key: index, staticClass: "list-group-item" }, [
+                _c("div", { staticClass: "card-body" }, [
+                  _c("h5", { staticClass: "card-title" }, [
+                    _c("a", { attrs: { href: "#" } }, [
+                      _vm._v(_vm._s(index) + ": " + _vm._s(item.i_name))
                     ])
                   ])
-                ]
-              )
+                ])
+              ])
             }),
             0
           )

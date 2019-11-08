@@ -44,13 +44,11 @@
       <div class="mt-1 card mb-5" id="cases">
         <div class="col-sm-12 mb-3">
           <ul class="list-group list-group-flush border-0">
-            <li class="list-group-item" v-for="item in items" :key="item.iid">
+            <li class="list-group-item" v-for="(item, index) in items" :key="index">
               <div class="card-body">
                 <h5 class="card-title">
-                  <a href="#">{{item.i_name}}</a>
+                  <a href="#">{{index}}: {{item.i_name}}</a>
                 </h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{item.i_order}}</h6>
-                <p class="card-text align-right">{{item.i_content}}</p>
               </div>
             </li>
           </ul>
