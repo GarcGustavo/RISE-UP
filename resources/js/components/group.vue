@@ -5,9 +5,9 @@
 
     <div v-if="!edit_title">
       <span class="text">
-        <h1 class="text-center" :style=" is_owner ? 'margin-left:35px;' : ''">
+        <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:35px;' : ''">
           {{group_name}}
-          <a href="#" @click="enableEditTitle" v-if="is_owner">
+          <a href="#" @click="enableEditTitle" v-if="rename_group_permission">
             <i class="material-icons">create</i>
           </a>
         </h1>
@@ -35,13 +35,13 @@
     <hr>
     <h1 class="text-center mt-5 col-sm">
       <a
-        v-if="edit_members"
+        v-if="add_remove_members_permission"
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
         data-dismiss="modal"
-        @click="showModal=true, action='Remove',
-        actor='member(s)', fetchMembers()"
+        @click=" action='Remove',
+        acted_on='member(s)', fetchMembers()"
       >
         <div class="add_icon" style="display:inline-flex;float:right;padding-top:5px;">
           <a style="font-size:18px;margin-left:15px;padding-top:11px;">Remove</a>
@@ -49,13 +49,13 @@
         </div>
       </a>
       <a
-        v-if="edit_members"
+        v-if="add_remove_members_permission"
         href="#mg_action_table"
         data-toggle="modal"
         data-target="#mg_action_table"
         data-dismiss="modal"
-        @click="showModal=true, action='Add',
-        actor='member(s)', fetchUsers()"
+        @click=" action='Add',
+        acted_on='member(s)', fetchUsers()"
       >
         <div class="remove_icon" style="display:inline-flex;float:right;padding-top:5px;">
           <a style="font-size:18px;padding-top:11px;">Add</a>
@@ -63,41 +63,34 @@
         </div>
       </a>
 
+      <p :style=" add_remove_members_permission ? 'margin-left:205px;' : ''">Members</p>
+    </h1>
+
+    <div v-if="action=='Add'|| action=='Remove'">
       <mg_action_table
-        v-if="showModal"
-        @close="showModal = false"
         :action="action"
-        :actor="actor"
-        :users="users"
-        :curr_user_id="group_user"
+        :acted_on="acted_on"
+        :users="users_add_remove"
+        :curr_user_id="curr_user"
         @addUsers="addUsers"
         @removeUsers="removeUsers"
       ></mg_action_table>
+    </div>
+    <div v-if="action=='Rename'">
+      <mg_action_confirm :action_confirm="action" :errors="errors"></mg_action_confirm>
+    </div>
 
-     <div v-if="error">
-        <mg_action_confirm :errors="errors"></mg_action_confirm>
-      </div>
-
-
-
-
-      <p :style=" edit_members ? 'margin-left:205px;' : ''">Members</p>
-    </h1>
-
-    <div>
+    <div v-if="action=='Create'">
       <case_create_dbox
         :action="'Create'"
-        :actor="'case study'"
-        :group_selection="gid"
+        :acted_on="'case study'"
+        :group_selection="curr_group"
         @createCaseStudy="createCaseStudy"
       ></case_create_dbox>
     </div>
-<div>
-    <mg_action_confirm :action_confirm="action" :errors="errors"></mg_action_confirm>
-</div>
     <!-- Members -->
     <div class="row mt-1 mb-5" id="members">
-      <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
+      <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
         <div class="card h-100 text-center shadow">
           <i class="material-icons pt-2" style="font-size: 125px">person</i>
           <div class="card-body">
@@ -115,21 +108,22 @@
 
     <!-- Case view -->
     <h1 id="cases_header" class="mt-5 text-center">
-      <div v-if="create_group_case">
-        <a
-          href="#case_create_dbox"
-          style="padding-top:5px;"
-          data-toggle="modal"
-          data-target="#case_create_dbox"
-        >Create case study</a>
-      </div>
-      <p :style="create_group_case ? 'margin-left:180px;' : ''">Our Cases</p>
+      <a
+        v-if="create_group_case_permission"
+        @click="action='Create'"
+        href="#case_create_dbox"
+        style="padding-top:5px;"
+        data-toggle="modal"
+        data-target="#case_create_dbox"
+      >Create case study</a>
+
+      <p :style="create_group_case_permission ? 'margin-left:180px;' : ''">Our Cases</p>
     </h1>
 
     <div class="mt-1 card mb-5" id="cases">
       <div class="col-sm-12 mb-3">
         <ul class="list-group list-group-flush border-0">
-          <li class="list-group-item" v-for="(case_study,index) in cases" :key="index">
+          <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">{{case_study.c_title}}</a>
@@ -148,27 +142,30 @@
 export default {
   data() {
     return {
-      showModal: false,
-      old_name: "",
       group_name: "",
       group_data: "",
       group_owner: "",
-      group_user: "",
+      curr_user: "",
       action: "",
-      actor: "",
-      gid: "",
-      members: [],
-      users: [],
-      cases: [],
+      acted_on: "",
+      curr_group: "",
+
+      group_members: [],
+      users_add_remove: [],
+      group_cases: [],
       members_to_add: [],
       errors: [],
-      tempValue: null,
+
+
       is_owner: false,
       is_member: false,
-      edit_members: false,
       edit_title: false,
-      create_group_case: false,
-      error: false
+      add_remove_members_permission: false,
+      rename_group_permission: false,
+      create_group_case_permission: false,
+      error: false,
+
+      tempValue: null
     };
   },
 
@@ -183,19 +180,22 @@ export default {
       this.isUserOwner();
       this.isUserMember();
       if (this.is_owner) {
-        this.edit_members = true;
-        this.create_group_case = true;
+        this.rename_group_permission = true;
+        this.add_remove_members_permission = true;
+        this.create_group_case_permission = true;
       } else if (this.is_member && !this.is_owner) {
-        this.edit_members = false;
-        this.create_group_case = true;
+        this.rename_group_permission = false;
+        this.add_remove_members_permission = false;
+        this.create_group_case_permission = true;
       } else {
-        this.edit_members = false;
-        this.create_group_case = false;
+        this.rename_group_permission = false;
+        this.add_remove_members_permission = false;
+        this.create_group_case_permission = false;
       }
     },
 
     isUserOwner() {
-      if (this.group_user == this.group_owner) {
+      if (this.curr_user == this.group_owner) {
         this.is_owner = true;
       } else {
         this.is_owner = false;
@@ -203,8 +203,8 @@ export default {
     },
 
     isUserMember() {
-      for (let i = 0; i < this.members.length; i++) {
-        if (this.group_user == this.members[i].uid) {
+      for (let i = 0; i < this.group_members.length; i++) {
+        if (this.curr_user == this.group_members[i].uid) {
           this.is_member = true;
           return;
         }
@@ -220,22 +220,24 @@ export default {
       this.tempValue = null;
       this.edit_title = false;
       this.error = false;
+      this.errors = []; //reset errors
     },
     saveEdit() {
-      this.old_name = this.group_name;
-      this.group_name = this.tempValue.trim();
+      this.temp_name = this.tempValue.trim();
 
-      if (this.group_name) {
+      if (this.temp_name) {
+        this.group_name = this.temp_name;
         this.changeGroupName();
         this.disableEditTitle();
       } else {
         this.errors = [];
 
-        if (!this.group_name) {
+        if (!this.temp_name) {
           this.errors.push("Group name required.");
         }
-        this.group_name = this.old_name;
+
         this.error = true;
+        console.log(this.errors);
       }
     },
 
@@ -243,17 +245,14 @@ export default {
       fetch("/users")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data; //to send to modal
+          this.users_add_remove = res.data; //to send to modal when adding users
           //filter users from list to show in table
-          for (let i = 0; i < this.users.length; i++) {
-            for (let k = 0; k < this.members.length; k++) {
-              if (this.users[i].uid == this.members[k].uid) {
 
-                this.users.splice(i, 1);
-                i=0;
-
-              }
-            }
+          for (let k = 0; k < this.group_members.length; k++) {
+            //remove all members from user list when adding new users to group
+            this.users_add_remove = this.users_add_remove.filter(
+              x => x.uid !== this.group_members[k].uid
+            );
           }
         })
         .catch(err => console.log(err));
@@ -261,31 +260,36 @@ export default {
 
     fetchMembers() {
       this.path = window.location.pathname.split("/");
-      this.group_user = Number(this.path[this.path.length - 3]);
-      this.gid = Number(this.path[this.path.length - 1]);
+      this.curr_user = Number(this.path[this.path.length - 3]); //conversion for filter
+      this.curr_group = (this.path[this.path.length - 1]);
 
-      fetch("/group/" + this.gid + "/members")
+      fetch("/group/" + this.curr_group + "/members")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data; //to send to modal when deleting
-          this.members = res.data; //to render in view
+          this.users_add_remove = res.data; //to send to modal when deleting
+          if (this.is_owner) {
+            this.users_add_remove = this.users_add_remove.filter(
+              x => x.uid !== this.curr_user
+            ); //filter owner so he can't remove himself
+          }
+          this.group_members = res.data; //to render in view
         })
         .catch(err => console.log(err));
     },
 
     fetchCases() {
-      fetch("/group/" + this.gid + "/cases")
+      fetch("/group/" + this.curr_group + "/cases")
         .then(res => res.json())
         .then(res => {
-          this.cases = res.data;
+          this.group_cases = res.data;
         })
         .catch(err => console.log(err));
     },
 
     fetchGroupInfo() {
       this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
-      fetch("/group/" + this.gid + "/info")
+      this.curr_group = (this.path[this.path.length - 1]);
+      fetch("/group/" + this.curr_group + "/info")
         .then(res => res.json())
         .then(res => {
           this.group_data = res.data;
@@ -299,8 +303,8 @@ export default {
 
     changeGroupName() {
       this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
-      fetch("/group/" + this.gid + "/update", {
+      this.curr_group = (this.path[this.path.length - 1]);
+      fetch("/group/" + this.curr_group + "/update", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",

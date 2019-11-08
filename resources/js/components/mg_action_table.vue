@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">{{action}} {{actor}}</h5>
+              <h5 class="modal-title">{{action}} {{acted_on}}</h5>
               <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>-->
@@ -32,7 +32,7 @@
                     maxlength="32"
                     class="form-control input-sm"
                     style="width:250px;"
-                    v-model="g_name"
+                    v-model="group_name_input"
                     placeholder="Name..."
                   >
                 </div>
@@ -64,20 +64,21 @@
                   </thead>
                   <tbody>
                     <tr v-for="(user,index) in filterUsers" v-bind:key="index">
-                      <td v-if="user.uid != curr_user_id">
-                        <div class="check-box" v-if="action!='Remove'">
-                          <input class="checkbox" type="checkbox" v-model="uids" :value="user.uid">
+                      <td>
+                        <div class="check-box">
+                          <input
+                            class="checkbox"
+                            type="checkbox"
+                            v-model="selected_users"
+                            :value="user.uid"
+                          >
                           <label for="checkbox">{{index+1}}</label>
                         </div>
-                        <div class="check-box" v-else>
-                          <input class="checkbox" type="checkbox" v-model="uids" :value="user.uid">
-                          <label for="checkbox">{{index}}</label>
-                        </div>
                       </td>
-                      <td v-if="user.uid!=curr_user_id">
+                      <td>
                         <label>{{user.email}}</label>
                       </td>
-                      <td v-if="user.uid!=curr_user_id">
+                      <td>
                         <label>{{user.first_name}} {{user.last_name}}</label>
                       </td>
                     </tr>
@@ -96,34 +97,24 @@
                   @click="isUserSelected()"
                 >{{action}}</button>
               </div>
-              <div v-else-if="action=='Add'  && actor=='member(s)' && isSelected">
+              <div v-else-if="action=='Add'">
                 <!--add user to group -->
                 <button
                   type="button"
                   class="btn btn-primary"
-                  data-dismiss="modal"
+                  :data-dismiss="close_dialog"
                   data-toggle="modal"
                   data-target="#mg_action_confirm"
                   @click="isUserSelected()"
                 >{{action}}</button>
               </div>
 
-              <div v-else-if="action=='Add'  && actor=='member(s)' && !isSelected">
-                <!--add user to group -->
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-toggle="modal"
-                  data-target="#mg_action_confirm"
-                  @click="isUserSelected()"
-                >{{action}}</button>
-              </div>
               <!-- create group -->
-              <div v-else-if="action=='Create' && actor=='group'">
+              <div v-else-if="action=='Create'">
                 <button
                   type="button"
                   class="btn btn-primary"
-                  :data-dismiss="modal"
+                  :data-dismiss="close_dialog"
                   data-toggle="modal"
                   data-target="#mg_action_confirm"
                   @click="isUserSelected(), validateInput()"
@@ -144,11 +135,10 @@
         </div>
       </div>
       <!--confirmation dialogue box -->
-
       <div>
         <mg_action_confirm
           :action_confirm="action"
-          :actor="actor"
+          :acted_on="acted_on"
           :isSelected="isSelected"
           :errors="errors"
           @sendUsers="sendUsers"
@@ -165,7 +155,7 @@ export default {
     action: {
       type: String
     },
-    actor: {
+    acted_on: {
       type: String
     },
     gname_box_show: {
@@ -174,23 +164,25 @@ export default {
     },
     users: {
       type: Array
-    },
-    curr_user_id: {
-      type: Number
     }
   },
 
   data() {
     return {
-      showModal: false,
-      uids: [],
+      group_name_input: "",
+      search: "",
+      close_dialog: "",
+
+      user_to_add_remove: [],
+      selected_users: [],
+      groups: [],
+      errors: [],
+
       user: {
         first_name: "",
         last_name: "",
         email: ""
       },
-      user_to_add_remove: [],
-      groups: [],
       group_to_create: {
         g_name: "",
         g_status: "",
@@ -198,10 +190,6 @@ export default {
         g_owner: ""
       },
 
-      g_name: "",
-      search: "",
-      modal: "",
-      errors: [],
       valid_input: false,
       isSelected: false,
       success: false
@@ -221,17 +209,19 @@ export default {
 
   methods: {
     uncheck() {
-      this.uids = [];
+      this.selected_users = [];
 
-      for (let i in this.uids) {
-        this.uids.push(this.uids[i].uid);
+      for (let i in this.selected_users) {
+        this.selected_users.push(this.selected_users[i].uid);
       }
     },
     isUserSelected() {
-      if (this.uids.length == 0) {
+      if (this.selected_users.length == 0) {
         this.isSelected = false;
+        this.close_dialog = "";
       } else {
         this.isSelected = true;
+        this.close_dialog = "modal";
         if (this.action == "Add") {
           this.sendUsers();
         }
@@ -239,18 +229,19 @@ export default {
     },
 
     validateInput() {
-      if (this.g_name.trim()) {
+      this.group_name_input.trim();
+      if (this.group_name_input) {
         this.sendGroupData();
-        this.modal = "modal";
+        this.close_dialog = "modal";
         this.valid_input = true;
         this.errors = []; //reset
       } else {
-        this.modal = "";
+        this.close_dialog = "";
         this.valid_input = false;
 
         this.errors = [];
 
-        if (!this.g_name.trim()) {
+        if (!this.group_name_input) {
           this.errors.push("Group name required.");
         }
       }
@@ -268,11 +259,11 @@ export default {
     sendUsers() {
       //send selected users to parent component to add users
       this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
+      this.gid = (this.path[this.path.length - 1]);
 
-      for (let i in this.uids) {
+      for (let i in this.selected_users) {
         this.user_to_add_remove.push({
-          uid: this.uids[i],
+          uid: this.selected_users[i],
           gid: this.gid
         });
       }
@@ -291,18 +282,18 @@ export default {
 
     sendGroupData() {
       this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
+      this.uid = (this.path[this.path.length - 2]);
       this.date = new Date().toJSON().slice(0, 10);
-      this.new_group_gid = this.groups.length;
+
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
-      this.group_to_create.g_name = this.g_name;
+      this.group_to_create.g_name = this.group_name_input;
       this.group_to_create.g_status = "lol";
       this.group_to_create.g_creation_date = this.date;
       this.group_to_create.g_owner = this.uid;
 
-      for (let i in this.uids) {
+      for (let i in this.selected_users) {
         this.user_to_add_remove.push({
-          uid: this.uids[i],
+          uid: this.selected_users[i],
           gid: this.group_to_create.gid
         });
       }

@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">{{action}} {{actor}}</h5>
+              <h5 class="modal-title">{{action}} {{acted_on}}</h5>
               <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>-->
@@ -85,17 +85,8 @@
         </div>
       </div>
       <!--confirmation dialogue box -->
-      <div v-if="valid_input">
-        <mg_action_confirm
-          :action_confirm="action"
-          :actor="actor"
-          :errors="errors"
-          @close="close=true"
-          @revalidate="validateInput"
-        ></mg_action_confirm>
-      </div>
-      <div v-else>
-        <mg_action_confirm :action_confirm="action" :actor="actor" :errors="errors"></mg_action_confirm>
+      <div>
+        <mg_action_confirm :action_confirm="action" :acted_on="acted_on" :errors="errors"></mg_action_confirm>
       </div>
     </div>
   </transition>
@@ -107,22 +98,26 @@ export default {
     action: {
       type: String
     },
-    actor: {
+    acted_on: {
       type: String
     },
     group_selection: {
-      type: Number
+      type: String
     }
   },
 
   data() {
     return {
-      showModal: false,
       modal: "",
       title: "",
       uid: "",
       gid: "",
       description: "",
+
+      cases: [],
+      groups: [],
+      errors: [],
+
       case_study: {
         cid: "",
         c_title: "",
@@ -134,12 +129,9 @@ export default {
         c_group: ""
       },
 
-      cases: [],
-      groups: [],
-      errors: [],
-
       maxCount: 140,
       remainingCount: 140,
+
       close: false,
       hasError: false,
       valid_input: false
@@ -196,10 +188,10 @@ export default {
     fetchGroups() {
       this.path = window.location.pathname.split("/");
       if (this.group_selection) {
-        this.uid = Number(this.path[this.path.length - 3]);
+        this.uid = (this.path[this.path.length - 3]);
         this.gid = this.group_selection;
       } else {
-        this.uid = Number(this.path[this.path.length - 2]);
+        this.uid = (this.path[this.path.length - 2]);
       }
 
       fetch("/user_groups/" + this.uid)

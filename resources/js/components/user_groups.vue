@@ -8,7 +8,7 @@
         data-toggle="modal"
         data-target="#mg_action_confirm"
         @click="action='Remove',
-        actor='group(s)',isGroupSelected()"
+        acted_on='group(s)',isGroupSelected()"
       >
         <div class="add_icon" style="display:inline-block;float:right;">
           <a style="font-size:18px;margin-left:15px">Remove</a>
@@ -22,7 +22,7 @@
           data-target="#mg_action_table"
           @click="gname_box_show=true,
         action='Create',
-        actor='group', fetchUsers()"
+        acted_on='group', fetchUsers()"
         >
           <div class="remove_icon" style="display:inline-block;float:right;">
             <a style="font-size:18px">Create</a>
@@ -30,37 +30,27 @@
           </div>
         </a>
       </div>
-      <div v-if="action=='Remove' && isSelected  ">
-        <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm
-          :action_confirm="action"
-          :actor="actor"
-          :errors="[]"
-          :isSelected="isSelected"
-          @removeGroups="removeGroups"
-        ></mg_action_confirm>
-      </div>
-      <div v-else-if="action=='Remove' && !isSelected ">
-        <mg_action_confirm
-          :action_confirm="action"
-          :actor="actor"
-          :errors="[]"
-          :isSelected="isSelected"
-          @removeGroups="removeGroups"
-        ></mg_action_confirm>
-      </div>
 
+      <p>My groups</p>
+    </h1>
+    <div v-if="action=='Remove'">
+      <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
+      <mg_action_confirm
+        :action_confirm="action"
+        :acted_on="acted_on"
+        :isSelected="isSelected"
+        @removeGroups="removeGroups"
+      ></mg_action_confirm>
+    </div>
+    <div v-if="action=='Create'">
       <mg_action_table
         :action="action"
-        :actor="actor"
+        :acted_on="acted_on"
         :gname_box_show="gname_box_show"
         :users="users"
         @createGroup="createGroup"
       ></mg_action_table>
-
-      <p>My groups</p>
-    </h1>
-
+    </div>
     <hr>
     <!-- Table -->
     <table id="group-table" class="table table-hover table-bordered table-sm" cellspacing="0">
@@ -72,13 +62,13 @@
       </thead>
       <tbody>
         <tr v-for="(group,index) in pageOfGroups" :key="index">
-          <td v-if="group.g_owner==uid">
+          <td v-if="group.g_owner==curr_user">
             <div class="check-box">
               <input
                 class="checkbox"
                 type="checkbox"
                 id="checkbox"
-                v-model="gids"
+                v-model="selected_groups"
                 :value="group.gid"
               >
               <label for="checkbox">{{index+1}}</label>
@@ -90,7 +80,7 @@
             </div>
           </td>
           <td>
-            <a :href="'/user/'+uid+'/group/' + group.gid">{{group.g_name}}</a>
+            <a :href="'/user/'+curr_user+'/group/' + group.gid">{{group.g_name}}</a>
           </td>
         </tr>
       </tbody>
@@ -104,7 +94,7 @@
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
-        >{{entries}}</button>
+        >{{entries_per_page_table}}</button>
         <div class="dropdown-menu">
           <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
           <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
@@ -118,8 +108,8 @@
         style="width:500px;padding-top:12px;padding-right:10px;float:right;"
       >
         <paginator
-          :items="groups"
-          :pageSize="entries"
+          :items="user_groups"
+          :pageSize="entries_per_page_table"
           @changePage="onChangePage"
           class="pagination"
           style="display:inline-block"
@@ -133,9 +123,16 @@
 export default {
   data() {
     return {
-      reload_paginator: false,
-      gids: [],
-      groups: [],
+      curr_user: "",
+      action: "",
+      acted_on: "",
+
+      selected_groups: [],
+      user_groups: [],
+      groups_to_remove: [],
+      pageOfGroups: [],
+      users: [],
+
       group: {
         gid: "",
         g_name: "",
@@ -144,13 +141,9 @@ export default {
         g_owner: ""
       },
 
-      groups_to_remove: [],
-      pageOfGroups: [],
-      users: [],
-      uid: "",
-      action: "",
-      actor: "",
-      entries: 4,
+      entries_per_page_table: 4, //table entries
+
+      reload_paginator: false,
       isSelected: false, //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
@@ -167,7 +160,7 @@ export default {
       this.pageOfGroups = pageOfGroups;
     },
     isGroupSelected() {
-      if (this.gids.length == 0) {
+      if (this.selected_groups.length == 0) {
         this.isSelected = false;
       } else {
         this.isSelected = true;
@@ -175,7 +168,7 @@ export default {
     },
 
     selectEntries(entry) {
-      this.entries = entry;
+      this.entries_per_page_table = entry;
       this.updatePaginator();
     },
 
@@ -190,39 +183,36 @@ export default {
     },
 
     uncheck() {
-      this.gids = [];
+      this.selected_groups = [];
 
-      for (let i in this.gids) {
-        this.gids.push(this.gids[i].gid);
+      for (let i in this.selected_groups) {
+        this.selected_groups.push(this.selected_groups[i].gid);
       }
     },
 
     fetchUsers() {
       this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
+      this.curr_user =(this.path[this.path.length - 2]);
       fetch("/users")
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
           //filter user from list to show in table
-          for (let i = 0; i < this.users.length; i++) {
-            if (this.users[i].uid == this.uid) {
-              this.users.splice(i, 1);
-              return;
-            }
-          }
+          this.users = this.users.filter(
+            x => x.uid !== this.curr_user
+          ); //filter owner so he can't remove himself
         })
         .catch(err => console.log(err));
     },
 
     fetchGroups() {
       this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
-      fetch("/user_groups/" + this.uid)
+      this.curr_user = (this.path[this.path.length - 2]);
+      fetch("/user_groups/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
-          this.groups = res.data;
-          this.pageOfGroups = this.groups;
+          this.user_groups = res.data;
+          this.pageOfGroups = this.user_groups;
           this.uncheck();
           this.updatePaginator();
         })
@@ -275,9 +265,9 @@ export default {
     },
 
     removeGroups() {
-      for (let i in this.gids) {
+      for (let i in this.selected_groups) {
         this.groups_to_remove.push({
-          gid: this.gids[i]
+          gid: this.selected_groups[i]
         });
       }
 

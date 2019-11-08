@@ -8,7 +8,7 @@
         data-toggle="modal"
         data-target="#mg_action_confirm"
         @click="action='Remove',
-        actor='case study(s)', isCaseSelected()"
+        acted_on='case study(s)', isCaseSelected()"
       >
         <div class="add_icon" style="display:inline-block;float:right;">
           <a style="font-size:18px;margin-left:15px">Remove</a>
@@ -19,9 +19,8 @@
         href="#case_create_dbox"
         data-toggle="modal"
         data-target="#case_create_dbox"
-        @click="showModal=true,
-        action='Create',
-        actor='case study'"
+        @click=" action='Create',
+        acted_on='case study'"
       >
         <div class="remove_icon" style="display:inline-block;float:right;">
           <a style="font-size:18px">Create</a>
@@ -29,30 +28,22 @@
         </div>
       </a>
 
-      <div v-if="action=='Remove' && isSelected">
-        <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm
-          :action_confirm="action"
-          :actor="actor"
-          :errors="[]"
-          :isSelected="isSelected"
-          @removeCases="removeCases"
-        ></mg_action_confirm>
-      </div>
-      <div v-else-if="action=='Remove' && !isSelected">
-        <mg_action_confirm
-          :action_confirm="action"
-          :actor="actor"
-          :errors="[]"
-          :isSelected="isSelected"
-          @removeCases="removeCases"
-        ></mg_action_confirm>
-      </div>
-
-      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy"></case_create_dbox>
-
       <p>My cases</p>
     </h1>
+
+    <div v-if="action=='Remove'">
+      <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
+      <mg_action_confirm
+        :action_confirm="action"
+        :acted_on="acted_on"
+        :isSelected="isSelected"
+        @removeCases="removeCases"
+      ></mg_action_confirm>
+    </div>
+
+    <div v-if="action=='Create'">
+      <case_create_dbox :action="action" :acted_on="acted_on" @createCaseStudy="createCaseStudy"></case_create_dbox>
+    </div>
 
     <hr>
     <!-- Table -->
@@ -71,7 +62,7 @@
                 class="checkbox"
                 type="checkbox"
                 id="checkbox"
-                v-model="cids"
+                v-model="selected_cases"
                 :value="case_study.cid"
               >
               <label for="checkbox">{{index+1}}</label>
@@ -98,7 +89,7 @@
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
-        >{{entries}}</button>
+        >{{entries_per_table_page}}</button>
         <div class="dropdown-menu">
           <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
           <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
@@ -112,8 +103,8 @@
         style="width:500px;padding-top:12px;padding-right:10px;float:right;"
       >
         <paginator
-          :items="cases"
-          :pageSize="entries"
+          :items="user_cases"
+          :pageSize="entries_per_table_page"
           @changePage="onChangePage"
           class="pagination"
           style="display:inline-block"
@@ -127,17 +118,19 @@
 export default {
   data() {
     return {
-      cases: [],
-      cids: [],
-      cases_to_remove: [],
-      case_study: { cid: "", c_title: "" },
-      pageOfCases: [],
-      users: [],
-      entries: 4,
       uid: "",
       action: "",
-      actor: "",
-      showModal: false,
+      acted_on: "",
+
+      user_cases: [],
+      selected_cases: [],
+      cases_to_remove: [],
+      pageOfCases: [],
+
+      case_study: { cid: "", c_title: "" },
+
+      entries_per_table_page: 4,
+
       isSelected: false,
       reload_paginator: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
@@ -154,7 +147,7 @@ export default {
     },
 
     isCaseSelected() {
-      if (this.cids.length == 0) {
+      if (this.selected_cases.length == 0) {
         this.isSelected = false;
       } else {
         this.isSelected = true;
@@ -162,7 +155,7 @@ export default {
     },
 
     selectEntries(entry) {
-      this.entries = entry;
+      this.entries_per_table_page = entry;
       this.updatePaginator();
     },
 
@@ -177,20 +170,11 @@ export default {
     },
 
     uncheck() {
-      this.cids = [];
+      this.selected_cases = [];
 
-      for (let i in this.cids) {
-        this.cids.push(this.cids[i].cid);
+      for (let i in this.selected_cases) {
+        this.selected_cases.push(this.selected_cases[i].cid);
       }
-    },
-
-    fetchUsers() {
-      fetch("/users")
-        .then(res => res.json())
-        .then(res => {
-          this.users = res.data;
-        })
-        .catch(err => console.log(err));
     },
 
     fetchCases() {
@@ -199,7 +183,7 @@ export default {
       fetch("/user_cases/" + this.uid)
         .then(res => res.json())
         .then(res => {
-          this.cases = res.data;
+          this.user_cases = res.data;
           this.pageOfCases = this.cases;
           this.uncheck();
           this.updatePaginator();
@@ -229,9 +213,9 @@ export default {
     },
 
     removeCases() {
-      for (let i in this.cids) {
+      for (let i in this.selected_cases) {
         this.cases_to_remove.push({
-          cid: this.cids[i]
+          cid: this.selected_cases[i]
         });
       }
       fetch("/user_cases/remove", {
