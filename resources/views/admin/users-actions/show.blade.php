@@ -5,7 +5,11 @@
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
-                    {{$usersName[0]->first_name }} {{$usersName[0]->last_name }} actions:
+                    @forelse($users as $user)
+                     {{$user->first_name }} {{$user->last_name }} actions:
+                    @empty
+                        No user
+                    @endforelse
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

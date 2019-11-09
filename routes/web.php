@@ -76,11 +76,22 @@ Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name(
 //User Requirement 2.64 on Software Requirement Specifications Documents
 //Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name('admin.users-requests');
 
-//Log of actions
+//Log of actions, presenting latest action for each user
 //User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('admin.users-actions');
+
+//Log of actions, presenting recent actions for a particular user
+//User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
+//and groups in the system, the activities are:
+//1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
+Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
+
+//Log of actions, presenting all groups
+//User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
+//and groups in the system, the activities are:
+//1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/groups/actions', 'AdminGroupsActionsController@index')->name('admin.groups.actions');
 
 
@@ -93,12 +104,6 @@ Route::get('/admin/filters', 'AdminController@filters')->name('admin.filters');
 Route::get('/admin/groups', 'AdminController@groups')->name('admin.groups');
 
 
-
-//List activity log
-//User Requirement 1.61. The web application will allow an Admin to view the recent activity of users
-//and groups in the system, the activities are:
-//1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
 
 //admin edits a user
 //User Requirement 1.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
