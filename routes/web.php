@@ -76,32 +76,35 @@ Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name(
 //User Requirement 2.64 on Software Requirement Specifications Documents
 //Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name('admin.users-requests');
 
-//Log of actions, presenting latest action for each user
+//Presents latest action for each user
 //User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('admin.users-actions');
 
-//Log of actions, presenting recent actions for a particular user
+//Presents recent actions for a particular user
 //User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
 
-//Log of actions, presenting all groups
+
+//Presents group name, the group owner, the latest action, and creation date for each group.
+//User Requirement 2.63. The web application will allow an Admin to view the groups of the system.
+Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups');
+
+//Presents recent actions for a particular user
 //User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/groups/actions', 'AdminGroupsActionsController@index')->name('admin.groups.actions');
+Route::get('/admin/group-actions', 'AdminGroupsActionsController@index')->name('admin.groups.actions');
 
 
 //List filters
 //User Requirement 1.65. The web application will allow an Admin to view a list of search filters for case studies.
 Route::get('/admin/filters', 'AdminController@filters')->name('admin.filters');
 
-//List groups
-//User Requirement 1.63. The web application will allow an Admin to view the groups of the system.
-Route::get('/admin/groups', 'AdminController@groups')->name('admin.groups');
+
 
 
 
