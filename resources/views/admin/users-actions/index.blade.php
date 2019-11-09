@@ -11,30 +11,27 @@
                             <thead>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Action</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Since</th>
+                                <th>Latest Action</th>
+                                <th>Date</th>
+                                <th>More actions</th>
                             </tr>
                             </thead>
                             <tfoot>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Action</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Since</th>
+                                <th>Latest Action</th>
+                                <th>Date</th>
+                                <th>More Actions</th>
                             </tr>
                             </tfoot>
                             <tbody>
 
-                            @forelse($userActions as $userAction)
+                            @forelse($users as $user)
                                 <tr>
-                                    <td> {{$userAction->first_name }} {{$userAction->last_name }} </td>
-                                    <td class="font-weight-bold"> <a href="/admin/log/actions/{{$userAction->uid }}">View</a> </td>
-                                    <td> {{$userAction->contact_email }} </td>
-                                    <td> {{$userAction->r_name }} </td>
-                                    <td> {{ \Carbon\Carbon::parse($userAction->u_creation_date)->format('d F Y')}} </td>
+                                    <td> {{$user->first_name }} {{$user->last_name}} </td>
+                                    <td> {{$user->act_name }} </td>
+                                    <td> {{ \Carbon\Carbon::parse($user->latest_action_date)->format('d F Y')}}  </td>
+                                    <td class="font-weight-bold"> <a href="/admin/users-actions/{{$user->uid }}">View</a> </td>
                                 </tr>
                             @empty
                                 <tr>
