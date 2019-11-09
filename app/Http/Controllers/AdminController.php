@@ -16,22 +16,6 @@ class AdminController extends Controller
 
 
 
-
-    //public function log
-    public function log(){
-        $userActions = DB::table('user')
-            ->join('role', 'user.u_role', '=', 'role.rid')
-            ->select('user.*', 'r_name')
-            ->orderBy('u_creation_date', 'desc')
-            ->get();
-
-        return view('admin.log', ['userActions' => $userActions]);
-    }
-
-
-
-
-
     //public function filters
     public function filters(){
 

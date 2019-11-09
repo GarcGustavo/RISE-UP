@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdminUsersRequestsController extends Controller
 {
-    //
-    //public function users
+    //public function index
     public function index(){
 
         //Creates the list of users to be sent to the view
@@ -36,7 +35,6 @@ class AdminUsersRequestsController extends Controller
             ->where('u_role_upgrade_request', 1)
             ->where('u_role', 1)
             ->where('u_ban_status', 0)
-            ->orderBy('u_creation_date', 'desc')
             ->get();
 
         return view('admin.users-requests.index', ['users' => $users, 'requests' => $requests]);

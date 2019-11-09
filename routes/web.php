@@ -67,17 +67,22 @@ Route::get('group/{id}/cases', 'GroupController@show_group_cases');
 //Admin board
 //User Requirement 2.60. The web application will allow an Admin to view the “Admin Dashboard” page
 
-//Provides the admin with a list of users and with a list of users
-//requesting their role to be upgraded from Viewer to Collaborator.
+//Provides the admin with a list of users.
 //User Requirement 2.62 on Software Requirement Specifications Documents
-//User Requirement 2.64 on Software Requirement Specifications Documents
 Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name('admin.users-requests');
 
-//List activity log
-//User Requirement 1.61. The web application will allow an Admin to view the recent activity of users
+//Provides the admin with a list of users
+//requesting their role to be upgraded from Viewer to Collaborator.
+//User Requirement 2.64 on Software Requirement Specifications Documents
+//Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name('admin.users-requests');
+
+//Log of actions
+//User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/log', 'AdminController@log')->name('admin.log');
+Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('admin.users-actions');
+Route::get('/admin/groups/actions', 'AdminGroupsActionsController@index')->name('admin.groups.actions');
+
 
 //List filters
 //User Requirement 1.65. The web application will allow an Admin to view a list of search filters for case studies.
@@ -93,7 +98,7 @@ Route::get('/admin/groups', 'AdminController@groups')->name('admin.groups');
 //User Requirement 1.61. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/log/actions/{id}', 'AdminController@actions');
+Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
 
 //admin edits a user
 //User Requirement 1.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
