@@ -184,11 +184,12 @@ export default {
 
   methods: {
     /**
-     * @description
+     * @description determine user priveleges in group
      */
     userPriveleges() {
-      this.isUserOwner();
-      this.isUserMember();
+      this.isUserOwner(); //verify if user is owner
+      this.isUserMember(); //verify is user is member
+
       if (this.is_owner) {
         this.rename_group_permission = true;
         this.add_remove_members_permission = true;
@@ -205,7 +206,7 @@ export default {
     },
 
     /**
-     * @description
+     * @description determine if current user is owner of group
      */
     isUserOwner() {
       if (this.curr_user == this.group_owner) {
@@ -216,7 +217,7 @@ export default {
     },
 
     /**
-     * @description
+     * @description determine if current user is member of group
      */
     isUserMember() {
       for (let i = 0; i < this.group_members.length; i++) {
@@ -229,14 +230,14 @@ export default {
     },
 
     /**
-     * @description
+     * @description enable edit mode to rename group
      */
     enableEditTitle() {
       this.tempValue = this.group_name;
       this.edit_title = true;
     },
     /**
-     * @description
+     * @description once saved or canceled disabled edit mode
      */
     disableEditTitle() {
       this.tempValue = null;
@@ -245,15 +246,16 @@ export default {
       this.errors = []; //reset errors
     },
     /**
-     * @description
+     * @description save changes to group name
      */
     saveEdit() {
       this.temp_name = this.tempValue.trim();
 
       if (this.temp_name) {
+        //if not empty
         this.group_name = this.temp_name;
-        this.changeGroupName();
-        this.disableEditTitle();
+        this.changeGroupName(); //send request
+        this.disableEditTitle(); //disable edit mode
       } else {
         this.errors = [];
 
@@ -266,17 +268,18 @@ export default {
     },
 
     /**
-     * @description
+     * @description get all of system's users when adding a user to group.
+     *
      */
     fetchUsers() {
       fetch("/users")
         .then(res => res.json())
         .then(res => {
-          this.users_add_remove = res.data; //to send to modal when adding users
+          this.users_add_remove = res.data; //to send to action_table_dbox when adding users
           //filter users from list to show in table
 
           for (let k = 0; k < this.group_members.length; k++) {
-            //remove all members from user list when adding new users to group
+            //filter out group members from user list when adding new users to group
             this.users_add_remove = this.users_add_remove.filter(
               x => x.uid !== this.group_members[k].uid
             );
@@ -286,21 +289,21 @@ export default {
     },
 
     /**
-     * @description
+     * @description gets all of the current group's users
      */
     fetchMembers() {
-      this.path = window.location.pathname.split("/");
-      this.curr_user = Number(this.path[this.path.length - 3]); //conversion for filter
-      this.curr_group = this.path[this.path.length - 1];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
 
       fetch("/group/" + this.curr_group + "/members")
         .then(res => res.json())
         .then(res => {
-          this.users_add_remove = res.data; //to send to modal when deleting
+          this.users_add_remove = res.data; //populates action_table_dbox when removing a member from group
           if (this.is_owner) {
             this.users_add_remove = this.users_add_remove.filter(
               x => x.uid !== this.curr_user
-            ); //filter owner so he can't remove himself
+            ); //filter owner out so he can't remove himself
           }
           this.group_members = res.data; //to render in view
         })
@@ -308,7 +311,7 @@ export default {
     },
 
     /**
-     * @description
+     * @description gets all of the cases of the current group
      */
     fetchCases() {
       fetch("/group/" + this.curr_group + "/cases")
@@ -320,7 +323,7 @@ export default {
     },
 
     /**
-     * @description
+     * @description gets info of the current group
      */
     fetchGroupInfo() {
       this.path = window.location.pathname.split("/");
@@ -329,16 +332,16 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.group_data = res.data;
-          this.group_name = this.group_data[0].g_name;
-          this.group_owner = this.group_data[0].g_owner;
-          //Verify if use is owner
-          this.userPriveleges();
+          this.group_name = this.group_data[0].g_name; //name of group
+          this.group_owner = this.group_data[0].g_owner; // id of owner
+
+          this.userPriveleges(); //set user priveleges
         })
         .catch(err => console.log(err));
     },
 
     /**
-     * @description
+     * @description outputs to the groupController a JSON request to rename group
      */
     changeGroupName() {
       this.path = window.location.pathname.split("/");
@@ -362,8 +365,8 @@ export default {
     },
 
     /**
-     * @description
-     * @param {any} users_to_add
+     * @description outputs to the User_groups Controller a JSON request to add members to a group
+     * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
      */
     addUsers(users_to_add) {
       fetch("/group/members/add", {
@@ -379,8 +382,8 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_add);
-          this.fetchUsers();
-          this.fetchMembers();
+          this.fetchUsers(); //update user list
+          this.fetchMembers(); //update member list
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -388,8 +391,8 @@ export default {
     },
 
     /**
-     * @description
-     * @param {any} users_to_remove
+     * @description outputs to the User_groups Controller a JSON request to remove members from group
+     * @param {Array} users_to_remove - array of user id's to remove group - data is sent by the action_table_dbox dialogue
      */
     removeUsers(users_to_remove) {
       fetch("/group/members/remove", {
@@ -405,8 +408,8 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_remove);
-          this.fetchUsers();
-          this.fetchMembers();
+          this.fetchUsers(); //update user list
+          this.fetchMembers(); //update member list
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -414,8 +417,8 @@ export default {
     },
 
     /**
-     * @description
-     * @param {any} case_study
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
      */
     createCaseStudy(case_study) {
       fetch("/case/create", {
@@ -431,7 +434,7 @@ export default {
         .then(res => {
           console.log(res);
           console.log(case_study);
-          this.fetchCases();
+          this.fetchCases(); //update case list
         })
         .catch(err => {
           console.error("Error: ", err);

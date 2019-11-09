@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     /**
-     * @description call to action_table_dbox(parent) to send user(s) to group vue to remove.
+     * @description call to parent(action_table_dbox) to send user(s) to group vue to remove.
      */
     confirmRemoveMembers() {
       this.$emit("sendUsers");

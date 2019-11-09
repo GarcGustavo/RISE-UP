@@ -171,7 +171,7 @@ export default {
   computed: {},
   methods: {
     /**
-     * @description - lists the set of groups of the current page
+     * @description - lists the set of groups of the current table page
      * @param  {Array} pageOfGroups - contains a list of set of groups sent by the paginator
      */
     onChangePage(pageOfGroups) {
@@ -223,15 +223,15 @@ export default {
     },
 
     /**
-     * @description get all users when adding a user to group
+     * @description get all of system's users when adding a user while creating a group
      */
     fetchUsers() {
-      this.path = window.location.pathname.split("/");
-      this.curr_user = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
       fetch("/users")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data;
+          this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
           this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner so he can't remove himself
         })
@@ -332,8 +332,8 @@ export default {
           console.log(res);
           console.log(this.groups_to_remove);
 
-          this.fetchGroups();
-          this.groups_to_remove = [];
+          this.fetchGroups(); //update group list
+          this.groups_to_remove = []; //reset variable
         })
         .catch(err => {
           console.error("Error: ", err);

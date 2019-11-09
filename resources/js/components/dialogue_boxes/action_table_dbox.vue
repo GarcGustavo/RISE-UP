@@ -88,7 +88,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <!--Remove will change -->
+              <!--Remove user from group  -->
               <div v-if="action=='Remove'">
                 <button
                   type="button"
@@ -128,7 +128,7 @@
                   type="button"
                   class="btn btn-secondary"
                   data-dismiss="modal"
-                  @click="uncheck(), search=''"
+                  @click="uncheck(), resetInputFields()"
                 >Close</button>
               </div>
             </div>
@@ -151,40 +151,53 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
   props: {
-    action: { //action the user is executing
+    action: {
+      //action the user is executing
       type: String
     },
-    acted_on: {  //on what is the action being executed
+    acted_on: {
+      //on what is the action being executed
       type: String
     },
-    gname_box_show: { //boolean to show group name input box to dialogue
+    gname_box_show: {
+      //boolean to show group name input box to dialogue
       type: Boolean,
       default: false
     },
-    users: { //array of users to add or remove
+    users: {
+      //array of users to add or remove
       type: Array
     }
   },
 
+  /**
+   * @description
+   * @returns {any}
+   */
   data() {
     return {
       group_name_input: "", //input for group name
       search: "", //search input
       close_dialog: "", //to close action table
 
-      user_to_add_remove: [], //list of users to add or remove
+      users_to_add_remove: [], //list of users to add or remove
       selected_users: [], //list of selected users to add or remove
       groups: [], //list of all the groups in the system, used to determine ID of new group
       errors: [], //list of errors
 
-      user: { //user attributes to use on table
+      user: {
+        //user attributes to use on table
         first_name: "",
         last_name: "",
         email: ""
       },
-      group_to_create: { //attributes to create a group
+      group_to_create: {
+        //attributes to create a group
         g_name: "",
         g_status: "",
         g_creation_date: "",
@@ -192,15 +205,21 @@ export default {
       },
 
       valid_input: false, //validate input
-      isSelected: false, //validate if user has made a selection to add or remove a user 
-
+      isSelected: false //validate if user has made a selection to add or remove a user
     };
   },
+  /**
+   * @description sets variable of groups when component is loaded
+   */
   created() {
     this.totalGroups();
   },
 
   computed: {
+    /**
+     * @description filters users by email search. Method is called per each key press
+     * @returns list of users in accordance to search.
+     */
     filterUsers() {
       return this.users.filter(user => {
         return user.email.includes(this.search);
@@ -209,6 +228,9 @@ export default {
   },
 
   methods: {
+    /**
+     * @description unchecks any selection of users that has been made
+     */
     uncheck() {
       this.selected_users = [];
 
@@ -216,38 +238,56 @@ export default {
         this.selected_users.push(this.selected_users[i].uid);
       }
     },
+    /**
+     * @description verifies if a selection has been made when performing action(add/remove)
+     */
     isUserSelected() {
       if (this.selected_users.length == 0) {
         this.isSelected = false;
-        this.close_dialog = "";
+        this.close_dialog = ""; //keep component opened if user has not made a selection
       } else {
         this.isSelected = true;
-        this.close_dialog = "modal";
+        this.close_dialog = "modal"; //close component if user has made a selection
         if (this.action == "Add") {
           this.sendUsers();
         }
       }
     },
+    /**
+     * @description resets all input fields
+     */
+    resetInputFields() {
+      this.search = "";
+      this.group_name_input = "";
+      this.users_to_add_remove = [];
+    },
 
+    /**
+     * @description validates group name input field
+     */
     validateInput() {
       this.group_name_input.trim();
       if (this.group_name_input) {
         this.sendGroupData();
-        this.close_dialog = "modal";
+        this.close_dialog = "modal"; //dismiss component if inputs are valid
         this.valid_input = true;
         this.errors = []; //reset
       } else {
-        this.close_dialog = "";
+        this.close_dialog = ""; //keep component opened if there are errors
         this.valid_input = false;
 
         this.errors = [];
 
         if (!this.group_name_input) {
+          //add error
           this.errors.push("Group name required.");
         }
       }
     },
 
+    /**
+     * @description gets all of the system's groups
+     */
     totalGroups() {
       fetch("/groups")
         .then(res => res.json())
@@ -257,13 +297,18 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description calls the addUsers method from parent window(user_groups or groups)
+     *  and sends the user data to be processed
+     */
     sendUsers() {
       //send selected users to parent component to add users
       this.path = window.location.pathname.split("/");
-      this.gid = (this.path[this.path.length - 1]);
+      this.gid = this.path[this.path.length - 1];
 
       for (let i in this.selected_users) {
-        this.user_to_add_remove.push({
+        //populate array with selected users
+        this.users_to_add_remove.push({
           uid: this.selected_users[i],
           gid: this.gid
         });
@@ -271,47 +316,53 @@ export default {
       //emit data to parent
       if (this.isSelected) {
         if (this.action == "Add") {
-          this.$emit("addUsers", this.user_to_add_remove);
+          this.$emit("addUsers", this.users_to_add_remove);
         } else {
-          this.$emit("removeUsers", this.user_to_add_remove);
+          //default action to delete
+          this.$emit("removeUsers", this.users_to_add_remove);
         }
         this.uncheck(); // uncheck all values when finished
-        this.user_to_add_remove = []; //reset variable
-        this.search = "";
+        this.resetInputFields();
       }
     },
 
+    /**
+     * @description calls the createGroup method from parent window(user_groups)
+     *  and sends the data for the new case study
+     */
     sendGroupData() {
       this.path = window.location.pathname.split("/");
-      this.uid = (this.path[this.path.length - 2]);
+      this.uid = this.path[this.path.length - 2];
       this.date = new Date().toJSON().slice(0, 10);
-
+      //append data to new group
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
       this.group_to_create.g_name = this.group_name_input;
-      this.group_to_create.g_status = "lol";
+      this.group_to_create.g_status = "active";
       this.group_to_create.g_creation_date = this.date;
       this.group_to_create.g_owner = this.uid;
 
       for (let i in this.selected_users) {
-        this.user_to_add_remove.push({
+        this.users_to_add_remove.push({
           uid: this.selected_users[i],
           gid: this.group_to_create.gid
         });
       }
       /*append owner to group*/
-      this.user_to_add_remove.push({
+      this.users_to_add_remove.push({
         uid: this.uid,
         gid: this.group_to_create.gid
       });
 
       if (this.isSelected || this.action == "Create") {
         this.$emit(
+          //call method with data
           "createGroup",
           this.group_to_create,
-          this.user_to_add_remove
+          this.users_to_add_remove
         );
       }
-      this.totalGroups();
+      this.totalGroups(); //update total groups
+      //reset fields
       this.group_to_create = {
         gid: "",
         g_name: "",
@@ -319,10 +370,9 @@ export default {
         g_creation_date: "",
         g_owner: ""
       };
-      this.g_name = "";
-      this.search = "";
-      this.user_to_add_remove = [];
+
       this.uncheck();
+      this.resetInputFields();
     }
   }
 };

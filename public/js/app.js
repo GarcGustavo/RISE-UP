@@ -2066,7 +2066,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     /**
-     * @description call to action_table_dbox(parent) to send user(s) to group vue to remove.
+     * @description call to parent(action_table_dbox) to send user(s) to group vue to remove.
      */
     confirmRemoveMembers: function confirmRemoveMembers() {
       this.$emit("sendUsers");
@@ -2251,6 +2251,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
+/**
+ * write a component's description
+ */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2271,6 +2275,11 @@ __webpack_require__.r(__webpack_exports__);
       type: Array
     }
   },
+
+  /**
+   * @description
+   * @returns {any}
+   */
   data: function data() {
     return {
       group_name_input: "",
@@ -2279,7 +2288,7 @@ __webpack_require__.r(__webpack_exports__);
       //search input
       close_dialog: "",
       //to close action table
-      user_to_add_remove: [],
+      users_to_add_remove: [],
       //list of users to add or remove
       selected_users: [],
       //list of selected users to add or remove
@@ -2302,14 +2311,22 @@ __webpack_require__.r(__webpack_exports__);
       },
       valid_input: false,
       //validate input
-      isSelected: false //validate if user has made a selection to add or remove a user 
+      isSelected: false //validate if user has made a selection to add or remove a user
 
     };
   },
+
+  /**
+   * @description sets variable of groups when component is loaded
+   */
   created: function created() {
     this.totalGroups();
   },
   computed: {
+    /**
+     * @description filters users by email search. Method is called per each key press
+     * @returns list of users in accordance to search.
+     */
     filterUsers: function filterUsers() {
       var _this = this;
 
@@ -2319,6 +2336,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    /**
+     * @description unchecks any selection of users that has been made
+     */
     uncheck: function uncheck() {
       this.selected_users = [];
 
@@ -2326,37 +2346,61 @@ __webpack_require__.r(__webpack_exports__);
         this.selected_users.push(this.selected_users[i].uid);
       }
     },
+
+    /**
+     * @description verifies if a selection has been made when performing action(add/remove)
+     */
     isUserSelected: function isUserSelected() {
       if (this.selected_users.length == 0) {
         this.isSelected = false;
-        this.close_dialog = "";
+        this.close_dialog = ""; //keep component opened if user has not made a selection
       } else {
         this.isSelected = true;
-        this.close_dialog = "modal";
+        this.close_dialog = "modal"; //close component if user has made a selection
 
         if (this.action == "Add") {
           this.sendUsers();
         }
       }
     },
+
+    /**
+     * @description resets all input fields
+     */
+    resetInputFields: function resetInputFields() {
+      this.search = "";
+      this.group_name_input = "";
+      this.users_to_add_remove = [];
+    },
+
+    /**
+     * @description validates group name input field
+     */
     validateInput: function validateInput() {
       this.group_name_input.trim();
 
       if (this.group_name_input) {
         this.sendGroupData();
-        this.close_dialog = "modal";
+        this.close_dialog = "modal"; //dismiss component if inputs are valid
+
         this.valid_input = true;
         this.errors = []; //reset
       } else {
-        this.close_dialog = "";
+        this.close_dialog = ""; //keep component opened if there are errors
+
         this.valid_input = false;
         this.errors = [];
 
         if (!this.group_name_input) {
+          //add error
           this.errors.push("Group name required.");
         }
       }
     },
+
+    /**
+     * @description gets all of the system's groups
+     */
     totalGroups: function totalGroups() {
       var _this2 = this;
 
@@ -2368,13 +2412,19 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(err);
       });
     },
+
+    /**
+     * @description calls the addUsers method from parent window(user_groups or groups)
+     *  and sends the user data to be processed
+     */
     sendUsers: function sendUsers() {
       //send selected users to parent component to add users
       this.path = window.location.pathname.split("/");
       this.gid = this.path[this.path.length - 1];
 
       for (var i in this.selected_users) {
-        this.user_to_add_remove.push({
+        //populate array with selected users
+        this.users_to_add_remove.push({
           uid: this.selected_users[i],
           gid: this.gid
         });
@@ -2383,30 +2433,35 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.isSelected) {
         if (this.action == "Add") {
-          this.$emit("addUsers", this.user_to_add_remove);
+          this.$emit("addUsers", this.users_to_add_remove);
         } else {
-          this.$emit("removeUsers", this.user_to_add_remove);
+          //default action to delete
+          this.$emit("removeUsers", this.users_to_add_remove);
         }
 
         this.uncheck(); // uncheck all values when finished
 
-        this.user_to_add_remove = []; //reset variable
-
-        this.search = "";
+        this.resetInputFields();
       }
     },
+
+    /**
+     * @description calls the createGroup method from parent window(user_groups)
+     *  and sends the data for the new case study
+     */
     sendGroupData: function sendGroupData() {
       this.path = window.location.pathname.split("/");
       this.uid = this.path[this.path.length - 2];
-      this.date = new Date().toJSON().slice(0, 10);
+      this.date = new Date().toJSON().slice(0, 10); //append data to new group
+
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
       this.group_to_create.g_name = this.group_name_input;
-      this.group_to_create.g_status = "lol";
+      this.group_to_create.g_status = "active";
       this.group_to_create.g_creation_date = this.date;
       this.group_to_create.g_owner = this.uid;
 
       for (var i in this.selected_users) {
-        this.user_to_add_remove.push({
+        this.users_to_add_remove.push({
           uid: this.selected_users[i],
           gid: this.group_to_create.gid
         });
@@ -2414,16 +2469,19 @@ __webpack_require__.r(__webpack_exports__);
       /*append owner to group*/
 
 
-      this.user_to_add_remove.push({
+      this.users_to_add_remove.push({
         uid: this.uid,
         gid: this.group_to_create.gid
       });
 
       if (this.isSelected || this.action == "Create") {
-        this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
+        this.$emit( //call method with data
+        "createGroup", this.group_to_create, this.users_to_add_remove);
       }
 
-      this.totalGroups();
+      this.totalGroups(); //update total groups
+      //reset fields
+
       this.group_to_create = {
         gid: "",
         g_name: "",
@@ -2431,10 +2489,8 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       };
-      this.g_name = "";
-      this.search = "";
-      this.user_to_add_remove = [];
       this.uncheck();
+      this.resetInputFields();
     }
   }
 });
@@ -2543,7 +2599,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
+
+/**
+ *  member group action table
+    this table is used everytime a user wants to remove
+    members of an existing group or to add an existing
+    user to a new group
+ */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2559,6 +2621,11 @@ __webpack_require__.r(__webpack_exports__);
       type: String
     }
   },
+
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data: function data() {
     return {
       close_dialog: "",
@@ -2600,15 +2667,27 @@ __webpack_require__.r(__webpack_exports__);
 
     };
   },
+
+  /**
+   * @description gets a list of users groups to append to case study when the component is loaded
+   * gets all system's cases to set case variable
+   */
   created: function created() {
     this.fetchGroups();
     this.totalCases();
   },
   methods: {
+    /**
+     * @description updates the description's remaining characters count
+     */
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.description.length;
       this.hasError = this.remainingCount < 0;
     },
+
+    /**
+     * @description resets all case study input fields
+     */
     resetInputFields: function resetInputFields() {
       this.title = "";
       this.description = "";
@@ -2619,14 +2698,20 @@ __webpack_require__.r(__webpack_exports__);
 
       this.remainingCount = 140;
     },
+
+    /**
+     * @description validates all case study input fields
+     */
     validateInput: function validateInput() {
       if (this.title.trim() && this.description.trim()) {
         this.sendCaseStudyData();
         this.valid_input = true;
-        this.close_dialog = "modal";
-        this.errors = [];
+        this.close_dialog = "modal"; //dismiss component if inputs are valid
+
+        this.errors = []; //reset errors
       } else {
-        this.close_dialog = "";
+        this.close_dialog = ""; //keep component opened if there are errors
+
         this.valid_input = false;
         this.errors = [];
 
@@ -2639,6 +2724,10 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     },
+
+    /**
+     * @description gets all of the system's cases
+     */
     totalCases: function totalCases() {
       var _this = this;
 
@@ -2650,16 +2739,22 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(err);
       });
     },
+
+    /**
+     * @description gets all the groups of the current user
+     */
     fetchGroups: function fetchGroups() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
       if (this.group_selection) {
-        this.curr_user = this.path[this.path.length - 3];
+        //variable sent by group view to set default in group options, therefor set group default to (curr_group/group selection)
+        this.curr_user = this.path[this.path.length - 3]; //get ID from path and perform Numeric conversion for filter
+
         this.curr_group = this.group_selection;
       } else {
-        this.curr_user = this.path[this.path.length - 2];
+        this.curr_user = this.path[this.path.length - 2]; //get ID from path and perform Numeric conversion for filter
       }
 
       fetch("/user_groups/" + this.curr_user).then(function (res) {
@@ -2670,11 +2765,18 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(err);
       });
     },
-    sendCaseStudyData: function sendCaseStudyData() {
-      this.path = window.location.pathname.split("/"); //  this.uid = Number(this.path[this.path.length - 2]);
 
-      this.date = new Date().toJSON().slice(0, 10);
-      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1;
+    /**
+     * @description calls the createCaseStudy method from parent window(user_cases)
+     *  and sends the data for the new case study
+     */
+    sendCaseStudyData: function sendCaseStudyData() {
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.date = new Date().toJSON().slice(0, 10); //append data to new case study
+
+      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id 
+
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
@@ -2682,7 +2784,8 @@ __webpack_require__.r(__webpack_exports__);
       this.case_study.c_date = this.date;
       this.case_study.c_owner = this.curr_user;
       this.case_study.c_group = this.curr_group;
-      this.$emit("createCaseStudy", this.case_study);
+      this.$emit("createCaseStudy", this.case_study); //call method with data
+
       this.totalCases(); //update total cases
       //reset variable
 
@@ -2696,7 +2799,7 @@ __webpack_require__.r(__webpack_exports__);
         c_owner: "",
         c_group: ""
       };
-      this.resetInputFields();
+      this.resetInputFields(); //reset fields
     }
   }
 });
@@ -2992,7 +3095,9 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /**
-   * @description
+   * @description gets all group members to populate members section when the page is loaded
+   * gets group info to determine who is owner when the page is loaded
+   * gets all group cases to populate case section when the page is loaded
    */
   created: function created() {
     this.fetchMembers();
@@ -3001,11 +3106,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     /**
-     * @description
+     * @description determine user priveleges in group
      */
     userPriveleges: function userPriveleges() {
-      this.isUserOwner();
-      this.isUserMember();
+      this.isUserOwner(); //verify if user is owner
+
+      this.isUserMember(); //verify is user is member
 
       if (this.is_owner) {
         this.rename_group_permission = true;
@@ -3023,7 +3129,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description determine if current user is owner of group
      */
     isUserOwner: function isUserOwner() {
       if (this.curr_user == this.group_owner) {
@@ -3034,7 +3140,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description determine if current user is member of group
      */
     isUserMember: function isUserMember() {
       for (var i = 0; i < this.group_members.length; i++) {
@@ -3048,7 +3154,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description enable edit mode to rename group
      */
     enableEditTitle: function enableEditTitle() {
       this.tempValue = this.group_name;
@@ -3056,7 +3162,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description once saved or canceled disabled edit mode
      */
     disableEditTitle: function disableEditTitle() {
       this.tempValue = null;
@@ -3066,15 +3172,17 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description save changes to group name
      */
     saveEdit: function saveEdit() {
       this.temp_name = this.tempValue.trim();
 
       if (this.temp_name) {
+        //if not empty
         this.group_name = this.temp_name;
-        this.changeGroupName();
-        this.disableEditTitle();
+        this.changeGroupName(); //send request
+
+        this.disableEditTitle(); //disable edit mode
       } else {
         this.errors = [];
 
@@ -3087,7 +3195,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description get all of system's users when adding a user to group.
+     *
      */
     fetchUsers: function fetchUsers() {
       var _this = this;
@@ -3095,11 +3204,11 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.users_add_remove = res.data; //to send to modal when adding users
+        _this.users_add_remove = res.data; //to send to action_table_dbox when adding users
         //filter users from list to show in table
 
         var _loop = function _loop(k) {
-          //remove all members from user list when adding new users to group
+          //filter out group members from user list when adding new users to group
           _this.users_add_remove = _this.users_add_remove.filter(function (x) {
             return x.uid !== _this.group_members[k].uid;
           });
@@ -3114,24 +3223,26 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description gets all of the current group's users
      */
     fetchMembers: function fetchMembers() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.curr_user = Number(this.path[this.path.length - 3]); //conversion for filter
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-      this.curr_group = this.path[this.path.length - 1];
+      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
+
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
+
       fetch("/group/" + this.curr_group + "/members").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users_add_remove = res.data; //to send to modal when deleting
+        _this2.users_add_remove = res.data; //populates action_table_dbox when removing a member from group
 
         if (_this2.is_owner) {
           _this2.users_add_remove = _this2.users_add_remove.filter(function (x) {
             return x.uid !== _this2.curr_user;
-          }); //filter owner so he can't remove himself
+          }); //filter owner out so he can't remove himself
         }
 
         _this2.group_members = res.data; //to render in view
@@ -3141,7 +3252,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description gets all of the cases of the current group
      */
     fetchCases: function fetchCases() {
       var _this3 = this;
@@ -3156,7 +3267,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
+     * @description gets info of the current group
      */
     fetchGroupInfo: function fetchGroupInfo() {
       var _this4 = this;
@@ -3167,17 +3278,19 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this4.group_data = res.data;
-        _this4.group_name = _this4.group_data[0].g_name;
-        _this4.group_owner = _this4.group_data[0].g_owner; //Verify if use is owner
+        _this4.group_name = _this4.group_data[0].g_name; //name of group
 
-        _this4.userPriveleges();
+        _this4.group_owner = _this4.group_data[0].g_owner; // id of owner
+
+        _this4.userPriveleges(); //set user priveleges
+
       })["catch"](function (err) {
         return console.log(err);
       });
     },
 
     /**
-     * @description
+     * @description outputs to the groupController a JSON request to rename group
      */
     changeGroupName: function changeGroupName() {
       this.path = window.location.pathname.split("/");
@@ -3202,8 +3315,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description
-     * @param {any} users_to_add
+     * @description outputs to the User_groups Controller a JSON request to add members to a group
+     * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
      */
     addUsers: function addUsers(users_to_add) {
       var _this5 = this;
@@ -3222,17 +3335,19 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(users_to_add);
 
-        _this5.fetchUsers();
+        _this5.fetchUsers(); //update user list
 
-        _this5.fetchMembers();
+
+        _this5.fetchMembers(); //update member list
+
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
 
     /**
-     * @description
-     * @param {any} users_to_remove
+     * @description outputs to the User_groups Controller a JSON request to remove members from group
+     * @param {Array} users_to_remove - array of user id's to remove group - data is sent by the action_table_dbox dialogue
      */
     removeUsers: function removeUsers(users_to_remove) {
       var _this6 = this;
@@ -3251,17 +3366,19 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(users_to_remove);
 
-        _this6.fetchUsers();
+        _this6.fetchUsers(); //update user list
 
-        _this6.fetchMembers();
+
+        _this6.fetchMembers(); //update member list
+
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
 
     /**
-     * @description
-     * @param {any} case_study
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
      */
     createCaseStudy: function createCaseStudy(case_study) {
       var _this7 = this;
@@ -3280,7 +3397,8 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(case_study);
 
-        _this7.fetchCases();
+        _this7.fetchCases(); //update case list
+
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -3827,14 +3945,14 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /**
-   * @description gets all users cases to populate UI when the page is loaded
+   * @description gets all users cases to populate case table when the page is loaded
    */
   created: function created() {
     this.fetchCases();
   },
   methods: {
     /**
-     * @description - lists the set cases of the current page
+     * @description - lists the set of cases of the current table page 
      * @param  {Array} pageOfCases - contains a list of set of cases sent by the paginator
      *
      */
@@ -3894,8 +4012,10 @@ __webpack_require__.r(__webpack_exports__);
     fetchCases: function fetchCases() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.curr_user = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+
       fetch("/user_cases/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -4158,7 +4278,7 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /**
-   * @description
+   * @description gets all users groups to populate group table when the page is loaded
    */
   created: function created() {
     this.fetchGroups();
@@ -4166,7 +4286,7 @@ __webpack_require__.r(__webpack_exports__);
   computed: {},
   methods: {
     /**
-     * @description - lists the set of groups of the current page
+     * @description - lists the set of groups of the current table page
      * @param  {Array} pageOfGroups - contains a list of set of groups sent by the paginator
      */
     onChangePage: function onChangePage(pageOfGroups) {
@@ -4220,17 +4340,20 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description get all users when adding a user to group
+     * @description get all of system's users when adding a user while creating a group
      */
     fetchUsers: function fetchUsers() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.curr_user = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data; //filter user from list to show in table
+        _this2.users = res.data; //used in action_table_dbox
+        //filter user from list to show in table
 
         _this2.users = _this2.users.filter(function (x) {
           return x.uid !== _this2.curr_user;
@@ -4345,9 +4468,10 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(_this5.groups_to_remove);
 
-        _this5.fetchGroups();
+        _this5.fetchGroups(); //update group list
 
-        _this5.groups_to_remove = [];
+
+        _this5.groups_to_remove = []; //reset variable
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -41325,7 +41449,7 @@ var render = function() {
                         attrs: { type: "button", "data-dismiss": "modal" },
                         on: {
                           click: function($event) {
-                            _vm.uncheck(), (_vm.search = "")
+                            _vm.uncheck(), _vm.resetInputFields()
                           }
                         }
                       },

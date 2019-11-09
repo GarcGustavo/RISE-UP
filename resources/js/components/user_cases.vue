@@ -159,7 +159,7 @@ export default {
 
 
     /**
-     * @description - lists the set cases of the current page
+     * @description - lists the set of cases of the current table page 
      * @param  {Array} pageOfCases - contains a list of set of cases sent by the paginator
      *
      */
@@ -217,8 +217,8 @@ export default {
      * @description gets all the cases of the current user
      */
     fetchCases() {
-      this.path = window.location.pathname.split("/");
-      this.curr_user = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
       fetch("/user_cases/" + this.curr_user)
         .then(res => res.json())
         .then(res => {

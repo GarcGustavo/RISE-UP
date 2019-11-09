@@ -1,11 +1,7 @@
 <template>
-  <!--member group action table
-        this table is used everytime a user wants to remove
-         members of an existing group or to add an existing
-         user to a new group
-  -->
   <transition>
     <div>
+        <!-- Dialogue Component to create case study -->
       <div
         class="modal fade"
         id="case_create_dbox"
@@ -65,7 +61,9 @@
               </div>
               <p class="text-right h6" v-bind:class="{'text-danger': hasError }">{{remainingCount}}</p>
             </div>
+            <!-- footer -->
             <div class="modal-footer">
+                <!--action button -->
               <button
                 type="button"
                 class="btn btn-primary"
@@ -74,6 +72,7 @@
                 data-target="#action_confirm_dbox"
                 @click="validateInput()"
               >{{action}}</button>
+              <!-- close button -->
               <button
                 type="button"
                 class="btn btn-secondary"
@@ -93,32 +92,46 @@
 </template>
 
 <script>
+/**
+ *  member group action table
+    this table is used everytime a user wants to remove
+    members of an existing group or to add an existing
+    user to a new group
+ */
 export default {
   props: {
-    action: { //action the user is executing
+    action: {
+      //action the user is executing
       type: String
     },
-    acted_on: { //on what is the action being executed
+    acted_on: {
+      //on what is the action being executed
       type: String
     },
-    group_selection: { //curr group user is viewing, append as default option for groups
+    group_selection: {
+      //curr group user is viewing, append as default option for groups
       type: String
     }
   },
 
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data() {
     return {
-      close_dialog: "",  //to close action table
+      close_dialog: "", //to close action table
       title: "", //input for title of case study
       curr_user: "", //current user id
-      curr_group: "",//curr group id
-      description: "",//inpuy for description of case study
+      curr_group: "", //curr group id
+      description: "", //inpuy for description of case study
 
       all_cases: [], //all cases of the system. Used to determine ID of new case study
       user_groups: [], //groups of curr user
       errors: [], //list of all input errors
 
-      case_study: { //case study attributes
+      case_study: {
+        //case study attributes
         cid: "",
         c_title: "",
         c_description: "",
@@ -137,16 +150,26 @@ export default {
       valid_input: false //is input valid
     };
   },
+  /**
+   * @description gets a list of users groups to append to case study when the component is loaded
+   * gets all system's cases to set case variable
+   */
   created() {
     this.fetchGroups();
     this.totalCases();
   },
 
   methods: {
+    /**
+     * @description updates the description's remaining characters count
+     */
     countdown() {
       this.remainingCount = this.maxCount - this.description.length;
       this.hasError = this.remainingCount < 0;
     },
+    /**
+     * @description resets all case study input fields
+     */
     resetInputFields() {
       this.title = "";
       this.description = "";
@@ -156,14 +179,17 @@ export default {
       this.remainingCount = 140;
     },
 
+    /**
+     * @description validates all case study input fields
+     */
     validateInput() {
       if (this.title.trim() && this.description.trim()) {
         this.sendCaseStudyData();
         this.valid_input = true;
-        this.close_dialog = "modal";
-        this.errors = [];
+        this.close_dialog = "modal"; //dismiss component if inputs are valid
+        this.errors = []; //reset errors
       } else {
-        this.close_dialog = "";
+        this.close_dialog = ""; //keep component opened if there are errors
         this.valid_input = false;
 
         this.errors = [];
@@ -175,9 +201,11 @@ export default {
           this.errors.push("description required.");
         }
       }
-      
     },
 
+    /**
+     * @description gets all of the system's cases
+     */
     totalCases() {
       fetch("/cases")
         .then(res => res.json())
@@ -187,13 +215,16 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description gets all the groups of the current user
+     */
     fetchGroups() {
-      this.path = window.location.pathname.split("/");
-      if (this.group_selection) {
-        this.curr_user = this.path[this.path.length - 3];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      if (this.group_selection) { //variable sent by group view to set default in group options, therefor set group default to (curr_group/group selection)
+        this.curr_user = this.path[this.path.length - 3]; //get ID from path and perform Numeric conversion for filter
         this.curr_group = this.group_selection;
       } else {
-        this.curr_user = this.path[this.path.length - 2];
+        this.curr_user = this.path[this.path.length - 2]; //get ID from path and perform Numeric conversion for filter
       }
 
       fetch("/user_groups/" + this.curr_user)
@@ -204,12 +235,17 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description calls the createCaseStudy method from parent window(user_cases)
+     *  and sends the data for the new case study
+     */
     sendCaseStudyData() {
-      this.path = window.location.pathname.split("/");
-      //  this.uid = Number(this.path[this.path.length - 2]);
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
       this.date = new Date().toJSON().slice(0, 10);
 
-      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1;
+//append data to new case study
+      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id 
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
@@ -218,7 +254,7 @@ export default {
       this.case_study.c_owner = this.curr_user;
       this.case_study.c_group = this.curr_group;
 
-      this.$emit("createCaseStudy", this.case_study);
+      this.$emit("createCaseStudy", this.case_study); //call method with data
       this.totalCases(); //update total cases
       //reset variable
       this.case_study = {
@@ -231,7 +267,7 @@ export default {
         c_owner: "",
         c_group: ""
       };
-      this.resetInputFields();
+      this.resetInputFields(); //reset fields
     }
   }
 };
