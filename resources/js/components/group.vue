@@ -1,12 +1,12 @@
 <template>
   <!-- Team Members -->
   <div class="body mb-5 mt-5">
-    <!-- <h1 class="text-center">Our Group</h1>-->
-
+    <!-- group title -->
     <div v-if="!edit_title">
       <span class="text">
         <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:35px;' : ''">
           {{group_name}}
+          <!--render if user has permission-->
           <a href="#" @click="enableEditTitle" v-if="rename_group_permission">
             <i class="material-icons">create</i>
           </a>
@@ -18,27 +18,22 @@
       <button @click="disableEditTitle">Cancel</button>
       <button
         data-toggle="modal"
-        data-target="#mg_action_confirm"
+        data-target="#action_confirm_dbox"
         @click="saveEdit(), action='Rename'"
       >Save</button>
     </div>
 
-    <!--
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="index.html">Home</a>
-        </li>
-        <li class="breadcrumb-item active">About</li>
-    </ol>
-    -->
-
     <hr>
+
+    <!--buttons to create or remove a group -->
+    <!-- render if user has permissions -->
     <h1 class="text-center mt-5 col-sm">
+      <!--remove button -->
       <a
         v-if="add_remove_members_permission"
-        href="#mg_action_table"
+        href="#action_table_dbox"
         data-toggle="modal"
-        data-target="#mg_action_table"
+        data-target="#action_table_dbox"
         data-dismiss="modal"
         @click=" action='Remove',
         acted_on='member(s)', fetchMembers()"
@@ -48,11 +43,12 @@
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
+      <!-- add button -->
       <a
         v-if="add_remove_members_permission"
-        href="#mg_action_table"
+        href="#action_table_dbox"
         data-toggle="modal"
-        data-target="#mg_action_table"
+        data-target="#action_table_dbox"
         data-dismiss="modal"
         @click=" action='Add',
         acted_on='member(s)', fetchUsers()"
@@ -65,21 +61,22 @@
 
       <p :style=" add_remove_members_permission ? 'margin-left:205px;' : ''">Members</p>
     </h1>
-
+    <!-- show table dialogue when adding or removing members -->
     <div v-if="action=='Add'|| action=='Remove'">
-      <mg_action_table
+      <action_table_dbox
         :action="action"
         :acted_on="acted_on"
         :users="users_add_remove"
         :curr_user_id="curr_user"
         @addUsers="addUsers"
         @removeUsers="removeUsers"
-      ></mg_action_table>
+      ></action_table_dbox>
     </div>
+    <!-- show confirmation box when renaming group -->
     <div v-if="action=='Rename'">
-      <mg_action_confirm :action_confirm="action" :errors="errors"></mg_action_confirm>
+      <action_confirm_dbox :action_confirm="action" :errors="errors"></action_confirm_dbox>
     </div>
-
+    <!-- show case study dialogue box when creating it from group -->
     <div v-if="action=='Create'">
       <case_create_dbox
         :action="'Create'"
@@ -106,7 +103,7 @@
 
     <hr>
 
-    <!-- Case view -->
+    <!-- Create case button -->
     <h1 id="cases_header" class="mt-5 text-center">
       <a
         v-if="create_group_case_permission"
@@ -119,7 +116,7 @@
 
       <p :style="create_group_case_permission ? 'margin-left:180px;' : ''">Our Cases</p>
     </h1>
-
+    <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
       <div class="col-sm-12 mb-3">
         <ul class="list-group list-group-flush border-0">
@@ -142,28 +139,26 @@
 export default {
   data() {
     return {
-      group_name: "",
-      group_data: "",
-      group_owner: "",
-      curr_user: "",
-      action: "",
-      acted_on: "",
-      curr_group: "",
+      group_name: "", //group name input
+      group_data: "", //curr group data
+      group_owner: "", //curr group owner
+      curr_user: "", //current user id
+      action: "",  //action the user is executing
+      acted_on: "", //on what is the action being exected
+      curr_group: "", //current user id
 
-      group_members: [],
-      users_add_remove: [],
-      group_cases: [],
-      members_to_add: [],
-      errors: [],
+      group_members: [], //members of group
+      users_add_remove: [], //users to add or remove from group
+      group_cases: [], //cases that belong to group
+      errors: [], //input errors
 
-
-      is_owner: false,
-      is_member: false,
-      edit_title: false,
-      add_remove_members_permission: false,
-      rename_group_permission: false,
-      create_group_case_permission: false,
-      error: false,
+      is_owner: false, //is curr user group owner
+      is_member: false, //is curr user member of group
+      edit_title: false,// is the edit title button clicked
+      add_remove_members_permission: false, //does curr user have permision to add/remove members
+      rename_group_permission: false, //does curr user have permission to rename group
+      create_group_case_permission: false, //does curr user have permission to create group case
+      error: false, //are there errors. Currently not being used on html
 
       tempValue: null
     };
@@ -261,7 +256,7 @@ export default {
     fetchMembers() {
       this.path = window.location.pathname.split("/");
       this.curr_user = Number(this.path[this.path.length - 3]); //conversion for filter
-      this.curr_group = (this.path[this.path.length - 1]);
+      this.curr_group = this.path[this.path.length - 1];
 
       fetch("/group/" + this.curr_group + "/members")
         .then(res => res.json())
@@ -288,7 +283,7 @@ export default {
 
     fetchGroupInfo() {
       this.path = window.location.pathname.split("/");
-      this.curr_group = (this.path[this.path.length - 1]);
+      this.curr_group = this.path[this.path.length - 1];
       fetch("/group/" + this.curr_group + "/info")
         .then(res => res.json())
         .then(res => {
@@ -303,7 +298,7 @@ export default {
 
     changeGroupName() {
       this.path = window.location.pathname.split("/");
-      this.curr_group = (this.path[this.path.length - 1]);
+      this.curr_group = this.path[this.path.length - 1];
       fetch("/group/" + this.curr_group + "/update", {
         method: "post",
         headers: new Headers({

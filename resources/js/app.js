@@ -26,8 +26,8 @@ window.Vue = require('vue');
 
 //web pages components
 Vue.component('paginator', require('./components/paginator.vue').default);
-Vue.component('mg_action_table', require('./components/mg_action_table.vue').default);
-Vue.component('mg_action_confirm', require('./components/mg_action_confirm.vue').default);
+Vue.component('action_table_dbox', require('./components/action_table_dbox.vue').default);
+Vue.component('action_confirm_dbox', require('./components/action_confirm_dbox.vue').default);
 Vue.component('case_create_dbox', require('./components/case_create_dbox.vue').default);
 //web pages
 Vue.component('iren_header', require('./components/header.vue').default);

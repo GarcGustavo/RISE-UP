@@ -2,7 +2,7 @@
   <!-- member group action confirmation -->
   <div
     class="modal fade"
-    id="mg_action_confirm"
+    id="action_confirm_dbox"
     tabindex="-1"
     data-keyboard="false"
     data-backdrop="static"
@@ -10,13 +10,16 @@
   >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
+        <!-- modal header -->
         <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
+          <h5 class="modal-title">{{action_confirm}}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+        <!-- modal body -->
         <div class="modal-body text-center">
+          <!-- if there are errors list them -->
           <div v-if="errors.length">
             <div>
               <label style="font-size:18px;">
@@ -27,7 +30,9 @@
               </label>
             </div>
           </div>
+          <!-- if no option was selected when adding/removing users from group or removing a case/group -->
           <div v-else-if="!isSelected">
+            <!-- alert content for user to make selection  -->
             <p>Please select {{acted_on}} to {{action_confirm}}</p>
           </div>
           <div v-else-if="action_confirm=='Create'">
@@ -47,13 +52,15 @@
             <p>{{action_confirm}} selected {{acted_on}}?</p>
           </div>
         </div>
-
+        <!-- modal footer -->
         <div class="modal-footer">
+          <!-- if action to execute is not remove, or if a selection has not been made or there are errors, render ok button only -->
           <div
             v-if="action_confirm=='Add'||action_confirm=='Create' || action_confirm=='Rename' || !isSelected || errors.length"
           >
             <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
           </div>
+          <!-- if action is to remove and a case/group/user has been selected -->
           <div v-if="action_confirm=='Remove' && isSelected">
             <div v-if="acted_on=='member(s)'">
               <!--Remove member action -->
@@ -65,6 +72,7 @@
               >Yes</button>
             </div>
             <div v-else-if=" acted_on=='group(s)'">
+              <!-- Remove group action -->
               <button
                 type="button"
                 class="btn btn-primary"
@@ -73,6 +81,7 @@
               >Yes</button>
             </div>
             <div v-else-if="acted_on=='case study(s)'">
+              <!-- Remove case study action -->
               <button
                 type="button"
                 class="btn btn-primary"
@@ -81,6 +90,7 @@
               >Yes</button>
             </div>
           </div>
+          <!-- if action is to remove and case/group/user has been selected -->
           <div v-if="action_confirm=='Remove' && isSelected">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
           </div>
@@ -94,19 +104,20 @@
 export default {
   props: {
     action_confirm: {
+      //action the user is executing
       type: String
     },
     acted_on: {
-      type: String
-    },
-    message: {
+      //on what is the action being executed
       type: String
     },
     isSelected: {
+      //user selection on cases, groups, or users
       type: Boolean,
       default: true
     },
     errors: {
+      //if there are any errors when executing said action
       type: Array,
       default: function() {
         return [];
@@ -115,13 +126,13 @@ export default {
   },
   methods: {
     confirmRemoveMembers() {
-      this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue to remove.
+      this.$emit("sendUsers"); //call to action_table_dbox(parent) to send user(s) to group vue to remove.
     },
     confirmRemoveGroups() {
-      this.$emit("removeGroups"); //call to parent (user_groups vue)
+      this.$emit("removeGroups"); //call to parent (user_groups vue) to remove group(s)
     },
     confirmRemoveCases() {
-      this.$emit("removeCases"); //call to parent (user_cases vue)
+      this.$emit("removeCases"); //call to parent (user_cases vue) to remove case(s)
     }
   }
 };

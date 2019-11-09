@@ -1,12 +1,13 @@
 
 <template>
   <div class="body mb-5 mt-5">
-    <!-- Page Heading/Breadcrumbs -->
+    <!-- buttons to create or remove a group -->
     <h1 class="mb-3">
+      <!-- button if clicked, render confirmation dialogue box to validate user's action -->
       <a
-        href="#mg_action_confirm"
+        href="#action_confirm_dbox"
         data-toggle="modal"
-        data-target="#mg_action_confirm"
+        data-target="#action_confirm_dbox"
         @click="action='Remove',
         acted_on='group(s)',isGroupSelected()"
       >
@@ -15,11 +16,12 @@
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
+      <!-- button if clicked, render create group input box -->
       <div>
         <a
-          href="#mg_action_table"
+          href="#action_table_dbox"
           data-toggle="modal"
-          data-target="#mg_action_table"
+          data-target="#action_table_dbox"
           @click="gname_box_show=true,
         action='Create',
         acted_on='group', fetchUsers()"
@@ -34,22 +36,23 @@
       <p>My groups</p>
     </h1>
     <div v-if="action=='Remove'">
-      <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-      <mg_action_confirm
+      <!-- if action is to remove group(s) render confirmation dialogue to validate user's request-->
+      <action_confirm_dbox
         :action_confirm="action"
         :acted_on="acted_on"
         :isSelected="isSelected"
         @removeGroups="removeGroups"
-      ></mg_action_confirm>
+      ></action_confirm_dbox>
     </div>
     <div v-if="action=='Create'">
-      <mg_action_table
+      <!-- if action is to create group(s) render confirmation dialogue alerting execution of said action-->
+      <action_table_dbox
         :action="action"
         :acted_on="acted_on"
         :gname_box_show="gname_box_show"
         :users="users"
         @createGroup="createGroup"
-      ></mg_action_table>
+      ></action_table_dbox>
     </div>
     <hr>
     <!-- Table -->
@@ -61,7 +64,10 @@
         </tr>
       </thead>
       <tbody>
+        <!--list user's groups -->
         <tr v-for="(group,index) in pageOfGroups" :key="index">
+          <!-- if user is not owner of group eliminate option to remove group -->
+
           <td v-if="group.g_owner==curr_user">
             <div class="check-box">
               <input
@@ -85,9 +91,11 @@
         </tr>
       </tbody>
     </table>
+    <!--number of entries per table page option -->
     <div id="container">
       <div class="btn-group" style="padding-top:12px;width:100px;">
         <label style="padding-right:5px;padding-top:5px;;">Entries:</label>
+        <!-- entries button -->
         <button
           class="btn btn-primary btn-sm dropdown-toggle"
           type="button"
@@ -102,11 +110,8 @@
           <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
         </div>
       </div>
-
-      <div
-        v-if="reload_paginator"
-        style="width:500px;padding-top:12px;padding-right:10px;float:right;"
-      >
+      <!-- paginator -->
+      <div id="paginate" v-if="reload_paginator">
         <paginator
           :items="user_groups"
           :pageSize="entries_per_page_table"
@@ -123,17 +128,17 @@
 export default {
   data() {
     return {
-      curr_user: "",
-      action: "",
-      acted_on: "",
+      curr_user: "", //current user id
+      action: "", //action the user is executing
+      acted_on: "", //on what is the action being exected
 
-      selected_groups: [],
-      user_groups: [],
-      groups_to_remove: [],
-      pageOfGroups: [],
+      user_groups: [], // groups of the user
+      selected_groups: [], // the groups the user selects
+      groups_to_remove: [], // the groups to remove, sent to controller
+      pageOfGroups: [], //groups to show on table page
       users: [],
 
-      group: {
+      group: { //group attributes
         gid: "",
         g_name: "",
         g_status: "",
@@ -143,7 +148,7 @@ export default {
 
       entries_per_page_table: 4, //table entries
 
-      reload_paginator: false,
+      reload_paginator: false, //used to update paginator
       isSelected: false, //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
@@ -192,22 +197,20 @@ export default {
 
     fetchUsers() {
       this.path = window.location.pathname.split("/");
-      this.curr_user =(this.path[this.path.length - 2]);
+      this.curr_user = this.path[this.path.length - 2];
       fetch("/users")
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
           //filter user from list to show in table
-          this.users = this.users.filter(
-            x => x.uid !== this.curr_user
-          ); //filter owner so he can't remove himself
+          this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner so he can't remove himself
         })
         .catch(err => console.log(err));
     },
 
     fetchGroups() {
       this.path = window.location.pathname.split("/");
-      this.curr_user = (this.path[this.path.length - 2]);
+      this.curr_user = this.path[this.path.length - 2];
       fetch("/user_groups/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
@@ -347,6 +350,13 @@ input[type="checkbox"] {
 }
 /* paginate component position in body */
 .pagination {
+  float: right;
+}
+
+#paginate {
+  width: 500px;
+  padding-top: 12px;
+  padding-right: 10px;
   float: right;
 }
 /* add/remove icons position in relation to header */

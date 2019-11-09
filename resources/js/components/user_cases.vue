@@ -1,12 +1,13 @@
 
 <template>
   <div class="body mb-5 mt-5">
-    <!-- Page Heading/Breadcrumbs -->
+    <!-- buttons to create or remove a case study -->
     <h1 class="mb-3">
+      <!-- remove button if clicked, render confirmation dialogue box to validate user's action -->
       <a
-        href="#mg_action_confirm"
+        href="#action_confirm_dbox"
         data-toggle="modal"
-        data-target="#mg_action_confirm"
+        data-target="#action_confirm_dbox"
         @click="action='Remove',
         acted_on='case study(s)', isCaseSelected()"
       >
@@ -15,33 +16,37 @@
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
-      <a
-        href="#case_create_dbox"
-        data-toggle="modal"
-        data-target="#case_create_dbox"
-        @click=" action='Create',
+      <!-- create button if clicked, render create case study dialogue box -->
+      <div>
+        <a
+          href="#case_create_dbox"
+          data-toggle="modal"
+          data-target="#case_create_dbox"
+          @click=" action='Create',
         acted_on='case study'"
-      >
-        <div class="remove_icon" style="display:inline-block;float:right;">
-          <a style="font-size:18px">Create</a>
-          <i class="material-icons">add_circle_outline</i>
-        </div>
-      </a>
+        >
+          <div class="remove_icon" style="display:inline-block;float:right;">
+            <a style="font-size:18px">Create</a>
+            <i class="material-icons">add_circle_outline</i>
+          </div>
+        </a>
+      </div>
 
       <p>My cases</p>
     </h1>
 
     <div v-if="action=='Remove'">
-      <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-      <mg_action_confirm
+      <!-- if action is to remove case(s) render confirmation dialogue to validate user's request-->
+      <action_confirm_dbox
         :action_confirm="action"
         :acted_on="acted_on"
         :isSelected="isSelected"
         @removeCases="removeCases"
-      ></mg_action_confirm>
+      ></action_confirm_dbox>
     </div>
 
     <div v-if="action=='Create'">
+      <!-- if action is to create group(s) render confirmation dialogue alerting execution of said action-->
       <case_create_dbox :action="action" :acted_on="acted_on" @createCaseStudy="createCaseStudy"></case_create_dbox>
     </div>
 
@@ -55,8 +60,10 @@
         </tr>
       </thead>
       <tbody>
+        <!--list user's case studies -->
         <tr v-for="(case_study,index) in pageOfCases" :key="index">
-          <td v-if="case_study.c_owner == uid">
+          <!-- if user is not owner of case study eliminate option to remove case study -->
+          <td v-if="case_study.c_owner == curr_user">
             <div class="check-box">
               <input
                 class="checkbox"
@@ -79,10 +86,11 @@
         </tr>
       </tbody>
     </table>
-
+    <!--number of entries per table page option -->
     <div id="container">
       <div class="btn-group" style="padding-top:12px;width:100px;">
         <label style="padding-right:5px;">Entries:</label>
+        <!--entries button -->
         <button
           class="btn btn-primary btn-sm dropdown-toggle"
           type="button"
@@ -97,11 +105,8 @@
           <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
         </div>
       </div>
-
-      <div
-        v-if="reload_paginator"
-        style="width:500px;padding-top:12px;padding-right:10px;float:right;"
-      >
+      <!-- paginator -->
+      <div id="paginate" v-if="reload_paginator">
         <paginator
           :items="user_cases"
           :pageSize="entries_per_table_page"
@@ -118,31 +123,30 @@
 export default {
   data() {
     return {
-      uid: "",
-      action: "",
-      acted_on: "",
+      curr_user: "", //current user id
+      action: "", //action the user is executing
+      acted_on: "", //on what is the action being exected
 
-      user_cases: [],
-      selected_cases: [],
-      cases_to_remove: [],
-      pageOfCases: [],
+      user_cases: [], // cases of the user
+      selected_cases: [], // the cases the user selects
+      cases_to_remove: [], // the cases to remove, sent to controller
+      pageOfCases: [], //cases to show on table page
 
-      case_study: { cid: "", c_title: "" },
+      case_study: { cid: "", c_title: "" }, //case attributes
 
-      entries_per_table_page: 4,
+      entries_per_table_page: 4, //table entries
 
-      isSelected: false,
-      reload_paginator: false,
+      reload_paginator: false, //used to update paginator
+      isSelected: false, //has user made selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
   created() {
     this.fetchCases();
   },
-
   methods: {
     onChangePage(pageOfCases) {
-      // update page of Casess
+      // update page of Cases
       this.pageOfCases = pageOfCases;
     },
 
@@ -179,8 +183,8 @@ export default {
 
     fetchCases() {
       this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/user_cases/" + this.uid)
+      this.curr_user = this.path[this.path.length - 2];
+      fetch("/user_cases/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_cases = res.data;
@@ -295,6 +299,14 @@ input[type="checkbox"] {
 .pagination {
   float: right;
 }
+
+#paginate {
+  width: 500px;
+  padding-top: 12px;
+  padding-right: 10px;
+  float: right;
+}
+
 /* add/remove icons position in relation to header */
 h1 i {
   float: right;

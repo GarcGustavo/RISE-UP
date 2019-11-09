@@ -8,7 +8,7 @@
     <div>
       <div
         class="modal fade"
-        id="mg_action_table"
+        id="action_table_dbox"
         tabindex="-1"
         data-keyboard="false"
         data-backdrop="static"
@@ -62,6 +62,7 @@
                       <th>Name</th>
                     </tr>
                   </thead>
+                  <!-- list users to add -->
                   <tbody>
                     <tr v-for="(user,index) in filterUsers" v-bind:key="index">
                       <td>
@@ -93,7 +94,7 @@
                   type="button"
                   class="btn btn-primary"
                   data-toggle="modal"
-                  data-target="#mg_action_confirm"
+                  data-target="#action_confirm_dbox"
                   @click="isUserSelected()"
                 >{{action}}</button>
               </div>
@@ -104,7 +105,7 @@
                   class="btn btn-primary"
                   :data-dismiss="close_dialog"
                   data-toggle="modal"
-                  data-target="#mg_action_confirm"
+                  data-target="#action_confirm_dbox"
                   @click="isUserSelected()"
                 >{{action}}</button>
               </div>
@@ -116,7 +117,7 @@
                   class="btn btn-primary"
                   :data-dismiss="close_dialog"
                   data-toggle="modal"
-                  data-target="#mg_action_confirm"
+                  data-target="#action_confirm_dbox"
                   @click="isUserSelected(), validateInput()"
                 >{{action}}</button>
               </div>
@@ -136,14 +137,14 @@
       </div>
       <!--confirmation dialogue box -->
       <div>
-        <mg_action_confirm
+        <action_confirm_dbox
           :action_confirm="action"
           :acted_on="acted_on"
           :isSelected="isSelected"
           :errors="errors"
           @sendUsers="sendUsers"
           @sendGroupData="sendGroupData"
-        ></mg_action_confirm>
+        ></action_confirm_dbox>
       </div>
     </div>
   </transition>
@@ -152,47 +153,47 @@
 <script>
 export default {
   props: {
-    action: {
+    action: { //action the user is executing
       type: String
     },
-    acted_on: {
+    acted_on: {  //on what is the action being executed
       type: String
     },
-    gname_box_show: {
+    gname_box_show: { //boolean to show group name input box to dialogue
       type: Boolean,
       default: false
     },
-    users: {
+    users: { //array of users to add or remove
       type: Array
     }
   },
 
   data() {
     return {
-      group_name_input: "",
-      search: "",
-      close_dialog: "",
+      group_name_input: "", //input for group name
+      search: "", //search input
+      close_dialog: "", //to close action table
 
-      user_to_add_remove: [],
-      selected_users: [],
-      groups: [],
-      errors: [],
+      user_to_add_remove: [], //list of users to add or remove
+      selected_users: [], //list of selected users to add or remove
+      groups: [], //list of all the groups in the system, used to determine ID of new group
+      errors: [], //list of errors
 
-      user: {
+      user: { //user attributes to use on table
         first_name: "",
         last_name: "",
         email: ""
       },
-      group_to_create: {
+      group_to_create: { //attributes to create a group
         g_name: "",
         g_status: "",
         g_creation_date: "",
         g_owner: ""
       },
 
-      valid_input: false,
-      isSelected: false,
-      success: false
+      valid_input: false, //validate input
+      isSelected: false, //validate if user has made a selection to add or remove a user 
+
     };
   },
   created() {
