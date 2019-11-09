@@ -101,6 +101,9 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
   props: {
     action_confirm: {
@@ -125,14 +128,23 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description call to action_table_dbox(parent) to send user(s) to group vue to remove.
+     */
     confirmRemoveMembers() {
-      this.$emit("sendUsers"); //call to action_table_dbox(parent) to send user(s) to group vue to remove.
+      this.$emit("sendUsers");
     },
+    /**
+     * @description call to parent (user_groups vue) to remove group(s)
+     */
     confirmRemoveGroups() {
-      this.$emit("removeGroups"); //call to parent (user_groups vue) to remove group(s)
+      this.$emit("removeGroups");
     },
+    /**
+     * @description call to parent (user_cases vue) to remove case(s)
+     */
     confirmRemoveCases() {
-      this.$emit("removeCases"); //call to parent (user_cases vue) to remove case(s)
+      this.$emit("removeCases");
     }
   }
 };

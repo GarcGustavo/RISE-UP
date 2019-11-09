@@ -125,7 +125,14 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
+  /**
+   * @description
+   * @returns {any}
+   */
   data() {
     return {
       curr_user: "", //current user id
@@ -154,16 +161,26 @@ export default {
     };
   },
 
+  /**
+   * @description
+   */
   created() {
     this.fetchGroups();
   },
 
   computed: {},
   methods: {
+    /**
+     * @description - lists the set of groups of the current page
+     * @param  {Array} pageOfGroups - contains a list of set of groups sent by the paginator
+     */
     onChangePage(pageOfGroups) {
       // update page of Groups
       this.pageOfGroups = pageOfGroups;
     },
+    /**
+     * @description @description verifies if user has made a selection of a group
+     */
     isGroupSelected() {
       if (this.selected_groups.length == 0) {
         this.isSelected = false;
@@ -172,11 +189,18 @@ export default {
       }
     },
 
+    /**
+     * @description sets the number of groups to show in a page
+     * @param {Number} entry - variable containing the number of entries per page
+     */
     selectEntries(entry) {
       this.entries_per_page_table = entry;
       this.updatePaginator();
     },
 
+    /**
+     * @description refreshes the paginator
+     */
     updatePaginator() {
       // Remove paginator from the DOM
       this.reload_paginator = false;
@@ -187,6 +211,9 @@ export default {
       });
     },
 
+    /**
+     * @description unchecks any selection of groups the user has made
+     */
     uncheck() {
       this.selected_groups = [];
 
@@ -195,6 +222,9 @@ export default {
       }
     },
 
+    /**
+     * @description get all users when adding a user to group
+     */
     fetchUsers() {
       this.path = window.location.pathname.split("/");
       this.curr_user = this.path[this.path.length - 2];
@@ -208,6 +238,9 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description gets all the groups of the current user
+     */
     fetchGroups() {
       this.path = window.location.pathname.split("/");
       this.curr_user = this.path[this.path.length - 2];
@@ -216,15 +249,19 @@ export default {
         .then(res => {
           this.user_groups = res.data;
           this.pageOfGroups = this.user_groups;
-          this.uncheck();
-          this.updatePaginator();
+          this.uncheck(); //uncheck any selected items 
+          this.updatePaginator(); //refresh with updated group list
         })
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description outputs to the groupController a JSON request to create a group
+     * @param {Array} group - array of group data to create a group - data is sent by action_table_dbox when calling method
+     * @param {Array} members - array of user id's to add to group
+     */
     createGroup(group, members) {
-      // console.log(JSON.stringify(group));
-      // console.log(JSON.stringify(members));
+
       fetch("/group/create", {
         method: "post",
         headers: new Headers({
@@ -238,14 +275,18 @@ export default {
         .then(res => {
           console.log(res);
           console.log(group);
-          this.addUsers(members);
-          this.fetchGroups();
+          this.addUsers(members); //add users to group
+          this.fetchGroups(); //updpate group list
         })
         .catch(err => {
           console.error("Error: ", err);
         });
     },
 
+    /**
+     * @description outputs to the User_Groups controller a JSON request to add users to existing group
+     * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
+     */
     addUsers(users_to_add) {
       fetch("/group/members/add", {
         method: "post",
@@ -260,13 +301,16 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_add);
-          this.fetchGroups();
+         // this.fetchGroups();
         })
         .catch(err => {
           console.error("Error: ", err);
         });
     },
 
+    /**
+     * @description removes any selected groups by making a delete request to User_Groups controller
+     */
     removeGroups() {
       for (let i in this.selected_groups) {
         this.groups_to_remove.push({

@@ -120,7 +120,16 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
+
+  /**
+   * @description
+   * declaration of global variables
+   * @returns array of all variables
+   */
   data() {
     return {
       curr_user: "", //current user id
@@ -141,15 +150,29 @@ export default {
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
+  /**
+   * @description gets all users cases to populate UI when the page is loaded
+   */
   created() {
     this.fetchCases();
   },
   methods: {
+
+
+    /**
+     * @description - lists the set cases of the current page
+     * @param  {Array} pageOfCases - contains a list of set of cases sent by the paginator
+     *
+     */
     onChangePage(pageOfCases) {
+
       // update page of Cases
       this.pageOfCases = pageOfCases;
     },
 
+    /**
+     * @description verifies if user has made a selection of a case
+     */
     isCaseSelected() {
       if (this.selected_cases.length == 0) {
         this.isSelected = false;
@@ -158,11 +181,18 @@ export default {
       }
     },
 
+    /**
+     * @description sets the number of cases to show in a page
+     * @param {Number} entry - variable containing the number of entries per page
+     */
     selectEntries(entry) {
       this.entries_per_table_page = entry;
       this.updatePaginator();
     },
 
+    /**
+     * @description - refreshes the paginator
+     */
     updatePaginator() {
       // Remove paginator from the DOM
       this.reload_paginator = false;
@@ -173,6 +203,9 @@ export default {
       });
     },
 
+    /**
+     * @description unchecks any selection of cases the user has made
+     */
     uncheck() {
       this.selected_cases = [];
 
@@ -181,6 +214,9 @@ export default {
       }
     },
 
+    /**
+     * @description gets all the cases of the current user
+     */
     fetchCases() {
       this.path = window.location.pathname.split("/");
       this.curr_user = this.path[this.path.length - 2];
@@ -188,13 +224,17 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.user_cases = res.data;
-          this.pageOfCases = this.cases;
+          this.pageOfCases = this.user_cases;
           this.uncheck();
-          this.updatePaginator();
+          this.updatePaginator(); //refresh with updated list of cases
         })
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     */
     createCaseStudy(case_study) {
       fetch("/case/create", {
         method: "post",
@@ -216,6 +256,9 @@ export default {
         });
     },
 
+    /**
+     * @description removes any selected user cases by making a delete request to caseController
+     */
     removeCases() {
       for (let i in this.selected_cases) {
         this.cases_to_remove.push({
@@ -235,8 +278,8 @@ export default {
         .then(res => {
           console.log(res);
           console.log(this.cases_to_remove);
-          this.fetchCases();
-          this.cases_to_remove = [];
+          this.fetchCases(); //update UI with latest cases
+          this.cases_to_remove = []; //reset variable of cases to remove
         })
         .catch(err => {
           console.error("Error: ", err);
