@@ -12,16 +12,18 @@
                             <tr class="text-center">
                                 <th>Group Name</th>
                                 <th>Group Owner</th>
-                                <th>Details</th>
-                                <th>Since</th>
+                                <th>Group Creation</th>
+                                <th>Latest Group action</th>
+                                <th>More Group actions</th>
                             </tr>
                             </thead>
                             <tfoot>
                             <tr class="text-center">
                                 <th>Group Name</th>
                                 <th>Group Owner</th>
-                                <th>Details</th>
-                                <th>Since</th>
+                                <th>Group Creation</th>
+                                <th>Latest Group Action</th>
+                                <th>More Group actions</th>
                             </tr>
                             </tfoot>
                             <tbody>
@@ -30,8 +32,9 @@
                                 <tr>
                                     <td> {{$group->g_name }} </td>
                                     <td> {{$group->first_name }} {{$group->last_name }}</td>
-                                    <td class="font-weight-bold"> <a href="/admin/group/{{$group->gid }}/edit">Details</a> </td>
                                     <td> {{ \Carbon\Carbon::parse($group->g_creation_date)->format('d F Y')}} </td>
+                                    <td> xxxx  </td>
+                                    <td class="font-weight-bold"> <a href="/admin/groups-actions/{{$group->gid }}">View</a> </td>
                                 </tr>
                             @empty
                                 <tr>

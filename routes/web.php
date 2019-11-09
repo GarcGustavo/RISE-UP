@@ -93,11 +93,11 @@ Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
 //User Requirement 2.63. The web application will allow an Admin to view the groups of the system.
 Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups');
 
-//Presents recent actions for a particular user
+//Presents recent actions for a particular group
 //User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/group-actions', 'AdminGroupsActionsController@index')->name('admin.groups.actions');
+Route::get('/admin/groups-actions/{id}', 'AdminGroupsActionsController@show');
 
 
 //List filters
