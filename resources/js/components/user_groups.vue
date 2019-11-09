@@ -130,8 +130,8 @@
  */
 export default {
   /**
-   * @description
-   * @returns {any}
+    * @description declaration of global variables
+   * @returns array of all variables
    */
   data() {
     return {
@@ -249,7 +249,7 @@ export default {
         .then(res => {
           this.user_groups = res.data;
           this.pageOfGroups = this.user_groups;
-          this.uncheck(); //uncheck any selected items 
+          this.uncheck(); //uncheck any selected items
           this.updatePaginator(); //refresh with updated group list
         })
         .catch(err => console.log(err));

@@ -81,18 +81,12 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
-
-//footer{
-
-    //position: relative;
-//}
 .page-footer {
-
+  position: absolute;
   bottom: 0;
   width: 100%;
   background-color: #333333;
-  margin-top: auto;
-
+  top: 100%;
 }
 
 /* change links text color */
@@ -102,8 +96,8 @@ a:link {
 
 /* Footer padding */
 .container-fluid {
-  padding-top: 30px;
-  padding-bottom: 100px;
+  //padding-top: 30px;
+  padding-bottom: 50px;
 }
 
 /* padding for content, and links text */

@@ -136,7 +136,14 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data() {
     return {
       group_name: "", //group name input
@@ -164,6 +171,9 @@ export default {
     };
   },
 
+  /**
+   * @description
+   */
   created() {
     this.fetchMembers();
     this.fetchGroupInfo();
@@ -171,6 +181,9 @@ export default {
   },
 
   methods: {
+    /**
+     * @description
+     */
     userPriveleges() {
       this.isUserOwner();
       this.isUserMember();
@@ -189,6 +202,9 @@ export default {
       }
     },
 
+    /**
+     * @description
+     */
     isUserOwner() {
       if (this.curr_user == this.group_owner) {
         this.is_owner = true;
@@ -197,6 +213,9 @@ export default {
       }
     },
 
+    /**
+     * @description
+     */
     isUserMember() {
       for (let i = 0; i < this.group_members.length; i++) {
         if (this.curr_user == this.group_members[i].uid) {
@@ -207,16 +226,25 @@ export default {
       this.is_member = false;
     },
 
+    /**
+     * @description
+     */
     enableEditTitle() {
       this.tempValue = this.group_name;
       this.edit_title = true;
     },
+    /**
+     * @description
+     */
     disableEditTitle() {
       this.tempValue = null;
       this.edit_title = false;
       this.error = false;
       this.errors = []; //reset errors
     },
+    /**
+     * @description
+     */
     saveEdit() {
       this.temp_name = this.tempValue.trim();
 
@@ -232,10 +260,12 @@ export default {
         }
 
         this.error = true;
-        console.log(this.errors);
       }
     },
 
+    /**
+     * @description
+     */
     fetchUsers() {
       fetch("/users")
         .then(res => res.json())
@@ -253,6 +283,9 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description
+     */
     fetchMembers() {
       this.path = window.location.pathname.split("/");
       this.curr_user = Number(this.path[this.path.length - 3]); //conversion for filter
@@ -272,6 +305,9 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description
+     */
     fetchCases() {
       fetch("/group/" + this.curr_group + "/cases")
         .then(res => res.json())
@@ -281,6 +317,9 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description
+     */
     fetchGroupInfo() {
       this.path = window.location.pathname.split("/");
       this.curr_group = this.path[this.path.length - 1];
@@ -296,6 +335,9 @@ export default {
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description
+     */
     changeGroupName() {
       this.path = window.location.pathname.split("/");
       this.curr_group = this.path[this.path.length - 1];
@@ -317,6 +359,10 @@ export default {
         });
     },
 
+    /**
+     * @description
+     * @param {any} users_to_add
+     */
     addUsers(users_to_add) {
       fetch("/group/members/add", {
         method: "post",
@@ -339,6 +385,10 @@ export default {
         });
     },
 
+    /**
+     * @description
+     * @param {any} users_to_remove
+     */
     removeUsers(users_to_remove) {
       fetch("/group/members/remove", {
         method: "delete",
@@ -361,6 +411,10 @@ export default {
         });
     },
 
+    /**
+     * @description
+     * @param {any} case_study
+     */
     createCaseStudy(case_study) {
       fetch("/case/create", {
         method: "post",

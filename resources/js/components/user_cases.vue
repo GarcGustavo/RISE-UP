@@ -126,8 +126,7 @@
 export default {
 
   /**
-   * @description
-   * declaration of global variables
+   * @description declaration of global variables
    * @returns array of all variables
    */
   data() {
