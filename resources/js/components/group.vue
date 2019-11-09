@@ -150,7 +150,7 @@ export default {
       group_data: "", //curr group data
       group_owner: "", //curr group owner
       curr_user: "", //current user id
-      action: "",  //action the user is executing
+      action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
       curr_group: "", //current user id
 
@@ -161,7 +161,7 @@ export default {
 
       is_owner: false, //is curr user group owner
       is_member: false, //is curr user member of group
-      edit_title: false,// is the edit title button clicked
+      edit_title: false, // is the edit title button clicked
       add_remove_members_permission: false, //does curr user have permision to add/remove members
       rename_group_permission: false, //does curr user have permission to rename group
       create_group_case_permission: false, //does curr user have permission to create group case
@@ -172,7 +172,9 @@ export default {
   },
 
   /**
-   * @description
+   * @description gets all group members to populate members section when the page is loaded
+   * gets group info to determine who is owner when the page is loaded
+   * gets all group cases to populate case section when the page is loaded
    */
   created() {
     this.fetchMembers();

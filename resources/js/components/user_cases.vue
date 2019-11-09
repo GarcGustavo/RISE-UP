@@ -150,7 +150,7 @@ export default {
     };
   },
   /**
-   * @description gets all users cases to populate UI when the page is loaded
+   * @description gets all users cases to populate case table when the page is loaded
    */
   created() {
     this.fetchCases();

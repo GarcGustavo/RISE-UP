@@ -162,7 +162,7 @@ export default {
   },
 
   /**
-   * @description
+   * @description gets all users groups to populate group table when the page is loaded
    */
   created() {
     this.fetchGroups();
