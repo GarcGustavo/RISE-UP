@@ -12,7 +12,7 @@ class AdminFiltersController extends Controller
     //allows to view a list of search filters for case studies
     public function index(){
 
-        $filters = DB::table('cs_parameter')
+        $categories = DB::table('cs_parameter')
             ->select('cs_parameter.*')
             ->get();
 
@@ -20,6 +20,6 @@ class AdminFiltersController extends Controller
             ->select('option.*')
             ->get();
 
-        return view('admin.filters.index', ['filters' => $filters, 'options' => $options]);
+        return view('admin.filters.index', ['categories' => $categories, 'options' => $options]);
     }
 }

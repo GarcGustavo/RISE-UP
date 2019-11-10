@@ -88,7 +88,6 @@ Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('a
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
 
-
 //Presents group name, the group owner, the latest action, and creation date for each group.
 //User Requirement 2.63. The web application will allow an Admin to view the groups of the system.
 Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups');
@@ -99,12 +98,18 @@ Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups')
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/groups-actions/{id}', 'AdminGroupsActionsController@show');
 
-
 //List filters
 //User Requirement 2.65  The web application will allow an Admin to view a list of search filters for case studies.
 //User Requirement 2.67  The web application will allow an Admin to view a list of search filter categories for case studies.
 Route::get('/admin/filters', 'AdminFiltersController@index')->name('admin.filters');
 
+//Add new filter
+//User Requirement: 2.70.  The web application will allow an Admin to add new filters to the list of search filters for case studies.
+Route::post('/admin/filter-option', 'AdminFilterOptionController@store');
+
+//Add new filter category
+//User Requirement: 2.71.  The web application will allow an Admin to add new categories to the list of search filters for case studies.
+Route::post('/admin/filter-category', 'AdminFilterCategoryController@store');
 
 
 //Admin Edits a User
@@ -115,16 +120,12 @@ Route::get('/admin/user/{id}/edit', 'AdminUserController@edit');
 
 Route::put('/admin/user/{id}', 'AdminUserController@update');
 
-//admin edits a group
-//User Requirement 1.61. The web application will allow an Admin to view the recent activity of users
-//and groups in the system, the activities are:
-//1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/group/{id}/edit', 'AdminController@groupEdit');
-
-Route::put('/admin/group/{id}', 'AdminController@groupUpdate');
+//Admin Edits a Group  ()
+Route::get('/admin/group/{id}/edit', 'AdminGroupController@edit');
+Route::put('/admin/group/{id}', 'AdminGroupController@update');
 
 /*
-//Falta index y update
+ * Not required.
 //Create an admin
 Route::get('/admin/create', 'AdminController@create');
 
