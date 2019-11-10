@@ -11,22 +11,6 @@ use App\Models\role;
 
 class AdminController extends Controller
 {
-
-    //public function filters
-    public function filters(){
-
-        $filters = DB::table('cs_parameter')
-            ->select('cs_parameter.*')
-            ->get();
-
-        $options = DB::table('option')
-            ->select('option.*')
-            ->get();
-
-        return view('admin.filters', ['filters' => $filters, 'options' => $options]);
-    }
-
-
     //public function userEdit
     public function userEdit($id){
 

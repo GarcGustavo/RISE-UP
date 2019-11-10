@@ -101,8 +101,8 @@ Route::get('/admin/groups-actions/{id}', 'AdminGroupsActionsController@show');
 
 
 //List filters
-//User Requirement 1.65. The web application will allow an Admin to view a list of search filters for case studies.
-Route::get('/admin/filters', 'AdminController@filters')->name('admin.filters');
+//User Requirement 2.65. The web application will allow an Admin to view a list of search filters for case studies.
+Route::get('/admin/filters', 'AdminFiltersController@index')->name('admin.filters');
 
 
 
