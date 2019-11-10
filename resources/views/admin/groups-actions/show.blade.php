@@ -5,10 +5,10 @@
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
-                    @forelse($users as $user)
-                     {{$user->first_name }} {{$user->last_name }} actions:
+                    @forelse($groups as $group)
+                     {{$group->g_name }} actions:
                     @empty
-                        No Users
+                        No Groups
                     @endforelse
                 </div>
                 <div class="card-body">
@@ -18,12 +18,14 @@
                             <tr class="text-center">
                                 <th>Action</th>
                                 <th>Date</th>
+                                <th>By</th>
                             </tr>
                             </thead>
                             <tfoot>
                             <tr class="text-center">
                                 <th>Action</th>
                                 <th>Date</th>
+                                <th>By</th>
                             </tr>
                             </tfoot>
                             <tbody>
@@ -31,6 +33,7 @@
                                     <tr>
                                         <td> {{$action->act_name }} </td>
                                         <td> {{ \Carbon\Carbon::parse($action->a_date)->format('d F Y')}} </td>
+                                        <td> {{$action->first_name }} {{$action->last_name }} </td>
                                     </tr>
                                 @empty
                                     <tr>

@@ -4,18 +4,18 @@
             <!-- User Actions Table -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="fas fa-table"></i>User latestActions:</div>
+                    <i class="fas fa-table"></i>Group Actions:</div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr class="text-center">
-                                <th>latestAction Name</th>
+                                <th>Group Name</th>
                                 <th>Group Owner</th>
                                 <th>Group Creation</th>
-                                <th>Latest Group action</th>
+                                <th>Latest Group Action</th>
                                 <th>Date</th>
-                                <th>More Group actions</th>
+                                <th>More Group Actions</th>
                             </tr>
                             </thead>
                             <tfoot>
@@ -25,7 +25,7 @@
                                 <th>Group Creation</th>
                                 <th>Latest Group Action</th>
                                 <th>Date</th>
-                                <th>More Group actions</th>
+                                <th>More Group Actions</th>
                             </tr>
                             </tfoot>
                             <tbody>
