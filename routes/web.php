@@ -101,20 +101,19 @@ Route::get('/admin/groups-actions/{id}', 'AdminGroupsActionsController@show');
 
 
 //List filters
-//User Requirement 2.65. The web application will allow an Admin to view a list of search filters for case studies.
+//User Requirement 2.65  The web application will allow an Admin to view a list of search filters for case studies.
+//User Requirement 2.67  The web application will allow an Admin to view a list of search filter categories for case studies.
 Route::get('/admin/filters', 'AdminFiltersController@index')->name('admin.filters');
 
 
 
+//Admin Edits a User
+//User Requirement 2.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
+//User Requirement 2.76. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
+//User Requirement 2.77. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
+Route::get('/admin/user/{id}/edit', 'AdminUserController@edit');
 
-
-//admin edits a user
-//User Requirement 1.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
-//1.76. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
-//1.77. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::get('/admin/user/{id}/edit', 'AdminController@userEdit');
-
-Route::put('/admin/user/{id}', 'AdminController@userUpdate');
+Route::put('/admin/user/{id}', 'AdminUserController@update');
 
 //admin edits a group
 //User Requirement 1.61. The web application will allow an Admin to view the recent activity of users

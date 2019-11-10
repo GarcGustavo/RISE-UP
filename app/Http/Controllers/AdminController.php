@@ -11,38 +11,6 @@ use App\Models\role;
 
 class AdminController extends Controller
 {
-    //public function userEdit
-    public function userEdit($id){
-
-        $users = DB::table('user')
-            ->select('user.*')
-            ->where('uid', '=', $id)
-            ->get();
-        return view('admin.userEdit', ['user' => $users[0]]);
-    }
-
-
-    //public function userUpdate
-    public function userUpdate($uid){
-        $validatedData = request()->validate([
-            'u_role' => ['required'],
-            'u_expiration_date' => ['required'],
-            'u_ban_status' => ['required'],
-            'u_role_upgrade_request' => ['required'],
-        ]);
-
-         $user = user::where('uid', $uid)->first(); // ->firstOrFail();
-      //dd($user);
-         $user->u_role = $validatedData['u_role'];
-         $user->u_expiration_date = $validatedData['u_expiration_date'];
-         $user->u_ban_status = $validatedData['u_ban_status'];
-         $user->u_role_upgrade_request = $validatedData['u_role_upgrade_request'];
-      //dd($user);
-         $user->save();
-         return redirect('/admin/users');
-    }
-
-
     //public function groupEdit
     public function groupEdit($id){
 
