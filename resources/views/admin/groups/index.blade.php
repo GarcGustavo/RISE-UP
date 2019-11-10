@@ -4,16 +4,17 @@
             <!-- User Actions Table -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="fas fa-table"></i>User Groups:</div>
+                    <i class="fas fa-table"></i>User latestActions:</div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr class="text-center">
-                                <th>Group Name</th>
+                                <th>latestAction Name</th>
                                 <th>Group Owner</th>
                                 <th>Group Creation</th>
                                 <th>Latest Group action</th>
+                                <th>Date</th>
                                 <th>More Group actions</th>
                             </tr>
                             </thead>
@@ -23,18 +24,20 @@
                                 <th>Group Owner</th>
                                 <th>Group Creation</th>
                                 <th>Latest Group Action</th>
+                                <th>Date</th>
                                 <th>More Group actions</th>
                             </tr>
                             </tfoot>
                             <tbody>
 
-                            @forelse($groups as $group)
+                            @forelse($latestActions as $latestAction)
                                 <tr>
-                                    <td> {{$group->g_name }} </td>
-                                    <td> {{$group->first_name }} {{$group->last_name }}</td>
-                                    <td> {{ \Carbon\Carbon::parse($group->g_creation_date)->format('d F Y')}} </td>
-                                    <td> xxxx  </td>
-                                    <td class="font-weight-bold"> <a href="/admin/groups-actions/{{$group->gid }}">View</a> </td>
+                                    <td> {{$latestAction->g_name }} </td>
+                                    <td> {{$latestAction->first_name }} {{$latestAction->last_name }}</td>
+                                    <td> {{ \Carbon\Carbon::parse($latestAction->g_creation_date)->format('d F Y')}} </td>
+                                    <td> {{$latestAction->act_name}} </td>
+                                    <td> {{ \Carbon\Carbon::parse($latestAction->latest_action_date)->format('d F Y')}}</td>
+                                    <td class="font-weight-bold"> <a href="/admin/groups-actions/{{$latestAction->gid }}">View</a> </td>
                                 </tr>
                             @empty
                                 <tr>

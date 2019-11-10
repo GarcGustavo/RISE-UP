@@ -14,8 +14,8 @@ class AdminUsersActionsController extends Controller
     public function index(){
         $latestDate = DB::table('action')
             ->select('a_user', DB::raw('MAX(a_date) as latest_action_date'))
-            ->groupBy('a_user');
-            //->orderBy('latest_action_date', 'desc')
+            ->groupBy('a_user')
+            ->orderBy('latest_action_date', 'desc');
             //->get();
 
         $users = DB::table('user')
