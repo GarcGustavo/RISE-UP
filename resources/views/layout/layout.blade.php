@@ -47,7 +47,7 @@
     <style>
         /* body padding in reference to header */
         .container {
-            padding-top: 55px;
+            padding-top: 60px;
         }
 
         #app {

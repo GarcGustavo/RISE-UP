@@ -1,16 +1,19 @@
 <template>
+  <!-- skip previous label disable if page < 5 -->
   <ul v-if="pager.pages && pager.pages.length" class="pagination" :style="ulStyles">
     <li class="page-item skip-prev" :class="{'disabled': pager.currentPage < 5}" :style="liStyles">
+      <!-- if pressed set page to current - 5 -->
       <a
         class="page-link"
         @click="setPage(pager.currentPage - 5)"
         :style="aStyles"
       >{{labels.skip_prev}}</a>
     </li>
-
+    <!-- skip to first page label -->
     <li class="page-item first" :class="{'disabled': pager.currentPage === 1}" :style="liStyles">
       <a class="page-link" @click="setPage(1)" :style="aStyles">{{labels.first}}</a>
     </li>
+    <!-- previous label -->
     <li class="page-item previous" :class="{'disabled': pager.currentPage === 1}" :style="liStyles">
       <a
         class="page-link"
@@ -18,6 +21,7 @@
         :style="aStyles"
       >{{labels.previous}}</a>
     </li>
+    <!-- list of pages -->
     <li
       v-for="page in pager.pages"
       :key="page"
@@ -25,8 +29,10 @@
       :class="{'active': pager.currentPage === page}"
       :style="liStyles"
     >
+      <!-- make them clickable -->
       <a class="page-link" @click="setPage(page)" :style="aStyles">{{page}}</a>
     </li>
+    <!-- next label -->
     <li
       class="page-item next"
       :class="{'disabled': pager.currentPage === pager.totalPages}"
@@ -34,6 +40,7 @@
     >
       <a class="page-link" @click="setPage(pager.currentPage + 1)" :style="aStyles">{{labels.next}}</a>
     </li>
+    <!-- skip to last page label -->
     <li
       class="page-item last"
       :class="{'disabled': pager.currentPage === pager.totalPages}"
@@ -41,12 +48,17 @@
     >
       <a class="page-link" @click="setPage(pager.totalPages)" :style="aStyles">{{labels.last}}</a>
     </li>
+    <!-- skip next 5 label set page to current + 5 -->
     <li
       class="page-item skip-next"
       :class="{'disabled': pager.currentPage > pager.totalPages - 5}"
       :style="liStyles"
     >
-      <a class="page-link" @click="setPage(pager.currentPage + 5)" :style="aStyles">{{labels.skip_next}}</a>
+      <a
+        class="page-link"
+        @click="setPage(pager.currentPage + 5)"
+        :style="aStyles"
+      >{{labels.skip_next}}</a>
     </li>
   </ul>
 </template>
@@ -143,7 +155,6 @@ export default {
     // set page if items array isn't empty
     if (this.items && this.items.length) {
       this.setPage(this.initialPage);
-
     }
   },
   methods: {
@@ -152,7 +163,6 @@ export default {
 
       // get new pager object for specified page
       const pager = paginate(items.length, page, pageSize, maxPages);
-      
 
       // get new page of items from items array
       const pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1);
