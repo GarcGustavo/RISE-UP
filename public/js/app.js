@@ -9006,7 +9006,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 450px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 575px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
 
 // exports
 
