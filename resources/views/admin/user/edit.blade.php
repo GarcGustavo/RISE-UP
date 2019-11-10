@@ -2,7 +2,11 @@
 
 @section('adminMainContent')
 
-    <h1 class="text-center">{{$user->first_name }} {{$user->last_name }}</h1>
+    @forelse($users as $user)
+
+    <h1 class="text-center">
+        {{$user->first_name }} {{$user->last_name }}
+    </h1>
     <h3 class="text-center">Editing</h3>
     <form action="/admin/user/{{$user->uid}}" method="post">
         @method('PUT')
@@ -67,5 +71,11 @@
             </div>
         </div>
     </form>
+
+    @empty
+        No such User.
+        <br><br>
+        Made @ UPRM for Capstone 2019.
+    @endforelse
 
 @endsection

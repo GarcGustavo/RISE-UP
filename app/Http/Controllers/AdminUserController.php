@@ -16,7 +16,7 @@ class AdminUserController extends Controller
             ->select('user.*')
             ->where('uid', '=', $id)
             ->get();
-        return view('admin.user.edit', ['user' => $users[0]]);
+        return view('admin.user.edit', ['users' => $users]);
     }
 
 
