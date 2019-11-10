@@ -16,7 +16,7 @@
     <!-- Case Body -->
     
     <div class="row mt-1 mb-5" id="members">
-      <button v-on:click="addItem(new_item, this.cid)">Add Item</button>
+      <button v-on:click="addItem(new_item)">Add Item</button>
       
       <draggable 
       v-model="items"
@@ -47,7 +47,7 @@
             <li class="list-group-item" v-for="(item, index) in items" :key="index">
               <div class="card-body">
                 <h5 class="card-title">
-                  <a href="#">{{index}}: {{item.i_name}}</a>
+                  <a href="#">{{index}} {{item.i_name}}</a>
                 </h5>
               </div>
             </li>
@@ -88,6 +88,7 @@ export default {
           },
         users:[],
         items:[],
+        all_items:[],
         ready: false,
         cid: "",
         gid: "",
@@ -117,6 +118,7 @@ export default {
     };
   },
   created() {
+    this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
     
@@ -129,6 +131,15 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.items = res.data;
+          console.log(res.data);
+        })
+      .catch(err => console.log(err));
+    },
+    fetchItems() {
+      fetch("/items")
+        .then(res => res.json())
+        .then(res => {
+          this.all_items = res.data;
           console.log(res.data);
         })
       .catch(err => console.log(err));
@@ -186,14 +197,16 @@ export default {
           })
           .catch(err => console.log(err));
     },
-    addItem(new_item, cid) {
+    addItem(new_item) {
+        this.path = window.location.pathname.split("/");
+        this.cid = Number(this.path[this.path.length - 2]);
         this.new_item = {
-          iid:"",
-          i_content:"",
+          iid: this.all_items.length + 1,
+          i_content:"dfsad",
           i_case: this.cid,
-          i_type:"",
-          order:"",
-          i_name:""
+          i_type:"1",
+          order:"0",
+          i_name:"New Item"
           },
         console.log((new_item));
         fetch("/item/add", {
@@ -203,7 +216,7 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body:(JSON.stringify(new_item))
+        body:JSON.stringify(new_item)
         })
         .then(res => res.text())
         .then(text => {

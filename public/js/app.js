@@ -2722,6 +2722,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       },
       users: [],
       items: [],
+      all_items: [],
       ready: false,
       cid: "",
       gid: "",
@@ -2749,6 +2750,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }), _defineProperty(_ref, "case_parameters", []), _ref;
   },
   created: function created() {
+    this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
   },
@@ -2767,21 +2769,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    fetchCase: function fetchCase() {
+    fetchItems: function fetchItems() {
       var _this2 = this;
+
+      fetch("/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.all_items = res.data;
+        console.log(res.data);
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    fetchCase: function fetchCase() {
+      var _this3 = this;
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
       fetch("/case/" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.case_to_show = res.data;
-        _this2.uid = Number(_this2.case_to_show[0].c_owner);
-        _this2.gid = Number(_this2.case_to_show[0].c_group);
+        _this3.case_to_show = res.data;
+        _this3.uid = Number(_this3.case_to_show[0].c_owner);
+        _this3.gid = Number(_this3.case_to_show[0].c_group);
 
-        _this2.fetchUser(_this2.uid);
+        _this3.fetchUser(_this3.uid);
 
-        _this2.fetchGroup(_this2.gid);
+        _this3.fetchGroup(_this3.gid);
 
         console.log(res.data);
       })["catch"](function (err) {
@@ -2789,42 +2803,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     fetchUser: function fetchUser(uid) {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/user/" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.users = res.data;
+        _this4.users = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchGroup: function fetchGroup(gid) {
-      var _this4 = this;
+      var _this5 = this;
 
       fetch("/case/group/" + this.gid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.groups = res.data;
+        _this5.groups = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     updateItemOrder: function updateItemOrder() {
-      var _this5 = this;
-
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
-        return res.text();
-      }).then(function (res) {
-        //this.groups = res.text;
-        _this5.ready = true;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-    updateItems: function updateItems() {
       var _this6 = this;
 
       this.path = window.location.pathname.split("/");
@@ -2838,16 +2838,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    addItem: function addItem(new_item, cid) {
+    updateItems: function updateItems() {
       var _this7 = this;
 
+      this.path = window.location.pathname.split("/");
+      this.uid = this.path[this.path.length - 2];
+      fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
+        return res.text();
+      }).then(function (res) {
+        //this.groups = res.text;
+        _this7.ready = true;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    addItem: function addItem(new_item) {
+      var _this8 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 2]);
       this.new_item = {
-        iid: "",
-        i_content: "",
+        iid: this.all_items.length + 1,
+        i_content: "dfsad",
         i_case: this.cid,
-        i_type: "",
-        order: "",
-        i_name: ""
+        i_type: "1",
+        order: "0",
+        i_name: "New Item"
       }, console.log(new_item);
       fetch("/item/add", {
         method: "post",
@@ -2862,13 +2878,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }).then(function (text) {
         console.log(text);
 
-        _this7.fetchCaseItems();
+        _this8.fetchCaseItems();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     removeItem: function removeItem(users_to_remove) {
-      var _this8 = this;
+      var _this9 = this;
 
       console.log(JSON.stringify(users_to_remove));
       fetch("/group/members/remove", {
@@ -2884,25 +2900,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }).then(function (data) {
         console.log(data);
 
-        _this8.fetchMembers();
+        _this9.fetchMembers();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this9 = this;
-
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this9.items = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-    updateCaseParameters: function updateCaseParameters() {
       var _this10 = this;
 
       this.path = window.location.pathname.split("/");
@@ -2911,6 +2914,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return res.json();
       }).then(function (res) {
         _this10.items = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    updateCaseParameters: function updateCaseParameters() {
+      var _this11 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this11.items = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -58596,7 +58612,7 @@ var render = function() {
             {
               on: {
                 click: function($event) {
-                  return _vm.addItem(_vm.new_item, this.cid)
+                  return _vm.addItem(_vm.new_item)
                 }
               }
             },
@@ -58658,7 +58674,7 @@ var render = function() {
                 _c("div", { staticClass: "card-body" }, [
                   _c("h5", { staticClass: "card-title" }, [
                     _c("a", { attrs: { href: "#" } }, [
-                      _vm._v(_vm._s(index) + ": " + _vm._s(item.i_name))
+                      _vm._v(_vm._s(index) + " " + _vm._s(item.i_name))
                     ])
                   ])
                 ])
