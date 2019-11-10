@@ -11,8 +11,8 @@
         @click="action='Remove',
         acted_on='case study(s)', isCaseSelected()"
       >
-        <div class="add_icon" style="display:inline-block;float:right;">
-          <a style="font-size:18px;margin-left:15px">Remove</a>
+        <div id="remove_icon">
+          <a>Remove</a>
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
@@ -25,8 +25,8 @@
           @click=" action='Create',
         acted_on='case study'"
         >
-          <div class="remove_icon" style="display:inline-block;float:right;">
-            <a style="font-size:18px">Create</a>
+          <div id="create_icon">
+            <a>Create</a>
             <i class="material-icons">add_circle_outline</i>
           </div>
         </a>
@@ -36,7 +36,7 @@
     </h1>
 
     <div v-if="action=='Remove'">
-      <!-- if action is to remove case(s) render confirmation dialogue to validate user's request-->
+      <!--  confirmation dialogue box to validate user's request-->
       <action_confirm_dbox
         :action_confirm="action"
         :acted_on="acted_on"
@@ -61,7 +61,7 @@
       </thead>
       <tbody>
         <!--list user's case studies -->
-        <tr v-for="(case_study,index) in pageOfCases" :key="index">
+        <tr v-for="(case_study,index) in page_of_cases" :key="index">
           <!-- if user is not owner of case study eliminate option to remove case study -->
           <td v-if="case_study.c_owner == curr_user">
             <div class="check-box">
@@ -88,8 +88,8 @@
     </table>
     <!--number of entries per table page option -->
     <div id="container">
-      <div class="btn-group" style="padding-top:12px;width:100px;">
-        <label style="padding-right:5px;">Entries:</label>
+      <div class="btn-group">
+        <label id="entries_label">Entries:</label>
         <!--entries button -->
         <button
           class="btn btn-primary btn-sm dropdown-toggle"
@@ -109,7 +109,7 @@
       <div id="paginate" v-if="reload_paginator">
         <paginator
           :items="user_cases"
-          :pageSize="entries_per_table_page"
+          :page_size="entries_per_table_page"
           @changePage="onChangePage"
           class="pagination"
           style="display:inline-block"
@@ -124,7 +124,6 @@
  * write a component's description
  */
 export default {
-
   /**
    * @description declaration of global variables
    * @returns array of all variables
@@ -138,7 +137,7 @@ export default {
       user_cases: [], // cases of the user
       selected_cases: [], // the cases the user selects
       cases_to_remove: [], // the cases to remove, sent to controller
-      pageOfCases: [], //cases to show on table page
+      page_of_cases: [], //cases to show on table page
 
       case_study: { cid: "", c_title: "" }, //case attributes
 
@@ -156,17 +155,14 @@ export default {
     this.fetchCases();
   },
   methods: {
-
-
     /**
-     * @description - lists the set of cases of the current table page 
-     * @param  {Array} pageOfCases - contains a list of set of cases sent by the paginator
+     * @description - lists the set of cases of the current table page
+     * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
      *
      */
-    onChangePage(pageOfCases) {
-
+    onChangePage(page_of_cases) {
       // update page of Cases
-      this.pageOfCases = pageOfCases;
+      this.page_of_cases = page_of_cases;
     },
 
     /**
@@ -223,7 +219,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.user_cases = res.data;
-          this.pageOfCases = this.user_cases;
+          this.page_of_cases = this.user_cases;
           this.uncheck();
           this.updatePaginator(); //refresh with updated list of cases
         })
@@ -261,6 +257,7 @@ export default {
     removeCases() {
       for (let i in this.selected_cases) {
         this.cases_to_remove.push({
+          //push selected cases id's as cid attribute
           cid: this.selected_cases[i]
         });
       }
@@ -271,7 +268,7 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.cases_to_remove)
+        body: JSON.stringify(this.cases_to_remove) //append data to the body of request
       })
         .then(res => res.json())
         .then(res => {
@@ -363,5 +360,37 @@ h1 a:hover {
 /* icon initial color */
 a {
   color: black;
+}
+/*move remove icon to right */
+#remove_icon {
+  float: right;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#remove_icon a {
+  font-size: 18px;
+  margin-left: 15px;
+}
+
+/*move create icon to right */
+#create_icon {
+  float: right;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#create_icon a {
+  font-size: 18px;
+}
+
+/*entries container padding in relation to table */
+#container .btn-group {
+  padding-top: 12px;
+  width: 100px;
+}
+
+/*entries label*/
+#container #entries_label {
+  padding-right: 5px;
+  padding-top: 5px;
 }
 </style>

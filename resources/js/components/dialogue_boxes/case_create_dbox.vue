@@ -1,7 +1,7 @@
 <template>
   <transition>
     <div>
-        <!-- Dialogue Component to create case study -->
+      <!-- Dialogue Component to create case study -->
       <div
         class="modal fade"
         id="case_create_dbox"
@@ -14,17 +14,15 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">{{action}} {{acted_on}}</h5>
-              <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>-->
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
               <label>Title</label>
-              <div class="input-group-append">
+              <div class="input-group">
                 <input
                   class="form-control input-sm"
-                  style="width:350px;"
+                  style="width:350px;
+                    height:35px;"
                   type="text"
                   maxlength="50"
                   v-model="title"
@@ -34,11 +32,11 @@
 
               <!-- group selection for table -->
               <div class="form-group">
-                <label for="exampleFormControlSelect2">Assign to a group(optional)</label>
+                <label for="group_select">Assign to a group(optional)</label>
                 <select
                   class="form-control"
-                  id="exampleFormControlSelect2"
-                  style="height:40px"
+                  id="group_select"
+                  style="height:35px"
                   v-model="curr_group"
                 >
                   <option
@@ -63,7 +61,7 @@
             </div>
             <!-- footer -->
             <div class="modal-footer">
-                <!--action button -->
+              <!--action button -->
               <button
                 type="button"
                 class="btn btn-primary"
@@ -93,10 +91,7 @@
 
 <script>
 /**
- *  member group action table
-    this table is used everytime a user wants to remove
-    members of an existing group or to add an existing
-    user to a new group
+ *This dialogue box is used to create a case study
  */
 export default {
   props: {
@@ -220,7 +215,8 @@ export default {
      */
     fetchGroups() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      if (this.group_selection) { //variable sent by group view to set default in group options, therefor set group default to (curr_group/group selection)
+      if (this.group_selection) {
+        //variable sent by group view to set default in group options, therefor set group default to (curr_group/group selection)
         this.curr_user = this.path[this.path.length - 3]; //get ID from path and perform Numeric conversion for filter
         this.curr_group = this.group_selection;
       } else {
@@ -244,8 +240,8 @@ export default {
 
       this.date = new Date().toJSON().slice(0, 10);
 
-//append data to new case study
-      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id 
+      //append data to new case study
+      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
@@ -274,7 +270,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/*the following style are for the search text and input bar*/
+/*the following style are for the search text and input text box(title)*/
 .modal-body label,
 .modal-body input {
   font-size: 18px;
@@ -282,30 +278,20 @@ export default {
   margin: 5px;
 }
 
-.input-group {
-  margin-bottom: 10px;
-}
-
-.input-group-append input {
+/*title input text box*/
+.input-group input {
   border-radius: 3px;
 }
-
-.form-check-input {
-  font-size: 20px;
-}
-
-.form-control {
-  height: 30px;
-}
-
 /***********************************************************/
 
+/*description box attributes*/
 textarea {
   width: 100%;
-  min-height: 150px;
+  height: 100px;
   resize: none;
 }
 
+/*set color for dialogue box popup background*/
 .modal {
   background: rgba(85, 85, 85, 0.5);
 }

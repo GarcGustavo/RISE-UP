@@ -18,9 +18,6 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">{{action}} {{acted_on}}</h5>
-              <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>-->
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
@@ -93,6 +90,7 @@
                 <button
                   type="button"
                   class="btn btn-primary"
+                  :data-dismiss="close_dialog"
                   data-toggle="modal"
                   data-target="#action_confirm_dbox"
                   @click="isUserSelected()"
@@ -152,7 +150,8 @@
 
 <script>
 /**
- * write a component's description
+ *  this table is used everytime a user wants to remove members of an existing group or to add an existing
+    user to a new group
  */
 export default {
   props: {
@@ -244,10 +243,10 @@ export default {
     isUserSelected() {
       if (this.selected_users.length == 0) {
         this.isSelected = false;
-        this.close_dialog = ""; //keep component opened if user has not made a selection
+        this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
       } else {
         this.isSelected = true;
-        this.close_dialog = "modal"; //close component if user has made a selection
+        this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
         if (this.action == "Add") {
           this.sendUsers();
         }
@@ -429,10 +428,7 @@ table tr td {
 
 /***********************************************************/
 
-.modal {
-  background: rgba(85, 85, 85, 0.5);
-}
-
+/*checkbox and label attributes*/
 input[type="checkbox"] + label {
   font-size: 18px;
   height: 18px;
@@ -440,8 +436,13 @@ input[type="checkbox"] + label {
   display: inline-block;
   padding: 0 0 0 0px;
 }
-
+/*checkbox sizing */
 input[type="checkbox"] {
   transform: scale(1.2);
+}
+
+/*set color for dialogue box popup background*/
+.modal {
+  background: rgba(85, 85, 85, 0.5);
 }
 </style>

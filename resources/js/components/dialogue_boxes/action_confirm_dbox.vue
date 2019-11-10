@@ -13,9 +13,9 @@
         <!-- modal header -->
         <div class="modal-header">
           <h5 class="modal-title">{{action_confirm}}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
-          </button>
+          </button>-->
         </div>
         <!-- modal body -->
         <div class="modal-body text-center">
@@ -102,7 +102,8 @@
 
 <script>
 /**
- * write a component's description
+ * This is a dialogue box that serves the multipurpose of alerting,confirming, and throwing error warnings.btn-group
+ * this is used for when a user creates/removes a case study or group, or when a user add/removes a member from a group
  */
 export default {
   props: {

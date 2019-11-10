@@ -2039,7 +2039,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- * write a component's description
+ * This is a dialogue box that serves the multipurpose of alerting,confirming, and throwing error warnings.btn-group
+ * this is used for when a user creates/removes a case study or group, or when a user add/removes a member from a group
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2249,11 +2250,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 /**
- * write a component's description
+ *  this table is used everytime a user wants to remove members of an existing group or to add an existing
+    user to a new group
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2353,10 +2353,10 @@ __webpack_require__.r(__webpack_exports__);
     isUserSelected: function isUserSelected() {
       if (this.selected_users.length == 0) {
         this.isSelected = false;
-        this.close_dialog = ""; //keep component opened if user has not made a selection
+        this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
       } else {
         this.isSelected = true;
-        this.close_dialog = "modal"; //close component if user has made a selection
+        this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
 
         if (this.action == "Add") {
           this.sendUsers();
@@ -2597,14 +2597,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 /**
- *  member group action table
-    this table is used everytime a user wants to remove
-    members of an existing group or to add an existing
-    user to a new group
+ *This dialogue box is used to create a case study
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2775,7 +2770,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.date = new Date().toJSON().slice(0, 10); //append data to new case study
 
-      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id 
+      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
 
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
@@ -2815,44 +2810,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -3676,7 +3633,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 
-var defaultLabels = {
+var default_labels = {
   first: "First",
   last: "Last",
   previous: "<",
@@ -3684,7 +3641,7 @@ var defaultLabels = {
   skip_prev: "<<",
   skip_next: ">>"
 };
-var defaultStyles = {
+var default_styles = {
   ul: {
     margin: 0,
     padding: 0,
@@ -3709,28 +3666,28 @@ var defaultStyles = {
       type: Array,
       required: true
     },
-    initialPage: {
+    initial_page: {
       type: Number,
       "default": 1
     },
-    pageSize: {
+    page_size: {
       type: Number,
       "default": 10
     },
-    maxPages: {
+    max_pages: {
       type: Number,
       "default": 5
     },
     labels: {
       type: Object,
       "default": function _default() {
-        return defaultLabels;
+        return default_labels;
       }
     },
     styles: {
       type: Object
     },
-    disableDefaultStyles: {
+    disable_default_styles: {
       type: Boolean,
       "default": false
     }
@@ -3738,9 +3695,9 @@ var defaultStyles = {
   data: function data() {
     return {
       pager: {},
-      ulStyles: {},
-      liStyles: {},
-      aStyles: {}
+      ul_styles: {},
+      li_styles: {},
+      a_styles: {}
     };
   },
   created: function created() {
@@ -3749,37 +3706,37 @@ var defaultStyles = {
     } // set default styles unless disabled
 
 
-    if (!this.disableDefaultStyles) {
-      this.ulStyles = defaultStyles.ul;
-      this.liStyles = defaultStyles.li;
-      this.aStyles = defaultStyles.a;
+    if (!this.disable_default_styles) {
+      this.ul_styles = default_styles.ul;
+      this.li_styles = default_styles.li;
+      this.a_styles = default_styles.a;
     } // merge custom styles with default styles
 
 
     if (this.styles) {
-      this.ulStyles = _objectSpread({}, this.ulStyles, {}, this.styles.ul);
-      this.liStyles = _objectSpread({}, this.liStyles, {}, this.styles.li);
-      this.aStyles = _objectSpread({}, this.aStyles, {}, this.styles.a);
+      this.ul_styles = _objectSpread({}, this.ul_styles, {}, this.styles.ul);
+      this.li_styles = _objectSpread({}, this.li_styles, {}, this.styles.li);
+      this.a_styles = _objectSpread({}, this.a_styles, {}, this.styles.a);
     } // set page if items array isn't empty
 
 
     if (this.items && this.items.length) {
-      this.setPage(this.initialPage);
+      this.setPage(this.initial_page);
     }
   },
   methods: {
     setPage: function setPage(page) {
       var items = this.items,
-          pageSize = this.pageSize,
-          maxPages = this.maxPages; // get new pager object for specified page
+          page_size = this.page_size,
+          max_pages = this.max_pages; // get new pager object for specified page
 
-      var pager = jw_paginate__WEBPACK_IMPORTED_MODULE_0___default()(items.length, page, pageSize, maxPages); // get new page of items from items array
+      var pager = jw_paginate__WEBPACK_IMPORTED_MODULE_0___default()(items.length, page, page_size, max_pages); // get new page of items from items array
 
-      var pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1); // update pager
+      var page_of_items = items.slice(pager.startIndex, pager.endIndex + 1); // update pager
 
       this.pager = pager; // emit change page event to parent component
 
-      this.$emit("changePage", pageOfItems);
+      this.$emit("changePage", page_of_items);
     }
   }
 });
@@ -3939,7 +3896,7 @@ __webpack_require__.r(__webpack_exports__);
       // the cases the user selects
       cases_to_remove: [],
       // the cases to remove, sent to controller
-      pageOfCases: [],
+      page_of_cases: [],
       //cases to show on table page
       case_study: {
         cid: "",
@@ -3965,13 +3922,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     /**
-     * @description - lists the set of cases of the current table page 
-     * @param  {Array} pageOfCases - contains a list of set of cases sent by the paginator
+     * @description - lists the set of cases of the current table page
+     * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
      *
      */
-    onChangePage: function onChangePage(pageOfCases) {
+    onChangePage: function onChangePage(page_of_cases) {
       // update page of Cases
-      this.pageOfCases = pageOfCases;
+      this.page_of_cases = page_of_cases;
     },
 
     /**
@@ -4033,7 +3990,7 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this2.user_cases = res.data;
-        _this2.pageOfCases = _this2.user_cases;
+        _this2.page_of_cases = _this2.user_cases;
 
         _this2.uncheck();
 
@@ -4079,6 +4036,7 @@ __webpack_require__.r(__webpack_exports__);
 
       for (var i in this.selected_cases) {
         this.cases_to_remove.push({
+          //push selected cases id's as cid attribute
           cid: this.selected_cases[i]
         });
       }
@@ -4090,7 +4048,8 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.cases_to_remove)
+        body: JSON.stringify(this.cases_to_remove) //append data to the body of request
+
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -4251,7 +4210,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   /**
-    * @description declaration of global variables
+   * @description declaration of global variables
    * @returns array of all variables
    */
   data: function data() {
@@ -4268,7 +4227,7 @@ __webpack_require__.r(__webpack_exports__);
       // the groups the user selects
       groups_to_remove: [],
       // the groups to remove, sent to controller
-      pageOfGroups: [],
+      page_of_groups: [],
       //groups to show on table page
       users: [],
       group: {
@@ -4300,11 +4259,11 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     /**
      * @description - lists the set of groups of the current table page
-     * @param  {Array} pageOfGroups - contains a list of set of groups sent by the paginator
+     * @param  {Array} page_of_groups - contains a list of set of groups sent by the paginator
      */
-    onChangePage: function onChangePage(pageOfGroups) {
+    onChangePage: function onChangePage(page_of_groups) {
       // update page of Groups
-      this.pageOfGroups = pageOfGroups;
+      this.page_of_groups = page_of_groups;
     },
 
     /**
@@ -4388,7 +4347,7 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this3.user_groups = res.data;
-        _this3.pageOfGroups = _this3.user_groups;
+        _this3.page_of_groups = _this3.user_groups;
 
         _this3.uncheck(); //uncheck any selected items
 
@@ -4463,6 +4422,7 @@ __webpack_require__.r(__webpack_exports__);
 
       for (var i in this.selected_groups) {
         this.groups_to_remove.push({
+          //push selected group id's as gid attributes
           gid: this.selected_groups[i]
         });
       }
@@ -8989,7 +8949,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-b4dffb22] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*table cell attrbites*/\ntable tr td[data-v-b4dffb22] {\n  text-align: center;\n  vertical-align: middle;\n  padding-top: 18px;\n  padding-bottom: 18px;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  max-width: 386px;\n}\n\n/*set checkbock row's width*/\n#row-checkbox[data-v-b4dffb22] {\n  width: 15%;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-b4dffb22],\n.modal-body input[data-v-b4dffb22] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n.input-group[data-v-b4dffb22] {\n  margin-bottom: 10px;\n}\n.input-group-append input[data-v-b4dffb22] {\n  border-radius: 3px;\n}\n.form-check-input[data-v-b4dffb22] {\n  font-size: 20px;\n}\n.form-control[data-v-b4dffb22] {\n  height: 30px;\n}\n\n/***********************************************************/\n.modal[data-v-b4dffb22] {\n  background: rgba(85, 85, 85, 0.5);\n}\ninput[type=checkbox] + label[data-v-b4dffb22] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\ninput[type=checkbox][data-v-b4dffb22] {\n  transform: scale(1.2);\n}", ""]);
+exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-b4dffb22] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*table cell attrbites*/\ntable tr td[data-v-b4dffb22] {\n  text-align: center;\n  vertical-align: middle;\n  padding-top: 18px;\n  padding-bottom: 18px;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  max-width: 386px;\n}\n\n/*set checkbock row's width*/\n#row-checkbox[data-v-b4dffb22] {\n  width: 15%;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-b4dffb22],\n.modal-body input[data-v-b4dffb22] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n.input-group[data-v-b4dffb22] {\n  margin-bottom: 10px;\n}\n.input-group-append input[data-v-b4dffb22] {\n  border-radius: 3px;\n}\n.form-check-input[data-v-b4dffb22] {\n  font-size: 20px;\n}\n.form-control[data-v-b4dffb22] {\n  height: 30px;\n}\n\n/***********************************************************/\n/*checkbox and label attributes*/\ninput[type=checkbox] + label[data-v-b4dffb22] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/*checkbox sizing */\ninput[type=checkbox][data-v-b4dffb22] {\n  transform: scale(1.2);\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-b4dffb22] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
 
 // exports
 
@@ -9008,7 +8968,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*the following style are for the search text and input bar*/\n.modal-body label[data-v-8f585bc6],\n.modal-body input[data-v-8f585bc6] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n.input-group[data-v-8f585bc6] {\n  margin-bottom: 10px;\n}\n.input-group-append input[data-v-8f585bc6] {\n  border-radius: 3px;\n}\n.form-check-input[data-v-8f585bc6] {\n  font-size: 20px;\n}\n.form-control[data-v-8f585bc6] {\n  height: 30px;\n}\n\n/***********************************************************/\ntextarea[data-v-8f585bc6] {\n  width: 100%;\n  min-height: 150px;\n  resize: none;\n}\n.modal[data-v-8f585bc6] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
+exports.push([module.i, "/*the following style are for the search text and input text box(title)*/\n.modal-body label[data-v-8f585bc6],\n.modal-body input[data-v-8f585bc6] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*title input text box*/\n.input-group input[data-v-8f585bc6] {\n  border-radius: 3px;\n}\n\n/***********************************************************/\n/*description box attributes*/\ntextarea[data-v-8f585bc6] {\n  width: 100%;\n  height: 100px;\n  resize: none;\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-8f585bc6] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
 
 // exports
 
@@ -9027,7 +8987,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".page-footer[data-v-585a4226] {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  background-color: #333333;\n  top: 100%;\n}\n\n/* change links text color */\na[data-v-585a4226]:link {\n  color: white;\n}\n\n/* Footer padding */\n.container-fluid[data-v-585a4226] {\n  padding-bottom: 50px;\n}\n\n/* padding for content, and links text */\n.text-white[data-v-585a4226] {\n  padding-right: 55px;\n}\n\n/* font weight for links options */\nul[data-v-585a4226] {\n  font-weight: 300;\n}\n\n/* underline for footer title text */\nh5[data-v-585a4226] {\n  border-bottom: 2px solid white;\n}", ""]);
+exports.push([module.i, ".page-footer[data-v-585a4226] {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  background-color: #333333;\n  top: 100%;\n}\n\n/* change links text color */\na[data-v-585a4226]:link {\n  color: white;\n}\n\n/* Footer padding */\n.container-fluid[data-v-585a4226] {\n  padding-bottom: 50px;\n}\n\n/* padding for content, and links text */\n.text-white[data-v-585a4226] {\n  padding-right: 55px;\n}\n\n/* font weight for links options */\nul[data-v-585a4226] {\n  font-weight: 300;\n}\n\n/*attributes for nsf logo and footer content display */\n#Acknowledgment img[data-v-585a4226] {\n  float: left;\n  margin-right: 15px;\n}\n#Acknowledgment h5[data-v-585a4226] {\n  margin-left: 15px;\n  padding-top: 15px;\n}\n#Disclaimer h5[data-v-585a4226] {\n  padding-top: 15px;\n}\n\n/*************************************************/", ""]);
 
 // exports
 
@@ -9084,7 +9044,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n#paginate[data-v-4dce56da] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover,\nh1 a[data-v-4dce56da]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n#paginate[data-v-4dce56da] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover,\nh1 a[data-v-4dce56da]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-4dce56da] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-4dce56da] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-4dce56da] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*entries label*/\n#container #entries_label[data-v-4dce56da] {\n  padding-right: 5px;\n  padding-top: 5px;\n}", ""]);
 
 // exports
 
@@ -9103,7 +9063,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n#paginate[data-v-79cc8066] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover,\nh1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-79cc8066] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover,\nh1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-79cc8066] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-79cc8066] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-79cc8066] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*entries label*/\n#container #entries_label[data-v-79cc8066] {\n  padding-right: 5px;\n  padding-top: 5px;\n}", ""]);
 
 // exports
 
@@ -41000,9 +40960,7 @@ var render = function() {
           _c("div", { staticClass: "modal-header" }, [
             _c("h5", { staticClass: "modal-title" }, [
               _vm._v(_vm._s(_vm.action_confirm))
-            ]),
-            _vm._v(" "),
-            _vm._m(0)
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "modal-body text-center" }, [
@@ -41153,25 +41111,7 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "modal",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -41398,6 +41338,7 @@ var render = function() {
                             staticClass: "btn btn-primary",
                             attrs: {
                               type: "button",
+                              "data-dismiss": _vm.close_dialog,
                               "data-toggle": "modal",
                               "data-target": "#action_confirm_dbox"
                             },
@@ -41548,7 +41489,7 @@ var render = function() {
                 _c("div", { staticClass: "modal-body" }, [
                   _c("label", [_vm._v("Title")]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "input-group-append" }, [
+                  _c("div", { staticClass: "input-group" }, [
                     _c("input", {
                       directives: [
                         {
@@ -41559,7 +41500,7 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control input-sm",
-                      staticStyle: { width: "350px" },
+                      staticStyle: { width: "350px", height: "35px" },
                       attrs: {
                         type: "text",
                         maxlength: "50",
@@ -41578,11 +41519,9 @@ var render = function() {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
-                    _c(
-                      "label",
-                      { attrs: { for: "exampleFormControlSelect2" } },
-                      [_vm._v("Assign to a group(optional)")]
-                    ),
+                    _c("label", { attrs: { for: "group_select" } }, [
+                      _vm._v("Assign to a group(optional)")
+                    ]),
                     _vm._v(" "),
                     _c(
                       "select",
@@ -41596,8 +41535,8 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        staticStyle: { height: "40px" },
-                        attrs: { id: "exampleFormControlSelect2" },
+                        staticStyle: { height: "35px" },
+                        attrs: { id: "group_select" },
                         on: {
                           change: function($event) {
                             var $$selectedVal = Array.prototype.filter
@@ -41758,82 +41697,51 @@ var staticRenderFns = [
               { staticClass: "container-fluid text-center text-md-left" },
               [
                 _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-md-6 mt-md-0 mt-3" }, [
-                    _c(
-                      "h5",
-                      {
-                        staticClass: "text-uppercase text-white",
-                        staticStyle: { width: "235px" }
-                      },
-                      [_vm._v("Footer Content")]
-                    ),
-                    _vm._v(" "),
-                    _c("p", { staticClass: "text-white font-weight-light" }, [
-                      _vm._v(
-                        "\n                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed voluptate nihil eum\n                consectetur\n                similique? Consectetur, quod, incidunt, harum nisi dolores delectus reprehenderit\n                voluptatem\n                perferendis dicta dolorem non blanditiis ex fugiat.\n              "
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("hr", { staticClass: "clearfix w-100 d-md-none pb-3" }),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-3 mb-md-0 mb-3" }, [
-                    _c(
-                      "h5",
-                      {
-                        staticClass: "text-uppercase text-white",
-                        staticStyle: { width: "50px" }
-                      },
-                      [_vm._v("Links")]
-                    ),
-                    _vm._v(" "),
-                    _c("ul", { staticClass: "list-unstyled" }, [
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link")])
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-7 mt-md-0 mt-3 justify-content-md-start",
+                      attrs: { id: "Acknowledgment" }
+                    },
+                    [
+                      _c("img", {
+                        attrs: {
+                          src: __webpack_require__(/*! ../../..//nsf_logo/nsf_logo.jpg */ "./nsf_logo/nsf_logo.jpg")
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("h5", { staticClass: "text-uppercase text-white" }, [
+                        _vm._v("Acknowledgment")
                       ]),
                       _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 2")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 3")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 4")])
+                      _c("p", { staticClass: "text-white font-weight-light" }, [
+                        _vm._v(
+                          "\n                This material is based upon work supported by the National Science Foundation under grants\n                No. HSI #1832468 and 1832427 (HSI program).\n              "
+                        )
                       ])
-                    ])
-                  ]),
+                    ]
+                  ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "col-md-3 mb-md-0 mb-3" }, [
-                    _c(
-                      "h5",
-                      {
-                        staticClass: "text-uppercase text-white",
-                        staticStyle: { width: "50px" }
-                      },
-                      [_vm._v("Links")]
-                    ),
-                    _vm._v(" "),
-                    _c("ul", { staticClass: "list-unstyled" }, [
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 1")])
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-5 mt-md-0 mt-3 justify-content-md-start",
+                      attrs: { id: "Disclaimer" }
+                    },
+                    [
+                      _c("h5", { staticClass: "text-uppercase text-white" }, [
+                        _vm._v("Disclaimer")
                       ]),
                       _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 2")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 3")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 4")])
+                      _c("p", { staticClass: "text-white font-weight-light" }, [
+                        _vm._v(
+                          "\n                Any opinions, findings, and conclusions or recommendations expressed in this material are\n                those of the authors and do not necessarily reflect the views of the National Science Foundation.\n              "
+                        )
                       ])
-                    ])
-                  ])
+                    ]
+                  )
                 ])
               ]
             )
@@ -42594,21 +42502,21 @@ var render = function() {
   return _vm.pager.pages && _vm.pager.pages.length
     ? _c(
         "ul",
-        { staticClass: "pagination", style: _vm.ulStyles },
+        { staticClass: "pagination", style: _vm.ul_styles },
         [
           _c(
             "li",
             {
               staticClass: "page-item skip-prev",
               class: { disabled: _vm.pager.currentPage < 5 },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage - 5)
@@ -42625,14 +42533,14 @@ var render = function() {
             {
               staticClass: "page-item first",
               class: { disabled: _vm.pager.currentPage === 1 },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(1)
@@ -42649,14 +42557,14 @@ var render = function() {
             {
               staticClass: "page-item previous",
               class: { disabled: _vm.pager.currentPage === 1 },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage - 1)
@@ -42675,14 +42583,14 @@ var render = function() {
                 key: page,
                 staticClass: "page-item page-number",
                 class: { active: _vm.pager.currentPage === page },
-                style: _vm.liStyles
+                style: _vm.li_styles
               },
               [
                 _c(
                   "a",
                   {
                     staticClass: "page-link",
-                    style: _vm.aStyles,
+                    style: _vm.a_styles,
                     on: {
                       click: function($event) {
                         return _vm.setPage(page)
@@ -42702,14 +42610,14 @@ var render = function() {
               class: {
                 disabled: _vm.pager.currentPage === _vm.pager.totalPages
               },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage + 1)
@@ -42728,14 +42636,14 @@ var render = function() {
               class: {
                 disabled: _vm.pager.currentPage === _vm.pager.totalPages
               },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.totalPages)
@@ -42754,14 +42662,14 @@ var render = function() {
               class: {
                 disabled: _vm.pager.currentPage > _vm.pager.totalPages - 5
               },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage + 5)
@@ -42885,7 +42793,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.pageOfCases, function(case_study, index) {
+          _vm._l(_vm.page_of_cases, function(case_study, index) {
             return _c("tr", { key: index }, [
               case_study.c_owner == _vm.curr_user
                 ? _c("td", [
@@ -42964,90 +42872,81 @@ var render = function() {
     ),
     _vm._v(" "),
     _c("div", { attrs: { id: "container" } }, [
-      _c(
-        "div",
-        {
-          staticClass: "btn-group",
-          staticStyle: { "padding-top": "12px", width: "100px" }
-        },
-        [
-          _c("label", { staticStyle: { "padding-right": "5px" } }, [
-            _vm._v("Entries:")
-          ]),
-          _vm._v(" "),
+      _c("div", { staticClass: "btn-group" }, [
+        _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary btn-sm dropdown-toggle",
+            attrs: {
+              type: "button",
+              "data-toggle": "dropdown",
+              "aria-haspopup": "true",
+              "aria-expanded": "false"
+            }
+          },
+          [_vm._v(_vm._s(_vm.entries_per_table_page))]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "dropdown-menu" }, [
           _c(
-            "button",
+            "a",
             {
-              staticClass: "btn btn-primary btn-sm dropdown-toggle",
-              attrs: {
-                type: "button",
-                "data-toggle": "dropdown",
-                "aria-haspopup": "true",
-                "aria-expanded": "false"
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(4)
+                }
               }
             },
-            [_vm._v(_vm._s(_vm.entries_per_table_page))]
+            [_vm._v("4")]
           ),
           _vm._v(" "),
-          _c("div", { staticClass: "dropdown-menu" }, [
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(4)
-                  }
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(8)
                 }
-              },
-              [_vm._v("4")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(8)
-                  }
+              }
+            },
+            [_vm._v("8")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(16)
                 }
-              },
-              [_vm._v("8")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(16)
-                  }
+              }
+            },
+            [_vm._v("16")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(32)
                 }
-              },
-              [_vm._v("16")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(32)
-                  }
-                }
-              },
-              [_vm._v("32")]
-            )
-          ])
-        ]
-      ),
+              }
+            },
+            [_vm._v("32")]
+          )
+        ])
+      ]),
       _vm._v(" "),
       _vm.reload_paginator
         ? _c(
@@ -43059,7 +42958,7 @@ var render = function() {
                 staticStyle: { display: "inline-block" },
                 attrs: {
                   items: _vm.user_cases,
-                  pageSize: _vm.entries_per_table_page
+                  page_size: _vm.entries_per_table_page
                 },
                 on: { changePage: _vm.onChangePage }
               })
@@ -43075,43 +42974,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "add_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c(
-          "a",
-          { staticStyle: { "font-size": "18px", "margin-left": "15px" } },
-          [_vm._v("Remove")]
-        ),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("remove_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "remove_icon" } }, [
+      _c("a", [_vm._v("Remove")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [
+        _vm._v("remove_circle_outline")
+      ])
+    ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "remove_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c("a", { staticStyle: { "font-size": "18px" } }, [_vm._v("Create")]),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("add_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "create_icon" } }, [
+      _c("a", [_vm._v("Create")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
+    ])
   },
   function() {
     var _vm = this
@@ -43241,7 +43120,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.pageOfGroups, function(group, index) {
+          _vm._l(_vm.page_of_groups, function(group, index) {
             return _c("tr", { key: index }, [
               group.g_owner == _vm.curr_user
                 ? _c("td", [
@@ -43326,92 +43205,81 @@ var render = function() {
     ),
     _vm._v(" "),
     _c("div", { attrs: { id: "container" } }, [
-      _c(
-        "div",
-        {
-          staticClass: "btn-group",
-          staticStyle: { "padding-top": "12px", width: "100px" }
-        },
-        [
+      _c("div", { staticClass: "btn-group" }, [
+        _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary btn-sm dropdown-toggle",
+            attrs: {
+              type: "button",
+              "data-toggle": "dropdown",
+              "aria-haspopup": "true",
+              "aria-expanded": "false"
+            }
+          },
+          [_vm._v(_vm._s(_vm.entries_per_page_table))]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "dropdown-menu" }, [
           _c(
-            "label",
-            { staticStyle: { "padding-right": "5px", "padding-top": "5px" } },
-            [_vm._v("Entries:")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
+            "a",
             {
-              staticClass: "btn btn-primary btn-sm dropdown-toggle",
-              attrs: {
-                type: "button",
-                "data-toggle": "dropdown",
-                "aria-haspopup": "true",
-                "aria-expanded": "false"
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(4)
+                }
               }
             },
-            [_vm._v(_vm._s(_vm.entries_per_page_table))]
+            [_vm._v("4")]
           ),
           _vm._v(" "),
-          _c("div", { staticClass: "dropdown-menu" }, [
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(4)
-                  }
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(8)
                 }
-              },
-              [_vm._v("4")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(8)
-                  }
+              }
+            },
+            [_vm._v("8")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(16)
                 }
-              },
-              [_vm._v("8")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(16)
-                  }
+              }
+            },
+            [_vm._v("16")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(32)
                 }
-              },
-              [_vm._v("16")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.selectEntries(32)
-                  }
-                }
-              },
-              [_vm._v("32")]
-            )
-          ])
-        ]
-      ),
+              }
+            },
+            [_vm._v("32")]
+          )
+        ])
+      ]),
       _vm._v(" "),
       _vm.reload_paginator
         ? _c(
@@ -43423,7 +43291,7 @@ var render = function() {
                 staticStyle: { display: "inline-block" },
                 attrs: {
                   items: _vm.user_groups,
-                  pageSize: _vm.entries_per_page_table
+                  page_size: _vm.entries_per_page_table
                 },
                 on: { changePage: _vm.onChangePage }
               })
@@ -43439,43 +43307,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "add_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c(
-          "a",
-          { staticStyle: { "font-size": "18px", "margin-left": "15px" } },
-          [_vm._v("Remove")]
-        ),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("remove_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "remove_icon" } }, [
+      _c("a", [_vm._v("Remove")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [
+        _vm._v("remove_circle_outline")
+      ])
+    ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "remove_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c("a", { staticStyle: { "font-size": "18px" } }, [_vm._v("Create")]),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("add_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "create_icon" } }, [
+      _c("a", [_vm._v("Create")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
+    ])
   },
   function() {
     var _vm = this
@@ -55629,6 +55477,17 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+
+/***/ "./nsf_logo/nsf_logo.jpg":
+/*!*******************************!*\
+  !*** ./nsf_logo/nsf_logo.jpg ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/images/nsf_logo.jpg?21f923893d8c79e878abcb223bbea07c";
 
 /***/ }),
 

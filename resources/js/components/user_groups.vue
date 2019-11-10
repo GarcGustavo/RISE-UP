@@ -11,8 +11,8 @@
         @click="action='Remove',
         acted_on='group(s)',isGroupSelected()"
       >
-        <div class="add_icon" style="display:inline-block;float:right;">
-          <a style="font-size:18px;margin-left:15px">Remove</a>
+        <div id="remove_icon">
+          <a>Remove</a>
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
@@ -26,8 +26,8 @@
         action='Create',
         acted_on='group', fetchUsers()"
         >
-          <div class="remove_icon" style="display:inline-block;float:right;">
-            <a style="font-size:18px">Create</a>
+          <div id="create_icon">
+            <a>Create</a>
             <i class="material-icons">add_circle_outline</i>
           </div>
         </a>
@@ -65,7 +65,7 @@
       </thead>
       <tbody>
         <!--list user's groups -->
-        <tr v-for="(group,index) in pageOfGroups" :key="index">
+        <tr v-for="(group,index) in page_of_groups" :key="index">
           <!-- if user is not owner of group eliminate option to remove group -->
 
           <td v-if="group.g_owner==curr_user">
@@ -93,8 +93,8 @@
     </table>
     <!--number of entries per table page option -->
     <div id="container">
-      <div class="btn-group" style="padding-top:12px;width:100px;">
-        <label style="padding-right:5px;padding-top:5px;;">Entries:</label>
+      <div class="btn-group" >
+        <label id="entries_label">Entries:</label>
         <!-- entries button -->
         <button
           class="btn btn-primary btn-sm dropdown-toggle"
@@ -114,7 +114,7 @@
       <div id="paginate" v-if="reload_paginator">
         <paginator
           :items="user_groups"
-          :pageSize="entries_per_page_table"
+          :page_size="entries_per_page_table"
           @changePage="onChangePage"
           class="pagination"
           style="display:inline-block"
@@ -130,7 +130,7 @@
  */
 export default {
   /**
-    * @description declaration of global variables
+   * @description declaration of global variables
    * @returns array of all variables
    */
   data() {
@@ -142,10 +142,11 @@ export default {
       user_groups: [], // groups of the user
       selected_groups: [], // the groups the user selects
       groups_to_remove: [], // the groups to remove, sent to controller
-      pageOfGroups: [], //groups to show on table page
+      page_of_groups: [], //groups to show on table page
       users: [],
 
-      group: { //group attributes
+      group: {
+        //group attributes
         gid: "",
         g_name: "",
         g_status: "",
@@ -172,11 +173,11 @@ export default {
   methods: {
     /**
      * @description - lists the set of groups of the current table page
-     * @param  {Array} pageOfGroups - contains a list of set of groups sent by the paginator
+     * @param  {Array} page_of_groups - contains a list of set of groups sent by the paginator
      */
-    onChangePage(pageOfGroups) {
+    onChangePage(page_of_groups) {
       // update page of Groups
-      this.pageOfGroups = pageOfGroups;
+      this.page_of_groups = page_of_groups;
     },
     /**
      * @description @description verifies if user has made a selection of a group
@@ -248,7 +249,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data;
-          this.pageOfGroups = this.user_groups;
+          this.page_of_groups = this.user_groups;
           this.uncheck(); //uncheck any selected items
           this.updatePaginator(); //refresh with updated group list
         })
@@ -261,7 +262,6 @@ export default {
      * @param {Array} members - array of user id's to add to group
      */
     createGroup(group, members) {
-
       fetch("/group/create", {
         method: "post",
         headers: new Headers({
@@ -301,7 +301,7 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_add);
-         // this.fetchGroups();
+          // this.fetchGroups();
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -314,6 +314,7 @@ export default {
     removeGroups() {
       for (let i in this.selected_groups) {
         this.groups_to_remove.push({
+          //push selected group id's as gid attributes
           gid: this.selected_groups[i]
         });
       }
@@ -396,7 +397,7 @@ input[type="checkbox"] {
 .pagination {
   float: right;
 }
-
+/*paginate component sizing*/
 #paginate {
   width: 500px;
   padding-top: 12px;
@@ -417,5 +418,35 @@ h1 a:hover {
 /* icon initial color */
 a {
   color: black;
+}
+/*move remove icon to right */
+#remove_icon {
+  float: right;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#remove_icon a {
+  font-size: 18px;
+  margin-left: 15px;
+}
+
+/*move create icon to right */
+#create_icon {
+  float: right;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#create_icon a {
+  font-size: 18px;
+}
+/*entries container padding in relation to table */
+#container .btn-group{
+padding-top:12px;
+width:100px;
+}
+/*entries label*/ 
+#container #entries_label{
+padding-right:5px;
+padding-top:5px;
 }
 </style>

@@ -13,7 +13,7 @@
         </h1>
       </span>
     </div>
-    <!-- if edit mode is enabled --> 
+    <!-- if edit mode is enabled -->
     <div v-if="edit_title">
       <input v-model="tempValue" maxlength="32" class="input">
       <button @click="disableEditTitle">Cancel</button>

@@ -8,62 +8,24 @@
             <!-- Grid row -->
             <div class="row">
               <!-- Grid column -->
-              <div class="col-md-6 mt-md-0 mt-3">
+              <div class="col-7 mt-md-0 mt-3 justify-content-md-start" id="Acknowledgment">
                 <!-- Content -->
-                <h5 class="text-uppercase text-white" style="width:235px;">Footer Content</h5>
-                <p class="text-white font-weight-light">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed voluptate nihil eum
-                  consectetur
-                  similique? Consectetur, quod, incidunt, harum nisi dolores delectus reprehenderit
-                  voluptatem
-                  perferendis dicta dolorem non blanditiis ex fugiat.
+                <img src="../../..//nsf_logo/nsf_logo.jpg" >
+                <h5 class="text-uppercase text-white" >Acknowledgment</h5>
+                <p class="text-white font-weight-light" >
+                  This material is based upon work supported by the National Science Foundation under grants
+                  No. HSI #1832468 and 1832427 (HSI program).
                 </p>
               </div>
               <!-- Grid column -->
 
-              <hr class="clearfix w-100 d-md-none pb-3">
-
-              <!-- Grid column -->
-              <div class="col-md-3 mb-md-0 mb-3">
-                <!-- Links -->
-                <h5 class="text-uppercase text-white" style="width:50px;">Links</h5>
-
-                <ul class="list-unstyled">
-                  <li>
-                    <a href="#!">Link</a>
-                  </li>
-                  <li>
-                    <a href="#!">Link 2</a>
-                  </li>
-                  <li>
-                    <a href="#!">Link 3</a>
-                  </li>
-                  <li>
-                    <a href="#!">Link 4</a>
-                  </li>
-                </ul>
-              </div>
-              <!-- Grid column -->
-
-              <!-- Grid column -->
-              <div class="col-md-3 mb-md-0 mb-3">
-                <!-- Links -->
-                <h5 class="text-uppercase text-white" style="width:50px;">Links</h5>
-
-                <ul class="list-unstyled">
-                  <li>
-                    <a href="#!">Link 1</a>
-                  </li>
-                  <li>
-                    <a href="#!">Link 2</a>
-                  </li>
-                  <li>
-                    <a href="#!">Link 3</a>
-                  </li>
-                  <li>
-                    <a href="#!">Link 4</a>
-                  </li>
-                </ul>
+              <div class="col-5 mt-md-0 mt-3 justify-content-md-start" id="Disclaimer" >
+                <!-- Content -->
+                <h5 class="text-uppercase text-white" >Disclaimer</h5>
+                <p class="text-white font-weight-light">
+                  Any opinions, findings, and conclusions or recommendations expressed in this material are
+                  those of the authors and do not necessarily reflect the views of the National Science Foundation.
+                </p>
               </div>
               <!-- Grid column -->
             </div>
@@ -110,8 +72,22 @@ ul {
   font-weight: 300;
 }
 
-/* underline for footer title text */
-h5 {
-  border-bottom: 2px solid white;
+
+/*attributes for nsf logo and footer content display */
+#Acknowledgment img {
+float:left;
+margin-right: 15px;
 }
+
+
+#Acknowledgment h5{
+margin-left: 15px;
+padding-top:15px;
+}
+
+#Disclaimer h5{
+padding-top:15px;
+}
+/*************************************************/
+
 </style>

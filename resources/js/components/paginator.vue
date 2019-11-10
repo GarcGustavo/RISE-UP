@@ -1,24 +1,24 @@
 <template>
   <!-- skip previous label disable if page < 5 -->
-  <ul v-if="pager.pages && pager.pages.length" class="pagination" :style="ulStyles">
-    <li class="page-item skip-prev" :class="{'disabled': pager.currentPage < 5}" :style="liStyles">
+  <ul v-if="pager.pages && pager.pages.length" class="pagination" :style="ul_styles">
+    <li class="page-item skip-prev" :class="{'disabled': pager.currentPage < 5}" :style="li_styles">
       <!-- if pressed set page to current - 5 -->
       <a
         class="page-link"
         @click="setPage(pager.currentPage - 5)"
-        :style="aStyles"
+        :style="a_styles"
       >{{labels.skip_prev}}</a>
     </li>
     <!-- skip to first page label -->
-    <li class="page-item first" :class="{'disabled': pager.currentPage === 1}" :style="liStyles">
-      <a class="page-link" @click="setPage(1)" :style="aStyles">{{labels.first}}</a>
+    <li class="page-item first" :class="{'disabled': pager.currentPage === 1}" :style="li_styles">
+      <a class="page-link" @click="setPage(1)" :style="a_styles">{{labels.first}}</a>
     </li>
     <!-- previous label -->
-    <li class="page-item previous" :class="{'disabled': pager.currentPage === 1}" :style="liStyles">
+    <li class="page-item previous" :class="{'disabled': pager.currentPage === 1}" :style="li_styles">
       <a
         class="page-link"
         @click="setPage(pager.currentPage - 1)"
-        :style="aStyles"
+        :style="a_styles"
       >{{labels.previous}}</a>
     </li>
     <!-- list of pages -->
@@ -27,37 +27,37 @@
       :key="page"
       class="page-item page-number"
       :class="{'active': pager.currentPage === page}"
-      :style="liStyles"
+      :style="li_styles"
     >
       <!-- make them clickable -->
-      <a class="page-link" @click="setPage(page)" :style="aStyles">{{page}}</a>
+      <a class="page-link" @click="setPage(page)" :style="a_styles">{{page}}</a>
     </li>
     <!-- next label -->
     <li
       class="page-item next"
       :class="{'disabled': pager.currentPage === pager.totalPages}"
-      :style="liStyles"
+      :style="li_styles"
     >
-      <a class="page-link" @click="setPage(pager.currentPage + 1)" :style="aStyles">{{labels.next}}</a>
+      <a class="page-link" @click="setPage(pager.currentPage + 1)" :style="a_styles">{{labels.next}}</a>
     </li>
     <!-- skip to last page label -->
     <li
       class="page-item last"
       :class="{'disabled': pager.currentPage === pager.totalPages}"
-      :style="liStyles"
+      :style="li_styles"
     >
-      <a class="page-link" @click="setPage(pager.totalPages)" :style="aStyles">{{labels.last}}</a>
+      <a class="page-link" @click="setPage(pager.totalPages)" :style="a_styles">{{labels.last}}</a>
     </li>
     <!-- skip next 5 label set page to current + 5 -->
     <li
       class="page-item skip-next"
       :class="{'disabled': pager.currentPage > pager.totalPages - 5}"
-      :style="liStyles"
+      :style="li_styles"
     >
       <a
         class="page-link"
         @click="setPage(pager.currentPage + 5)"
-        :style="aStyles"
+        :style="a_styles"
       >{{labels.skip_next}}</a>
     </li>
   </ul>
@@ -66,7 +66,7 @@
 <script>
 import paginate from "jw-paginate";
 
-const defaultLabels = {
+const default_labels = {
   first: "First",
   last: "Last",
   previous: "<",
@@ -75,7 +75,7 @@ const defaultLabels = {
   skip_next: ">>"
 };
 
-const defaultStyles = {
+const default_styles = {
   ul: {
     margin: 0,
     padding: 0,
@@ -101,26 +101,26 @@ export default {
       type: Array,
       required: true
     },
-    initialPage: {
+    initial_page: {
       type: Number,
       default: 1
     },
-    pageSize: {
+    page_size: {
       type: Number,
       default: 10
     },
-    maxPages: {
+    max_pages: {
       type: Number,
       default: 5
     },
     labels: {
       type: Object,
-      default: () => defaultLabels
+      default: () => default_labels
     },
     styles: {
       type: Object
     },
-    disableDefaultStyles: {
+    disable_default_styles: {
       type: Boolean,
       default: false
     }
@@ -128,9 +128,9 @@ export default {
   data() {
     return {
       pager: {},
-      ulStyles: {},
-      liStyles: {},
-      aStyles: {}
+      ul_styles: {},
+      li_styles: {},
+      a_styles: {}
     };
   },
   created() {
@@ -139,39 +139,39 @@ export default {
     }
 
     // set default styles unless disabled
-    if (!this.disableDefaultStyles) {
-      this.ulStyles = defaultStyles.ul;
-      this.liStyles = defaultStyles.li;
-      this.aStyles = defaultStyles.a;
+    if (!this.disable_default_styles) {
+      this.ul_styles = default_styles.ul;
+      this.li_styles = default_styles.li;
+      this.a_styles = default_styles.a;
     }
 
     // merge custom styles with default styles
     if (this.styles) {
-      this.ulStyles = { ...this.ulStyles, ...this.styles.ul };
-      this.liStyles = { ...this.liStyles, ...this.styles.li };
-      this.aStyles = { ...this.aStyles, ...this.styles.a };
+      this.ul_styles = { ...this.ul_styles, ...this.styles.ul };
+      this.li_styles = { ...this.li_styles, ...this.styles.li };
+      this.a_styles = { ...this.a_styles, ...this.styles.a };
     }
 
     // set page if items array isn't empty
     if (this.items && this.items.length) {
-      this.setPage(this.initialPage);
+      this.setPage(this.initial_page);
     }
   },
   methods: {
     setPage(page) {
-      const { items, pageSize, maxPages } = this;
+      const { items, page_size, max_pages } = this;
 
       // get new pager object for specified page
-      const pager = paginate(items.length, page, pageSize, maxPages);
+      const pager = paginate(items.length, page, page_size, max_pages);
 
       // get new page of items from items array
-      const pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1);
+      const page_of_items = items.slice(pager.startIndex, pager.endIndex + 1);
 
       // update pager
       this.pager = pager;
 
       // emit change page event to parent component
-      this.$emit("changePage", pageOfItems);
+      this.$emit("changePage", page_of_items);
     }
   }
 };
