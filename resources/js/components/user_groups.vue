@@ -66,7 +66,7 @@
       <tbody>
         <!--list user's groups -->
         <tr v-for="(group,index) in page_of_groups" :key="index">
-          <!-- if user is not owner of group eliminate option to remove group -->
+          <!-- if user is owner render with option to select -->
 
           <td v-if="group.g_owner==curr_user">
             <div class="check-box">
@@ -81,6 +81,7 @@
             </div>
           </td>
           <td v-else>
+            <!-- else render group without option to select -->
             <div>
               <label style="padding-top:18px;padding-left:18px;">{{index+1}}</label>
             </div>
@@ -246,7 +247,7 @@ export default {
      */
     fetchGroups() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = this.path[this.path.length - 2];  //get ID from path
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
       fetch("/user_groups/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
@@ -271,7 +272,7 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(group) //append group to body of request 
+        body: JSON.stringify(group) //append group to body of request
       })
         .then(res => res.json())
         .then(res => {

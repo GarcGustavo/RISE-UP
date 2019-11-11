@@ -10,18 +10,18 @@
               <!-- Grid column -->
               <div class="col-7 mt-md-0 mt-3 justify-content-md-start" id="Acknowledgment">
                 <!-- Content -->
-                <img src="../../..//nsf_logo/nsf_logo.jpg" >
-                <h5 class="text-uppercase text-white" >Acknowledgment</h5>
-                <p class="text-white font-weight-light" >
+                <img src="../../..//nsf_logo/nsf_logo.jpg">
+                <h5 class="text-uppercase text-white">Acknowledgment</h5>
+                <p class="text-white font-weight-light">
                   This material is based upon work supported by the National Science Foundation under grants
                   No. HSI #1832468 and 1832427 (HSI program).
                 </p>
               </div>
               <!-- Grid column -->
 
-              <div class="col-5 mt-md-0 mt-3 justify-content-md-start" id="Disclaimer" >
+              <div class="col-5 mt-md-0 mt-3 justify-content-md-start" id="Disclaimer">
                 <!-- Content -->
-                <h5 class="text-uppercase text-white" >Disclaimer</h5>
+                <h5 class="text-uppercase text-white">Disclaimer</h5>
                 <p class="text-white font-weight-light">
                   Any opinions, findings, and conclusions or recommendations expressed in this material are
                   those of the authors and do not necessarily reflect the views of the National Science Foundation.
@@ -72,22 +72,19 @@ ul {
   font-weight: 300;
 }
 
-
 /*attributes for nsf logo and footer content display */
 #Acknowledgment img {
-float:left;
-margin-right: 15px;
+  float: left;
+  margin-right: 15px;
 }
 
-
-#Acknowledgment h5{
-margin-left: 15px;
-padding-top:15px;
+#Acknowledgment h5 {
+  margin-left: 15px;
+  padding-top: 15px;
 }
 
-#Disclaimer h5{
-padding-top:15px;
+#Disclaimer h5 {
+  padding-top: 15px;
 }
 /*************************************************/
-
 </style>

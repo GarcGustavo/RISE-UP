@@ -14,7 +14,11 @@
       <a class="page-link" @click="setPage(1)" :style="a_styles">{{labels.first}}</a>
     </li>
     <!-- previous label -->
-    <li class="page-item previous" :class="{'disabled': pager.currentPage === 1}" :style="li_styles">
+    <li
+      class="page-item previous"
+      :class="{'disabled': pager.currentPage === 1}"
+      :style="li_styles"
+    >
       <a
         class="page-link"
         @click="setPage(pager.currentPage - 1)"
@@ -66,7 +70,8 @@
 <script>
 import paginate from "jw-paginate";
 
-const default_labels = { //labels for options
+const default_labels = {
+  //labels for options
   first: "First",
   last: "Last",
   previous: "<",
@@ -75,7 +80,8 @@ const default_labels = { //labels for options
   skip_next: ">>"
 };
 
-const default_styles = { //paginator default style
+const default_styles = {
+  //paginator default style
   ul: {
     margin: 0,
     padding: 0,
@@ -97,30 +103,37 @@ const default_styles = { //paginator default style
 
 export default {
   props: {
-    items: { //array of items to be paged
+    items: {
+      //array of items to be paged
       type: Array,
       required: true
     },
-    initial_page: { //set first page
+    initial_page: {
+      //set first page
       type: Number,
       default: 1
     },
-    page_size: { //set number of items per page
+    page_size: {
+      //set number of items per page
       type: Number,
       default: 10
     },
-    max_pages: { //number of pages to be shown between labels(<1,2,3,4,5>)
+    max_pages: {
+      //number of pages to be shown between labels(<1,2,3,4,5>)
       type: Number,
       default: 5
     },
-    labels: { //default options labels
+    labels: {
+      //default options labels
       type: Object,
       default: () => default_labels
     },
-    styles: { //custom style(no custom style has been used)
+    styles: {
+      //custom style(no custom style has been used)
       type: Object
     },
-    disable_default_styles: { //set default style
+    disable_default_styles: {
+      //set default style
       type: Boolean,
       default: false
     }

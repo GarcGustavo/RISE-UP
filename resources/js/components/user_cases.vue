@@ -62,7 +62,7 @@
       <tbody>
         <!--list user's case studies -->
         <tr v-for="(case_study,index) in page_of_cases" :key="index">
-          <!-- if user is not owner of case study eliminate option to remove case study -->
+          <!-- if user is owner render with option to select -->
           <td v-if="case_study.c_owner == curr_user">
             <div class="check-box">
               <input
@@ -76,6 +76,7 @@
             </div>
           </td>
           <td v-else>
+            <!-- else render group without option to select -->
             <div>
               <label style="padding-top:18px;padding-left:18px;">{{index+1}}</label>
             </div>

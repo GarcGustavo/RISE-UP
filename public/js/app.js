@@ -3633,6 +3633,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 var default_labels = {
   //labels for options
@@ -3762,6 +3766,7 @@ var default_styles = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -4214,6 +4219,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /**
  * write a component's description
@@ -4388,7 +4394,7 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(group) //append group to body of request 
+        body: JSON.stringify(group) //append group to body of request
 
       }).then(function (res) {
         return res.json();

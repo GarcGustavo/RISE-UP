@@ -325,7 +325,7 @@ export default {
      *  and sends the data for the new case study
      */
     sendGroupData() {
-      this.path = window.location.pathname.split("/");  //slice URL in array to get ID
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
       this.uid = this.path[this.path.length - 2]; //get user id from path
       this.date = new Date().toJSON().slice(0, 10);
       //append data to new group
