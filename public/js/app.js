@@ -2272,8 +2272,8 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /**
-   * @description
-   * @returns {any}
+   * @description declaration of global variables
+   * @returns array of all variables
    */
   data: function data() {
     return {
@@ -3002,7 +3002,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- * write a component's description
+ * this component displays a group page 
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   /**
@@ -3890,7 +3890,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- * write a component's description
+ * this component is used to display the cases of a user
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   /**
@@ -4222,7 +4222,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- * write a component's description
+ * this component is used to display the groups of a user 
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   /**
@@ -9046,7 +9046,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 16px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n.profile-usertitle-job[data-v-798ca618] {\n  text-transform: uppercase;\n  color: #5b9bd1;\n  font-size: 12px;\n  font-weight: 600;\n  margin-bottom: 15px;\n}\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n  border: 0;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of droodown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 35px;\n}\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
+exports.push([module.i, "/*style for user title*/\n.profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n\n/*style for user's name*/\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 16px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n\n/*style for navbar*/\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n  border: 0;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of dropdown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n\n/*dropdown item text color*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n\n/*dropdown item text hover and focus styles*/\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n\n/*item's padding*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n\n/*item's width*/\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 35px;\n}\n\n/*search bar width*/\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
 
 // exports
 
@@ -41203,7 +41203,7 @@ var render = function() {
                             attrs: {
                               type: "text",
                               maxlength: "32",
-                              placeholder: "Name..."
+                              placeholder: "Title..."
                             },
                             domProps: { value: _vm.group_name_input },
                             on: {
