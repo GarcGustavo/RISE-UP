@@ -25,7 +25,7 @@
                     class="form-control input-sm"
                     style="width:250px;"
                     v-model="group_name_input"
-                    placeholder="Title..."
+                    placeholder="Name..."
                   >
                 </div>
               </div>

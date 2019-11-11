@@ -41203,7 +41203,7 @@ var render = function() {
                             attrs: {
                               type: "text",
                               maxlength: "32",
-                              placeholder: "Title..."
+                              placeholder: "Name..."
                             },
                             domProps: { value: _vm.group_name_input },
                             on: {
@@ -41525,7 +41525,7 @@ var render = function() {
                       attrs: {
                         type: "text",
                         maxlength: "50",
-                        placeholder: "Name..."
+                        placeholder: "Title..."
                       },
                       domProps: { value: _vm.title },
                       on: {

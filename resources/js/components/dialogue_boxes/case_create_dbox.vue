@@ -26,7 +26,7 @@
                   type="text"
                   maxlength="50"
                   v-model="title"
-                  placeholder="Name..."
+                  placeholder="Title..."
                 >
               </div>
 
