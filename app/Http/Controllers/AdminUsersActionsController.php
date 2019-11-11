@@ -26,6 +26,7 @@ class AdminUsersActionsController extends Controller
                      ->on('action.a_date', '=', 'latestDate.latest_action_date');
             })
             ->join('action_type', 'action_type.act_id', '=', 'action.a_type')
+            ->orderBy('latest_action_date', 'desc')
             ->get();
 
         return view('admin.users-actions.index', ['users' => $users]);
