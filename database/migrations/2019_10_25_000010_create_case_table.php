@@ -17,7 +17,7 @@ class CreateCaseTable extends Migration
             $table->bigIncrements('cid');
             $table->string('c_title', 255);
             $table->string('c_description', 255);
-            $table->string('c_thumbnail', 255);
+            $table->string('c_thumbnail', 255)->nullable();
             $table->string('c_status', 255);
             $table->date('c_date');
             $table->unsignedBigInteger('c_owner');

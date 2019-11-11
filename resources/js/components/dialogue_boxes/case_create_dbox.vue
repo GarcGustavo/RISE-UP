@@ -239,13 +239,13 @@ export default {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
     //yyyy-mm-dd
-      this.date = new Date().toJSON().slice(0, 10); //current time
+      this.date = new Date().toJSON().slice(0, 10); //current date
 
       //append data to new case study
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
-      this.case_study.c_thumbnail = "empty";
+      this.case_study.c_thumbnail = "";
       this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
       this.case_study.c_owner = this.curr_user;

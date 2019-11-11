@@ -451,7 +451,7 @@ export default {
 /* Set max height for content containers */
 #cases,
 #members {
-  max-height: 575px;
+  max-height: 580px;
   overflow-y: auto;
 }
 

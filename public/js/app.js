@@ -2767,14 +2767,14 @@ __webpack_require__.r(__webpack_exports__);
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
       //yyyy-mm-dd
 
-      this.date = new Date().toJSON().slice(0, 10); //current time
+      this.date = new Date().toJSON().slice(0, 10); //current date
       //append data to new case study
 
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
 
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
-      this.case_study.c_thumbnail = "empty";
+      this.case_study.c_thumbnail = "";
       this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
       this.case_study.c_owner = this.curr_user;
@@ -9032,7 +9032,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 575px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/*margin for headers*/\nh1 p[data-v-027ff7c4] {\n  margin-top: 75px;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  margin-left: 15px;\n  padding-top: 11px;\n}\n\n/*move add icon to right */\n#add_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#add_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  padding-top: 11px;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 580px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/*margin for headers*/\nh1 p[data-v-027ff7c4] {\n  margin-top: 75px;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  margin-left: 15px;\n  padding-top: 11px;\n}\n\n/*move add icon to right */\n#add_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#add_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  padding-top: 11px;\n}", ""]);
 
 // exports
 

@@ -66,7 +66,7 @@ class case_study extends Model
     public static $rules = [
         'c_title' => 'required',
         'c_description' => 'required',
-        'c_thumbnail' => 'required',
+        'c_thumbnail' => 'nullable',
         'c_status' => 'required',
         'c_date' => 'required',
         'c_owner' => 'required',
