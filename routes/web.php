@@ -107,10 +107,17 @@ Route::get('/admin/filters', 'AdminFiltersController@index')->name('admin.filter
 //User Requirement: 2.70.  The web application will allow an Admin to add new filters to the list of search filters for case studies.
 Route::post('/admin/filter-option', 'AdminFilterOptionController@store');
 
+//Remove filter
+//User Requirement: 2.74.  The web application will allow an Admin to remove search filters they have created for case studies
+Route::delete('/admin/filter-option/{id}', 'AdminFilterOptionController@destroy');
+
 //Add new filter category
 //User Requirement: 2.71.  The web application will allow an Admin to add new categories to the list of search filters for case studies.
 Route::post('/admin/filter-category', 'AdminFilterCategoryController@store');
 
+//Remove filter category
+//User Requirement: 2.75.  The web application will allow an Admin to remove search filter categories they have created for case studies
+Route::delete('/admin/filter-category/{id}', 'AdminFilterCategoryController@destroy');
 
 //Admin Edits a User
 //User Requirement 2.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.

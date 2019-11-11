@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class cs_parameter extends Model
 {
-    use SoftDeletes;
+    protected $primaryKey = 'csp_id';
+
+    // use SoftDeletes;
 
     public $table = 'Cs_Parameter';
 

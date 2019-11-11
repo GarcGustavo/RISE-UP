@@ -25,7 +25,7 @@
                 <div class="card-body mt-5">
                     <ul class="list-group">
                     @forelse($options as $option)
-                        @if ($loop->parent->iteration == $option->o_parameter)
+                        @if ($category->csp_id == $option->o_parameter)
                             @include('admin.filters.removeOptionForm')
                         @endif
                     @empty

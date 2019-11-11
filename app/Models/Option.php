@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Option extends Model
 {
-    use SoftDeletes;
+    protected $primaryKey = 'oid';
+
+   // use SoftDeletes;
 
     public $table = 'Option';
 
