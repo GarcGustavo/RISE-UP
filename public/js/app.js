@@ -2735,6 +2735,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
  //Vue.use(Editor);
@@ -19944,7 +19945,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-475f3ef6],\n#members[data-v-475f3ef6] {\n  max-height: 450px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
 
 // exports
 
@@ -58665,15 +58666,15 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-2" }, [
+      _c("div", { staticClass: "row", staticStyle: { "margin-top": "50px" } }, [
+        _c("div", { staticClass: "col-md-2.5" }, [
           _c("h4", { staticClass: "card-title" }, [
             _vm._v("Table of Contents")
           ]),
           _vm._v(" "),
           _c(
             "div",
-            { staticClass: "row mt-2 card mb-5", attrs: { id: "cases" } },
+            { staticClass: "row mt-2 card mb-5", attrs: { id: "toc" } },
             [
               _c("div", { staticClass: "toc_list" }, [
                 _c(
@@ -58697,10 +58698,23 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-10" }, [
+        _c("div", { staticClass: "col-md-9" }, [
+          _c(
+            "h4",
+            {
+              staticClass: "card-title",
+              staticStyle: { "margin-left": "50px" }
+            },
+            [_vm._v("Parameters")]
+          ),
+          _vm._v(" "),
           _c(
             "div",
-            { staticClass: "row border", staticStyle: { margin: "50px" } },
+            {
+              staticClass: "row border",
+              staticStyle: { "margin-left": "50px" },
+              attrs: { id: "toc" }
+            },
             _vm._l(_vm.items, function(item, index) {
               return _c(
                 "div",
@@ -58770,7 +58784,7 @@ var render = function() {
         _c("div", { staticClass: "col-md-12" }, [
           _c(
             "div",
-            { staticClass: "row mt-2 card mb-5", attrs: { id: "cases" } },
+            { staticClass: "row mt-2 card mb-5", attrs: { id: "items" } },
             [
               _c(
                 "draggable",

@@ -22,11 +22,11 @@
           </template>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-2">
+      <div class="row" style="margin-top: 50px;">
+        <div class="col-md-2.5">
           <!-- Table of Contents -->
           <h4 class="card-title">Table of Contents</h4>
-          <div class="row mt-2 card mb-5" id="cases">
+          <div class="row mt-2 card mb-5"  id="toc">
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
@@ -36,8 +36,9 @@
             </div>
           </div>
         </div>
-        <div class="col-md-10">
-          <div class="row border" style="margin: 50px;">
+        <div class="col-md-9" >
+          <h4 class="card-title" style="margin-left: 50px;">Parameters</h4>
+          <div class="row border" style="margin-left: 50px;" id="toc">
             <div
               class="col-sm-1 mx-auto-left"
               v-for="(item, index) in items"
@@ -70,7 +71,7 @@
       <div class="row">
         <div class="col-md-12">
           <!-- Case Body -->
-          <div class="row mt-2 card mb-5" id="cases">
+          <div class="row mt-2 card mb-5" id="items">
             <draggable
               v-model="items"
               animation="250"
@@ -346,10 +347,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 /* Set max height for content containers */
-#cases,
-#members {
-  max-height: 450px;
+#items {
+  //max-height: 475px;
+  overflow-y: auto;
+}
+#toc {
+  max-height: 475px;
   overflow-y: auto;
 }
 
