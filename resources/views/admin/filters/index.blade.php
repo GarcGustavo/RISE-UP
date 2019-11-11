@@ -19,30 +19,19 @@
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
-                    <div class="d-flex flex-row-reverse">
-                        <a href="#" class="badge badge-danger m-2">Remove this Category</a>
-                    </div>
-                    <div class="d-flex flex-row-reverse">
-                        <a href="#" class="badge badge-success m-2">Add new Category</a>
-                        <span> new cate </span>
-                    </div>
+                        @include('admin.filters.removeCategoryForm')
+                        @include('admin.filters.addCategoryForm')
                 </div>
-                <div class="card-body">
+                <div class="card-body mt-5">
                     <ul class="list-group">
                     @forelse($options as $option)
                         @if ($loop->parent->iteration == $option->o_parameter)
-                            <li class="list-group-item d-flex">
-                                <span class="mr-auto"> {{$option->o_content}} </span>
-                                <a href="#" class="badge badge-danger p-1">-</a>
-                            </li>
+                            @include('admin.filters.removeOptionForm')
                         @endif
                     @empty
 
                     @endforelse
-                            <li class="list-group-item d-flex">
-                                <span class="mr-auto"> new option </span>
-                                <a href="#" class="badge badge-success p-1">+</a>
-                            </li>
+                            @include('admin.filters.addOptionForm')
                     </ul>
                 </div>
                 <div class="card-footer small text-muted">
