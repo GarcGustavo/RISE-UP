@@ -9032,7 +9032,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 575px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 575px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/*margin for headers*/\nh1 p[data-v-027ff7c4] {\n  margin-top: 75px;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  margin-left: 15px;\n  padding-top: 11px;\n}\n\n/*move add icon to right */\n#add_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#add_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  padding-top: 11px;\n}", ""]);
 
 // exports
 
@@ -42043,7 +42043,7 @@ var render = function() {
         _c(
           "p",
           {
-            style: _vm.create_group_case_permission ? "margin-left:170px;" : ""
+            style: _vm.create_group_case_permission ? "margin-left:165px;" : ""
           },
           [_vm._v("Our Cases")]
         )
@@ -42085,61 +42085,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "add_icon",
-        staticStyle: {
-          display: "inline-flex",
-          float: "right",
-          "padding-top": "5px"
-        }
-      },
-      [
-        _c(
-          "a",
-          {
-            staticStyle: {
-              "font-size": "18px",
-              "margin-left": "15px",
-              "padding-top": "11px"
-            }
-          },
-          [_vm._v("Remove")]
-        ),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("remove_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "remove_icon" } }, [
+      _c("a", [_vm._v("Remove")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [
+        _vm._v("remove_circle_outline")
+      ])
+    ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "remove_icon",
-        staticStyle: {
-          display: "inline-flex",
-          float: "right",
-          "padding-top": "5px"
-        }
-      },
-      [
-        _c(
-          "a",
-          { staticStyle: { "font-size": "18px", "padding-top": "11px" } },
-          [_vm._v("Add")]
-        ),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("add_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "add_icon" } }, [
+      _c("a", [_vm._v("Add")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
+    ])
   }
 ]
 render._withStripped = true

@@ -39,8 +39,8 @@
         @click=" action='Remove',
         acted_on='member(s)', fetchMembers()"
       >
-        <div class="add_icon" style="display:inline-flex;float:right;padding-top:5px;">
-          <a style="font-size:18px;margin-left:15px;padding-top:11px;">Remove</a>
+        <div id="remove_icon">
+          <a>Remove</a>
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
@@ -54,8 +54,8 @@
         @click=" action='Add',
         acted_on='member(s)', fetchUsers()"
       >
-        <div class="remove_icon" style="display:inline-flex;float:right;padding-top:5px;">
-          <a style="font-size:18px;padding-top:11px;">Add</a>
+        <div id="add_icon">
+          <a>Add</a>
           <i class="material-icons">add_circle_outline</i>
         </div>
       </a>
@@ -115,7 +115,7 @@
         data-target="#case_create_dbox"
       >Create case study</a>
 
-      <p :style="create_group_case_permission ? 'margin-left:170px;' : ''">Our Cases</p>
+      <p :style="create_group_case_permission ? 'margin-left:165px;' : ''">Our Cases</p>
     </h1>
     <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
@@ -459,7 +459,10 @@ export default {
 li {
   border: none;
 }
-
+/*margin for headers*/
+h1 p {
+  margin-top: 75px;
+}
 /* add/remove icons position in relation to header */
 h1 i {
   float: right;
@@ -483,5 +486,32 @@ a {
   float: right;
   font-size: 18px;
   margin-top: 10px;
+}
+
+/*move remove icon to right */
+#remove_icon {
+  display: inline-flex;
+  float: right;
+  padding-top: 5px;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#remove_icon a {
+  font-size: 18px;
+  margin-left: 15px;
+  padding-top: 11px;
+}
+
+/*move add icon to right */
+#add_icon {
+  display: inline-flex;
+  float: right;
+  padding-top: 5px;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#add_icon a {
+  font-size: 18px;
+  padding-top: 11px;
 }
 </style>
