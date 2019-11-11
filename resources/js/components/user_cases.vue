@@ -214,7 +214,7 @@ export default {
      */
     fetchCases() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+      this.curr_user = this.path[this.path.length - 2]; //get user id from path
       fetch("/user_cases/" + this.curr_user)
         .then(res => res.json())
         .then(res => {

@@ -91,7 +91,7 @@
 
 <script>
 /**
- *This dialogue box is used to create a case study
+ *This dialogue box is used to get input for a new case study
  */
 export default {
   props: {
@@ -238,7 +238,7 @@ export default {
     sendCaseStudyData() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-      this.date = new Date().toJSON().slice(0, 10);
+      this.date = new Date().toJSON().slice(0, 10); //current time
 
       //append data to new case study
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
@@ -290,6 +290,8 @@ textarea {
   height: 100px;
   resize: none;
 }
+
+/*height and width for group dropdown and title input are defined in html element*/
 
 /*set color for dialogue box popup background*/
 .modal {

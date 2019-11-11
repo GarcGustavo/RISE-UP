@@ -327,8 +327,8 @@ export default {
      * @description gets info of the current group
      */
     fetchGroupInfo() {
-      this.path = window.location.pathname.split("/");
-      this.curr_group = this.path[this.path.length - 1];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
       fetch("/group/" + this.curr_group + "/info")
         .then(res => res.json())
         .then(res => {

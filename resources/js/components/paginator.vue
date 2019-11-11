@@ -66,7 +66,7 @@
 <script>
 import paginate from "jw-paginate";
 
-const default_labels = {
+const default_labels = { //labels for options
   first: "First",
   last: "Last",
   previous: "<",
@@ -75,7 +75,7 @@ const default_labels = {
   skip_next: ">>"
 };
 
-const default_styles = {
+const default_styles = { //paginator default style
   ul: {
     margin: 0,
     padding: 0,
@@ -97,30 +97,30 @@ const default_styles = {
 
 export default {
   props: {
-    items: {
+    items: { //array of items to be paged
       type: Array,
       required: true
     },
-    initial_page: {
+    initial_page: { //set first page
       type: Number,
       default: 1
     },
-    page_size: {
+    page_size: { //set number of items per page
       type: Number,
       default: 10
     },
-    max_pages: {
+    max_pages: { //number of pages to be shown between labels(<1,2,3,4,5>)
       type: Number,
       default: 5
     },
-    labels: {
+    labels: { //default options labels
       type: Object,
       default: () => default_labels
     },
-    styles: {
+    styles: { //custom style(no custom style has been used)
       type: Object
     },
-    disable_default_styles: {
+    disable_default_styles: { //set default style
       type: Boolean,
       default: false
     }

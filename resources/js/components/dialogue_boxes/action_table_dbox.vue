@@ -1,9 +1,4 @@
 <template>
-  <!--member group action table
-        this table is used everytime a user wants to remove
-         members of an existing group or to add an existing
-         user to a new group
-  -->
   <transition>
     <div>
       <div
@@ -150,7 +145,7 @@
 
 <script>
 /**
- *  this table is used everytime a user wants to remove members of an existing group or to add an existing
+ *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
     user to a new group
  */
 export default {
@@ -302,8 +297,8 @@ export default {
      */
     sendUsers() {
       //send selected users to parent component to add users
-      this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.gid = this.path[this.path.length - 1]; //get group id from path
 
       for (let i in this.selected_users) {
         //populate array with selected users
@@ -317,7 +312,7 @@ export default {
         if (this.action == "Add") {
           this.$emit("addUsers", this.users_to_add_remove);
         } else {
-          //default action to delete
+          //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
         }
         this.uncheck(); // uncheck all values when finished
@@ -330,8 +325,8 @@ export default {
      *  and sends the data for the new case study
      */
     sendGroupData() {
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/");  //slice URL in array to get ID
+      this.uid = this.path[this.path.length - 2]; //get user id from path
       this.date = new Date().toJSON().slice(0, 10);
       //append data to new group
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
@@ -409,19 +404,15 @@ table tr td {
   display: inline-block;
   margin: 5px;
 }
-
+/*elements margins*/
 .input-group {
   margin-bottom: 10px;
 }
-
+/*input box radius*/
 .input-group-append input {
   border-radius: 3px;
 }
-
-.form-check-input {
-  font-size: 20px;
-}
-
+/*input height*/
 .form-control {
   height: 30px;
 }
@@ -444,5 +435,7 @@ input[type="checkbox"] {
 /*set color for dialogue box popup background*/
 .modal {
   background: rgba(85, 85, 85, 0.5);
+
+  /*width for group name input and search is defined in HTML elements*/
 }
 </style>

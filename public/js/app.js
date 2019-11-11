@@ -2245,14 +2245,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 
 /**
- *  this table is used everytime a user wants to remove members of an existing group or to add an existing
+ *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
     user to a new group
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2419,8 +2414,9 @@ __webpack_require__.r(__webpack_exports__);
      */
     sendUsers: function sendUsers() {
       //send selected users to parent component to add users
-      this.path = window.location.pathname.split("/");
-      this.gid = this.path[this.path.length - 1];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.gid = this.path[this.path.length - 1]; //get group id from path
 
       for (var i in this.selected_users) {
         //populate array with selected users
@@ -2435,7 +2431,7 @@ __webpack_require__.r(__webpack_exports__);
         if (this.action == "Add") {
           this.$emit("addUsers", this.users_to_add_remove);
         } else {
-          //default action to delete
+          //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
         }
 
@@ -2450,8 +2446,10 @@ __webpack_require__.r(__webpack_exports__);
      *  and sends the data for the new case study
      */
     sendGroupData: function sendGroupData() {
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.uid = this.path[this.path.length - 2]; //get user id from path
+
       this.date = new Date().toJSON().slice(0, 10); //append data to new group
 
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
@@ -2599,7 +2597,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- *This dialogue box is used to create a case study
+ *This dialogue box is used to get input for a new case study
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2768,7 +2766,8 @@ __webpack_require__.r(__webpack_exports__);
     sendCaseStudyData: function sendCaseStudyData() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-      this.date = new Date().toJSON().slice(0, 10); //append data to new case study
+      this.date = new Date().toJSON().slice(0, 10); //current time
+      //append data to new case study
 
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
 
@@ -3230,8 +3229,10 @@ __webpack_require__.r(__webpack_exports__);
     fetchGroupInfo: function fetchGroupInfo() {
       var _this4 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.curr_group = this.path[this.path.length - 1];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
+
       fetch("/group/" + this.curr_group + "/info").then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -3634,6 +3635,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 
 var default_labels = {
+  //labels for options
   first: "First",
   last: "Last",
   previous: "<",
@@ -3642,6 +3644,7 @@ var default_labels = {
   skip_next: ">>"
 };
 var default_styles = {
+  //paginator default style
   ul: {
     margin: 0,
     padding: 0,
@@ -3663,31 +3666,38 @@ var default_styles = {
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     items: {
+      //array of items to be paged
       type: Array,
       required: true
     },
     initial_page: {
+      //set first page
       type: Number,
       "default": 1
     },
     page_size: {
+      //set number of items per page
       type: Number,
       "default": 10
     },
     max_pages: {
+      //number of pages to be shown between labels(<1,2,3,4,5>)
       type: Number,
       "default": 5
     },
     labels: {
+      //default options labels
       type: Object,
       "default": function _default() {
         return default_labels;
       }
     },
     styles: {
+      //custom style(no custom style has been used)
       type: Object
     },
     disable_default_styles: {
+      //set default style
       type: Boolean,
       "default": false
     }
@@ -3984,7 +3994,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+      this.curr_user = this.path[this.path.length - 2]; //get user id from path
 
       fetch("/user_cases/" + this.curr_user).then(function (res) {
         return res.json();
@@ -4221,6 +4231,8 @@ __webpack_require__.r(__webpack_exports__);
       //action the user is executing
       acted_on: "",
       //on what is the action being exected
+      path: "",
+      uid: "",
       user_groups: [],
       // groups of the user
       selected_groups: [],
@@ -4341,8 +4353,10 @@ __webpack_require__.r(__webpack_exports__);
     fetchGroups: function fetchGroups() {
       var _this3 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.curr_user = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+
       fetch("/user_groups/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -4374,7 +4388,8 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(group)
+        body: JSON.stringify(group) //append group to body of request 
+
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -8949,7 +8964,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-b4dffb22] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*table cell attrbites*/\ntable tr td[data-v-b4dffb22] {\n  text-align: center;\n  vertical-align: middle;\n  padding-top: 18px;\n  padding-bottom: 18px;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  max-width: 386px;\n}\n\n/*set checkbock row's width*/\n#row-checkbox[data-v-b4dffb22] {\n  width: 15%;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-b4dffb22],\n.modal-body input[data-v-b4dffb22] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n.input-group[data-v-b4dffb22] {\n  margin-bottom: 10px;\n}\n.input-group-append input[data-v-b4dffb22] {\n  border-radius: 3px;\n}\n.form-check-input[data-v-b4dffb22] {\n  font-size: 20px;\n}\n.form-control[data-v-b4dffb22] {\n  height: 30px;\n}\n\n/***********************************************************/\n/*checkbox and label attributes*/\ninput[type=checkbox] + label[data-v-b4dffb22] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/*checkbox sizing */\ninput[type=checkbox][data-v-b4dffb22] {\n  transform: scale(1.2);\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-b4dffb22] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
+exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-b4dffb22] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*table cell attrbites*/\ntable tr td[data-v-b4dffb22] {\n  text-align: center;\n  vertical-align: middle;\n  padding-top: 18px;\n  padding-bottom: 18px;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  max-width: 386px;\n}\n\n/*set checkbock row's width*/\n#row-checkbox[data-v-b4dffb22] {\n  width: 15%;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-b4dffb22],\n.modal-body input[data-v-b4dffb22] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*elements margins*/\n.input-group[data-v-b4dffb22] {\n  margin-bottom: 10px;\n}\n\n/*input box radius*/\n.input-group-append input[data-v-b4dffb22] {\n  border-radius: 3px;\n}\n\n/*input height*/\n.form-control[data-v-b4dffb22] {\n  height: 30px;\n}\n\n/***********************************************************/\n/*checkbox and label attributes*/\ninput[type=checkbox] + label[data-v-b4dffb22] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/*checkbox sizing */\ninput[type=checkbox][data-v-b4dffb22] {\n  transform: scale(1.2);\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-b4dffb22] {\n  background: rgba(85, 85, 85, 0.5);\n  /*width for group name input and search is defined in HTML elements*/\n}", ""]);
 
 // exports
 
@@ -8968,7 +8983,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*the following style are for the search text and input text box(title)*/\n.modal-body label[data-v-8f585bc6],\n.modal-body input[data-v-8f585bc6] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*title input text box*/\n.input-group input[data-v-8f585bc6] {\n  border-radius: 3px;\n}\n\n/***********************************************************/\n/*description box attributes*/\ntextarea[data-v-8f585bc6] {\n  width: 100%;\n  height: 100px;\n  resize: none;\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-8f585bc6] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
+exports.push([module.i, "/*the following style are for the search text and input text box(title)*/\n.modal-body label[data-v-8f585bc6],\n.modal-body input[data-v-8f585bc6] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*title input text box*/\n.input-group input[data-v-8f585bc6] {\n  border-radius: 3px;\n}\n\n/***********************************************************/\n/*description box attributes*/\ntextarea[data-v-8f585bc6] {\n  width: 100%;\n  height: 100px;\n  resize: none;\n}\n\n/*height and width for group dropdown and title input are defined in html element*/\n/*set color for dialogue box popup background*/\n.modal[data-v-8f585bc6] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
 
 // exports
 

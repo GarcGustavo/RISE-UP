@@ -93,7 +93,7 @@
     </table>
     <!--number of entries per table page option -->
     <div id="container">
-      <div class="btn-group" >
+      <div class="btn-group">
         <label id="entries_label">Entries:</label>
         <!-- entries button -->
         <button
@@ -138,6 +138,8 @@ export default {
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
+      path: "",
+      uid: "",
 
       user_groups: [], // groups of the user
       selected_groups: [], // the groups the user selects
@@ -243,8 +245,8 @@ export default {
      * @description gets all the groups of the current user
      */
     fetchGroups() {
-      this.path = window.location.pathname.split("/");
-      this.curr_user = this.path[this.path.length - 2];
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_user = this.path[this.path.length - 2];  //get ID from path
       fetch("/user_groups/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
@@ -269,7 +271,7 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(group)
+        body: JSON.stringify(group) //append group to body of request 
       })
         .then(res => res.json())
         .then(res => {
@@ -440,13 +442,13 @@ a {
   font-size: 18px;
 }
 /*entries container padding in relation to table */
-#container .btn-group{
-padding-top:12px;
-width:100px;
+#container .btn-group {
+  padding-top: 12px;
+  width: 100px;
 }
-/*entries label*/ 
-#container #entries_label{
-padding-right:5px;
-padding-top:5px;
+/*entries label*/
+#container #entries_label {
+  padding-right: 5px;
+  padding-top: 5px;
 }
 </style>
