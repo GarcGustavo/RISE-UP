@@ -2457,20 +2457,20 @@ __webpack_require__.r(__webpack_exports__);
       this.group_to_create.g_status = "active";
       this.group_to_create.g_creation_date = this.date;
       this.group_to_create.g_owner = this.uid;
-
-      for (var i in this.selected_users) {
-        this.users_to_add_remove.push({
-          uid: this.selected_users[i],
-          gid: this.group_to_create.gid
-        });
-      }
       /*append owner to group*/
-
 
       this.users_to_add_remove.push({
         uid: this.uid,
         gid: this.group_to_create.gid
       });
+
+      for (var i in this.selected_users) {
+        //populate array with selected users
+        this.users_to_add_remove.push({
+          uid: this.selected_users[i],
+          gid: this.group_to_create.gid
+        });
+      }
 
       if (this.isSelected || this.action == "Create") {
         this.$emit( //call method with data
@@ -2765,6 +2765,7 @@ __webpack_require__.r(__webpack_exports__);
      */
     sendCaseStudyData: function sendCaseStudyData() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      //yyyy-mm-dd
 
       this.date = new Date().toJSON().slice(0, 10); //current time
       //append data to new case study
@@ -3002,7 +3003,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- * this component displays a group page 
+ * this component displays a group page
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   /**
@@ -3157,6 +3158,10 @@ __webpack_require__.r(__webpack_exports__);
      */
     fetchUsers: function fetchUsers() {
       var _this = this;
+
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
 
       fetch("/users").then(function (res) {
         return res.json();
@@ -4222,7 +4227,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- * this component is used to display the groups of a user 
+ * this component is used to display the groups of a user
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   /**
@@ -4337,7 +4342,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
 
       fetch("/users").then(function (res) {
         return res.json();
@@ -4347,7 +4352,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this2.users = _this2.users.filter(function (x) {
           return x.uid !== _this2.curr_user;
-        }); //filter owner so he can't remove himself
+        }); //filter owner
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -41801,7 +41806,7 @@ var render = function() {
               "h1",
               {
                 staticClass: "text-center",
-                style: _vm.rename_group_permission ? "margin-left:35px;" : ""
+                style: _vm.rename_group_permission ? "margin-left:45px;" : ""
               },
               [
                 _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
@@ -42038,7 +42043,7 @@ var render = function() {
         _c(
           "p",
           {
-            style: _vm.create_group_case_permission ? "margin-left:180px;" : ""
+            style: _vm.create_group_case_permission ? "margin-left:170px;" : ""
           },
           [_vm._v("Our Cases")]
         )

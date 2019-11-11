@@ -335,17 +335,19 @@ export default {
       this.group_to_create.g_creation_date = this.date;
       this.group_to_create.g_owner = this.uid;
 
-      for (let i in this.selected_users) {
-        this.users_to_add_remove.push({
-          uid: this.selected_users[i],
-          gid: this.group_to_create.gid
-        });
-      }
       /*append owner to group*/
       this.users_to_add_remove.push({
         uid: this.uid,
         gid: this.group_to_create.gid
       });
+
+      for (let i in this.selected_users) {
+        //populate array with selected users
+        this.users_to_add_remove.push({
+          uid: this.selected_users[i],
+          gid: this.group_to_create.gid
+        });
+      }
 
       if (this.isSelected || this.action == "Create") {
         this.$emit(

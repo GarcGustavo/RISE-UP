@@ -127,7 +127,7 @@
 
 <script>
 /**
- * this component is used to display the groups of a user 
+ * this component is used to display the groups of a user
  */
 export default {
   /**
@@ -231,13 +231,13 @@ export default {
      */
     fetchUsers() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
       fetch("/users")
         .then(res => res.json())
         .then(res => {
           this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
-          this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner so he can't remove himself
+          this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner
         })
         .catch(err => console.log(err));
     },

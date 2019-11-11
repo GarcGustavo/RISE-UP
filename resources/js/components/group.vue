@@ -4,7 +4,7 @@
     <!-- group title -->
     <div v-if="!edit_title">
       <span class="text">
-        <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:35px;' : ''">
+        <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:45px;' : ''">
           {{group_name}}
           <!--render if user has permission-->
           <a href="#" @click="enableEditTitle" v-if="rename_group_permission">
@@ -115,7 +115,7 @@
         data-target="#case_create_dbox"
       >Create case study</a>
 
-      <p :style="create_group_case_permission ? 'margin-left:180px;' : ''">Our Cases</p>
+      <p :style="create_group_case_permission ? 'margin-left:170px;' : ''">Our Cases</p>
     </h1>
     <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
@@ -138,7 +138,7 @@
 
 <script>
 /**
- * this component displays a group page 
+ * this component displays a group page
  */
 export default {
   /**
@@ -273,12 +273,13 @@ export default {
      *
      */
     fetchUsers() {
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
       fetch("/users")
         .then(res => res.json())
         .then(res => {
           this.users_add_remove = res.data; //to send to action_table_dbox when adding users
           //filter users from list to show in table
-
           for (let k = 0; k < this.group_members.length; k++) {
             //filter out group members from user list when adding new users to group
             this.users_add_remove = this.users_add_remove.filter(

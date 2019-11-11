@@ -238,6 +238,7 @@ export default {
     sendCaseStudyData() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
+    //yyyy-mm-dd
       this.date = new Date().toJSON().slice(0, 10); //current time
 
       //append data to new case study
