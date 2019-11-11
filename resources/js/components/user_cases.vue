@@ -122,7 +122,7 @@
 
 <script>
 /**
- * write a component's description
+ * this component is used to display the cases of a user
  */
 export default {
   /**

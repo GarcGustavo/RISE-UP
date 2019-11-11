@@ -170,8 +170,8 @@ export default {
   },
 
   /**
-   * @description
-   * @returns {any}
+   * @description declaration of global variables
+   * @returns array of all variables
    */
   data() {
     return {

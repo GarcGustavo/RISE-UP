@@ -78,26 +78,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/*style for user title*/
 .profile-usertitle {
   text-align: center;
   margin-top: 20px;
 }
-
+/*style for user's name*/
 .profile-usertitle-name {
   color: #5a7391;
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 7px;
 }
-
-.profile-usertitle-job {
-  text-transform: uppercase;
-  color: #5b9bd1;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
+/*style for navbar*/
 .navbar-custom {
   background-color: #333333;
   border: 0;
@@ -121,27 +114,30 @@ export default {
   color: #ffffff;
 }
 
-/* for dropdown only - change the color of droodown */
+/* for dropdown only - change the color of dropdown */
 .navbar-custom .dropdown-menu {
   background-color: #ffffff;
 }
+/*dropdown item text color*/
 .navbar-custom .dropdown-item {
   color: black;
 }
+/*dropdown item text hover and focus styles*/
 .navbar-custom .dropdown-item:hover,
 .navbar-custom .dropdown-item:focus {
   color: #333333;
   background-color: lightgray;
 }
-
+/*item's padding*/
 .navbar-custom .dropdown-item {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+/*item's width*/
 .navbar-custom .dropdown-menu {
   width: 35px;
 }
-
+/*search bar width*/
 .search input[type="text"] {
   width: 315px !important;
 }

@@ -138,7 +138,7 @@
 
 <script>
 /**
- * write a component's description
+ * this component displays a group page 
  */
 export default {
   /**

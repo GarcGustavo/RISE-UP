@@ -127,7 +127,7 @@
 
 <script>
 /**
- * write a component's description
+ * this component is used to display the groups of a user 
  */
 export default {
   /**
