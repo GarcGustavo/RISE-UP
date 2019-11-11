@@ -26,8 +26,8 @@
         <link
             href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900'
             rel='stylesheet' type='text/css'>
-        <!-- Include csrf protection --> 
-            <meta name="csrf-token" content="{{ csrf_token() }}">
+        <!-- Include csrf protection -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
     </head>
 
@@ -47,10 +47,20 @@
     <style>
         /* body padding in reference to header */
         .container {
-            padding-top: 55px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100%;
+            padding-top: 60px;
+        }
+
+        #app {
+            min-height: 100vh;
+            /* will cover the 100% of viewport */
+            display: block;
+            position: relative;
+            padding-bottom: 100px;
+        }
+
+        body {
+            height: 100%;
+            position: relative;
         }
     </style>
 

@@ -1,57 +1,58 @@
 <template>
   <!-- Team Members -->
   <div class="body mb-5 mt-5">
-    <!-- <h1 class="text-center">Our Group</h1>-->
-
+    <!-- group title -->
     <div v-if="!edit_title">
       <span class="text">
-        <h1 class="text-center" :style=" is_owner ? 'margin-left:35px;' : ''">
+        <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:35px;' : ''">
           {{group_name}}
-          <a href="#" @click="enableEditTitle" v-if="is_owner">
+          <!--render if user has permission-->
+          <a href="#" @click="enableEditTitle" v-if="rename_group_permission">
             <i class="material-icons">create</i>
           </a>
         </h1>
       </span>
     </div>
+    <!-- if edit mode is enabled -->
     <div v-if="edit_title">
       <input v-model="tempValue" maxlength="32" class="input">
       <button @click="disableEditTitle">Cancel</button>
-      <button data-toggle="modal" data-target="#mg_action_confirm" @click="saveEdit">Save</button>
+      <button
+        data-toggle="modal"
+        data-target="#action_confirm_dbox"
+        @click="saveEdit(), action='Rename'"
+      >Save</button>
     </div>
 
-    <!--
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="index.html">Home</a>
-        </li>
-        <li class="breadcrumb-item active">About</li>
-    </ol>
-    -->
-
     <hr>
+
+    <!--buttons to create or remove a group -->
+    <!-- render if user has permissions -->
     <h1 class="text-center mt-5 col-sm">
+      <!--remove button -->
       <a
-        v-if="edit_members"
-        href="#mg_action_table"
+        v-if="add_remove_members_permission"
+        href="#action_table_dbox"
         data-toggle="modal"
-        data-target="#mg_action_table"
+        data-target="#action_table_dbox"
         data-dismiss="modal"
-        @click="showModal=true, action='Remove',
-        actor='member(s)', fetchMembers()"
+        @click=" action='Remove',
+        acted_on='member(s)', fetchMembers()"
       >
         <div class="add_icon" style="display:inline-flex;float:right;padding-top:5px;">
           <a style="font-size:18px;margin-left:15px;padding-top:11px;">Remove</a>
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
+      <!-- add button -->
       <a
-        v-if="edit_members"
-        href="#mg_action_table"
+        v-if="add_remove_members_permission"
+        href="#action_table_dbox"
         data-toggle="modal"
-        data-target="#mg_action_table"
+        data-target="#action_table_dbox"
         data-dismiss="modal"
-        @click="showModal=true, action='Add',
-        actor='member(s)', fetchUsers()"
+        @click=" action='Add',
+        acted_on='member(s)', fetchUsers()"
       >
         <div class="remove_icon" style="display:inline-flex;float:right;padding-top:5px;">
           <a style="font-size:18px;padding-top:11px;">Add</a>
@@ -59,34 +60,35 @@
         </div>
       </a>
 
-      <mg_action_table
-        v-if="showModal"
-        @close="showModal = false"
+      <p :style=" add_remove_members_permission ? 'margin-left:205px;' : ''">Members</p>
+    </h1>
+    <!-- show table dialogue when adding or removing members -->
+    <div v-if="action=='Add'|| action=='Remove'">
+      <action_table_dbox
         :action="action"
-        :actor="actor"
-        :users="users"
+        :acted_on="acted_on"
+        :users="users_add_remove"
+        :curr_user_id="curr_user"
         @addUsers="addUsers"
         @removeUsers="removeUsers"
-      ></mg_action_table>
-
-      <div v-if="error">
-        <mg_action_confirm :errors="errors"></mg_action_confirm>
-      </div>
-
-      <p :style=" edit_members ? 'margin-left:205px;' : ''">Members</p>
-    </h1>
-
-    <div>
+      ></action_table_dbox>
+    </div>
+    <!-- show confirmation box when renaming group -->
+    <div v-if="action=='Rename'">
+      <action_confirm_dbox :action_confirm="action" :errors="errors"></action_confirm_dbox>
+    </div>
+    <!-- show case study dialogue box when creating it from group -->
+    <div v-if="action=='Create'">
       <case_create_dbox
         :action="'Create'"
-        :actor="'case study'"
-        :group_selection="gid"
+        :acted_on="'case study'"
+        :group_selection="curr_group"
         @createCaseStudy="createCaseStudy"
       ></case_create_dbox>
     </div>
     <!-- Members -->
     <div class="row mt-1 mb-5" id="members">
-      <div class="col-lg-4 mb-4" v-for="member in members" :key="member.uid">
+      <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
         <div class="card h-100 text-center shadow">
           <i class="material-icons pt-2" style="font-size: 125px">person</i>
           <div class="card-body">
@@ -102,23 +104,24 @@
 
     <hr>
 
-    <!-- Case view -->
+    <!-- Create case button -->
     <h1 id="cases_header" class="mt-5 text-center">
-      <div v-if="create_group_case">
-        <a
-          href="#case_create_dbox"
-          style="padding-top:5px;"
-          data-toggle="modal"
-          data-target="#case_create_dbox"
-        >Create case study</a>
-      </div>
-      <p :style="create_group_case ? 'margin-left:170px;' : ''">Our Cases</p>
-    </h1>
+      <a
+        v-if="create_group_case_permission"
+        @click="action='Create'"
+        href="#case_create_dbox"
+        style="padding-top:5px;"
+        data-toggle="modal"
+        data-target="#case_create_dbox"
+      >Create case study</a>
 
+      <p :style="create_group_case_permission ? 'margin-left:180px;' : ''">Our Cases</p>
+    </h1>
+    <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
       <div class="col-sm-12 mb-3">
         <ul class="list-group list-group-flush border-0">
-          <li class="list-group-item" v-for="(case_study,index) in cases" :key="index">
+          <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
             <div class="card-body">
               <h5 class="card-title">
                 <a href="#">{{case_study.c_title}}</a>
@@ -134,33 +137,46 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data() {
     return {
-      showModal: false,
-      old_name: "",
-      group_name: "",
-      group_data: "",
-      group_owner: "",
-      group_user: "",
-      action: "",
-      actor: "",
-      gid: "",
-      members: [],
-      users: [],
-      cases: [],
-      members_to_add: [],
-      errors: [],
-      tempValue: null,
-      is_owner: false,
-      is_member: false,
-      edit_members: false,
-      edit_title: false,
-      create_group_case: false,
-      error: false
+      group_name: "", //group name input
+      group_data: "", //curr group data
+      group_owner: "", //curr group owner
+      curr_user: "", //current user id
+      action: "", //action the user is executing
+      acted_on: "", //on what is the action being exected
+      curr_group: "", //current user id
+
+      group_members: [], //members of group
+      users_add_remove: [], //users to add or remove from group
+      group_cases: [], //cases that belong to group
+      errors: [], //input errors
+
+      is_owner: false, //is curr user group owner
+      is_member: false, //is curr user member of group
+      edit_title: false, // is the edit title button clicked
+      add_remove_members_permission: false, //does curr user have permision to add/remove members
+      rename_group_permission: false, //does curr user have permission to rename group
+      create_group_case_permission: false, //does curr user have permission to create group case
+      error: false, //are there errors. Currently not being used on html
+
+      tempValue: null
     };
   },
 
+  /**
+   * @description gets all group members to populate members section when the page is loaded
+   * gets group info to determine who is owner when the page is loaded
+   * gets all group cases to populate case section when the page is loaded
+   */
   created() {
     this.fetchMembers();
     this.fetchGroupInfo();
@@ -168,32 +184,45 @@ export default {
   },
 
   methods: {
+    /**
+     * @description determine user priveleges in group
+     */
     userPriveleges() {
-      this.isUserOwner();
-      this.isUserMember();
+      this.isUserOwner(); //verify if user is owner
+      this.isUserMember(); //verify is user is member
+
       if (this.is_owner) {
-        this.edit_members = true;
-        this.create_group_case = true;
+        this.rename_group_permission = true;
+        this.add_remove_members_permission = true;
+        this.create_group_case_permission = true;
       } else if (this.is_member && !this.is_owner) {
-        this.edit_members = false;
-        this.create_group_case = true;
+        this.rename_group_permission = false;
+        this.add_remove_members_permission = false;
+        this.create_group_case_permission = true;
       } else {
-        this.edit_members = false;
-        this.create_group_case = false;
+        this.rename_group_permission = false;
+        this.add_remove_members_permission = false;
+        this.create_group_case_permission = false;
       }
     },
 
+    /**
+     * @description determine if current user is owner of group
+     */
     isUserOwner() {
-      if (this.group_user == this.group_owner) {
+      if (this.curr_user == this.group_owner) {
         this.is_owner = true;
       } else {
         this.is_owner = false;
       }
     },
 
+    /**
+     * @description determine if current user is member of group
+     */
     isUserMember() {
-      for (let i = 0; i < this.members.length; i++) {
-        if (this.group_user == this.members[i].uid) {
+      for (let i = 0; i < this.group_members.length; i++) {
+        if (this.curr_user == this.group_members[i].uid) {
           this.is_member = true;
           return;
         }
@@ -201,92 +230,124 @@ export default {
       this.is_member = false;
     },
 
+    /**
+     * @description enable edit mode to rename group
+     */
     enableEditTitle() {
       this.tempValue = this.group_name;
       this.edit_title = true;
     },
+    /**
+     * @description once saved or canceled disabled edit mode
+     */
     disableEditTitle() {
       this.tempValue = null;
       this.edit_title = false;
       this.error = false;
+      this.errors = []; //reset errors
     },
+    /**
+     * @description save changes to group name
+     */
     saveEdit() {
-      this.old_name = this.group_name;
-      this.group_name = this.tempValue.trim();
-      // However we want to save it to the database
-      if (this.group_name) {
-        this.changeGroupName();
-        this.disableEditTitle();
+      this.temp_name = this.tempValue.trim();
+
+      if (this.temp_name) {
+        //if not empty
+        this.group_name = this.temp_name;
+        this.changeGroupName(); //send request
+        this.disableEditTitle(); //disable edit mode
       } else {
         this.errors = [];
 
-        if (!this.group_name) {
+        if (!this.temp_name) {
           this.errors.push("Group name required.");
         }
-        this.group_name = this.old_name;
+
         this.error = true;
       }
     },
 
+    /**
+     * @description get all of system's users when adding a user to group.
+     *
+     */
     fetchUsers() {
       fetch("/users")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data; //to send to modal
+          this.users_add_remove = res.data; //to send to action_table_dbox when adding users
           //filter users from list to show in table
-          for (let i = 0; i < this.users.length; i++) {
-            for (let k = 0; k < this.members.length; k++) {
-              if (this.users[i].uid == this.members[k].uid) {
-                this.users.splice(i, 1);
-              }
-            }
+
+          for (let k = 0; k < this.group_members.length; k++) {
+            //filter out group members from user list when adding new users to group
+            this.users_add_remove = this.users_add_remove.filter(
+              x => x.uid !== this.group_members[k].uid
+            );
           }
         })
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description gets all of the current group's users
+     */
     fetchMembers() {
-      this.path = window.location.pathname.split("/");
-      this.group_user = Number(this.path[this.path.length - 3]);
-      this.gid = Number(this.path[this.path.length - 1]);
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
 
-      fetch("/group/" + this.gid + "/members")
+      fetch("/group/" + this.curr_group + "/members")
         .then(res => res.json())
         .then(res => {
-          this.users = res.data;
-          this.members = res.data; //to render in view
+          this.users_add_remove = res.data; //populates action_table_dbox when removing a member from group
+          if (this.is_owner) {
+            this.users_add_remove = this.users_add_remove.filter(
+              x => x.uid !== this.curr_user
+            ); //filter owner out so he can't remove himself
+          }
+          this.group_members = res.data; //to render in view
         })
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description gets all of the cases of the current group
+     */
     fetchCases() {
-      fetch("/group/" + this.gid + "/cases")
+      fetch("/group/" + this.curr_group + "/cases")
         .then(res => res.json())
         .then(res => {
-          this.cases = res.data;
+          this.group_cases = res.data;
         })
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description gets info of the current group
+     */
     fetchGroupInfo() {
-      this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
-      fetch("/group/" + this.gid + "/info")
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
+      fetch("/group/" + this.curr_group + "/info")
         .then(res => res.json())
         .then(res => {
           this.group_data = res.data;
-          this.group_name = this.group_data[0].g_name;
-          this.group_owner = this.group_data[0].g_owner;
-          //Verify if use is owner
-          this.userPriveleges();
+          this.group_name = this.group_data[0].g_name; //name of group
+          this.group_owner = this.group_data[0].g_owner; // id of owner
+
+          this.userPriveleges(); //set user priveleges
         })
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description outputs to the groupController a JSON request to rename group
+     */
     changeGroupName() {
       this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
-      fetch("/group/" + this.gid + "/update", {
+      this.curr_group = this.path[this.path.length - 1];
+      fetch("/group/" + this.curr_group + "/update", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -304,6 +365,10 @@ export default {
         });
     },
 
+    /**
+     * @description outputs to the User_groups Controller a JSON request to add members to a group
+     * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
+     */
     addUsers(users_to_add) {
       fetch("/group/members/add", {
         method: "post",
@@ -318,14 +383,18 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_add);
-          this.fetchUsers();
-          this.fetchMembers();
+          this.fetchUsers(); //update user list
+          this.fetchMembers(); //update member list
         })
         .catch(err => {
           console.error("Error: ", err);
         });
     },
 
+    /**
+     * @description outputs to the User_groups Controller a JSON request to remove members from group
+     * @param {Array} users_to_remove - array of user id's to remove group - data is sent by the action_table_dbox dialogue
+     */
     removeUsers(users_to_remove) {
       fetch("/group/members/remove", {
         method: "delete",
@@ -340,14 +409,18 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_remove);
-          this.fetchUsers();
-          this.fetchMembers();
+          this.fetchUsers(); //update user list
+          this.fetchMembers(); //update member list
         })
         .catch(err => {
           console.error("Error: ", err);
         });
     },
 
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     */
     createCaseStudy(case_study) {
       fetch("/case/create", {
         method: "post",
@@ -362,7 +435,7 @@ export default {
         .then(res => {
           console.log(res);
           console.log(case_study);
-          this.fetchCases();
+          this.fetchCases(); //update case list
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -377,7 +450,7 @@ export default {
 /* Set max height for content containers */
 #cases,
 #members {
-  max-height: 450px;
+  max-height: 575px;
   overflow-y: auto;
 }
 

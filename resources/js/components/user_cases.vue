@@ -1,58 +1,54 @@
 
 <template>
   <div class="body mb-5 mt-5">
-    <!-- Page Heading/Breadcrumbs -->
+    <!-- buttons to create or remove a case study -->
     <h1 class="mb-3">
+      <!-- remove button if clicked, render confirmation dialogue box to validate user's action -->
       <a
-        href="#mg_action_confirm"
+        href="#action_confirm_dbox"
         data-toggle="modal"
-        data-target="#mg_action_confirm"
+        data-target="#action_confirm_dbox"
         @click="action='Remove',
-        actor='case study(s)', isCaseSelected()"
+        acted_on='case study(s)', isCaseSelected()"
       >
-        <div class="add_icon" style="display:inline-block;float:right;">
-          <a style="font-size:18px;margin-left:15px">Remove</a>
+        <div id="remove_icon">
+          <a>Remove</a>
           <i class="material-icons">remove_circle_outline</i>
         </div>
       </a>
-      <a
-        href="#case_create_dbox"
-        data-toggle="modal"
-        data-target="#case_create_dbox"
-        @click="showModal=true,
-        action='Create',
-        actor='case study'"
-      >
-        <div class="remove_icon" style="display:inline-block;float:right;">
-          <a style="font-size:18px">Create</a>
-          <i class="material-icons">add_circle_outline</i>
-        </div>
-      </a>
-
-      <div v-if="action=='Remove' && isSelected">
-        <!-- if action is to remove group, render confirm box upfront; this is so there's no display issues with action_table since it also renders a confirm box -->
-        <mg_action_confirm
-          :action_confirm="action"
-          :actor="actor"
-          :errors="[]"
-          :isSelected="isSelected"
-          @removeCases="removeCases"
-        ></mg_action_confirm>
+      <!-- create button if clicked, render create case study dialogue box -->
+      <div>
+        <a
+          href="#case_create_dbox"
+          data-toggle="modal"
+          data-target="#case_create_dbox"
+          @click=" action='Create',
+        acted_on='case study'"
+        >
+          <div id="create_icon">
+            <a>Create</a>
+            <i class="material-icons">add_circle_outline</i>
+          </div>
+        </a>
       </div>
-      <div v-else-if="action=='Remove' && !isSelected">
-        <mg_action_confirm
-          :action_confirm="action"
-          :actor="actor"
-          :errors="[]"
-          :isSelected="isSelected"
-          @removeCases="removeCases"
-        ></mg_action_confirm>
-      </div>
-
-      <case_create_dbox :action="action" :actor="actor" @createCaseStudy="createCaseStudy"></case_create_dbox>
 
       <p>My cases</p>
     </h1>
+
+    <div v-if="action=='Remove'">
+      <!--  confirmation dialogue box to validate user's request-->
+      <action_confirm_dbox
+        :action_confirm="action"
+        :acted_on="acted_on"
+        :isSelected="isSelected"
+        @removeCases="removeCases"
+      ></action_confirm_dbox>
+    </div>
+
+    <div v-if="action=='Create'">
+      <!-- if action is to create group(s) render confirmation dialogue alerting execution of said action-->
+      <case_create_dbox :action="action" :acted_on="acted_on" @createCaseStudy="createCaseStudy"></case_create_dbox>
+    </div>
 
     <hr>
     <!-- Table -->
@@ -64,20 +60,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(case_study,index) in pageOfCases" :key="index">
-          <td v-if="case_study.c_owner == uid">
+        <!--list user's case studies -->
+        <tr v-for="(case_study,index) in page_of_cases" :key="index">
+          <!-- if user is owner render with option to select -->
+          <td v-if="case_study.c_owner == curr_user">
             <div class="check-box">
               <input
                 class="checkbox"
                 type="checkbox"
                 id="checkbox"
-                v-model="cids"
+                v-model="selected_cases"
                 :value="case_study.cid"
               >
               <label for="checkbox">{{index+1}}</label>
             </div>
           </td>
           <td v-else>
+            <!-- else render group without option to select -->
             <div>
               <label style="padding-top:18px;padding-left:18px;">{{index+1}}</label>
             </div>
@@ -88,90 +87,150 @@
         </tr>
       </tbody>
     </table>
-    <div v-if="ready">
-      <paginator :items="cases" @changePage="onChangePage" class="pagination"></paginator>
+    <!--number of entries per table page option -->
+    <div id="container">
+      <div class="btn-group">
+        <label id="entries_label">Entries:</label>
+        <!--entries button -->
+        <button
+          class="btn btn-primary btn-sm dropdown-toggle"
+          type="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >{{entries_per_table_page}}</button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
+          <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
+          <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
+          <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+        </div>
+      </div>
+      <!-- paginator -->
+      <div id="paginate" v-if="reload_paginator">
+        <paginator
+          :items="user_cases"
+          :page_size="entries_per_table_page"
+          @changePage="onChangePage"
+          class="pagination"
+          style="display:inline-block"
+        ></paginator>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data() {
     return {
-      cases: [],
-      cids: [],
-      cases_to_remove: [],
-      case_study: { cid: "", c_title: "" },
-      pageOfCases: [],
-      users: [],
-      uid: "",
-      action: "",
-      actor: "",
-      showModal: false,
-      isSelected: false,
-      ready: false,
+      curr_user: "", //current user id
+      action: "", //action the user is executing
+      acted_on: "", //on what is the action being exected
+
+      user_cases: [], // cases of the user
+      selected_cases: [], // the cases the user selects
+      cases_to_remove: [], // the cases to remove, sent to controller
+      page_of_cases: [], //cases to show on table page
+
+      case_study: { cid: "", c_title: "" }, //case attributes
+
+      entries_per_table_page: 4, //table entries
+
+      reload_paginator: false, //used to update paginator
+      isSelected: false, //has user made selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
+  /**
+   * @description gets all users cases to populate case table when the page is loaded
+   */
   created() {
     this.fetchCases();
   },
-
   methods: {
-    onChangePage(pageOfCases) {
-      // update page of Casess
-      this.pageOfCases = pageOfCases;
+    /**
+     * @description - lists the set of cases of the current table page
+     * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
+     *
+     */
+    onChangePage(page_of_cases) {
+      // update page of Cases
+      this.page_of_cases = page_of_cases;
     },
 
+    /**
+     * @description verifies if user has made a selection of a case
+     */
     isCaseSelected() {
-      if (this.cids.length == 0) {
+      if (this.selected_cases.length == 0) {
         this.isSelected = false;
       } else {
         this.isSelected = true;
       }
     },
 
+    /**
+     * @description sets the number of cases to show in a page
+     * @param {Number} entry - variable containing the number of entries per page
+     */
+    selectEntries(entry) {
+      this.entries_per_table_page = entry;
+      this.updatePaginator();
+    },
+
+    /**
+     * @description - refreshes the paginator
+     */
     updatePaginator() {
       // Remove paginator from the DOM
-      this.ready = false;
+      this.reload_paginator = false;
 
       this.$nextTick().then(() => {
         // Add the paginator back in
-        this.ready = true;
+        this.reload_paginator = true;
       });
     },
 
+    /**
+     * @description unchecks any selection of cases the user has made
+     */
     uncheck() {
-      this.cids = [];
+      this.selected_cases = [];
 
-      for (let i in this.cids) {
-        this.cids.push(this.cids[i].cid);
+      for (let i in this.selected_cases) {
+        this.selected_cases.push(this.selected_cases[i].cid);
       }
     },
 
-    fetchUsers() {
-      fetch("/users")
-        .then(res => res.json())
-        .then(res => {
-          this.users = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-
+    /**
+     * @description gets all the cases of the current user
+     */
     fetchCases() {
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/user_cases/" + this.uid)
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.curr_user = this.path[this.path.length - 2]; //get user id from path
+      fetch("/user_cases/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
-          this.cases = res.data;
-          this.pageOfCases = this.cases;
+          this.user_cases = res.data;
+          this.page_of_cases = this.user_cases;
           this.uncheck();
-          this.updatePaginator();
+          this.updatePaginator(); //refresh with updated list of cases
         })
         .catch(err => console.log(err));
     },
 
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     */
     createCaseStudy(case_study) {
       fetch("/case/create", {
         method: "post",
@@ -193,12 +252,14 @@ export default {
         });
     },
 
+    /**
+     * @description removes any selected user cases by making a delete request to caseController
+     */
     removeCases() {
-      console.log(JSON.stringify(this.cids));
-
-      for (let i in this.cids) {
+      for (let i in this.selected_cases) {
         this.cases_to_remove.push({
-          cid: this.cids[i]
+          //push selected cases id's as cid attribute
+          cid: this.selected_cases[i]
         });
       }
       fetch("/user_cases/remove", {
@@ -208,14 +269,14 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.cases_to_remove)
+        body: JSON.stringify(this.cases_to_remove) //append data to the body of request
       })
         .then(res => res.json())
         .then(res => {
           console.log(res);
           console.log(this.cases_to_remove);
-          this.fetchCases();
-          this.cases_to_remove = [];
+          this.fetchCases(); //update UI with latest cases
+          this.cases_to_remove = []; //reset variable of cases to remove
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -278,6 +339,14 @@ input[type="checkbox"] {
 .pagination {
   float: right;
 }
+
+#paginate {
+  width: 500px;
+  padding-top: 12px;
+  padding-right: 10px;
+  float: right;
+}
+
 /* add/remove icons position in relation to header */
 h1 i {
   float: right;
@@ -292,5 +361,37 @@ h1 a:hover {
 /* icon initial color */
 a {
   color: black;
+}
+/*move remove icon to right */
+#remove_icon {
+  float: right;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#remove_icon a {
+  font-size: 18px;
+  margin-left: 15px;
+}
+
+/*move create icon to right */
+#create_icon {
+  float: right;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#create_icon a {
+  font-size: 18px;
+}
+
+/*entries container padding in relation to table */
+#container .btn-group {
+  padding-top: 12px;
+  width: 100px;
+}
+
+/*entries label*/
+#container #entries_label {
+  padding-right: 5px;
+  padding-top: 5px;
 }
 </style>

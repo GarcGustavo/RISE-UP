@@ -1926,10 +1926,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=script&lang=js&":
-/*!***************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/case_create_dbox.vue?vue&type=script&lang=js& ***!
-  \***************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2033,27 +2033,612 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+
+/**
+ * This is a dialogue box that serves the multipurpose of alerting,confirming, and throwing error warnings.btn-group
+ * this is used for when a user creates/removes a case study or group, or when a user add/removes a member from a group
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    action_confirm: {
+      //action the user is executing
+      type: String
+    },
+    acted_on: {
+      //on what is the action being executed
+      type: String
+    },
+    isSelected: {
+      //user selection on cases, groups, or users
+      type: Boolean,
+      "default": true
+    },
+    errors: {
+      //if there are any errors when executing said action
+      type: Array,
+      "default": function _default() {
+        return [];
+      }
+    }
+  },
+  methods: {
+    /**
+     * @description call to parent(action_table_dbox) to send user(s) to group vue to remove.
+     */
+    confirmRemoveMembers: function confirmRemoveMembers() {
+      this.$emit("sendUsers");
+    },
+
+    /**
+     * @description call to parent (user_groups vue) to remove group(s)
+     */
+    confirmRemoveGroups: function confirmRemoveGroups() {
+      this.$emit("removeGroups");
+    },
+
+    /**
+     * @description call to parent (user_cases vue) to remove case(s)
+     */
+    confirmRemoveCases: function confirmRemoveCases() {
+      this.$emit("removeCases");
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
+    user to a new group
+ */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
+      //action the user is executing
       type: String
     },
-    actor: {
+    acted_on: {
+      //on what is the action being executed
+      type: String
+    },
+    gname_box_show: {
+      //boolean to show group name input box to dialogue
+      type: Boolean,
+      "default": false
+    },
+    users: {
+      //array of users to add or remove
+      type: Array
+    }
+  },
+
+  /**
+   * @description
+   * @returns {any}
+   */
+  data: function data() {
+    return {
+      group_name_input: "",
+      //input for group name
+      search: "",
+      //search input
+      close_dialog: "",
+      //to close action table
+      users_to_add_remove: [],
+      //list of users to add or remove
+      selected_users: [],
+      //list of selected users to add or remove
+      groups: [],
+      //list of all the groups in the system, used to determine ID of new group
+      errors: [],
+      //list of errors
+      user: {
+        //user attributes to use on table
+        first_name: "",
+        last_name: "",
+        email: ""
+      },
+      group_to_create: {
+        //attributes to create a group
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      },
+      valid_input: false,
+      //validate input
+      isSelected: false //validate if user has made a selection to add or remove a user
+
+    };
+  },
+
+  /**
+   * @description sets variable of groups when component is loaded
+   */
+  created: function created() {
+    this.totalGroups();
+  },
+  computed: {
+    /**
+     * @description filters users by email search. Method is called per each key press
+     * @returns list of users in accordance to search.
+     */
+    filterUsers: function filterUsers() {
+      var _this = this;
+
+      return this.users.filter(function (user) {
+        return user.email.includes(_this.search);
+      });
+    }
+  },
+  methods: {
+    /**
+     * @description unchecks any selection of users that has been made
+     */
+    uncheck: function uncheck() {
+      this.selected_users = [];
+
+      for (var i in this.selected_users) {
+        this.selected_users.push(this.selected_users[i].uid);
+      }
+    },
+
+    /**
+     * @description verifies if a selection has been made when performing action(add/remove)
+     */
+    isUserSelected: function isUserSelected() {
+      if (this.selected_users.length == 0) {
+        this.isSelected = false;
+        this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
+      } else {
+        this.isSelected = true;
+        this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
+
+        if (this.action == "Add") {
+          this.sendUsers();
+        }
+      }
+    },
+
+    /**
+     * @description resets all input fields
+     */
+    resetInputFields: function resetInputFields() {
+      this.search = "";
+      this.group_name_input = "";
+      this.users_to_add_remove = [];
+    },
+
+    /**
+     * @description validates group name input field
+     */
+    validateInput: function validateInput() {
+      this.group_name_input.trim();
+
+      if (this.group_name_input) {
+        this.sendGroupData();
+        this.close_dialog = "modal"; //dismiss component if inputs are valid
+
+        this.valid_input = true;
+        this.errors = []; //reset
+      } else {
+        this.close_dialog = ""; //keep component opened if there are errors
+
+        this.valid_input = false;
+        this.errors = [];
+
+        if (!this.group_name_input) {
+          //add error
+          this.errors.push("Group name required.");
+        }
+      }
+    },
+
+    /**
+     * @description gets all of the system's groups
+     */
+    totalGroups: function totalGroups() {
+      var _this2 = this;
+
+      fetch("/groups").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.groups = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description calls the addUsers method from parent window(user_groups or groups)
+     *  and sends the user data to be processed
+     */
+    sendUsers: function sendUsers() {
+      //send selected users to parent component to add users
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.gid = this.path[this.path.length - 1]; //get group id from path
+
+      for (var i in this.selected_users) {
+        //populate array with selected users
+        this.users_to_add_remove.push({
+          uid: this.selected_users[i],
+          gid: this.gid
+        });
+      } //emit data to parent
+
+
+      if (this.isSelected) {
+        if (this.action == "Add") {
+          this.$emit("addUsers", this.users_to_add_remove);
+        } else {
+          //default action is to delete
+          this.$emit("removeUsers", this.users_to_add_remove);
+        }
+
+        this.uncheck(); // uncheck all values when finished
+
+        this.resetInputFields();
+      }
+    },
+
+    /**
+     * @description calls the createGroup method from parent window(user_groups)
+     *  and sends the data for the new case study
+     */
+    sendGroupData: function sendGroupData() {
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.uid = this.path[this.path.length - 2]; //get user id from path
+
+      this.date = new Date().toJSON().slice(0, 10); //append data to new group
+
+      this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
+      this.group_to_create.g_name = this.group_name_input;
+      this.group_to_create.g_status = "active";
+      this.group_to_create.g_creation_date = this.date;
+      this.group_to_create.g_owner = this.uid;
+
+      for (var i in this.selected_users) {
+        this.users_to_add_remove.push({
+          uid: this.selected_users[i],
+          gid: this.group_to_create.gid
+        });
+      }
+      /*append owner to group*/
+
+
+      this.users_to_add_remove.push({
+        uid: this.uid,
+        gid: this.group_to_create.gid
+      });
+
+      if (this.isSelected || this.action == "Create") {
+        this.$emit( //call method with data
+        "createGroup", this.group_to_create, this.users_to_add_remove);
+      }
+
+      this.totalGroups(); //update total groups
+      //reset fields
+
+      this.group_to_create = {
+        gid: "",
+        g_name: "",
+        g_status: "",
+        g_creation_date: "",
+        g_owner: ""
+      };
+      this.uncheck();
+      this.resetInputFields();
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ *This dialogue box is used to get input for a new case study
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    action: {
+      //action the user is executing
+      type: String
+    },
+    acted_on: {
+      //on what is the action being executed
       type: String
     },
     group_selection: {
-      type: Number
+      //curr group user is viewing, append as default option for groups
+      type: String
     }
   },
+
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data: function data() {
     return {
-      showModal: false,
-      modal: "",
+      close_dialog: "",
+      //to close action table
       title: "",
-      uid: "",
-      gid: "",
+      //input for title of case study
+      curr_user: "",
+      //current user id
+      curr_group: "",
+      //curr group id
       description: "",
+      //inpuy for description of case study
+      all_cases: [],
+      //all cases of the system. Used to determine ID of new case study
+      user_groups: [],
+      //groups of curr user
+      errors: [],
+      //list of all input errors
       case_study: {
+        //case study attributes
         cid: "",
         c_title: "",
         c_description: "",
@@ -2063,96 +2648,138 @@ __webpack_require__.r(__webpack_exports__);
         c_owner: "",
         c_group: ""
       },
-      cases: [],
-      groups: [],
-      errors: [],
       maxCount: 140,
+      //maximum amount of characters allowed in the description
       remainingCount: 140,
+      //used to determine remaining account of character
       close: false,
+      //NOT USED
       hasError: false,
-      valid_input: false
+      //does description's character count exceed limit - NOT USED IN HTML
+      valid_input: false //is input valid
+
     };
   },
+
+  /**
+   * @description gets a list of users groups to append to case study when the component is loaded
+   * gets all system's cases to set case variable
+   */
   created: function created() {
     this.fetchGroups();
     this.totalCases();
   },
   methods: {
+    /**
+     * @description updates the description's remaining characters count
+     */
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.description.length;
       this.hasError = this.remainingCount < 0;
     },
+
+    /**
+     * @description resets all case study input fields
+     */
     resetInputFields: function resetInputFields() {
       this.title = "";
       this.description = "";
-      this.gid = "";
+
+      if (!this.group_selection) {
+        this.curr_group = "";
+      }
+
       this.remainingCount = 140;
     },
+
+    /**
+     * @description validates all case study input fields
+     */
     validateInput: function validateInput() {
-      if (this.title && this.description) {
+      if (this.title.trim() && this.description.trim()) {
         this.sendCaseStudyData();
         this.valid_input = true;
-        this.modal = "modal";
-        this.errors = [];
+        this.close_dialog = "modal"; //dismiss component if inputs are valid
+
+        this.errors = []; //reset errors
       } else {
-        this.modal = "";
+        this.close_dialog = ""; //keep component opened if there are errors
+
         this.valid_input = false;
         this.errors = [];
 
-        if (!this.title) {
+        if (!this.title.trim()) {
           this.errors.push("title required.");
         }
 
-        if (!this.description) {
+        if (!this.description.trim()) {
           this.errors.push("description required.");
         }
-      } //  this.valid_input = false;
-
+      }
     },
+
+    /**
+     * @description gets all of the system's cases
+     */
     totalCases: function totalCases() {
       var _this = this;
 
       fetch("/cases").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.cases = res.data;
+        _this.all_cases = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description gets all the groups of the current user
+     */
     fetchGroups: function fetchGroups() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
       if (this.group_selection) {
-        this.uid = Number(this.path[this.path.length - 3]);
-        this.gid = this.group_selection;
+        //variable sent by group view to set default in group options, therefor set group default to (curr_group/group selection)
+        this.curr_user = this.path[this.path.length - 3]; //get ID from path and perform Numeric conversion for filter
+
+        this.curr_group = this.group_selection;
       } else {
-        this.uid = Number(this.path[this.path.length - 2]);
+        this.curr_user = this.path[this.path.length - 2]; //get ID from path and perform Numeric conversion for filter
       }
 
-      fetch("/user_groups/" + this.uid).then(function (res) {
+      fetch("/user_groups/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.groups = res.data;
+        _this2.user_groups = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description calls the createCaseStudy method from parent window(user_cases)
+     *  and sends the data for the new case study
+     */
     sendCaseStudyData: function sendCaseStudyData() {
-      this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
-      this.date = new Date().toJSON().slice(0, 10);
-      this.case_study.cid = this.cases[this.cases.length - 1].cid + 1;
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.date = new Date().toJSON().slice(0, 10); //current time
+      //append data to new case study
+
+      this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
+
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
       this.case_study.c_thumbnail = "empty";
       this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
-      this.case_study.c_owner = this.uid;
-      this.case_study.c_group = this.gid;
-      this.$emit("createCaseStudy", this.case_study);
+      this.case_study.c_owner = this.curr_user;
+      this.case_study.c_group = this.curr_group;
+      this.$emit("createCaseStudy", this.case_study); //call method with data
+
       this.totalCases(); //update total cases
       //reset variable
 
@@ -2166,7 +2793,7 @@ __webpack_require__.r(__webpack_exports__);
         c_owner: "",
         c_group: ""
       };
-      this.resetInputFields();
+      this.resetInputFields(); //reset fields
     }
   }
 });
@@ -2182,44 +2809,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -2408,63 +2997,111 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+
+/**
+ * write a component's description
+ */
 /* harmony default export */ __webpack_exports__["default"] = ({
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data: function data() {
     return {
-      showModal: false,
-      old_name: "",
       group_name: "",
+      //group name input
       group_data: "",
+      //curr group data
       group_owner: "",
-      group_user: "",
+      //curr group owner
+      curr_user: "",
+      //current user id
       action: "",
-      actor: "",
-      gid: "",
-      members: [],
-      users: [],
-      cases: [],
-      members_to_add: [],
+      //action the user is executing
+      acted_on: "",
+      //on what is the action being exected
+      curr_group: "",
+      //current user id
+      group_members: [],
+      //members of group
+      users_add_remove: [],
+      //users to add or remove from group
+      group_cases: [],
+      //cases that belong to group
       errors: [],
-      tempValue: null,
+      //input errors
       is_owner: false,
+      //is curr user group owner
       is_member: false,
-      edit_members: false,
+      //is curr user member of group
       edit_title: false,
-      create_group_case: false,
-      error: false
+      // is the edit title button clicked
+      add_remove_members_permission: false,
+      //does curr user have permision to add/remove members
+      rename_group_permission: false,
+      //does curr user have permission to rename group
+      create_group_case_permission: false,
+      //does curr user have permission to create group case
+      error: false,
+      //are there errors. Currently not being used on html
+      tempValue: null
     };
   },
+
+  /**
+   * @description gets all group members to populate members section when the page is loaded
+   * gets group info to determine who is owner when the page is loaded
+   * gets all group cases to populate case section when the page is loaded
+   */
   created: function created() {
     this.fetchMembers();
     this.fetchGroupInfo();
     this.fetchCases();
   },
   methods: {
+    /**
+     * @description determine user priveleges in group
+     */
     userPriveleges: function userPriveleges() {
-      this.isUserOwner();
-      this.isUserMember();
+      this.isUserOwner(); //verify if user is owner
+
+      this.isUserMember(); //verify is user is member
 
       if (this.is_owner) {
-        this.edit_members = true;
-        this.create_group_case = true;
+        this.rename_group_permission = true;
+        this.add_remove_members_permission = true;
+        this.create_group_case_permission = true;
       } else if (this.is_member && !this.is_owner) {
-        this.edit_members = false;
-        this.create_group_case = true;
+        this.rename_group_permission = false;
+        this.add_remove_members_permission = false;
+        this.create_group_case_permission = true;
       } else {
-        this.edit_members = false;
-        this.create_group_case = false;
+        this.rename_group_permission = false;
+        this.add_remove_members_permission = false;
+        this.create_group_case_permission = false;
       }
     },
+
+    /**
+     * @description determine if current user is owner of group
+     */
     isUserOwner: function isUserOwner() {
-      if (this.group_user == this.group_owner) {
+      if (this.curr_user == this.group_owner) {
         this.is_owner = true;
       } else {
         this.is_owner = false;
       }
     },
+
+    /**
+     * @description determine if current user is member of group
+     */
     isUserMember: function isUserMember() {
-      for (var i = 0; i < this.members.length; i++) {
-        if (this.group_user == this.members[i].uid) {
+      for (var i = 0; i < this.group_members.length; i++) {
+        if (this.curr_user == this.group_members[i].uid) {
           this.is_member = true;
           return;
         }
@@ -2472,100 +3109,152 @@ __webpack_require__.r(__webpack_exports__);
 
       this.is_member = false;
     },
+
+    /**
+     * @description enable edit mode to rename group
+     */
     enableEditTitle: function enableEditTitle() {
       this.tempValue = this.group_name;
       this.edit_title = true;
     },
+
+    /**
+     * @description once saved or canceled disabled edit mode
+     */
     disableEditTitle: function disableEditTitle() {
       this.tempValue = null;
       this.edit_title = false;
       this.error = false;
+      this.errors = []; //reset errors
     },
-    saveEdit: function saveEdit() {
-      this.old_name = this.group_name;
-      this.group_name = this.tempValue.trim(); // However we want to save it to the database
 
-      if (this.group_name) {
-        this.changeGroupName();
-        this.disableEditTitle();
+    /**
+     * @description save changes to group name
+     */
+    saveEdit: function saveEdit() {
+      this.temp_name = this.tempValue.trim();
+
+      if (this.temp_name) {
+        //if not empty
+        this.group_name = this.temp_name;
+        this.changeGroupName(); //send request
+
+        this.disableEditTitle(); //disable edit mode
       } else {
         this.errors = [];
 
-        if (!this.group_name) {
+        if (!this.temp_name) {
           this.errors.push("Group name required.");
         }
 
-        this.group_name = this.old_name;
         this.error = true;
       }
     },
+
+    /**
+     * @description get all of system's users when adding a user to group.
+     *
+     */
     fetchUsers: function fetchUsers() {
       var _this = this;
 
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.users = res.data; //to send to modal
+        _this.users_add_remove = res.data; //to send to action_table_dbox when adding users
         //filter users from list to show in table
 
-        for (var i = 0; i < _this.users.length; i++) {
-          for (var k = 0; k < _this.members.length; k++) {
-            if (_this.users[i].uid == _this.members[k].uid) {
-              _this.users.splice(i, 1);
-            }
-          }
+        var _loop = function _loop(k) {
+          //filter out group members from user list when adding new users to group
+          _this.users_add_remove = _this.users_add_remove.filter(function (x) {
+            return x.uid !== _this.group_members[k].uid;
+          });
+        };
+
+        for (var k = 0; k < _this.group_members.length; k++) {
+          _loop(k);
         }
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description gets all of the current group's users
+     */
     fetchMembers: function fetchMembers() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.group_user = Number(this.path[this.path.length - 3]);
-      this.gid = Number(this.path[this.path.length - 1]);
-      fetch("/group/" + this.gid + "/members").then(function (res) {
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
+
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
+
+      fetch("/group/" + this.curr_group + "/members").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data;
-        _this2.members = res.data; //to render in view
+        _this2.users_add_remove = res.data; //populates action_table_dbox when removing a member from group
+
+        if (_this2.is_owner) {
+          _this2.users_add_remove = _this2.users_add_remove.filter(function (x) {
+            return x.uid !== _this2.curr_user;
+          }); //filter owner out so he can't remove himself
+        }
+
+        _this2.group_members = res.data; //to render in view
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description gets all of the cases of the current group
+     */
     fetchCases: function fetchCases() {
       var _this3 = this;
 
-      fetch("/group/" + this.gid + "/cases").then(function (res) {
+      fetch("/group/" + this.curr_group + "/cases").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.cases = res.data;
+        _this3.group_cases = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description gets info of the current group
+     */
     fetchGroupInfo: function fetchGroupInfo() {
       var _this4 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
-      fetch("/group/" + this.gid + "/info").then(function (res) {
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
+
+      fetch("/group/" + this.curr_group + "/info").then(function (res) {
         return res.json();
       }).then(function (res) {
         _this4.group_data = res.data;
-        _this4.group_name = _this4.group_data[0].g_name;
-        _this4.group_owner = _this4.group_data[0].g_owner; //Verify if use is owner
+        _this4.group_name = _this4.group_data[0].g_name; //name of group
 
-        _this4.userPriveleges();
+        _this4.group_owner = _this4.group_data[0].g_owner; // id of owner
+
+        _this4.userPriveleges(); //set user priveleges
+
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description outputs to the groupController a JSON request to rename group
+     */
     changeGroupName: function changeGroupName() {
       this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
-      fetch("/group/" + this.gid + "/update", {
+      this.curr_group = this.path[this.path.length - 1];
+      fetch("/group/" + this.curr_group + "/update", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -2583,6 +3272,11 @@ __webpack_require__.r(__webpack_exports__);
         console.error("Error: ", err);
       });
     },
+
+    /**
+     * @description outputs to the User_groups Controller a JSON request to add members to a group
+     * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
+     */
     addUsers: function addUsers(users_to_add) {
       var _this5 = this;
 
@@ -2600,13 +3294,20 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(users_to_add);
 
-        _this5.fetchUsers();
+        _this5.fetchUsers(); //update user list
 
-        _this5.fetchMembers();
+
+        _this5.fetchMembers(); //update member list
+
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
+
+    /**
+     * @description outputs to the User_groups Controller a JSON request to remove members from group
+     * @param {Array} users_to_remove - array of user id's to remove group - data is sent by the action_table_dbox dialogue
+     */
     removeUsers: function removeUsers(users_to_remove) {
       var _this6 = this;
 
@@ -2624,13 +3325,20 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(users_to_remove);
 
-        _this6.fetchUsers();
+        _this6.fetchUsers(); //update user list
 
-        _this6.fetchMembers();
+
+        _this6.fetchMembers(); //update member list
+
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
+
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     */
     createCaseStudy: function createCaseStudy(case_study) {
       var _this7 = this;
 
@@ -2648,7 +3356,8 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(case_study);
 
-        _this7.fetchCases();
+        _this7.fetchCases(); //update case list
+
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -2842,480 +3551,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=script&lang=js&":
-/*!****************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_confirm.vue?vue&type=script&lang=js& ***!
-  \****************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    action_confirm: {
-      type: String
-    },
-    actor: {
-      type: String
-    },
-    message: {
-      type: String
-    },
-    isSelected: {
-      type: Boolean
-    },
-    errors: {
-      type: Array
-    }
-  },
-  methods: {
-    confirmRemoveMembers: function confirmRemoveMembers() {
-      this.$emit("sendUsers"); //call to mg_action_table(parent) to send users to group vue.
-    },
-    confirmRemoveGroups: function confirmRemoveGroups() {
-      this.$emit("removeGroups"); //call to parent (user_groups vue)
-    },
-    confirmRemoveCases: function confirmRemoveCases() {
-      this.$emit("removeCases"); //call to parent (user_cases vue)
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=script&lang=js&":
-/*!**************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_table.vue?vue&type=script&lang=js& ***!
-  \**************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    action: {
-      type: String
-    },
-    actor: {
-      type: String
-    },
-    gname_box_show: {
-      type: Boolean,
-      "default": false
-    },
-    users: {
-      type: Array
-    },
-    curr_user_id: {
-      type: Number
-    }
-  },
-  data: function data() {
-    return {
-      showModal: false,
-      uids: [],
-      user: {
-        first_name: "",
-        last_name: "",
-        email: ""
-      },
-      user_to_add_remove: [],
-      groups: [],
-      group_to_create: {
-        g_name: "",
-        g_status: "",
-        g_creation_date: "",
-        g_owner: ""
-      },
-      g_name: "",
-      search: "",
-      modal: "",
-      errors: [],
-      valid_input: false,
-      isSelected: false,
-      success: false
-    };
-  },
-  created: function created() {
-    this.totalGroups();
-  },
-  computed: {
-    filterUsers: function filterUsers() {
-      var _this = this;
-
-      return this.users.filter(function (user) {
-        return user.email.includes(_this.search);
-      });
-    }
-  },
-  methods: {
-    uncheck: function uncheck() {
-      this.uids = [];
-
-      for (var i in this.uids) {
-        this.uids.push(this.uids[i].uid);
-      }
-    },
-    isUserSelected: function isUserSelected() {
-      if (this.uids.length == 0) {
-        this.isSelected = false;
-      } else {
-        this.isSelected = true;
-
-        if (this.action == "Add") {
-          this.sendUsers();
-        }
-      }
-    },
-    validateInput: function validateInput() {
-      if (this.g_name) {
-        this.sendGroupData();
-        this.modal = "modal";
-        this.valid_input = true;
-        this.errors = []; //reset
-      } else {
-        this.modal = "";
-        this.valid_input = false;
-        this.errors = [];
-
-        if (!this.g_name) {
-          this.errors.push("Group name required.");
-        }
-      }
-    },
-    totalGroups: function totalGroups() {
-      var _this2 = this;
-
-      fetch("/groups").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this2.groups = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-    sendUsers: function sendUsers() {
-      //send selected users to parent component to add users
-      this.path = window.location.pathname.split("/");
-      this.gid = Number(this.path[this.path.length - 1]);
-
-      for (var i in this.uids) {
-        this.user_to_add_remove.push({
-          uid: this.uids[i],
-          gid: this.gid
-        });
-      } //emit data to parent
-
-
-      if (this.isSelected) {
-        if (this.action == "Add") {
-          this.$emit("addUsers", this.user_to_add_remove);
-        } else {
-          this.$emit("removeUsers", this.user_to_add_remove);
-        }
-
-        this.uncheck(); // uncheck all values when finished
-
-        this.user_to_add_remove = []; //reset variable
-
-        this.search = "";
-      }
-    },
-    sendGroupData: function sendGroupData() {
-      this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
-      this.date = new Date().toJSON().slice(0, 10);
-      this.new_group_gid = this.groups.length;
-      this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
-      this.group_to_create.g_name = this.g_name;
-      this.group_to_create.g_status = "lol";
-      this.group_to_create.g_creation_date = this.date;
-      this.group_to_create.g_owner = this.uid;
-
-      for (var i in this.uids) {
-        this.user_to_add_remove.push({
-          uid: this.uids[i],
-          gid: this.group_to_create.gid
-        });
-      }
-      /*append owner to group*/
-
-
-      this.user_to_add_remove.push({
-        uid: this.uid,
-        gid: this.group_to_create.gid
-      });
-
-      if (this.isSelected || this.action == "Create") {
-        this.$emit("createGroup", this.group_to_create, this.user_to_add_remove);
-      }
-
-      this.totalGroups();
-      this.group_to_create = {
-        gid: "",
-        g_name: "",
-        g_status: "",
-        g_creation_date: "",
-        g_owner: ""
-      };
-      this.g_name = "";
-      this.search = "";
-      this.user_to_add_remove = [];
-      this.uncheck();
-    }
-  }
-});
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/paginator.vue?vue&type=script&lang=js&":
 /*!********************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/paginator.vue?vue&type=script&lang=js& ***!
@@ -3386,8 +3621,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
-var defaultLabels = {
+var default_labels = {
+  //labels for options
   first: "First",
   last: "Last",
   previous: "<",
@@ -3395,7 +3647,8 @@ var defaultLabels = {
   skip_prev: "<<",
   skip_next: ">>"
 };
-var defaultStyles = {
+var default_styles = {
+  //paginator default style
   ul: {
     margin: 0,
     padding: 0,
@@ -3417,31 +3670,38 @@ var defaultStyles = {
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     items: {
+      //array of items to be paged
       type: Array,
       required: true
     },
-    initialPage: {
+    initial_page: {
+      //set first page
       type: Number,
       "default": 1
     },
-    pageSize: {
+    page_size: {
+      //set number of items per page
       type: Number,
       "default": 10
     },
-    maxPages: {
+    max_pages: {
+      //number of pages to be shown between labels(<1,2,3,4,5>)
       type: Number,
       "default": 5
     },
     labels: {
+      //default options labels
       type: Object,
       "default": function _default() {
-        return defaultLabels;
+        return default_labels;
       }
     },
     styles: {
+      //custom style(no custom style has been used)
       type: Object
     },
-    disableDefaultStyles: {
+    disable_default_styles: {
+      //set default style
       type: Boolean,
       "default": false
     }
@@ -3449,9 +3709,9 @@ var defaultStyles = {
   data: function data() {
     return {
       pager: {},
-      ulStyles: {},
-      liStyles: {},
-      aStyles: {}
+      ul_styles: {},
+      li_styles: {},
+      a_styles: {}
     };
   },
   created: function created() {
@@ -3460,37 +3720,37 @@ var defaultStyles = {
     } // set default styles unless disabled
 
 
-    if (!this.disableDefaultStyles) {
-      this.ulStyles = defaultStyles.ul;
-      this.liStyles = defaultStyles.li;
-      this.aStyles = defaultStyles.a;
+    if (!this.disable_default_styles) {
+      this.ul_styles = default_styles.ul;
+      this.li_styles = default_styles.li;
+      this.a_styles = default_styles.a;
     } // merge custom styles with default styles
 
 
     if (this.styles) {
-      this.ulStyles = _objectSpread({}, this.ulStyles, {}, this.styles.ul);
-      this.liStyles = _objectSpread({}, this.liStyles, {}, this.styles.li);
-      this.aStyles = _objectSpread({}, this.aStyles, {}, this.styles.a);
+      this.ul_styles = _objectSpread({}, this.ul_styles, {}, this.styles.ul);
+      this.li_styles = _objectSpread({}, this.li_styles, {}, this.styles.li);
+      this.a_styles = _objectSpread({}, this.a_styles, {}, this.styles.a);
     } // set page if items array isn't empty
 
 
     if (this.items && this.items.length) {
-      this.setPage(this.initialPage);
+      this.setPage(this.initial_page);
     }
   },
   methods: {
     setPage: function setPage(page) {
       var items = this.items,
-          pageSize = this.pageSize,
-          maxPages = this.maxPages; // get new pager object for specified page
+          page_size = this.page_size,
+          max_pages = this.max_pages; // get new pager object for specified page
 
-      var pager = jw_paginate__WEBPACK_IMPORTED_MODULE_0___default()(items.length, page, pageSize, maxPages); // get new page of items from items array
+      var pager = jw_paginate__WEBPACK_IMPORTED_MODULE_0___default()(items.length, page, page_size, max_pages); // get new page of items from items array
 
-      var pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1); // update pager
+      var page_of_items = items.slice(pager.startIndex, pager.endIndex + 1); // update pager
 
       this.pager = pager; // emit change page event to parent component
 
-      this.$emit("changePage", pageOfItems);
+      this.$emit("changePage", page_of_items);
     }
   }
 });
@@ -3602,91 +3862,166 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * write a component's description
+ */
 /* harmony default export */ __webpack_exports__["default"] = ({
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data: function data() {
     return {
-      cases: [],
-      cids: [],
+      curr_user: "",
+      //current user id
+      action: "",
+      //action the user is executing
+      acted_on: "",
+      //on what is the action being exected
+      user_cases: [],
+      // cases of the user
+      selected_cases: [],
+      // the cases the user selects
       cases_to_remove: [],
+      // the cases to remove, sent to controller
+      page_of_cases: [],
+      //cases to show on table page
       case_study: {
         cid: "",
         c_title: ""
       },
-      pageOfCases: [],
-      users: [],
-      uid: "",
-      action: "",
-      actor: "",
-      showModal: false,
+      //case attributes
+      entries_per_table_page: 4,
+      //table entries
+      reload_paginator: false,
+      //used to update paginator
       isSelected: false,
-      ready: false,
+      //has user made selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
   },
+
+  /**
+   * @description gets all users cases to populate case table when the page is loaded
+   */
   created: function created() {
     this.fetchCases();
   },
   methods: {
-    onChangePage: function onChangePage(pageOfCases) {
-      // update page of Casess
-      this.pageOfCases = pageOfCases;
+    /**
+     * @description - lists the set of cases of the current table page
+     * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
+     *
+     */
+    onChangePage: function onChangePage(page_of_cases) {
+      // update page of Cases
+      this.page_of_cases = page_of_cases;
     },
+
+    /**
+     * @description verifies if user has made a selection of a case
+     */
     isCaseSelected: function isCaseSelected() {
-      if (this.cids.length == 0) {
+      if (this.selected_cases.length == 0) {
         this.isSelected = false;
       } else {
         this.isSelected = true;
       }
     },
+
+    /**
+     * @description sets the number of cases to show in a page
+     * @param {Number} entry - variable containing the number of entries per page
+     */
+    selectEntries: function selectEntries(entry) {
+      this.entries_per_table_page = entry;
+      this.updatePaginator();
+    },
+
+    /**
+     * @description - refreshes the paginator
+     */
     updatePaginator: function updatePaginator() {
       var _this = this;
 
       // Remove paginator from the DOM
-      this.ready = false;
+      this.reload_paginator = false;
       this.$nextTick().then(function () {
         // Add the paginator back in
-        _this.ready = true;
+        _this.reload_paginator = true;
       });
     },
-    uncheck: function uncheck() {
-      this.cids = [];
 
-      for (var i in this.cids) {
-        this.cids.push(this.cids[i].cid);
+    /**
+     * @description unchecks any selection of cases the user has made
+     */
+    uncheck: function uncheck() {
+      this.selected_cases = [];
+
+      for (var i in this.selected_cases) {
+        this.selected_cases.push(this.selected_cases[i].cid);
       }
     },
-    fetchUsers: function fetchUsers() {
+
+    /**
+     * @description gets all the cases of the current user
+     */
+    fetchCases: function fetchCases() {
       var _this2 = this;
 
-      fetch("/users").then(function (res) {
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = this.path[this.path.length - 2]; //get user id from path
+
+      fetch("/user_cases/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data;
+        _this2.user_cases = res.data;
+        _this2.page_of_cases = _this2.user_cases;
+
+        _this2.uncheck();
+
+        _this2.updatePaginator(); //refresh with updated list of cases
+
       })["catch"](function (err) {
         return console.log(err);
       });
     },
-    fetchCases: function fetchCases() {
-      var _this3 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/user_cases/" + this.uid).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this3.cases = res.data;
-        _this3.pageOfCases = _this3.cases;
-
-        _this3.uncheck();
-
-        _this3.updatePaginator();
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     */
     createCaseStudy: function createCaseStudy(case_study) {
-      var _this4 = this;
+      var _this3 = this;
 
       fetch("/case/create", {
         method: "post",
@@ -3702,19 +4037,22 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(case_study);
 
-        _this4.fetchCases();
+        _this3.fetchCases();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
+
+    /**
+     * @description removes any selected user cases by making a delete request to caseController
+     */
     removeCases: function removeCases() {
-      var _this5 = this;
+      var _this4 = this;
 
-      console.log(JSON.stringify(this.cids));
-
-      for (var i in this.cids) {
+      for (var i in this.selected_cases) {
         this.cases_to_remove.push({
-          cid: this.cids[i]
+          //push selected cases id's as cid attribute
+          cid: this.selected_cases[i]
         });
       }
 
@@ -3725,16 +4063,18 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.cases_to_remove)
+        body: JSON.stringify(this.cases_to_remove) //append data to the body of request
+
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(_this5.cases_to_remove);
+        console.log(_this4.cases_to_remove);
 
-        _this5.fetchCases();
+        _this4.fetchCases(); //update UI with latest cases
 
-        _this5.cases_to_remove = [];
+
+        _this4.cases_to_remove = []; //reset variable of cases to remove
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -3856,48 +4196,118 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * write a component's description
+ */
 /* harmony default export */ __webpack_exports__["default"] = ({
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
   data: function data() {
     return {
-      reload_paginator: false,
-      gids: [],
-      groups: [],
+      curr_user: "",
+      //current user id
+      action: "",
+      //action the user is executing
+      acted_on: "",
+      //on what is the action being exected
+      path: "",
+      uid: "",
+      user_groups: [],
+      // groups of the user
+      selected_groups: [],
+      // the groups the user selects
+      groups_to_remove: [],
+      // the groups to remove, sent to controller
+      page_of_groups: [],
+      //groups to show on table page
+      users: [],
       group: {
+        //group attributes
         gid: "",
         g_name: "",
         g_status: "",
         g_creation_date: "",
         g_owner: ""
       },
-      groups_to_remove: [],
-      pageOfGroups: [],
-      users: [],
-      uid: "",
-      action: "",
-      actor: "",
+      entries_per_page_table: 4,
+      //table entries
+      reload_paginator: false,
+      //used to update paginator
       isSelected: false,
       //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
   },
+
+  /**
+   * @description gets all users groups to populate group table when the page is loaded
+   */
   created: function created() {
     this.fetchGroups();
   },
   computed: {},
   methods: {
-    onChangePage: function onChangePage(pageOfGroups) {
+    /**
+     * @description - lists the set of groups of the current table page
+     * @param  {Array} page_of_groups - contains a list of set of groups sent by the paginator
+     */
+    onChangePage: function onChangePage(page_of_groups) {
       // update page of Groups
-      this.pageOfGroups = pageOfGroups;
+      this.page_of_groups = page_of_groups;
     },
+
+    /**
+     * @description @description verifies if user has made a selection of a group
+     */
     isGroupSelected: function isGroupSelected() {
-      if (this.gids.length == 0) {
+      if (this.selected_groups.length == 0) {
         this.isSelected = false;
       } else {
         this.isSelected = true;
       }
     },
-    forceRerender: function forceRerender() {
+
+    /**
+     * @description sets the number of groups to show in a page
+     * @param {Number} entry - variable containing the number of entries per page
+     */
+    selectEntries: function selectEntries(entry) {
+      this.entries_per_page_table = entry;
+      this.updatePaginator();
+    },
+
+    /**
+     * @description refreshes the paginator
+     */
+    updatePaginator: function updatePaginator() {
       var _this = this;
 
       // Remove paginator from the DOM
@@ -3907,57 +4317,76 @@ __webpack_require__.r(__webpack_exports__);
         _this.reload_paginator = true;
       });
     },
-    uncheck: function uncheck() {
-      this.gids = [];
 
-      for (var i in this.gids) {
-        this.gids.push(this.gids[i].gid);
+    /**
+     * @description unchecks any selection of groups the user has made
+     */
+    uncheck: function uncheck() {
+      this.selected_groups = [];
+
+      for (var i in this.selected_groups) {
+        this.selected_groups.push(this.selected_groups[i].gid);
       }
     },
+
+    /**
+     * @description get all of system's users when adding a user while creating a group
+     */
     fetchUsers: function fetchUsers() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data; //filter user from list to show in table
+        _this2.users = res.data; //used in action_table_dbox
+        //filter user from list to show in table
 
-        for (var i = 0; i < _this2.users.length; i++) {
-          if (_this2.users[i].uid == _this2.uid) {
-            _this2.users.splice(i, 1);
-
-            return;
-          }
-        }
+        _this2.users = _this2.users.filter(function (x) {
+          return x.uid !== _this2.curr_user;
+        }); //filter owner so he can't remove himself
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description gets all the groups of the current user
+     */
     fetchGroups: function fetchGroups() {
       var _this3 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.uid = Number(this.path[this.path.length - 2]);
-      fetch("/user_groups/" + this.uid).then(function (res) {
+      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+
+      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+
+      fetch("/user_groups/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.groups = res.data;
-        _this3.pageOfGroups = _this3.groups;
+        _this3.user_groups = res.data;
+        _this3.page_of_groups = _this3.user_groups;
 
-        _this3.uncheck();
+        _this3.uncheck(); //uncheck any selected items
 
-        _this3.forceRerender();
+
+        _this3.updatePaginator(); //refresh with updated group list
+
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+
+    /**
+     * @description outputs to the groupController a JSON request to create a group
+     * @param {Array} group - array of group data to create a group - data is sent by action_table_dbox when calling method
+     * @param {Array} members - array of user id's to add to group
+     */
     createGroup: function createGroup(group, members) {
       var _this4 = this;
 
-      // console.log(JSON.stringify(group));
-      // console.log(JSON.stringify(members));
       fetch("/group/create", {
         method: "post",
         headers: new Headers({
@@ -3965,23 +4394,29 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(group)
+        body: JSON.stringify(group) //append group to body of request
+
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
         console.log(res);
         console.log(group);
 
-        _this4.addUsers(members);
+        _this4.addUsers(members); //add users to group
 
-        _this4.fetchGroups();
+
+        _this4.fetchGroups(); //updpate group list
+
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
-    addUsers: function addUsers(users_to_add) {
-      var _this5 = this;
 
+    /**
+     * @description outputs to the User_Groups controller a JSON request to add users to existing group
+     * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
+     */
+    addUsers: function addUsers(users_to_add) {
       fetch("/group/members/add", {
         method: "post",
         headers: new Headers({
@@ -3994,19 +4429,22 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(users_to_add);
-
-        _this5.fetchGroups();
+        console.log(users_to_add); // this.fetchGroups();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
     },
-    removeGroups: function removeGroups() {
-      var _this6 = this;
 
-      for (var i in this.gids) {
+    /**
+     * @description removes any selected groups by making a delete request to User_Groups controller
+     */
+    removeGroups: function removeGroups() {
+      var _this5 = this;
+
+      for (var i in this.selected_groups) {
         this.groups_to_remove.push({
-          gid: this.gids[i]
+          //push selected group id's as gid attributes
+          gid: this.selected_groups[i]
         });
       }
 
@@ -4022,11 +4460,12 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(_this6.groups_to_remove);
+        console.log(_this5.groups_to_remove);
 
-        _this6.fetchGroups();
+        _this5.fetchGroups(); //update group list
 
-        _this6.groups_to_remove = [];
+
+        _this5.groups_to_remove = []; //reset variable
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -8500,19 +8939,57 @@ exports.push([module.i, ".card .card-body[data-v-0b0aedd2] {\n  padding-left: 20
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true&":
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true& ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
 // imports
 
 
 // module
-exports.push([module.i, "/*the following style are for the search text and input bar*/\n.modal-body label[data-v-5b06e286],\n.modal-body input[data-v-5b06e286] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n.input-group[data-v-5b06e286] {\n  margin-bottom: 10px;\n}\n.input-group-append input[data-v-5b06e286] {\n  border-radius: 3px;\n}\n.form-check-input[data-v-5b06e286] {\n  font-size: 20px;\n}\n.form-control[data-v-5b06e286] {\n  height: 30px;\n}\n\n/***********************************************************/\ntextarea[data-v-5b06e286] {\n  width: 100%;\n  min-height: 150px;\n  resize: none;\n}\n.modal[data-v-5b06e286] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
+exports.push([module.i, "p[data-v-3b958806] {\n  padding-top: 30px;\n  padding-bottom: 15px;\n  font-size: 18px;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true&":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true& ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-b4dffb22] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*table cell attrbites*/\ntable tr td[data-v-b4dffb22] {\n  text-align: center;\n  vertical-align: middle;\n  padding-top: 18px;\n  padding-bottom: 18px;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  max-width: 386px;\n}\n\n/*set checkbock row's width*/\n#row-checkbox[data-v-b4dffb22] {\n  width: 15%;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-b4dffb22],\n.modal-body input[data-v-b4dffb22] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*elements margins*/\n.input-group[data-v-b4dffb22] {\n  margin-bottom: 10px;\n}\n\n/*input box radius*/\n.input-group-append input[data-v-b4dffb22] {\n  border-radius: 3px;\n}\n\n/*input height*/\n.form-control[data-v-b4dffb22] {\n  height: 30px;\n}\n\n/***********************************************************/\n/*checkbox and label attributes*/\ninput[type=checkbox] + label[data-v-b4dffb22] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/*checkbox sizing */\ninput[type=checkbox][data-v-b4dffb22] {\n  transform: scale(1.2);\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-b4dffb22] {\n  background: rgba(85, 85, 85, 0.5);\n  /*width for group name input and search is defined in HTML elements*/\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "/*the following style are for the search text and input text box(title)*/\n.modal-body label[data-v-8f585bc6],\n.modal-body input[data-v-8f585bc6] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*title input text box*/\n.input-group input[data-v-8f585bc6] {\n  border-radius: 3px;\n}\n\n/***********************************************************/\n/*description box attributes*/\ntextarea[data-v-8f585bc6] {\n  width: 100%;\n  height: 100px;\n  resize: none;\n}\n\n/*height and width for group dropdown and title input are defined in html element*/\n/*set color for dialogue box popup background*/\n.modal[data-v-8f585bc6] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
 
 // exports
 
@@ -8531,7 +9008,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".page-footer[data-v-585a4226] {\n  bottom: 0;\n  width: 100%;\n  background-color: #333333;\n  margin-top: auto;\n}\n\n/* change links text color */\na[data-v-585a4226]:link {\n  color: white;\n}\n\n/* Footer padding */\n.container-fluid[data-v-585a4226] {\n  padding-top: 30px;\n  padding-bottom: 100px;\n}\n\n/* padding for content, and links text */\n.text-white[data-v-585a4226] {\n  padding-right: 55px;\n}\n\n/* font weight for links options */\nul[data-v-585a4226] {\n  font-weight: 300;\n}\n\n/* underline for footer title text */\nh5[data-v-585a4226] {\n  border-bottom: 2px solid white;\n}", ""]);
+exports.push([module.i, ".page-footer[data-v-585a4226] {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  background-color: #333333;\n  top: 100%;\n}\n\n/* change links text color */\na[data-v-585a4226]:link {\n  color: white;\n}\n\n/* Footer padding */\n.container-fluid[data-v-585a4226] {\n  padding-bottom: 50px;\n}\n\n/* padding for content, and links text */\n.text-white[data-v-585a4226] {\n  padding-right: 55px;\n}\n\n/* font weight for links options */\nul[data-v-585a4226] {\n  font-weight: 300;\n}\n\n/*attributes for nsf logo and footer content display */\n#Acknowledgment img[data-v-585a4226] {\n  float: left;\n  margin-right: 15px;\n}\n#Acknowledgment h5[data-v-585a4226] {\n  margin-left: 15px;\n  padding-top: 15px;\n}\n#Disclaimer h5[data-v-585a4226] {\n  padding-top: 15px;\n}\n\n/*************************************************/", ""]);
 
 // exports
 
@@ -8550,7 +9027,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 450px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-027ff7c4],\n#members[data-v-027ff7c4] {\n  max-height: 575px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
 
 // exports
 
@@ -8576,44 +9053,6 @@ exports.push([module.i, ".profile-usertitle[data-v-798ca618] {\n  text-align: ce
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true&":
-/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true& ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "p[data-v-71154e41] {\n  padding-top: 30px;\n  padding-bottom: 15px;\n  font-size: 18px;\n}", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true&":
-/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true& ***!
-  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-3d2cdae2] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*table cell attrbites*/\ntable tr td[data-v-3d2cdae2] {\n  text-align: center;\n  vertical-align: middle;\n  padding-top: 18px;\n  padding-bottom: 18px;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  max-width: 386px;\n}\n\n/*set checkbock row's width*/\n#row-checkbox[data-v-3d2cdae2] {\n  width: 15%;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-3d2cdae2],\n.modal-body input[data-v-3d2cdae2] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n.input-group[data-v-3d2cdae2] {\n  margin-bottom: 10px;\n}\n.input-group-append input[data-v-3d2cdae2] {\n  border-radius: 3px;\n}\n.form-check-input[data-v-3d2cdae2] {\n  font-size: 20px;\n}\n.form-control[data-v-3d2cdae2] {\n  height: 30px;\n}\n\n/***********************************************************/\n.modal[data-v-3d2cdae2] {\n  background: rgba(85, 85, 85, 0.5);\n}\ninput[type=checkbox] + label[data-v-3d2cdae2] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\ninput[type=checkbox][data-v-3d2cdae2] {\n  transform: scale(1.2);\n}", ""]);
-
-// exports
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/user_cases.vue?vue&type=style&index=0&id=4dce56da&lang=scss&scoped=true&":
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/user_cases.vue?vue&type=style&index=0&id=4dce56da&lang=scss&scoped=true& ***!
@@ -8626,7 +9065,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover,\nh1 a[data-v-4dce56da]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n#paginate[data-v-4dce56da] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover,\nh1 a[data-v-4dce56da]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-4dce56da] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-4dce56da] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-4dce56da] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*entries label*/\n#container #entries_label[data-v-4dce56da] {\n  padding-right: 5px;\n  padding-top: 5px;\n}", ""]);
 
 // exports
 
@@ -8645,7 +9084,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover,\nh1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-79cc8066] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover,\nh1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-79cc8066] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-79cc8066] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-79cc8066] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*entries label*/\n#container #entries_label[data-v-79cc8066] {\n  padding-right: 5px;\n  padding-top: 5px;\n}", ""]);
 
 // exports
 
@@ -39611,15 +40050,15 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true&":
-/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true& ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true&");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -39633,7 +40072,67 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -39710,66 +40209,6 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./header.vue?vue&type=style&index=0&id=798ca618&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/header.vue?vue&type=style&index=0&id=798ca618&lang=scss&scoped=true&");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true&":
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true& ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true&");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true&":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true& ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -40509,10 +40948,525 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true&":
-/*!*******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true& ***!
-  \*******************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true&":
+/*!*************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true& ***!
+  \*************************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "action_confirm_dbox",
+        tabindex: "-1",
+        "data-keyboard": "false",
+        "data-backdrop": "static",
+        role: "dialog"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _c("div", { staticClass: "modal-header" }, [
+            _c("h5", { staticClass: "modal-title" }, [
+              _vm._v(_vm._s(_vm.action_confirm))
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-body text-center" }, [
+            _vm.errors.length
+              ? _c("div", [
+                  _c("div", [
+                    _c("label", { staticStyle: { "font-size": "18px" } }, [
+                      _vm._v(
+                        "\n              Please correct the following error(s):\n              "
+                      ),
+                      _c(
+                        "ul",
+                        { staticStyle: { margin: "10px" } },
+                        _vm._l(_vm.errors, function(error, index) {
+                          return _c(
+                            "li",
+                            { key: index, staticStyle: { margin: "10px" } },
+                            [_vm._v(_vm._s(error))]
+                          )
+                        }),
+                        0
+                      )
+                    ])
+                  ])
+                ])
+              : !_vm.isSelected
+              ? _c("div", [
+                  _c("p", [
+                    _vm._v(
+                      "Please select " +
+                        _vm._s(_vm.acted_on) +
+                        " to " +
+                        _vm._s(_vm.action_confirm)
+                    )
+                  ])
+                ])
+              : _vm.action_confirm == "Create"
+              ? _c("div", [
+                  _c("p", [
+                    _vm._v(
+                      _vm._s(_vm.action_confirm) + "d " + _vm._s(_vm.acted_on)
+                    )
+                  ])
+                ])
+              : _vm.action_confirm == "Add"
+              ? _c("div", [_c("p", [_vm._v("Added user(s) to group")])])
+              : _vm.action_confirm == "Rename"
+              ? _c("div", [_c("p", [_vm._v("Renamed group!")])])
+              : _c("div", [
+                  _c("p", [
+                    _vm._v(
+                      _vm._s(_vm.action_confirm) +
+                        " selected " +
+                        _vm._s(_vm.acted_on) +
+                        "?"
+                    )
+                  ])
+                ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _vm.action_confirm == "Add" ||
+            _vm.action_confirm == "Create" ||
+            _vm.action_confirm == "Rename" ||
+            !_vm.isSelected ||
+            _vm.errors.length
+              ? _c("div", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "button", "data-dismiss": "modal" }
+                    },
+                    [_vm._v("Ok")]
+                  )
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.action_confirm == "Remove" && _vm.isSelected
+              ? _c("div", [
+                  _vm.acted_on == "member(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button", "data-dismiss": "modal" },
+                            on: {
+                              click: function($event) {
+                                return _vm.confirmRemoveMembers()
+                              }
+                            }
+                          },
+                          [_vm._v("Yes")]
+                        )
+                      ])
+                    : _vm.acted_on == "group(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button", "data-dismiss": "modal" },
+                            on: {
+                              click: function($event) {
+                                return _vm.confirmRemoveGroups()
+                              }
+                            }
+                          },
+                          [_vm._v("Yes")]
+                        )
+                      ])
+                    : _vm.acted_on == "case study(s)"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button", "data-dismiss": "modal" },
+                            on: {
+                              click: function($event) {
+                                return _vm.confirmRemoveCases()
+                              }
+                            }
+                          },
+                          [_vm._v("Yes")]
+                        )
+                      ])
+                    : _vm._e()
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.action_confirm == "Remove" && _vm.isSelected
+              ? _c("div", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary",
+                      attrs: { type: "button", "data-dismiss": "modal" }
+                    },
+                    [_vm._v("No")]
+                  )
+                ])
+              : _vm._e()
+          ])
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true&":
+/*!***********************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true& ***!
+  \***********************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("transition", [
+    _c("div", [
+      _c(
+        "div",
+        {
+          staticClass: "modal fade",
+          attrs: {
+            id: "action_table_dbox",
+            tabindex: "-1",
+            "data-keyboard": "false",
+            "data-backdrop": "static",
+            role: "dialog"
+          }
+        },
+        [
+          _c(
+            "div",
+            {
+              staticClass: "modal-dialog modal-lg",
+              attrs: { role: "document" }
+            },
+            [
+              _c("div", { staticClass: "modal-content" }, [
+                _c("div", { staticClass: "modal-header" }, [
+                  _c("h5", { staticClass: "modal-title" }, [
+                    _vm._v(_vm._s(_vm.action) + " " + _vm._s(_vm.acted_on))
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "modal-body" }, [
+                  _vm.gname_box_show == true
+                    ? _c("div", { staticClass: "input-group" }, [
+                        _c("label", [_vm._v("Group name")]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "input-group-append" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.group_name_input,
+                                expression: "group_name_input"
+                              }
+                            ],
+                            staticClass: "form-control input-sm",
+                            staticStyle: { width: "250px" },
+                            attrs: {
+                              type: "text",
+                              maxlength: "32",
+                              placeholder: "Name..."
+                            },
+                            domProps: { value: _vm.group_name_input },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.group_name_input = $event.target.value
+                              }
+                            }
+                          })
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group" }, [
+                    _c("label", [_vm._v("Search")]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "input-group-append search" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.search,
+                            expression: "search"
+                          }
+                        ],
+                        staticClass: "form-control input-sm",
+                        staticStyle: { width: "250px" },
+                        attrs: {
+                          type: "text",
+                          maxlength: "32",
+                          placeholder: "User email.."
+                        },
+                        domProps: { value: _vm.search },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.search = $event.target.value
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "table-wrapper" }, [
+                    _c(
+                      "table",
+                      {
+                        staticClass: "table table-hover table-bordered",
+                        attrs: { id: "group-table", cellspacing: "0" }
+                      },
+                      [
+                        _c("thead", { staticClass: "thead-dark" }, [
+                          _c("tr", [
+                            _c("th", { attrs: { id: "row-checkbox" } }, [
+                              _vm._v("#")
+                            ]),
+                            _vm._v(" "),
+                            _c("th", [_vm._v("Email")]),
+                            _vm._v(" "),
+                            _c("th", [_vm._v("Name")])
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "tbody",
+                          _vm._l(_vm.filterUsers, function(user, index) {
+                            return _c("tr", { key: index }, [
+                              _c("td", [
+                                _c("div", { staticClass: "check-box" }, [
+                                  _c("input", {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: _vm.selected_users,
+                                        expression: "selected_users"
+                                      }
+                                    ],
+                                    staticClass: "checkbox",
+                                    attrs: { type: "checkbox" },
+                                    domProps: {
+                                      value: user.uid,
+                                      checked: Array.isArray(_vm.selected_users)
+                                        ? _vm._i(_vm.selected_users, user.uid) >
+                                          -1
+                                        : _vm.selected_users
+                                    },
+                                    on: {
+                                      change: function($event) {
+                                        var $$a = _vm.selected_users,
+                                          $$el = $event.target,
+                                          $$c = $$el.checked ? true : false
+                                        if (Array.isArray($$a)) {
+                                          var $$v = user.uid,
+                                            $$i = _vm._i($$a, $$v)
+                                          if ($$el.checked) {
+                                            $$i < 0 &&
+                                              (_vm.selected_users = $$a.concat([
+                                                $$v
+                                              ]))
+                                          } else {
+                                            $$i > -1 &&
+                                              (_vm.selected_users = $$a
+                                                .slice(0, $$i)
+                                                .concat($$a.slice($$i + 1)))
+                                          }
+                                        } else {
+                                          _vm.selected_users = $$c
+                                        }
+                                      }
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("label", { attrs: { for: "checkbox" } }, [
+                                    _vm._v(_vm._s(index + 1))
+                                  ])
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("label", [_vm._v(_vm._s(user.email))])
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("label", [
+                                  _vm._v(
+                                    _vm._s(user.first_name) +
+                                      " " +
+                                      _vm._s(user.last_name)
+                                  )
+                                ])
+                              ])
+                            ])
+                          }),
+                          0
+                        )
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "modal-footer" }, [
+                  _vm.action == "Remove"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: {
+                              type: "button",
+                              "data-dismiss": _vm.close_dialog,
+                              "data-toggle": "modal",
+                              "data-target": "#action_confirm_dbox"
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.isUserSelected()
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.action))]
+                        )
+                      ])
+                    : _vm.action == "Add"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: {
+                              type: "button",
+                              "data-dismiss": _vm.close_dialog,
+                              "data-toggle": "modal",
+                              "data-target": "#action_confirm_dbox"
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.isUserSelected()
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.action))]
+                        )
+                      ])
+                    : _vm.action == "Create"
+                    ? _c("div", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: {
+                              type: "button",
+                              "data-dismiss": _vm.close_dialog,
+                              "data-toggle": "modal",
+                              "data-target": "#action_confirm_dbox"
+                            },
+                            on: {
+                              click: function($event) {
+                                _vm.isUserSelected(), _vm.validateInput()
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.action))]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("div", [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button", "data-dismiss": "modal" },
+                        on: {
+                          click: function($event) {
+                            _vm.uncheck(), _vm.resetInputFields()
+                          }
+                        }
+                      },
+                      [_vm._v("Close")]
+                    )
+                  ])
+                ])
+              ])
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        [
+          _c("action_confirm_dbox", {
+            attrs: {
+              action_confirm: _vm.action,
+              acted_on: _vm.acted_on,
+              isSelected: _vm.isSelected,
+              errors: _vm.errors
+            },
+            on: { sendUsers: _vm.sendUsers, sendGroupData: _vm.sendGroupData }
+          })
+        ],
+        1
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -40549,14 +41503,14 @@ var render = function() {
               _c("div", { staticClass: "modal-content" }, [
                 _c("div", { staticClass: "modal-header" }, [
                   _c("h5", { staticClass: "modal-title" }, [
-                    _vm._v(_vm._s(_vm.action) + " " + _vm._s(_vm.actor))
+                    _vm._v(_vm._s(_vm.action) + " " + _vm._s(_vm.acted_on))
                   ])
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-body" }, [
                   _c("label", [_vm._v("Title")]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "input-group-append" }, [
+                  _c("div", { staticClass: "input-group" }, [
                     _c("input", {
                       directives: [
                         {
@@ -40567,10 +41521,10 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control input-sm",
-                      staticStyle: { width: "350px" },
+                      staticStyle: { width: "350px", height: "35px" },
                       attrs: {
                         type: "text",
-                        maxlength: "32",
+                        maxlength: "50",
                         placeholder: "Name..."
                       },
                       domProps: { value: _vm.title },
@@ -40586,11 +41540,9 @@ var render = function() {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
-                    _c(
-                      "label",
-                      { attrs: { for: "exampleFormControlSelect2" } },
-                      [_vm._v("Assign to a group(optional)")]
-                    ),
+                    _c("label", { attrs: { for: "group_select" } }, [
+                      _vm._v("Assign to a group(optional)")
+                    ]),
                     _vm._v(" "),
                     _c(
                       "select",
@@ -40599,13 +41551,13 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.gid,
-                            expression: "gid"
+                            value: _vm.curr_group,
+                            expression: "curr_group"
                           }
                         ],
                         staticClass: "form-control",
-                        staticStyle: { height: "40px" },
-                        attrs: { id: "exampleFormControlSelect2" },
+                        staticStyle: { height: "35px" },
+                        attrs: { id: "group_select" },
                         on: {
                           change: function($event) {
                             var $$selectedVal = Array.prototype.filter
@@ -40616,13 +41568,13 @@ var render = function() {
                                 var val = "_value" in o ? o._value : o.value
                                 return val
                               })
-                            _vm.gid = $event.target.multiple
+                            _vm.curr_group = $event.target.multiple
                               ? $$selectedVal
                               : $$selectedVal[0]
                           }
                         }
                       },
-                      _vm._l(_vm.groups, function(group) {
+                      _vm._l(_vm.user_groups, function(group) {
                         return _c(
                           "option",
                           { key: group.gid, domProps: { value: group.gid } },
@@ -40680,8 +41632,8 @@ var render = function() {
                       attrs: {
                         type: "button",
                         "data-toggle": "modal",
-                        "data-dismiss": _vm.modal,
-                        "data-target": "#mg_action_confirm"
+                        "data-dismiss": _vm.close_dialog,
+                        "data-target": "#action_confirm_dbox"
                       },
                       on: {
                         click: function($event) {
@@ -40712,39 +41664,19 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _vm.valid_input
-        ? _c(
-            "div",
-            [
-              _c("mg_action_confirm", {
-                attrs: {
-                  action_confirm: _vm.action,
-                  actor: _vm.actor,
-                  errors: _vm.errors
-                },
-                on: {
-                  close: function($event) {
-                    _vm.close = true
-                  },
-                  revalidate: _vm.validateInput
-                }
-              })
-            ],
-            1
-          )
-        : _c(
-            "div",
-            [
-              _c("mg_action_confirm", {
-                attrs: {
-                  action_confirm: _vm.action,
-                  actor: _vm.actor,
-                  errors: _vm.errors
-                }
-              })
-            ],
-            1
-          )
+      _c(
+        "div",
+        [
+          _c("action_confirm_dbox", {
+            attrs: {
+              action_confirm: _vm.action,
+              acted_on: _vm.acted_on,
+              errors: _vm.errors
+            }
+          })
+        ],
+        1
+      )
     ])
   ])
 }
@@ -40786,82 +41718,51 @@ var staticRenderFns = [
               { staticClass: "container-fluid text-center text-md-left" },
               [
                 _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-md-6 mt-md-0 mt-3" }, [
-                    _c(
-                      "h5",
-                      {
-                        staticClass: "text-uppercase text-white",
-                        staticStyle: { width: "235px" }
-                      },
-                      [_vm._v("Footer Content")]
-                    ),
-                    _vm._v(" "),
-                    _c("p", { staticClass: "text-white font-weight-light" }, [
-                      _vm._v(
-                        "\n                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed voluptate nihil eum\n                consectetur\n                similique? Consectetur, quod, incidunt, harum nisi dolores delectus reprehenderit\n                voluptatem\n                perferendis dicta dolorem non blanditiis ex fugiat.\n              "
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("hr", { staticClass: "clearfix w-100 d-md-none pb-3" }),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-3 mb-md-0 mb-3" }, [
-                    _c(
-                      "h5",
-                      {
-                        staticClass: "text-uppercase text-white",
-                        staticStyle: { width: "50px" }
-                      },
-                      [_vm._v("Links")]
-                    ),
-                    _vm._v(" "),
-                    _c("ul", { staticClass: "list-unstyled" }, [
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link")])
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-7 mt-md-0 mt-3 justify-content-md-start",
+                      attrs: { id: "Acknowledgment" }
+                    },
+                    [
+                      _c("img", {
+                        attrs: {
+                          src: __webpack_require__(/*! ../../..//nsf_logo/nsf_logo.jpg */ "./nsf_logo/nsf_logo.jpg")
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("h5", { staticClass: "text-uppercase text-white" }, [
+                        _vm._v("Acknowledgment")
                       ]),
                       _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 2")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 3")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 4")])
+                      _c("p", { staticClass: "text-white font-weight-light" }, [
+                        _vm._v(
+                          "\n                This material is based upon work supported by the National Science Foundation under grants\n                No. HSI #1832468 and 1832427 (HSI program).\n              "
+                        )
                       ])
-                    ])
-                  ]),
+                    ]
+                  ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "col-md-3 mb-md-0 mb-3" }, [
-                    _c(
-                      "h5",
-                      {
-                        staticClass: "text-uppercase text-white",
-                        staticStyle: { width: "50px" }
-                      },
-                      [_vm._v("Links")]
-                    ),
-                    _vm._v(" "),
-                    _c("ul", { staticClass: "list-unstyled" }, [
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 1")])
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-5 mt-md-0 mt-3 justify-content-md-start",
+                      attrs: { id: "Disclaimer" }
+                    },
+                    [
+                      _c("h5", { staticClass: "text-uppercase text-white" }, [
+                        _vm._v("Disclaimer")
                       ]),
                       _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 2")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 3")])
-                      ]),
-                      _vm._v(" "),
-                      _c("li", [
-                        _c("a", { attrs: { href: "#!" } }, [_vm._v("Link 4")])
+                      _c("p", { staticClass: "text-white font-weight-light" }, [
+                        _vm._v(
+                          "\n                Any opinions, findings, and conclusions or recommendations expressed in this material are\n                those of the authors and do not necessarily reflect the views of the National Science Foundation.\n              "
+                        )
                       ])
-                    ])
-                  ])
+                    ]
+                  )
                 ])
               ]
             )
@@ -40900,11 +41801,12 @@ var render = function() {
               "h1",
               {
                 staticClass: "text-center",
-                style: _vm.is_owner ? "margin-left:35px;" : ""
+                style: _vm.rename_group_permission ? "margin-left:35px;" : ""
               },
               [
                 _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
-                _vm.is_owner
+                _vm._v(" "),
+                _vm.rename_group_permission
                   ? _c(
                       "a",
                       {
@@ -40957,9 +41859,13 @@ var render = function() {
             {
               attrs: {
                 "data-toggle": "modal",
-                "data-target": "#mg_action_confirm"
+                "data-target": "#action_confirm_dbox"
               },
-              on: { click: _vm.saveEdit }
+              on: {
+                click: function($event) {
+                  _vm.saveEdit(), (_vm.action = "Rename")
+                }
+              }
             },
             [_vm._v("Save")]
           )
@@ -40968,103 +41874,111 @@ var render = function() {
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
-    _c(
-      "h1",
-      { staticClass: "text-center mt-5 col-sm" },
-      [
-        _vm.edit_members
-          ? _c(
-              "a",
-              {
-                attrs: {
-                  href: "#mg_action_table",
-                  "data-toggle": "modal",
-                  "data-target": "#mg_action_table",
-                  "data-dismiss": "modal"
-                },
-                on: {
-                  click: function($event) {
-                    ;(_vm.showModal = true),
-                      (_vm.action = "Remove"),
-                      (_vm.actor = "member(s)"),
-                      _vm.fetchMembers()
-                  }
-                }
+    _c("h1", { staticClass: "text-center mt-5 col-sm" }, [
+      _vm.add_remove_members_permission
+        ? _c(
+            "a",
+            {
+              attrs: {
+                href: "#action_table_dbox",
+                "data-toggle": "modal",
+                "data-target": "#action_table_dbox",
+                "data-dismiss": "modal"
               },
-              [_vm._m(0)]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.edit_members
-          ? _c(
-              "a",
-              {
-                attrs: {
-                  href: "#mg_action_table",
-                  "data-toggle": "modal",
-                  "data-target": "#mg_action_table",
-                  "data-dismiss": "modal"
-                },
-                on: {
-                  click: function($event) {
-                    ;(_vm.showModal = true),
-                      (_vm.action = "Add"),
-                      (_vm.actor = "member(s)"),
-                      _vm.fetchUsers()
-                  }
-                }
-              },
-              [_vm._m(1)]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.showModal
-          ? _c("mg_action_table", {
-              attrs: { action: _vm.action, actor: _vm.actor, users: _vm.users },
               on: {
-                close: function($event) {
-                  _vm.showModal = false
-                },
-                addUsers: _vm.addUsers,
-                removeUsers: _vm.removeUsers
+                click: function($event) {
+                  ;(_vm.action = "Remove"),
+                    (_vm.acted_on = "member(s)"),
+                    _vm.fetchMembers()
+                }
               }
-            })
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.error
-          ? _c(
-              "div",
-              [_c("mg_action_confirm", { attrs: { errors: _vm.errors } })],
-              1
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _c("p", { style: _vm.edit_members ? "margin-left:205px;" : "" }, [
-          _vm._v("Members")
-        ])
-      ],
-      1
-    ),
+            },
+            [_vm._m(0)]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.add_remove_members_permission
+        ? _c(
+            "a",
+            {
+              attrs: {
+                href: "#action_table_dbox",
+                "data-toggle": "modal",
+                "data-target": "#action_table_dbox",
+                "data-dismiss": "modal"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.action = "Add"),
+                    (_vm.acted_on = "member(s)"),
+                    _vm.fetchUsers()
+                }
+              }
+            },
+            [_vm._m(1)]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "p",
+        {
+          style: _vm.add_remove_members_permission ? "margin-left:205px;" : ""
+        },
+        [_vm._v("Members")]
+      )
+    ]),
     _vm._v(" "),
-    _c(
-      "div",
-      [
-        _c("case_create_dbox", {
-          attrs: {
-            action: "Create",
-            actor: "case study",
-            group_selection: _vm.gid
-          },
-          on: { createCaseStudy: _vm.createCaseStudy }
-        })
-      ],
-      1
-    ),
+    _vm.action == "Add" || _vm.action == "Remove"
+      ? _c(
+          "div",
+          [
+            _c("action_table_dbox", {
+              attrs: {
+                action: _vm.action,
+                acted_on: _vm.acted_on,
+                users: _vm.users_add_remove,
+                curr_user_id: _vm.curr_user
+              },
+              on: { addUsers: _vm.addUsers, removeUsers: _vm.removeUsers }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.action == "Rename"
+      ? _c(
+          "div",
+          [
+            _c("action_confirm_dbox", {
+              attrs: { action_confirm: _vm.action, errors: _vm.errors }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.action == "Create"
+      ? _c(
+          "div",
+          [
+            _c("case_create_dbox", {
+              attrs: {
+                action: "Create",
+                acted_on: "case study",
+                group_selection: _vm.curr_group
+              },
+              on: { createCaseStudy: _vm.createCaseStudy }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
     _vm._v(" "),
     _c(
       "div",
       { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
-      _vm._l(_vm.members, function(member) {
+      _vm._l(_vm.group_members, function(member) {
         return _c("div", { key: member.uid, staticClass: "col-lg-4 mb-4" }, [
           _c("div", { staticClass: "card h-100 text-center shadow" }, [
             _c(
@@ -41101,26 +42015,33 @@ var render = function() {
       "h1",
       { staticClass: "mt-5 text-center", attrs: { id: "cases_header" } },
       [
-        _vm.create_group_case
-          ? _c("div", [
-              _c(
-                "a",
-                {
-                  staticStyle: { "padding-top": "5px" },
-                  attrs: {
-                    href: "#case_create_dbox",
-                    "data-toggle": "modal",
-                    "data-target": "#case_create_dbox"
-                  }
+        _vm.create_group_case_permission
+          ? _c(
+              "a",
+              {
+                staticStyle: { "padding-top": "5px" },
+                attrs: {
+                  href: "#case_create_dbox",
+                  "data-toggle": "modal",
+                  "data-target": "#case_create_dbox"
                 },
-                [_vm._v("Create case study")]
-              )
-            ])
+                on: {
+                  click: function($event) {
+                    _vm.action = "Create"
+                  }
+                }
+              },
+              [_vm._v("Create case study")]
+            )
           : _vm._e(),
         _vm._v(" "),
-        _c("p", { style: _vm.create_group_case ? "margin-left:170px;" : "" }, [
-          _vm._v("Our Cases")
-        ])
+        _c(
+          "p",
+          {
+            style: _vm.create_group_case_permission ? "margin-left:180px;" : ""
+          },
+          [_vm._v("Our Cases")]
+        )
       ]
     ),
     _vm._v(" "),
@@ -41129,7 +42050,7 @@ var render = function() {
         _c(
           "ul",
           { staticClass: "list-group list-group-flush border-0" },
-          _vm._l(_vm.cases, function(case_study, index) {
+          _vm._l(_vm.group_cases, function(case_study, index) {
             return _c("li", { key: index, staticClass: "list-group-item" }, [
               _c("div", { staticClass: "card-body" }, [
                 _c("h5", { staticClass: "card-title" }, [
@@ -41584,571 +42505,6 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true&":
-/*!********************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true& ***!
-  \********************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "modal fade",
-      attrs: {
-        id: "mg_action_confirm",
-        tabindex: "-1",
-        "data-keyboard": "false",
-        "data-backdrop": "static",
-        role: "dialog"
-      }
-    },
-    [
-      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
-        _c("div", { staticClass: "modal-content" }, [
-          _vm._m(0),
-          _vm._v(" "),
-          _c("div", { staticClass: "modal-body text-center" }, [
-            _vm.action_confirm == "Create" && !_vm.errors.length
-              ? _c("div", [
-                  _c("p", [
-                    _vm._v(
-                      _vm._s(_vm.action_confirm) + "d " + _vm._s(_vm.actor)
-                    )
-                  ])
-                ])
-              : _vm.action_confirm == "Add" && _vm.isSelected
-              ? _c("div", [_c("p", [_vm._v("Added user(s) to group")])])
-              : _vm.errors.length
-              ? _c("div", [
-                  _c("div", [
-                    _c("p", [
-                      _vm._v(
-                        "Please correct the following error(s):\n            "
-                      ),
-                      _c(
-                        "ul",
-                        { staticStyle: { margin: "10px" } },
-                        _vm._l(_vm.errors, function(error, index) {
-                          return _c(
-                            "li",
-                            { key: index, staticStyle: { margin: "10px" } },
-                            [_vm._v(_vm._s(error))]
-                          )
-                        }),
-                        0
-                      )
-                    ])
-                  ])
-                ])
-              : !_vm.isSelected
-              ? _c("div", [
-                  _c("p", [
-                    _vm._v(
-                      "Please select " +
-                        _vm._s(_vm.actor) +
-                        " to " +
-                        _vm._s(_vm.action_confirm)
-                    )
-                  ])
-                ])
-              : _c("div", [
-                  _c("p", [
-                    _vm._v(
-                      _vm._s(_vm.action_confirm) +
-                        " selected " +
-                        _vm._s(_vm.actor) +
-                        "?"
-                    )
-                  ])
-                ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "modal-footer" }, [
-            _vm.errors.length
-              ? _c("div", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "button", "data-dismiss": "modal" }
-                    },
-                    [_vm._v("Ok")]
-                  )
-                ])
-              : _vm.action_confirm == "Add" ||
-                _vm.action_confirm == "Create" ||
-                !_vm.isSelected
-              ? _c("div", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "button", "data-dismiss": "modal" }
-                    },
-                    [_vm._v("Ok")]
-                  )
-                ])
-              : _vm._e(),
-            _vm._v(" "),
-            _vm.isSelected
-              ? _c("div", [
-                  _vm.action_confirm == "Remove" && _vm.actor == "member(s)"
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: { type: "button", "data-dismiss": "modal" },
-                            on: {
-                              click: function($event) {
-                                return _vm.confirmRemoveMembers()
-                              }
-                            }
-                          },
-                          [_vm._v("Yes")]
-                        )
-                      ])
-                    : _vm.action_confirm == "Remove" && _vm.actor == "group(s)"
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: { type: "button", "data-dismiss": "modal" },
-                            on: {
-                              click: function($event) {
-                                return _vm.confirmRemoveGroups()
-                              }
-                            }
-                          },
-                          [_vm._v("Yes")]
-                        )
-                      ])
-                    : _vm.action_confirm == "Remove" &&
-                      _vm.actor == "case study(s)"
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: { type: "button", "data-dismiss": "modal" },
-                            on: {
-                              click: function($event) {
-                                return _vm.confirmRemoveCases()
-                              }
-                            }
-                          },
-                          [_vm._v("Yes")]
-                        )
-                      ])
-                    : _vm._e()
-                ])
-              : _vm._e(),
-            _vm._v(" "),
-            _vm.isSelected ? _c("div", [_vm._m(1)]) : _vm._e()
-          ])
-        ])
-      ])
-    ]
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c("h5", { staticClass: "modal-title" }, [_vm._v("Modal title")]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-dismiss": "modal",
-            "aria-label": "Close"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-secondary",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("No")]
-      )
-    ])
-  }
-]
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true&":
-/*!******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true& ***!
-  \******************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("transition", [
-    _c("div", [
-      _c(
-        "div",
-        {
-          staticClass: "modal fade",
-          attrs: {
-            id: "mg_action_table",
-            tabindex: "-1",
-            "data-keyboard": "false",
-            "data-backdrop": "static",
-            role: "dialog"
-          }
-        },
-        [
-          _c(
-            "div",
-            {
-              staticClass: "modal-dialog modal-lg",
-              attrs: { role: "document" }
-            },
-            [
-              _c("div", { staticClass: "modal-content" }, [
-                _c("div", { staticClass: "modal-header" }, [
-                  _c("h5", { staticClass: "modal-title" }, [
-                    _vm._v(_vm._s(_vm.action) + " " + _vm._s(_vm.actor))
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-body" }, [
-                  _vm.gname_box_show == true
-                    ? _c("div", { staticClass: "input-group" }, [
-                        _c("label", [_vm._v("Group name")]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "input-group-append" }, [
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.g_name,
-                                expression: "g_name"
-                              }
-                            ],
-                            staticClass: "form-control input-sm",
-                            staticStyle: { width: "250px" },
-                            attrs: {
-                              type: "text",
-                              maxlength: "32",
-                              placeholder: "Name..."
-                            },
-                            domProps: { value: _vm.g_name },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.g_name = $event.target.value
-                              }
-                            }
-                          })
-                        ])
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "input-group" }, [
-                    _c("label", [_vm._v("Search")]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "input-group-append search" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.search,
-                            expression: "search"
-                          }
-                        ],
-                        staticClass: "form-control input-sm",
-                        staticStyle: { width: "250px" },
-                        attrs: {
-                          type: "text",
-                          maxlength: "32",
-                          placeholder: "User email.."
-                        },
-                        domProps: { value: _vm.search },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.search = $event.target.value
-                          }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "table-wrapper" }, [
-                    _c(
-                      "table",
-                      {
-                        staticClass: "table table-hover table-bordered",
-                        attrs: { id: "group-table", cellspacing: "0" }
-                      },
-                      [
-                        _c("thead", { staticClass: "thead-dark" }, [
-                          _c("tr", [
-                            _c("th", { attrs: { id: "row-checkbox" } }, [
-                              _vm._v("#")
-                            ]),
-                            _vm._v(" "),
-                            _c("th", [_vm._v("Email")]),
-                            _vm._v(" "),
-                            _c("th", [_vm._v("Name")])
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c(
-                          "tbody",
-                          _vm._l(_vm.filterUsers, function(user, index) {
-                            return _c("tr", { key: index }, [
-                              _c("td", [
-                                _c("div", { staticClass: "check-box" }, [
-                                  _c("input", {
-                                    directives: [
-                                      {
-                                        name: "model",
-                                        rawName: "v-model",
-                                        value: _vm.uids,
-                                        expression: "uids"
-                                      }
-                                    ],
-                                    staticClass: "checkbox",
-                                    attrs: { type: "checkbox" },
-                                    domProps: {
-                                      value: user.uid,
-                                      checked: Array.isArray(_vm.uids)
-                                        ? _vm._i(_vm.uids, user.uid) > -1
-                                        : _vm.uids
-                                    },
-                                    on: {
-                                      change: function($event) {
-                                        var $$a = _vm.uids,
-                                          $$el = $event.target,
-                                          $$c = $$el.checked ? true : false
-                                        if (Array.isArray($$a)) {
-                                          var $$v = user.uid,
-                                            $$i = _vm._i($$a, $$v)
-                                          if ($$el.checked) {
-                                            $$i < 0 &&
-                                              (_vm.uids = $$a.concat([$$v]))
-                                          } else {
-                                            $$i > -1 &&
-                                              (_vm.uids = $$a
-                                                .slice(0, $$i)
-                                                .concat($$a.slice($$i + 1)))
-                                          }
-                                        } else {
-                                          _vm.uids = $$c
-                                        }
-                                      }
-                                    }
-                                  }),
-                                  _vm._v(" "),
-                                  _c("label", { attrs: { for: "checkbox" } }, [
-                                    _vm._v(_vm._s(index + 1))
-                                  ])
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c("label", [_vm._v(_vm._s(user.email))])
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c("label", [
-                                  _vm._v(
-                                    _vm._s(user.first_name) +
-                                      " " +
-                                      _vm._s(user.last_name)
-                                  )
-                                ])
-                              ])
-                            ])
-                          }),
-                          0
-                        )
-                      ]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-footer" }, [
-                  _vm.action == "Remove"
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: {
-                              type: "button",
-                              "data-toggle": "modal",
-                              "data-target": "#mg_action_confirm"
-                            },
-                            on: {
-                              click: function($event) {
-                                return _vm.isUserSelected()
-                              }
-                            }
-                          },
-                          [_vm._v(_vm._s(_vm.action))]
-                        )
-                      ])
-                    : _vm.action == "Add" &&
-                      _vm.actor == "member(s)" &&
-                      _vm.isSelected
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: {
-                              type: "button",
-                              "data-dismiss": "modal",
-                              "data-toggle": "modal",
-                              "data-target": "#mg_action_confirm"
-                            },
-                            on: {
-                              click: function($event) {
-                                return _vm.isUserSelected()
-                              }
-                            }
-                          },
-                          [_vm._v(_vm._s(_vm.action))]
-                        )
-                      ])
-                    : _vm.action == "Add" &&
-                      _vm.actor == "member(s)" &&
-                      !_vm.isSelected
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: {
-                              type: "button",
-                              "data-toggle": "modal",
-                              "data-target": "#mg_action_confirm"
-                            },
-                            on: {
-                              click: function($event) {
-                                return _vm.isUserSelected()
-                              }
-                            }
-                          },
-                          [_vm._v(_vm._s(_vm.action))]
-                        )
-                      ])
-                    : _vm.action == "Create" && _vm.actor == "group"
-                    ? _c("div", [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: {
-                              type: "button",
-                              "data-dismiss": _vm.modal,
-                              "data-toggle": "modal",
-                              "data-target": "#mg_action_confirm"
-                            },
-                            on: {
-                              click: function($event) {
-                                _vm.isUserSelected(), _vm.validateInput()
-                              }
-                            }
-                          },
-                          [_vm._v(_vm._s(_vm.action))]
-                        )
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("div", [
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-secondary",
-                        attrs: { type: "button", "data-dismiss": "modal" },
-                        on: {
-                          click: function($event) {
-                            _vm.uncheck(), (_vm.search = "")
-                          }
-                        }
-                      },
-                      [_vm._v("Close")]
-                    )
-                  ])
-                ])
-              ])
-            ]
-          )
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        [
-          _c("mg_action_confirm", {
-            attrs: {
-              action_confirm: _vm.action,
-              actor: _vm.actor,
-              isSelected: _vm.isSelected,
-              errors: _vm.errors
-            },
-            on: { sendUsers: _vm.sendUsers, sendGroupData: _vm.sendGroupData }
-          })
-        ],
-        1
-      )
-    ])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/paginator.vue?vue&type=template&id=29c63dd6&":
 /*!************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/paginator.vue?vue&type=template&id=29c63dd6& ***!
@@ -42167,21 +42523,21 @@ var render = function() {
   return _vm.pager.pages && _vm.pager.pages.length
     ? _c(
         "ul",
-        { staticClass: "pagination", style: _vm.ulStyles },
+        { staticClass: "pagination", style: _vm.ul_styles },
         [
           _c(
             "li",
             {
               staticClass: "page-item skip-prev",
               class: { disabled: _vm.pager.currentPage < 5 },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage - 5)
@@ -42198,14 +42554,14 @@ var render = function() {
             {
               staticClass: "page-item first",
               class: { disabled: _vm.pager.currentPage === 1 },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(1)
@@ -42222,14 +42578,14 @@ var render = function() {
             {
               staticClass: "page-item previous",
               class: { disabled: _vm.pager.currentPage === 1 },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage - 1)
@@ -42248,14 +42604,14 @@ var render = function() {
                 key: page,
                 staticClass: "page-item page-number",
                 class: { active: _vm.pager.currentPage === page },
-                style: _vm.liStyles
+                style: _vm.li_styles
               },
               [
                 _c(
                   "a",
                   {
                     staticClass: "page-link",
-                    style: _vm.aStyles,
+                    style: _vm.a_styles,
                     on: {
                       click: function($event) {
                         return _vm.setPage(page)
@@ -42275,14 +42631,14 @@ var render = function() {
               class: {
                 disabled: _vm.pager.currentPage === _vm.pager.totalPages
               },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage + 1)
@@ -42301,14 +42657,14 @@ var render = function() {
               class: {
                 disabled: _vm.pager.currentPage === _vm.pager.totalPages
               },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.totalPages)
@@ -42327,14 +42683,14 @@ var render = function() {
               class: {
                 disabled: _vm.pager.currentPage > _vm.pager.totalPages - 5
               },
-              style: _vm.liStyles
+              style: _vm.li_styles
             },
             [
               _c(
                 "a",
                 {
                   staticClass: "page-link",
-                  style: _vm.aStyles,
+                  style: _vm.a_styles,
                   on: {
                     click: function($event) {
                       return _vm.setPage(_vm.pager.currentPage + 5)
@@ -42373,29 +42729,27 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "body mb-5 mt-5" }, [
-    _c(
-      "h1",
-      { staticClass: "mb-3" },
-      [
-        _c(
-          "a",
-          {
-            attrs: {
-              href: "#mg_action_confirm",
-              "data-toggle": "modal",
-              "data-target": "#mg_action_confirm"
-            },
-            on: {
-              click: function($event) {
-                ;(_vm.action = "Remove"),
-                  (_vm.actor = "case study(s)"),
-                  _vm.isCaseSelected()
-              }
-            }
+    _c("h1", { staticClass: "mb-3" }, [
+      _c(
+        "a",
+        {
+          attrs: {
+            href: "#action_confirm_dbox",
+            "data-toggle": "modal",
+            "data-target": "#action_confirm_dbox"
           },
-          [_vm._m(0)]
-        ),
-        _vm._v(" "),
+          on: {
+            click: function($event) {
+              ;(_vm.action = "Remove"),
+                (_vm.acted_on = "case study(s)"),
+                _vm.isCaseSelected()
+            }
+          }
+        },
+        [_vm._m(0)]
+      ),
+      _vm._v(" "),
+      _c("div", [
         _c(
           "a",
           {
@@ -42406,58 +42760,46 @@ var render = function() {
             },
             on: {
               click: function($event) {
-                ;(_vm.showModal = true),
-                  (_vm.action = "Create"),
-                  (_vm.actor = "case study")
+                ;(_vm.action = "Create"), (_vm.acted_on = "case study")
               }
             }
           },
           [_vm._m(1)]
-        ),
-        _vm._v(" "),
-        _vm.action == "Remove" && _vm.isSelected
-          ? _c(
-              "div",
-              [
-                _c("mg_action_confirm", {
-                  attrs: {
-                    action_confirm: _vm.action,
-                    actor: _vm.actor,
-                    errors: [],
-                    isSelected: _vm.isSelected
-                  },
-                  on: { removeCases: _vm.removeCases }
-                })
-              ],
-              1
-            )
-          : _vm.action == "Remove" && !_vm.isSelected
-          ? _c(
-              "div",
-              [
-                _c("mg_action_confirm", {
-                  attrs: {
-                    action_confirm: _vm.action,
-                    actor: _vm.actor,
-                    errors: [],
-                    isSelected: _vm.isSelected
-                  },
-                  on: { removeCases: _vm.removeCases }
-                })
-              ],
-              1
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _c("case_create_dbox", {
-          attrs: { action: _vm.action, actor: _vm.actor },
-          on: { createCaseStudy: _vm.createCaseStudy }
-        }),
-        _vm._v(" "),
-        _c("p", [_vm._v("My cases")])
-      ],
-      1
-    ),
+        )
+      ]),
+      _vm._v(" "),
+      _c("p", [_vm._v("My cases")])
+    ]),
+    _vm._v(" "),
+    _vm.action == "Remove"
+      ? _c(
+          "div",
+          [
+            _c("action_confirm_dbox", {
+              attrs: {
+                action_confirm: _vm.action,
+                acted_on: _vm.acted_on,
+                isSelected: _vm.isSelected
+              },
+              on: { removeCases: _vm.removeCases }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.action == "Create"
+      ? _c(
+          "div",
+          [
+            _c("case_create_dbox", {
+              attrs: { action: _vm.action, acted_on: _vm.acted_on },
+              on: { createCaseStudy: _vm.createCaseStudy }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
@@ -42472,9 +42814,9 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.pageOfCases, function(case_study, index) {
+          _vm._l(_vm.page_of_cases, function(case_study, index) {
             return _c("tr", { key: index }, [
-              case_study.c_owner == _vm.uid
+              case_study.c_owner == _vm.curr_user
                 ? _c("td", [
                     _c("div", { staticClass: "check-box" }, [
                       _c("input", {
@@ -42482,36 +42824,37 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.cids,
-                            expression: "cids"
+                            value: _vm.selected_cases,
+                            expression: "selected_cases"
                           }
                         ],
                         staticClass: "checkbox",
                         attrs: { type: "checkbox", id: "checkbox" },
                         domProps: {
                           value: case_study.cid,
-                          checked: Array.isArray(_vm.cids)
-                            ? _vm._i(_vm.cids, case_study.cid) > -1
-                            : _vm.cids
+                          checked: Array.isArray(_vm.selected_cases)
+                            ? _vm._i(_vm.selected_cases, case_study.cid) > -1
+                            : _vm.selected_cases
                         },
                         on: {
                           change: function($event) {
-                            var $$a = _vm.cids,
+                            var $$a = _vm.selected_cases,
                               $$el = $event.target,
                               $$c = $$el.checked ? true : false
                             if (Array.isArray($$a)) {
                               var $$v = case_study.cid,
                                 $$i = _vm._i($$a, $$v)
                               if ($$el.checked) {
-                                $$i < 0 && (_vm.cids = $$a.concat([$$v]))
+                                $$i < 0 &&
+                                  (_vm.selected_cases = $$a.concat([$$v]))
                               } else {
                                 $$i > -1 &&
-                                  (_vm.cids = $$a
+                                  (_vm.selected_cases = $$a
                                     .slice(0, $$i)
                                     .concat($$a.slice($$i + 1)))
                               }
                             } else {
-                              _vm.cids = $$c
+                              _vm.selected_cases = $$c
                             }
                           }
                         }
@@ -42549,19 +42892,102 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm.ready
-      ? _c(
-          "div",
-          [
-            _c("paginator", {
-              staticClass: "pagination",
-              attrs: { items: _vm.cases },
-              on: { changePage: _vm.onChangePage }
-            })
-          ],
-          1
-        )
-      : _vm._e()
+    _c("div", { attrs: { id: "container" } }, [
+      _c("div", { staticClass: "btn-group" }, [
+        _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary btn-sm dropdown-toggle",
+            attrs: {
+              type: "button",
+              "data-toggle": "dropdown",
+              "aria-haspopup": "true",
+              "aria-expanded": "false"
+            }
+          },
+          [_vm._v(_vm._s(_vm.entries_per_table_page))]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "dropdown-menu" }, [
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(4)
+                }
+              }
+            },
+            [_vm._v("4")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(8)
+                }
+              }
+            },
+            [_vm._v("8")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(16)
+                }
+              }
+            },
+            [_vm._v("16")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(32)
+                }
+              }
+            },
+            [_vm._v("32")]
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _vm.reload_paginator
+        ? _c(
+            "div",
+            { attrs: { id: "paginate" } },
+            [
+              _c("paginator", {
+                staticClass: "pagination",
+                staticStyle: { display: "inline-block" },
+                attrs: {
+                  items: _vm.user_cases,
+                  page_size: _vm.entries_per_table_page
+                },
+                on: { changePage: _vm.onChangePage }
+              })
+            ],
+            1
+          )
+        : _vm._e()
+    ])
   ])
 }
 var staticRenderFns = [
@@ -42569,43 +42995,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "add_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c(
-          "a",
-          { staticStyle: { "font-size": "18px", "margin-left": "15px" } },
-          [_vm._v("Remove")]
-        ),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("remove_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "remove_icon" } }, [
+      _c("a", [_vm._v("Remove")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [
+        _vm._v("remove_circle_outline")
+      ])
+    ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "remove_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c("a", { staticStyle: { "font-size": "18px" } }, [_vm._v("Create")]),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("add_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "create_icon" } }, [
+      _c("a", [_vm._v("Create")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
+    ])
   },
   function() {
     var _vm = this
@@ -42642,99 +43048,85 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "body mb-5 mt-5" }, [
-    _c(
-      "h1",
-      { staticClass: "mb-3" },
-      [
+    _c("h1", { staticClass: "mb-3" }, [
+      _c(
+        "a",
+        {
+          attrs: {
+            href: "#action_confirm_dbox",
+            "data-toggle": "modal",
+            "data-target": "#action_confirm_dbox"
+          },
+          on: {
+            click: function($event) {
+              ;(_vm.action = "Remove"),
+                (_vm.acted_on = "group(s)"),
+                _vm.isGroupSelected()
+            }
+          }
+        },
+        [_vm._m(0)]
+      ),
+      _vm._v(" "),
+      _c("div", [
         _c(
           "a",
           {
             attrs: {
-              href: "#mg_action_confirm",
+              href: "#action_table_dbox",
               "data-toggle": "modal",
-              "data-target": "#mg_action_confirm"
+              "data-target": "#action_table_dbox"
             },
             on: {
               click: function($event) {
-                ;(_vm.action = "Remove"),
-                  (_vm.actor = "group(s)"),
-                  _vm.isGroupSelected()
+                ;(_vm.gname_box_show = true),
+                  (_vm.action = "Create"),
+                  (_vm.acted_on = "group"),
+                  _vm.fetchUsers()
               }
             }
           },
-          [_vm._m(0)]
-        ),
-        _vm._v(" "),
-        _c("div", [
-          _c(
-            "a",
-            {
+          [_vm._m(1)]
+        )
+      ]),
+      _vm._v(" "),
+      _c("p", [_vm._v("My groups")])
+    ]),
+    _vm._v(" "),
+    _vm.action == "Remove"
+      ? _c(
+          "div",
+          [
+            _c("action_confirm_dbox", {
               attrs: {
-                href: "#mg_action_table",
-                "data-toggle": "modal",
-                "data-target": "#mg_action_table"
+                action_confirm: _vm.action,
+                acted_on: _vm.acted_on,
+                isSelected: _vm.isSelected
               },
-              on: {
-                click: function($event) {
-                  ;(_vm.gname_box_show = true),
-                    (_vm.action = "Create"),
-                    (_vm.actor = "group"),
-                    _vm.fetchUsers()
-                }
-              }
-            },
-            [_vm._m(1)]
-          )
-        ]),
-        _vm._v(" "),
-        _vm.action == "Remove" && _vm.isSelected
-          ? _c(
-              "div",
-              [
-                _c("mg_action_confirm", {
-                  attrs: {
-                    action_confirm: _vm.action,
-                    actor: _vm.actor,
-                    errors: [],
-                    isSelected: _vm.isSelected
-                  },
-                  on: { removeGroups: _vm.removeGroups }
-                })
-              ],
-              1
-            )
-          : _vm.action == "Remove" && !_vm.isSelected
-          ? _c(
-              "div",
-              [
-                _c("mg_action_confirm", {
-                  attrs: {
-                    action_confirm: _vm.action,
-                    actor: _vm.actor,
-                    errors: [],
-                    isSelected: _vm.isSelected
-                  },
-                  on: { removeGroups: _vm.removeGroups }
-                })
-              ],
-              1
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _c("mg_action_table", {
-          attrs: {
-            action: _vm.action,
-            actor: _vm.actor,
-            gname_box_show: _vm.gname_box_show,
-            users: _vm.users
-          },
-          on: { createGroup: _vm.createGroup }
-        }),
-        _vm._v(" "),
-        _c("p", [_vm._v("My groups")])
-      ],
-      1
-    ),
+              on: { removeGroups: _vm.removeGroups }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.action == "Create"
+      ? _c(
+          "div",
+          [
+            _c("action_table_dbox", {
+              attrs: {
+                action: _vm.action,
+                acted_on: _vm.acted_on,
+                gname_box_show: _vm.gname_box_show,
+                users: _vm.users
+              },
+              on: { createGroup: _vm.createGroup }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
@@ -42749,9 +43141,9 @@ var render = function() {
         _vm._v(" "),
         _c(
           "tbody",
-          _vm._l(_vm.pageOfGroups, function(group, index) {
+          _vm._l(_vm.page_of_groups, function(group, index) {
             return _c("tr", { key: index }, [
-              group.g_owner == _vm.uid
+              group.g_owner == _vm.curr_user
                 ? _c("td", [
                     _c("div", { staticClass: "check-box" }, [
                       _c("input", {
@@ -42759,36 +43151,37 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.gids,
-                            expression: "gids"
+                            value: _vm.selected_groups,
+                            expression: "selected_groups"
                           }
                         ],
                         staticClass: "checkbox",
                         attrs: { type: "checkbox", id: "checkbox" },
                         domProps: {
                           value: group.gid,
-                          checked: Array.isArray(_vm.gids)
-                            ? _vm._i(_vm.gids, group.gid) > -1
-                            : _vm.gids
+                          checked: Array.isArray(_vm.selected_groups)
+                            ? _vm._i(_vm.selected_groups, group.gid) > -1
+                            : _vm.selected_groups
                         },
                         on: {
                           change: function($event) {
-                            var $$a = _vm.gids,
+                            var $$a = _vm.selected_groups,
                               $$el = $event.target,
                               $$c = $$el.checked ? true : false
                             if (Array.isArray($$a)) {
                               var $$v = group.gid,
                                 $$i = _vm._i($$a, $$v)
                               if ($$el.checked) {
-                                $$i < 0 && (_vm.gids = $$a.concat([$$v]))
+                                $$i < 0 &&
+                                  (_vm.selected_groups = $$a.concat([$$v]))
                               } else {
                                 $$i > -1 &&
-                                  (_vm.gids = $$a
+                                  (_vm.selected_groups = $$a
                                     .slice(0, $$i)
                                     .concat($$a.slice($$i + 1)))
                               }
                             } else {
-                              _vm.gids = $$c
+                              _vm.selected_groups = $$c
                             }
                           }
                         }
@@ -42818,7 +43211,9 @@ var render = function() {
                 _c(
                   "a",
                   {
-                    attrs: { href: "/user/" + _vm.uid + "/group/" + group.gid }
+                    attrs: {
+                      href: "/user/" + _vm.curr_user + "/group/" + group.gid
+                    }
                   },
                   [_vm._v(_vm._s(group.g_name))]
                 )
@@ -42830,19 +43225,102 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm.reload_paginator
-      ? _c(
-          "div",
-          [
-            _c("paginator", {
-              staticClass: "pagination",
-              attrs: { items: _vm.groups },
-              on: { changePage: _vm.onChangePage }
-            })
-          ],
-          1
-        )
-      : _vm._e()
+    _c("div", { attrs: { id: "container" } }, [
+      _c("div", { staticClass: "btn-group" }, [
+        _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary btn-sm dropdown-toggle",
+            attrs: {
+              type: "button",
+              "data-toggle": "dropdown",
+              "aria-haspopup": "true",
+              "aria-expanded": "false"
+            }
+          },
+          [_vm._v(_vm._s(_vm.entries_per_page_table))]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "dropdown-menu" }, [
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(4)
+                }
+              }
+            },
+            [_vm._v("4")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(8)
+                }
+              }
+            },
+            [_vm._v("8")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(16)
+                }
+              }
+            },
+            [_vm._v("16")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "dropdown-item",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  return _vm.selectEntries(32)
+                }
+              }
+            },
+            [_vm._v("32")]
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _vm.reload_paginator
+        ? _c(
+            "div",
+            { attrs: { id: "paginate" } },
+            [
+              _c("paginator", {
+                staticClass: "pagination",
+                staticStyle: { display: "inline-block" },
+                attrs: {
+                  items: _vm.user_groups,
+                  page_size: _vm.entries_per_page_table
+                },
+                on: { changePage: _vm.onChangePage }
+              })
+            ],
+            1
+          )
+        : _vm._e()
+    ])
   ])
 }
 var staticRenderFns = [
@@ -42850,43 +43328,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "add_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c(
-          "a",
-          { staticStyle: { "font-size": "18px", "margin-left": "15px" } },
-          [_vm._v("Remove")]
-        ),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("remove_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "remove_icon" } }, [
+      _c("a", [_vm._v("Remove")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [
+        _vm._v("remove_circle_outline")
+      ])
+    ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "remove_icon",
-        staticStyle: { display: "inline-block", float: "right" }
-      },
-      [
-        _c("a", { staticStyle: { "font-size": "18px" } }, [_vm._v("Create")]),
-        _vm._v(" "),
-        _c("i", { staticClass: "material-icons" }, [
-          _vm._v("add_circle_outline")
-        ])
-      ]
-    )
+    return _c("div", { attrs: { id: "create_icon" } }, [
+      _c("a", [_vm._v("Create")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
+    ])
   },
   function() {
     var _vm = this
@@ -55043,6 +55501,17 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./nsf_logo/nsf_logo.jpg":
+/*!*******************************!*\
+  !*** ./nsf_logo/nsf_logo.jpg ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/images/nsf_logo.jpg?21f923893d8c79e878abcb223bbea07c";
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -55071,9 +55540,9 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 //web pages components
 
 Vue.component('paginator', __webpack_require__(/*! ./components/paginator.vue */ "./resources/js/components/paginator.vue")["default"]);
-Vue.component('mg_action_table', __webpack_require__(/*! ./components/mg_action_table.vue */ "./resources/js/components/mg_action_table.vue")["default"]);
-Vue.component('mg_action_confirm', __webpack_require__(/*! ./components/mg_action_confirm.vue */ "./resources/js/components/mg_action_confirm.vue")["default"]);
-Vue.component('case_create_dbox', __webpack_require__(/*! ./components/case_create_dbox.vue */ "./resources/js/components/case_create_dbox.vue")["default"]); //web pages
+Vue.component('action_table_dbox', __webpack_require__(/*! ./components/dialogue_boxes/action_table_dbox.vue */ "./resources/js/components/dialogue_boxes/action_table_dbox.vue")["default"]);
+Vue.component('action_confirm_dbox', __webpack_require__(/*! ./components/dialogue_boxes/action_confirm_dbox.vue */ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue")["default"]);
+Vue.component('case_create_dbox', __webpack_require__(/*! ./components/dialogue_boxes/case_create_dbox.vue */ "./resources/js/components/dialogue_boxes/case_create_dbox.vue")["default"]); //web pages
 
 Vue.component('iren_header', __webpack_require__(/*! ./components/header.vue */ "./resources/js/components/header.vue")["default"]);
 Vue.component('iren_footer', __webpack_require__(/*! ./components/footer.vue */ "./resources/js/components/footer.vue")["default"]);
@@ -55226,19 +55695,193 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/case_create_dbox.vue":
-/*!******************************************************!*\
-  !*** ./resources/js/components/case_create_dbox.vue ***!
-  \******************************************************/
+/***/ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue":
+/*!************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_confirm_dbox.vue ***!
+  \************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _case_create_dbox_vue_vue_type_template_id_5b06e286_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true& */ "./resources/js/components/case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true&");
-/* harmony import */ var _case_create_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./case_create_dbox.vue?vue&type=script&lang=js& */ "./resources/js/components/case_create_dbox.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _case_create_dbox_vue_vue_type_style_index_0_id_5b06e286_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true& */ "./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _action_confirm_dbox_vue_vue_type_template_id_3b958806_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true& */ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true&");
+/* harmony import */ var _action_confirm_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./action_confirm_dbox.vue?vue&type=script&lang=js& */ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _action_confirm_dbox_vue_vue_type_style_index_0_id_3b958806_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true& */ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _action_confirm_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _action_confirm_dbox_vue_vue_type_template_id_3b958806_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _action_confirm_dbox_vue_vue_type_template_id_3b958806_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "3b958806",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/dialogue_boxes/action_confirm_dbox.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_confirm_dbox.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true&":
+/*!**********************************************************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true& ***!
+  \**********************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_style_index_0_id_3b958806_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader!../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=style&index=0&id=3b958806&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_style_index_0_id_3b958806_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_style_index_0_id_3b958806_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_style_index_0_id_3b958806_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_style_index_0_id_3b958806_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_style_index_0_id_3b958806_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true&":
+/*!*******************************************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true& ***!
+  \*******************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_template_id_3b958806_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_confirm_dbox.vue?vue&type=template&id=3b958806&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_template_id_3b958806_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_action_confirm_dbox_vue_vue_type_template_id_3b958806_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/action_table_dbox.vue":
+/*!**********************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_table_dbox.vue ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _action_table_dbox_vue_vue_type_template_id_b4dffb22_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true& */ "./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true&");
+/* harmony import */ var _action_table_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./action_table_dbox.vue?vue&type=script&lang=js& */ "./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _action_table_dbox_vue_vue_type_style_index_0_id_b4dffb22_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true& */ "./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _action_table_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _action_table_dbox_vue_vue_type_template_id_b4dffb22_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _action_table_dbox_vue_vue_type_template_id_b4dffb22_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "b4dffb22",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/dialogue_boxes/action_table_dbox.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_table_dbox.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true&":
+/*!********************************************************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true& ***!
+  \********************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_style_index_0_id_b4dffb22_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader!../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=style&index=0&id=b4dffb22&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_style_index_0_id_b4dffb22_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_style_index_0_id_b4dffb22_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_style_index_0_id_b4dffb22_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_style_index_0_id_b4dffb22_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_style_index_0_id_b4dffb22_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true&":
+/*!*****************************************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true& ***!
+  \*****************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_template_id_b4dffb22_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/action_table_dbox.vue?vue&type=template&id=b4dffb22&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_template_id_b4dffb22_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_action_table_dbox_vue_vue_type_template_id_b4dffb22_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/dialogue_boxes/case_create_dbox.vue":
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/case_create_dbox.vue ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _case_create_dbox_vue_vue_type_template_id_8f585bc6_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true& */ "./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true&");
+/* harmony import */ var _case_create_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./case_create_dbox.vue?vue&type=script&lang=js& */ "./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _case_create_dbox_vue_vue_type_style_index_0_id_8f585bc6_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true& */ "./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -55249,65 +55892,65 @@ __webpack_require__.r(__webpack_exports__);
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _case_create_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _case_create_dbox_vue_vue_type_template_id_5b06e286_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _case_create_dbox_vue_vue_type_template_id_5b06e286_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _case_create_dbox_vue_vue_type_template_id_8f585bc6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _case_create_dbox_vue_vue_type_template_id_8f585bc6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  "5b06e286",
+  "8f585bc6",
   null
   
 )
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/case_create_dbox.vue"
+component.options.__file = "resources/js/components/dialogue_boxes/case_create_dbox.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/components/case_create_dbox.vue?vue&type=script&lang=js&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/case_create_dbox.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************/
+/***/ "./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true&":
-/*!****************************************************************************************************************!*\
-  !*** ./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true& ***!
-  \****************************************************************************************************************/
+/***/ "./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true&":
+/*!*******************************************************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true& ***!
+  \*******************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_5b06e286_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=style&index=0&id=5b06e286&lang=scss&scoped=true&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_5b06e286_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_5b06e286_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_5b06e286_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_5b06e286_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_5b06e286_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_8f585bc6_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader!../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=style&index=0&id=8f585bc6&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_8f585bc6_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_8f585bc6_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_8f585bc6_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_8f585bc6_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_style_index_0_id_8f585bc6_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
-/***/ "./resources/js/components/case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true&":
-/*!*************************************************************************************************!*\
-  !*** ./resources/js/components/case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true& ***!
-  \*************************************************************************************************/
+/***/ "./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true&":
+/*!****************************************************************************************************************!*\
+  !*** ./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true& ***!
+  \****************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_template_id_5b06e286_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/case_create_dbox.vue?vue&type=template&id=5b06e286&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_template_id_5b06e286_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_template_id_8f585bc6_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/dialogue_boxes/case_create_dbox.vue?vue&type=template&id=8f585bc6&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_template_id_8f585bc6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_template_id_5b06e286_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_case_create_dbox_vue_vue_type_template_id_8f585bc6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -55638,180 +56281,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_help_vue_vue_type_template_id_70b2598c_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_help_vue_vue_type_template_id_70b2598c_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_confirm.vue":
-/*!*******************************************************!*\
-  !*** ./resources/js/components/mg_action_confirm.vue ***!
-  \*******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _mg_action_confirm_vue_vue_type_template_id_71154e41_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true& */ "./resources/js/components/mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true&");
-/* harmony import */ var _mg_action_confirm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mg_action_confirm.vue?vue&type=script&lang=js& */ "./resources/js/components/mg_action_confirm.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _mg_action_confirm_vue_vue_type_style_index_0_id_71154e41_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true& */ "./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _mg_action_confirm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _mg_action_confirm_vue_vue_type_template_id_71154e41_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _mg_action_confirm_vue_vue_type_template_id_71154e41_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  "71154e41",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/mg_action_confirm.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_confirm.vue?vue&type=script&lang=js&":
-/*!********************************************************************************!*\
-  !*** ./resources/js/components/mg_action_confirm.vue?vue&type=script&lang=js& ***!
-  \********************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_confirm.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true&":
-/*!*****************************************************************************************************************!*\
-  !*** ./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true& ***!
-  \*****************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_style_index_0_id_71154e41_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=style&index=0&id=71154e41&lang=scss&scoped=true&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_style_index_0_id_71154e41_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_style_index_0_id_71154e41_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_style_index_0_id_71154e41_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_style_index_0_id_71154e41_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_style_index_0_id_71154e41_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true&":
-/*!**************************************************************************************************!*\
-  !*** ./resources/js/components/mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true& ***!
-  \**************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_template_id_71154e41_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_confirm.vue?vue&type=template&id=71154e41&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_template_id_71154e41_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_confirm_vue_vue_type_template_id_71154e41_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_table.vue":
-/*!*****************************************************!*\
-  !*** ./resources/js/components/mg_action_table.vue ***!
-  \*****************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _mg_action_table_vue_vue_type_template_id_3d2cdae2_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true& */ "./resources/js/components/mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true&");
-/* harmony import */ var _mg_action_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mg_action_table.vue?vue&type=script&lang=js& */ "./resources/js/components/mg_action_table.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _mg_action_table_vue_vue_type_style_index_0_id_3d2cdae2_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true& */ "./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _mg_action_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _mg_action_table_vue_vue_type_template_id_3d2cdae2_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _mg_action_table_vue_vue_type_template_id_3d2cdae2_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  "3d2cdae2",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/mg_action_table.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_table.vue?vue&type=script&lang=js&":
-/*!******************************************************************************!*\
-  !*** ./resources/js/components/mg_action_table.vue?vue&type=script&lang=js& ***!
-  \******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_table.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true&":
-/*!***************************************************************************************************************!*\
-  !*** ./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true& ***!
-  \***************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_style_index_0_id_3d2cdae2_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=style&index=0&id=3d2cdae2&lang=scss&scoped=true&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_style_index_0_id_3d2cdae2_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_style_index_0_id_3d2cdae2_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_style_index_0_id_3d2cdae2_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_style_index_0_id_3d2cdae2_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_style_index_0_id_3d2cdae2_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
-
-/***/ }),
-
-/***/ "./resources/js/components/mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true&":
-/*!************************************************************************************************!*\
-  !*** ./resources/js/components/mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true& ***!
-  \************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_template_id_3d2cdae2_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/mg_action_table.vue?vue&type=template&id=3d2cdae2&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_template_id_3d2cdae2_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_mg_action_table_vue_vue_type_template_id_3d2cdae2_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
