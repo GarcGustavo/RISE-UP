@@ -2693,6 +2693,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
  //Vue.use(Editor);
@@ -2710,6 +2752,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       showModal: false,
       action: "",
       actor: "",
+      total_items: "",
       case_study: {
         cid: "",
         c_title: "",
@@ -2776,6 +2819,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return res.json();
       }).then(function (res) {
         _this2.all_items = res.data;
+        _this2.total_items = _this2.all_items.length;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -2857,14 +2901,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
-      this.new_item = {
-        iid: this.all_items.length + 1,
-        i_content: "dfsad",
-        i_case: this.cid,
-        i_type: "1",
-        order: "0",
-        i_name: "New Item"
-      }, console.log(new_item);
+      this.new_item.iid = this.total_items + 1;
+      this.new_item.i_content = "dfsad";
+      this.new_item.i_case = this.cid;
+      this.new_item.i_type = "1";
+      this.new_item.order = "1";
+      this.new_item.i_name = "New Item";
+      console.log(new_item);
       fetch("/item/add", {
         method: "post",
         headers: new Headers({
@@ -2882,30 +2925,52 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
-    },
-    removeItem: function removeItem(users_to_remove) {
-      var _this9 = this;
+      this.fetchItems();
+      this.fetchCaseItems(); //Reset item container data
 
-      console.log(JSON.stringify(users_to_remove));
-      fetch("/group/members/remove", {
+      this.new_item = {
+        iid: "",
+        i_content: "",
+        i_case: "",
+        i_type: "",
+        order: "",
+        i_name: ""
+      };
+    },
+    removeItem: function removeItem(item_to_remove) {
+      console.log(item_to_remove.iid);
+      fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
         method: "delete",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_remove)
+        body: JSON.stringify(item_to_remove)
       }).then(function (res) {
-        return res.json();
-      }).then(function (data) {
-        console.log(data);
-
-        _this9.fetchMembers();
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
+      this.fetchCaseItems();
+      this.fetchItems();
     },
     fetchCaseParameters: function fetchCaseParameters() {
+      var _this9 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this9.items = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    updateCaseParameters: function updateCaseParameters() {
       var _this10 = this;
 
       this.path = window.location.pathname.split("/");
@@ -2914,19 +2979,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return res.json();
       }).then(function (res) {
         _this10.items = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-    updateCaseParameters: function updateCaseParameters() {
-      var _this11 = this;
-
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this11.items = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -19892,7 +19944,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-475f3ef6],\n#members[data-v-475f3ef6] {\n  max-height: 450px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#cases[data-v-475f3ef6],\n#members[data-v-475f3ef6] {\n  max-height: 450px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
 
 // exports
 
@@ -58563,50 +58615,143 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "body mb-5 mt-5" },
-    [
-      _vm.case_to_show
-        ? [
-            _vm._l(_vm.case_to_show, function(case_study, index) {
-              return _c("h1", { key: index, staticClass: "text-center mt-3" }, [
-                _c("h1", { staticClass: "text-capitalize" }, [
-                  _vm._v(_vm._s(case_study.c_title))
-                ])
+  return _c("div", { staticClass: "body mb-5 mt-5" }, [
+    _c("div", { staticClass: "container-fluid" }, [
+      _c("div", { staticClass: "row" }, [
+        _c(
+          "div",
+          { staticClass: "col-md-12" },
+          [
+            _vm.case_to_show
+              ? [
+                  _vm._l(_vm.case_to_show, function(case_study, index) {
+                    return _c(
+                      "h1",
+                      { key: index, staticClass: "text-center mt-3" },
+                      [
+                        _c("h1", { staticClass: "text-capitalize" }, [
+                          _vm._v(_vm._s(case_study.c_title))
+                        ])
+                      ]
+                    )
+                  }),
+                  _vm._v(" "),
+                  _vm._l(_vm.users, function(user, index) {
+                    return _c(
+                      "h5",
+                      { key: index + 10, staticClass: "text-center mt-3" },
+                      [
+                        _vm._v(
+                          "Created by: " +
+                            _vm._s(user.first_name) +
+                            " " +
+                            _vm._s(user.last_name)
+                        )
+                      ]
+                    )
+                  }),
+                  _vm._v(" "),
+                  _vm._l(_vm.groups, function(group, index) {
+                    return _c(
+                      "h5",
+                      { key: index + 20, staticClass: "text-center mt-3" },
+                      [_vm._v("Group: " + _vm._s(group.g_name))]
+                    )
+                  })
+                ]
+              : _vm._e()
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-2" }, [
+          _c("h4", { staticClass: "card-title" }, [
+            _vm._v("Table of Contents")
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "row mt-2 card mb-5", attrs: { id: "cases" } },
+            [
+              _c("div", { staticClass: "toc_list" }, [
+                _c(
+                  "ul",
+                  { staticClass: "list-group list-group-flush border-0" },
+                  _vm._l(_vm.items, function(item, index) {
+                    return _c(
+                      "li",
+                      { key: index, staticClass: "list-group-item" },
+                      [
+                        _c("a", { attrs: { href: "#" } }, [
+                          _vm._v(_vm._s(index + 1) + ": " + _vm._s(item.i_name))
+                        ])
+                      ]
+                    )
+                  }),
+                  0
+                )
               ])
-            }),
-            _vm._v(" "),
-            _vm._l(_vm.users, function(user, index) {
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-md-10" }, [
+          _c(
+            "div",
+            { staticClass: "row border", staticStyle: { margin: "50px" } },
+            _vm._l(_vm.items, function(item, index) {
               return _c(
-                "h5",
-                { key: index + 10, staticClass: "text-center mt-3" },
+                "div",
+                {
+                  key: index,
+                  staticClass: "col-sm-1 mx-auto-left",
+                  staticStyle: { margin: "50px" }
+                },
                 [
-                  _vm._v(
-                    "\n      Created by: " +
-                      _vm._s(user.first_name) +
-                      " " +
-                      _vm._s(user.last_name) +
-                      "\n    "
-                  )
+                  _c("div", { staticClass: "dropdown" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary dropdown-toggle",
+                        attrs: {
+                          type: "button",
+                          id: "dropdownMenuButton",
+                          "data-toggle": "dropdown"
+                        }
+                      },
+                      [_vm._v("Action")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "dropdown-menu",
+                        attrs: { "aria-labelledby": "dropdownMenuButton" }
+                      },
+                      _vm._l(_vm.items, function(item, sd) {
+                        return _c(
+                          "a",
+                          {
+                            key: sd,
+                            staticClass: "dropdown-item",
+                            attrs: { href: "#" }
+                          },
+                          [_vm._v("Action " + _vm._s(sd + 1))]
+                        )
+                      }),
+                      0
+                    )
+                  ])
                 ]
               )
             }),
-            _vm._v(" "),
-            _vm._l(_vm.groups, function(group, index) {
-              return _c(
-                "h5",
-                { key: index + 20, staticClass: "text-center mt-3" },
-                [_vm._v("\n      Group: " + _vm._s(group.g_name) + "\n    ")]
-              )
-            })
-          ]
-        : _vm._e(),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "row mt-1 mb-5", attrs: { id: "members" } },
-        [
+            0
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-12 mb-1" }, [
           _c(
             "button",
             {
@@ -58617,76 +58762,85 @@ var render = function() {
               }
             },
             [_vm._v("Add Item")]
-          ),
-          _vm._v(" "),
-          _c(
-            "draggable",
-            {
-              attrs: { animation: "250", group: "members" },
-              on: {
-                start: function($event) {
-                  _vm.drag = true
-                },
-                end: function($event) {
-                  _vm.drag = false
-                }
-              },
-              model: {
-                value: _vm.items,
-                callback: function($$v) {
-                  _vm.items = $$v
-                },
-                expression: "items"
-              }
-            },
-            _vm._l(_vm.items, function(item, index) {
-              return _c("div", { key: index, staticClass: "col-sm-12 mb-3" }, [
-                _c("ul", { staticClass: "list-items" }, [
-                  _c("div", { staticClass: "card h-100 text-left shadow" }, [
-                    _c("div", { staticClass: "card-body" }, [
-                      _c("h4", { staticClass: "card-title" }, [
-                        _vm._v(_vm._s(item.i_name))
-                      ]),
-                      _vm._v(" "),
-                      _c("p", { staticClass: "card-text" }, [
-                        _vm._v(_vm._s(item.i_content))
-                      ])
-                    ])
-                  ])
-                ])
-              ])
-            }),
-            0
           )
-        ],
-        1
-      ),
+        ])
+      ]),
       _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      _c("div", { staticClass: "mt-1 card mb-5", attrs: { id: "cases" } }, [
-        _c("div", { staticClass: "col-sm-12 mb-3" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-12" }, [
           _c(
-            "ul",
-            { staticClass: "list-group list-group-flush border-0" },
-            _vm._l(_vm.items, function(item, index) {
-              return _c("li", { key: index, staticClass: "list-group-item" }, [
-                _c("div", { staticClass: "card-body" }, [
-                  _c("h5", { staticClass: "card-title" }, [
-                    _c("a", { attrs: { href: "#" } }, [
-                      _vm._v(_vm._s(index) + " " + _vm._s(item.i_name))
-                    ])
-                  ])
-                ])
-              ])
-            }),
-            0
+            "div",
+            { staticClass: "row mt-2 card mb-5", attrs: { id: "cases" } },
+            [
+              _c(
+                "draggable",
+                {
+                  attrs: { animation: "250", group: "members" },
+                  on: {
+                    start: function($event) {
+                      _vm.drag = true
+                    },
+                    end: function($event) {
+                      _vm.drag = false
+                    }
+                  },
+                  model: {
+                    value: _vm.items,
+                    callback: function($$v) {
+                      _vm.items = $$v
+                    },
+                    expression: "items"
+                  }
+                },
+                _vm._l(_vm.items, function(item, index) {
+                  return _c(
+                    "div",
+                    { key: index, staticClass: "col-sm-12 mb-3" },
+                    [
+                      _c("ul", { staticClass: "list-items" }, [
+                        _c(
+                          "div",
+                          { staticClass: "card h-100 text-left shadow" },
+                          [
+                            _c("div", { staticClass: "card-body" }, [
+                              _c("h4", { staticClass: "card-title" }, [
+                                _vm._v(
+                                  "\n                      " +
+                                    _vm._s(item.i_name) +
+                                    "\n                      "
+                                ),
+                                _c(
+                                  "button",
+                                  {
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.removeItem(item)
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Delete")]
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "card-text" }, [
+                                _vm._v(_vm._s(item.i_content))
+                              ])
+                            ])
+                          ]
+                        )
+                      ])
+                    ]
+                  )
+                }),
+                0
+              )
+            ],
+            1
           )
         ])
       ])
-    ],
-    2
-  )
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true

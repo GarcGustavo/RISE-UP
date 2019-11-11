@@ -104,8 +104,8 @@ Route::delete('user_groups/remove', 'GroupController@destroy');
 //Delete case study
 Route::delete('user_cases/remove', 'CaseController@destroy');
 
-//Delete items from a case
-Route::delete('/case/{id}/items/remove', 'ItemController@removeCaseItem');
+//Delete item
+Route::delete('/item/{id}/remove', 'ItemController@removeItem');
 
 //Create a group
 Route::post('/group/create', 'GroupController@store');

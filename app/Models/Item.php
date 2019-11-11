@@ -20,6 +20,8 @@ class item extends Model
 {
     public $table = 'Item';
 
+    //use SoftDeletes;
+
     //protected $dates = false;
 
     public $timestamps = false;

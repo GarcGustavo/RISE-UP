@@ -37,15 +37,6 @@ class ItemController extends Controller
         }
     }
 
-    public function removeCaseItem($id)
-    {
-        $to_delete = $request->all();
-        $cids_to_delete = array_map(function($item){ return $item['gid']; }, $to_delete);
-        $iids_to_delete = array_map(function($item){ return $item['uid']; }, $to_delete);
-        User_Groups::whereIn('gid', $gids_to_delete)->whereIn('uid', $uids_to_delete)->delete();
-        return response()->json(['message'=>'User(s) has been removed from group']);
-    }
-
     public function updateItemOrder(Request $request, $id)
     {
         $this->validate($request, [
@@ -138,9 +129,23 @@ class ItemController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * 
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        //$to_delete = $request->all();
+        //$iid_to_delete = array_map(function($item){ return $item['iid']; }, $to_delete);
+        //$iid_to_delete = $id;
+        //$items_to_delete = Item::
+        //->where('Item.iid', $iid_to_delete)
+        //->delete();
+        //Item::whereIn('iid', $iid_to_delete)->delete();
+        //return response()->json(['message'=>'Item has been removed from case']);
+    }
+    public function removeItem($id)
+    {
+        $iid_to_delete = $id;
+        Item::where('iid', $iid_to_delete)->delete();
+        return response()->json(['message'=>'Item has been removed from case']);
     }
 }
