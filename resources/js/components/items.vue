@@ -1,11 +1,20 @@
 <template>
-  <div class="body mb-5 mt-5 border">
+  <div class="body mb-5 mt-5 border shadow">
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
           <template v-if="case_to_show">
             <h1 class="text-center mt-3" v-for="(case_study,index) in case_to_show" :key="index">
-              <h1 class="text-capitalize">{{case_study.c_title}}</h1>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="case_study.c_title"
+                  v-if="editing"
+                  @keydown="editingCase"
+                />
+              </div>
+              <h1 class="text-capitalize" v-if="!editing" >{{case_study.c_title}}</h1>
             </h1>
             <h5
               class="text-center mt-3"
@@ -82,16 +91,18 @@
               @end="drag=false"
             >
               <div class="col-sm-12 mb-3" v-for="(item,index) in items" :key="index">
-                <ul class="list-items" >
-                  <div class="card h-100 text-left shadow"  style="margin: 50px;">
+                <ul class="list-items">
+                  <div class="card h-100 text-left shadow" style="margin: 50px;">
                     <div class="card-body">
-                      <h4 class="card-title" v-if="!editing">
-                        {{item.i_name }}
-                      </h4>
-                      <button class="col-sm-2 mb-3 right" v-on:click="removeItem(item)" v-if="editing">Delete</button>
+                      <h4 class="card-title" v-if="!editing">{{item.i_name }}</h4>
+                      <button
+                        class="col-sm-2 mb-3 right"
+                        v-on:click="removeItem(item)"
+                        v-if="editing"
+                      >Delete</button>
                       <div class="panel panel-default">
                         <div class="panel-body">
-                          <div class="form-group" >
+                          <div class="form-group">
                             <input
                               type="text"
                               class="form-control"
@@ -113,9 +124,11 @@
                           </div>
                         </div>
                       </div>
-                      <div class="form-group" v-if="!editing" style="white-space: pre-line;">
-                        {{item.i_content}}
-                      </div>
+                      <div
+                        class="form-group"
+                        v-if="!editing"
+                        style="white-space: pre-line;"
+                      >{{item.i_content}}</div>
                     </div>
                   </div>
                 </ul>
@@ -159,7 +172,7 @@ export default {
       items: [],
       all_items: [],
       case_parameters: [],
-      parameter_options:[],
+      parameter_options: [],
       ready: false,
       cid: "",
       gid: "",
@@ -290,7 +303,7 @@ export default {
           console.log(res.data);
         })
         .catch(err => console.log(err));
-        this.fetchParameterOptions();
+      this.fetchParameterOptions();
     },
     fetchParameterOptions() {
       fetch("/parameter/options")
@@ -302,7 +315,9 @@ export default {
         .catch(err => console.log(err));
     },
     filteredOptions(parameter) {
-      return this.parameter_options.filter(option => option.o_parameter == parameter);
+      return this.parameter_options.filter(
+        option => option.o_parameter == parameter
+      );
     },
     updateCaseParameters() {
       this.path = window.location.pathname.split("/");
@@ -391,6 +406,7 @@ export default {
     },
     removeItem(item_to_remove) {
       console.log(item_to_remove.iid);
+      if(confirm("Do you want to delete this item permanently?")){
       fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
         method: "delete",
         headers: new Headers({
@@ -406,7 +422,7 @@ export default {
         })
         .catch(err => {
           console.error("Error: ", err);
-        });
+        });}
       this.fetchCaseItems();
       this.fetchItems();
     },

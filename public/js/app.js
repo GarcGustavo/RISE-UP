@@ -2764,6 +2764,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3051,21 +3064,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     removeItem: function removeItem(item_to_remove) {
       console.log(item_to_remove.iid);
-      fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
-        method: "delete",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        body: JSON.stringify(item_to_remove)
-      }).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
-      })["catch"](function (err) {
-        console.error("Error: ", err);
-      });
+
+      if (confirm("Do you want to delete this item permanently?")) {
+        fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
+          method: "delete",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            "Access-Control-Origin": "*",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+          }),
+          body: JSON.stringify(item_to_remove)
+        }).then(function (res) {
+          return res.text();
+        }).then(function (text) {
+          console.log(text);
+        })["catch"](function (err) {
+          console.error("Error: ", err);
+        });
+      }
+
       this.fetchCaseItems();
       this.fetchItems();
     },
@@ -58690,7 +58707,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "body mb-5 mt-5 border" }, [
+  return _c("div", { staticClass: "body mb-5 mt-5 border shadow" }, [
     _c("div", { staticClass: "container-fluid" }, [
       _c("div", { staticClass: "row" }, [
         _c(
@@ -58704,9 +58721,42 @@ var render = function() {
                       "h1",
                       { key: index, staticClass: "text-center mt-3" },
                       [
-                        _c("h1", { staticClass: "text-capitalize" }, [
-                          _vm._v(_vm._s(case_study.c_title))
-                        ])
+                        _c("div", { staticClass: "form-group" }, [
+                          _vm.editing
+                            ? _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: case_study.c_title,
+                                    expression: "case_study.c_title"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: { type: "text" },
+                                domProps: { value: case_study.c_title },
+                                on: {
+                                  keydown: _vm.editingCase,
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      case_study,
+                                      "c_title",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            : _vm._e()
+                        ]),
+                        _vm._v(" "),
+                        !_vm.editing
+                          ? _c("h1", { staticClass: "text-capitalize" }, [
+                              _vm._v(_vm._s(case_study.c_title))
+                            ])
+                          : _vm._e()
                       ]
                     )
                   }),
@@ -58937,11 +58987,7 @@ var render = function() {
                             _c("div", { staticClass: "card-body" }, [
                               !_vm.editing
                                 ? _c("h4", { staticClass: "card-title" }, [
-                                    _vm._v(
-                                      "\n                      " +
-                                        _vm._s(item.i_name) +
-                                        "\n                    "
-                                    )
+                                    _vm._v(_vm._s(item.i_name))
                                   ])
                                 : _vm._e(),
                               _vm._v(" "),
@@ -59043,13 +59089,7 @@ var render = function() {
                                       staticClass: "form-group",
                                       staticStyle: { "white-space": "pre-line" }
                                     },
-                                    [
-                                      _vm._v(
-                                        "\n                      " +
-                                          _vm._s(item.i_content) +
-                                          "\n                    "
-                                      )
-                                    ]
+                                    [_vm._v(_vm._s(item.i_content))]
                                   )
                                 : _vm._e()
                             ])
