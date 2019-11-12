@@ -2595,6 +2595,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /**
  *This dialogue box is used to get input for a new case study
@@ -2656,7 +2657,9 @@ __webpack_require__.r(__webpack_exports__);
       //NOT USED
       hasError: false,
       //does description's character count exceed limit - NOT USED IN HTML
-      valid_input: false //is input valid
+      valid_input: false,
+      //is input valid
+      disable_dropdown: false //disable dropdown options for group
 
     };
   },
@@ -2742,12 +2745,14 @@ __webpack_require__.r(__webpack_exports__);
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
       if (this.group_selection) {
-        //variable sent by group view to set default in group options, therefor set group default to (curr_group/group selection)
-        this.curr_user = this.path[this.path.length - 3]; //get ID from path and perform Numeric conversion for filter
+        //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
+        this.curr_user = this.path[this.path.length - 3]; //get ID from path
 
         this.curr_group = this.group_selection;
+        this.disable_dropdown = true;
       } else {
-        this.curr_user = this.path[this.path.length - 2]; //get ID from path and perform Numeric conversion for filter
+        //called by user_groups vue
+        this.curr_user = this.path[this.path.length - 2]; //get ID from path 
       }
 
       fetch("/user_groups/" + this.curr_user).then(function (res) {
@@ -41562,7 +41567,10 @@ var render = function() {
                         ],
                         staticClass: "form-control",
                         staticStyle: { height: "35px" },
-                        attrs: { id: "group_select" },
+                        attrs: {
+                          id: "group_select",
+                          disabled: _vm.disable_dropdown
+                        },
                         on: {
                           change: function($event) {
                             var $$selectedVal = Array.prototype.filter

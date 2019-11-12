@@ -38,6 +38,7 @@
                   id="group_select"
                   style="height:35px"
                   v-model="curr_group"
+                  :disabled="disable_dropdown"
                 >
                   <option
                     v-for="group in user_groups"
@@ -142,7 +143,8 @@ export default {
 
       close: false, //NOT USED
       hasError: false, //does description's character count exceed limit - NOT USED IN HTML
-      valid_input: false //is input valid
+      valid_input: false, //is input valid
+      disable_dropdown:false //disable dropdown options for group
     };
   },
   /**
@@ -216,11 +218,12 @@ export default {
     fetchGroups() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
       if (this.group_selection) {
-        //variable sent by group view to set default in group options, therefor set group default to (curr_group/group selection)
-        this.curr_user = this.path[this.path.length - 3]; //get ID from path and perform Numeric conversion for filter
+        //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
+        this.curr_user = this.path[this.path.length - 3]; //get ID from path
         this.curr_group = this.group_selection;
-      } else {
-        this.curr_user = this.path[this.path.length - 2]; //get ID from path and perform Numeric conversion for filter
+        this.disable_dropdown=true;
+      } else { //called by user_groups vue
+        this.curr_user = this.path[this.path.length - 2]; //get ID from path 
       }
 
       fetch("/user_groups/" + this.curr_user)
