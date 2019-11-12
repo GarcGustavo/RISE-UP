@@ -121,7 +121,12 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $content= $request -> input('i_content');
+        $type = $request -> input('i_type');
+        $order = $request -> input('order');
+        $name = $request -> input('i_name');
+        Item::where(['iid' => $id])->update(['i_content' => $content,'i_type' => $type,'order' => $order,'i_name' => $name]);
+        return response()->json(['message'=>'Updated item successfully']);
     }
 
     /**

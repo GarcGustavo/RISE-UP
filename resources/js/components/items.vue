@@ -26,7 +26,7 @@
         <div class="col-md-2.5">
           <!-- Table of Contents -->
           <h4 class="card-title">Table of Contents</h4>
-          <div class="row mt-2 card mb-5"  id="toc">
+          <div class="row mt-2 card mb-5" id="toc">
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
@@ -36,7 +36,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-9" >
+        <div class="col-md-9">
           <h4 class="card-title" style="margin-left: 50px;">Parameters</h4>
           <div class="row border" style="margin-left: 50px;" id="toc">
             <div
@@ -65,6 +65,7 @@
           </div>
         </div>
         <div class="col-sm-12 mb-1">
+          <button v-on:click="onEdit()">Edit</button>
           <button v-on:click="addItem(new_item)">Add Item</button>
         </div>
       </div>
@@ -75,7 +76,7 @@
             <draggable
               v-model="items"
               animation="250"
-              group="members"
+              group="items"
               @start="drag=true"
               @end="drag=false"
             >
@@ -86,6 +87,7 @@
                       <h4 class="card-title">
                         {{item.i_name }}
                         <button v-on:click="removeItem(item)">Delete</button>
+                        <button v-on:click="updateItem(item)">Submit Changes</button>
                       </h4>
                       <p class="card-text">{{item.i_content}}</p>
                     </div>
@@ -168,7 +170,7 @@ export default {
     fetchCaseItems() {
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
-      fetch("/case/"+this.cid+"/items")
+      fetch("/case/" + this.cid + "/items")
         .then(res => res.json())
         .then(res => {
           this.items = res.data;
@@ -181,7 +183,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.all_items = res.data;
-          this.total_items = this.all_items.length;
+          this.total_items = this.all_items.length + 1;
           console.log(res.data);
         })
         .catch(err => console.log(err));
@@ -189,7 +191,7 @@ export default {
     fetchCase() {
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
-      fetch("/case/"+this.cid)
+      fetch("/case/" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.case_to_show = res.data;
@@ -202,7 +204,7 @@ export default {
         .catch(err => console.log(err));
     },
     fetchUser(uid) {
-      fetch("/user/"+this.uid)
+      fetch("/user/" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
@@ -210,40 +212,48 @@ export default {
         .catch(err => console.log(err));
     },
     fetchGroup(gid) {
-      fetch("/case/group/"+this.gid)
+      fetch("/case/group/" + this.gid)
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
         })
         .catch(err => console.log(err));
     },
-    updateItemOrder() {
+    updateItem(item_to_update) {
       this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/case/" + this.i_case + "/updateItems/")
+      this.cid = this.path[this.path.length - 2];
+      this.updated_item = {
+        iid: Number(item_to_update.iid),
+        i_content: "Updated content",
+        i_case: this.cid,
+        i_type: "2",
+        order: "2",
+        i_name: "Updated Item"
+      };
+      fetch("/item/"+ item_to_update.iid +"/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.updated_item)
+      })
         .then(res => res.text())
-        .then(res => {
-          //this.groups = res.text;
-          this.ready = true;
+        .then(text => {
+          console.log(text);
         })
-        .catch(err => console.log(err));
-    },
-    updateItems() {
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/case/" + this.i_case + "/updateItems/")
-        .then(res => res.text())
-        .then(res => {
-          //this.groups = res.text;
-          this.ready = true;
-        })
-        .catch(err => console.log(err));
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+      this.fetchItems();
+      this.fetchCaseItems();
     },
     addItem(new_item) {
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
-      this.new_item.iid = this.total_items + 1;
-      this.new_item.i_content = "dfsad";
+      this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
+      this.new_item.i_content = "Add content here!";
       this.new_item.i_case = this.cid;
       this.new_item.i_type = "1";
       this.new_item.order = "1";
@@ -261,14 +271,13 @@ export default {
         .then(res => res.text())
         .then(text => {
           console.log(text);
-          this.fetchCaseItems();
         })
         .catch(err => {
           console.error("Error: ", err);
         });
+
       this.fetchItems();
       this.fetchCaseItems();
-
       //Reset item container data
       this.new_item = {
         iid: "",
@@ -281,7 +290,7 @@ export default {
     },
     removeItem(item_to_remove) {
       console.log(item_to_remove.iid);
-      fetch("/item/"+Number(item_to_remove.iid)+"/remove", {
+      fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
         method: "delete",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -334,20 +343,12 @@ export default {
       for (let i in this.cids) {
         this.cids.push(this.cids[i].cid);
       }
-    },
-    draggable() {
-      this.cids = [];
-
-      for (let i in this.cids) {
-        this.cids.push(this.cids[i].cid);
-      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-
 /* Set max height for content containers */
 #items {
   //max-height: 475px;

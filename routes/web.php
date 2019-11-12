@@ -95,6 +95,9 @@ Route::post('/group/members/add', 'User_GroupsController@store');
 //Add items to a case
 Route::post('/item/add', 'ItemController@addCaseItem');
 
+//Update item in a case
+Route::post('/item/{id}/update', 'ItemController@update');
+
 //Remove users from group
 Route::delete('/group/members/remove', 'User_GroupsController@destroy');
 

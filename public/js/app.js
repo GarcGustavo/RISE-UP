@@ -2736,6 +2736,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
  //Vue.use(Editor);
@@ -2820,7 +2822,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return res.json();
       }).then(function (res) {
         _this2.all_items = res.data;
-        _this2.total_items = _this2.all_items.length;
+        _this2.total_items = _this2.all_items.length + 1;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -2869,41 +2871,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    updateItemOrder: function updateItemOrder() {
-      var _this6 = this;
-
+    updateItem: function updateItem(item_to_update) {
       this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
-        return res.text();
+      this.cid = this.path[this.path.length - 2];
+      this.updated_item = {
+        iid: Number(item_to_update.iid),
+        i_content: "Updated content",
+        i_case: this.cid,
+        i_type: "2",
+        order: "2",
+        i_name: "Updated Item"
+      };
+      fetch("/item/" + item_to_update.iid + "/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.updated_item)
       }).then(function (res) {
-        //this.groups = res.text;
-        _this6.ready = true;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-    updateItems: function updateItems() {
-      var _this7 = this;
-
-      this.path = window.location.pathname.split("/");
-      this.uid = this.path[this.path.length - 2];
-      fetch("/case/" + this.i_case + "/updateItems/").then(function (res) {
         return res.text();
-      }).then(function (res) {
-        //this.groups = res.text;
-        _this7.ready = true;
+      }).then(function (text) {
+        console.log(text);
       })["catch"](function (err) {
-        return console.log(err);
+        console.error("Error: ", err);
       });
+      this.fetchItems();
+      this.fetchCaseItems();
     },
     addItem: function addItem(new_item) {
-      var _this8 = this;
-
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
-      this.new_item.iid = this.total_items + 1;
-      this.new_item.i_content = "dfsad";
+      this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
+      this.new_item.i_content = "Add content here!";
       this.new_item.i_case = this.cid;
       this.new_item.i_type = "1";
       this.new_item.order = "1";
@@ -2921,8 +2922,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return res.text();
       }).then(function (text) {
         console.log(text);
-
-        _this8.fetchCaseItems();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -2959,27 +2958,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchItems();
     },
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this9 = this;
+      var _this6 = this;
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 1]);
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this9.items = res.data;
+        _this6.items = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     updateCaseParameters: function updateCaseParameters() {
-      var _this10 = this;
+      var _this7 = this;
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 1]);
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this10.items = res.data;
+        _this7.items = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2993,13 +2992,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     onSubmit: function onSubmit() {
-      this.cids = [];
-
-      for (var i in this.cids) {
-        this.cids.push(this.cids[i].cid);
-      }
-    },
-    draggable: function draggable() {
       this.cids = [];
 
       for (var i in this.cids) {
@@ -58771,6 +58763,18 @@ var render = function() {
             {
               on: {
                 click: function($event) {
+                  return _vm.onEdit()
+                }
+              }
+            },
+            [_vm._v("Edit")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              on: {
+                click: function($event) {
                   return _vm.addItem(_vm.new_item)
                 }
               }
@@ -58789,7 +58793,7 @@ var render = function() {
               _c(
                 "draggable",
                 {
-                  attrs: { animation: "250", group: "members" },
+                  attrs: { animation: "250", group: "items" },
                   on: {
                     start: function($event) {
                       _vm.drag = true
@@ -58833,6 +58837,18 @@ var render = function() {
                                     }
                                   },
                                   [_vm._v("Delete")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.updateItem(item)
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Submit Changes")]
                                 )
                               ]),
                               _vm._v(" "),
