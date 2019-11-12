@@ -20,10 +20,10 @@
           </template>
         </div>
       </div>
-      <div class="row" style="margin-top: 50px;">
-        <div class="col-md-2.5">
+      <div class="row" style="margin: 50px;">
+        <div class="col-md-3">
           <!-- Table of Contents -->
-          <h4 class="card-title">Table of Contents</h4>
+          <h4 class="text-center card-title">Table of Contents</h4>
           <div class="row mt-2 card mb-5" id="toc">
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
@@ -39,7 +39,7 @@
           <h4 class="card-title" style="margin-left: 50px;">Parameters</h4>
           <div class="row border" style="margin-left: 50px;" id="toc">
             <div
-              class="col-sm-1 mx-auto-left"
+              class="col-sm-4 mx-auto-left"
               v-for="(case_parameter, index) in case_parameters"
               :key="index"
               style="margin: 50px;"
@@ -50,7 +50,7 @@
                   type="button"
                   id="dropdownMenuButton"
                   data-toggle="dropdown"
-                >{{case_parameter.csp_name}}</button>
+                >{{case_parameter.csp_name}}: Selection</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a
                     class="dropdown-item"
@@ -82,8 +82,8 @@
               @end="drag=false"
             >
               <div class="col-sm-12 mb-3" v-for="(item,index) in items" :key="index">
-                <ul class="list-items">
-                  <div class="card h-100 text-left shadow">
+                <ul class="list-items" >
+                  <div class="card h-100 text-left shadow"  style="margin: 50px;">
                     <div class="card-body">
                       <h4 class="card-title" v-if="!editing">
                         {{item.i_name }}
@@ -97,6 +97,7 @@
                               class="form-control"
                               v-model="item.i_name"
                               v-if="editing"
+                              no-resize
                               @keydown="editingCase"
                             />
                           </div>
@@ -104,6 +105,7 @@
                             <textarea
                               class="form-control"
                               rows="10"
+                              min-height="50px"
                               v-model="item.i_content"
                               v-if="editing"
                               @keydown="editingCase"
@@ -111,8 +113,8 @@
                           </div>
                         </div>
                       </div>
-                      <div class="form-control" v-if="!editing">
-                        <p class="card-text">{{item.i_content}}</p>
+                      <div class="form-group" v-if="!editing" style="white-space: pre-line;">
+                        {{item.i_content}}
                       </div>
                     </div>
                   </div>
@@ -427,6 +429,7 @@ export default {
 /* Set max height for content containers */
 #items {
   //max-height: 475px;
+  margin: 50px;
   overflow-y: auto;
 }
 #toc {

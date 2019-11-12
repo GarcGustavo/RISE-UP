@@ -2762,6 +2762,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -20017,7 +20019,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  margin: 50px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
 
 // exports
 
@@ -58738,9 +58740,9 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "row", staticStyle: { "margin-top": "50px" } }, [
-        _c("div", { staticClass: "col-md-2.5" }, [
-          _c("h4", { staticClass: "card-title" }, [
+      _c("div", { staticClass: "row", staticStyle: { margin: "50px" } }, [
+        _c("div", { staticClass: "col-md-3" }, [
+          _c("h4", { staticClass: "text-center card-title" }, [
             _vm._v("Table of Contents")
           ]),
           _vm._v(" "),
@@ -58792,7 +58794,7 @@ var render = function() {
                 "div",
                 {
                   key: index,
-                  staticClass: "col-sm-1 mx-auto-left",
+                  staticClass: "col-sm-4 mx-auto-left",
                   staticStyle: { margin: "50px" }
                 },
                 [
@@ -58807,7 +58809,7 @@ var render = function() {
                           "data-toggle": "dropdown"
                         }
                       },
-                      [_vm._v(_vm._s(case_parameter.csp_name))]
+                      [_vm._v(_vm._s(case_parameter.csp_name) + ": Selection")]
                     ),
                     _vm._v(" "),
                     _c(
@@ -58927,7 +58929,10 @@ var render = function() {
                       _c("ul", { staticClass: "list-items" }, [
                         _c(
                           "div",
-                          { staticClass: "card h-100 text-left shadow" },
+                          {
+                            staticClass: "card h-100 text-left shadow",
+                            staticStyle: { margin: "50px" }
+                          },
                           [
                             _c("div", { staticClass: "card-body" }, [
                               !_vm.editing
@@ -58972,7 +58977,10 @@ var render = function() {
                                               }
                                             ],
                                             staticClass: "form-control",
-                                            attrs: { type: "text" },
+                                            attrs: {
+                                              type: "text",
+                                              "no-resize": ""
+                                            },
                                             domProps: { value: item.i_name },
                                             on: {
                                               keydown: _vm.editingCase,
@@ -59003,7 +59011,10 @@ var render = function() {
                                               }
                                             ],
                                             staticClass: "form-control",
-                                            attrs: { rows: "10" },
+                                            attrs: {
+                                              rows: "10",
+                                              "min-height": "50px"
+                                            },
                                             domProps: { value: item.i_content },
                                             on: {
                                               keydown: _vm.editingCase,
@@ -59026,11 +59037,20 @@ var render = function() {
                               ),
                               _vm._v(" "),
                               !_vm.editing
-                                ? _c("div", { staticClass: "form-control" }, [
-                                    _c("p", { staticClass: "card-text" }, [
-                                      _vm._v(_vm._s(item.i_content))
-                                    ])
-                                  ])
+                                ? _c(
+                                    "div",
+                                    {
+                                      staticClass: "form-group",
+                                      staticStyle: { "white-space": "pre-line" }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                      " +
+                                          _vm._s(item.i_content) +
+                                          "\n                    "
+                                      )
+                                    ]
+                                  )
                                 : _vm._e()
                             ])
                           ]
