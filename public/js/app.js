@@ -2738,6 +2738,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
  //Vue.use(Editor);
@@ -2752,6 +2777,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var _ref;
 
     return _ref = {
+      editing: false,
       showModal: false,
       action: "",
       actor: "",
@@ -2800,7 +2826,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchCaseItems();
     this.fetchCase();
   },
+  mounted: function mounted() {
+    /*Echo.join(`note.${this.note.slug}`)
+      .here(users => {
+        this.usersEditing = users;
+      })
+      .joining(user => {
+        this.usersEditing.push(user);
+      })
+      .leaving(user => {
+        this.usersEditing = this.usersEditing.filter(u => u != user);
+      })
+      .listenForWhisper("editing", e => {
+        this.title = e.title;
+        this.body = e.body;
+      })
+      .listenForWhisper("saved", e => {
+        this.status = e.status;
+          // clear is status after 1s
+        setTimeout(() => {
+          this.status = "";
+        }, 1000);
+      });*/
+  },
   methods: {
+    editingCase: function editingCase() {
+      /*let channel = Echo.join(`note.${this.note.slug}`);
+        // show changes after 1s
+      setTimeout(() => {
+        channel.whisper("editing", {
+          title: this.title,
+          body: this.body
+        });
+      }, 1000);*/
+    },
     fetchCaseItems: function fetchCaseItems() {
       var _this = this;
 
@@ -2877,10 +2936,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.updated_item = {
         iid: Number(item_to_update.iid),
         i_content: item_to_update.i_content,
-        i_case: this.cid,
-        i_type: "2",
+        i_case: item_to_update.i_case,
+        i_type: item_to_update.i_type,
         order: Number(item_to_update.order),
-        i_name: "Updated Item"
+        i_name: item_to_update.i_name
       };
       fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
@@ -2900,7 +2959,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     updateItems: function updateItems(items) {
       for (var item in this.items) {
-        this.items[item].i_content = "Updated content " + item;
         this.items[item].order = item;
         this.updateItem(this.items[item]);
       }
@@ -2993,18 +3051,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     languageToggle: function languageToggle() {},
     onEdit: function onEdit() {
-      this.cids = [];
-
-      for (var i in this.cids) {
-        this.cids.push(this.cids[i].cid);
-      }
+      this.editing = true;
     },
-    onSubmit: function onSubmit() {
-      this.cids = [];
-
-      for (var i in this.cids) {
-        this.cids.push(this.cids[i].cid);
-      }
+    onSubmit: function onSubmit(items) {
+      this.updateItems(items);
+      this.editing = false;
+    },
+    onCancel: function onCancel() {
+      this.editing = false;
     }
   }
 });
@@ -58616,7 +58670,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "body mb-5 mt-5" }, [
+  return _c("div", { staticClass: "body mb-5 mt-5 border" }, [
     _c("div", { staticClass: "container-fluid" }, [
       _c("div", { staticClass: "row" }, [
         _c(
@@ -58766,41 +58820,47 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "col-sm-12 mb-1" }, [
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.onEdit()
-                }
-              }
-            },
-            [_vm._v("Edit")]
-          ),
+          !this.editing
+            ? _c(
+                "button",
+                {
+                  on: {
+                    click: function($event) {
+                      return _vm.onEdit()
+                    }
+                  }
+                },
+                [_vm._v("Edit")]
+              )
+            : _vm._e(),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.addItem(_vm.new_item)
-                }
-              }
-            },
-            [_vm._v("Add Item")]
-          ),
+          this.editing
+            ? _c(
+                "button",
+                {
+                  on: {
+                    click: function($event) {
+                      return _vm.addItem(_vm.new_item)
+                    }
+                  }
+                },
+                [_vm._v("Add Item")]
+              )
+            : _vm._e(),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.updateItems(_vm.items)
-                }
-              }
-            },
-            [_vm._v("Submit Changes")]
-          )
+          this.editing
+            ? _c(
+                "button",
+                {
+                  on: {
+                    click: function($event) {
+                      return _vm.onSubmit(_vm.items)
+                    }
+                  }
+                },
+                [_vm._v("Submit Changes")]
+              )
+            : _vm._e()
         ])
       ]),
       _vm._v(" "),
@@ -58813,7 +58873,11 @@ var render = function() {
               _c(
                 "draggable",
                 {
-                  attrs: { animation: "250", group: "items" },
+                  attrs: {
+                    animation: "250",
+                    group: "items",
+                    options: { disabled: !_vm.editing }
+                  },
                   on: {
                     start: function($event) {
                       _vm.drag = true
@@ -58841,27 +58905,105 @@ var render = function() {
                           { staticClass: "card h-100 text-left shadow" },
                           [
                             _c("div", { staticClass: "card-body" }, [
-                              _c("h4", { staticClass: "card-title" }, [
-                                _vm._v(
-                                  "\n                      " +
-                                    _vm._s(item.i_name) +
-                                    "\n                      "
-                                ),
-                                _c(
-                                  "button",
-                                  {
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.removeItem(item)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("Delete")]
-                                )
-                              ]),
+                              !_vm.editing
+                                ? _c("h4", { staticClass: "card-title" }, [
+                                    _vm._v(
+                                      "\n                      " +
+                                        _vm._s(item.i_name) +
+                                        "\n                    "
+                                    )
+                                  ])
+                                : _vm._e(),
                               _vm._v(" "),
-                              _c("p", { staticClass: "card-text" }, [
-                                _vm._v(_vm._s(item.i_content))
+                              _vm.editing
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass: "col-sm-2 mb-3 right",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.removeItem(item)
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Delete")]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "panel panel-default" },
+                                [
+                                  _c("div", { staticClass: "panel-body" }, [
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _vm.editing
+                                        ? _c("input", {
+                                            directives: [
+                                              {
+                                                name: "model",
+                                                rawName: "v-model",
+                                                value: item.i_name,
+                                                expression: "item.i_name"
+                                              }
+                                            ],
+                                            staticClass: "form-control",
+                                            attrs: { type: "text" },
+                                            domProps: { value: item.i_name },
+                                            on: {
+                                              keydown: _vm.editingCase,
+                                              input: function($event) {
+                                                if ($event.target.composing) {
+                                                  return
+                                                }
+                                                _vm.$set(
+                                                  item,
+                                                  "i_name",
+                                                  $event.target.value
+                                                )
+                                              }
+                                            }
+                                          })
+                                        : _vm._e()
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _vm.editing
+                                        ? _c("textarea", {
+                                            directives: [
+                                              {
+                                                name: "model",
+                                                rawName: "v-model",
+                                                value: item.i_content,
+                                                expression: "item.i_content"
+                                              }
+                                            ],
+                                            staticClass: "form-control",
+                                            attrs: { rows: "10" },
+                                            domProps: { value: item.i_content },
+                                            on: {
+                                              keydown: _vm.editingCase,
+                                              input: function($event) {
+                                                if ($event.target.composing) {
+                                                  return
+                                                }
+                                                _vm.$set(
+                                                  item,
+                                                  "i_content",
+                                                  $event.target.value
+                                                )
+                                              }
+                                            }
+                                          })
+                                        : _vm._e()
+                                    ])
+                                  ])
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "form-control" }, [
+                                _c("p", { staticClass: "card-text" }, [
+                                  _vm._v(_vm._s(item.i_content))
+                                ])
                               ])
                             ])
                           ]

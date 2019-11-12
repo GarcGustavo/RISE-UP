@@ -1,7 +1,7 @@
 <template>
   <!-- Team Members -->
 
-  <div class="body mb-5 mt-5">
+  <div class="body mb-5 mt-5 border">
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
@@ -65,9 +65,9 @@
           </div>
         </div>
         <div class="col-sm-12 mb-1">
-          <button v-on:click="onEdit()">Edit</button>
-          <button v-on:click="addItem(new_item)">Add Item</button>
-          <button v-on:click="updateItems(items)">Submit Changes</button>
+          <button v-on:click="onEdit()" v-if="!this.editing">Edit</button>
+          <button v-on:click="addItem(new_item)" v-if="this.editing">Add Item</button>
+          <button v-on:click="onSubmit(items)" v-if="this.editing">Submit Changes</button>
         </div>
       </div>
       <div class="row">
@@ -78,6 +78,7 @@
               v-model="items"
               animation="250"
               group="items"
+              :options="{disabled: !editing}"
               @start="drag=true"
               @end="drag=false"
             >
@@ -85,11 +86,35 @@
                 <ul class="list-items">
                   <div class="card h-100 text-left shadow">
                     <div class="card-body">
-                      <h4 class="card-title">
+                      <h4 class="card-title" v-if="!editing">
                         {{item.i_name }}
-                        <button v-on:click="removeItem(item)">Delete</button>
                       </h4>
-                      <p class="card-text">{{item.i_content}}</p>
+                      <button class="col-sm-2 mb-3 right" v-on:click="removeItem(item)" v-if="editing">Delete</button>
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                          <div class="form-group" >
+                            <input
+                              type="text"
+                              class="form-control"
+                              v-model="item.i_name"
+                              v-if="editing"
+                              @keydown="editingCase"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <textarea
+                              class="form-control"
+                              rows="10"
+                              v-model="item.i_content"
+                              v-if="editing"
+                              @keydown="editingCase"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-control">
+                        <p class="card-text">{{item.i_content}}</p>
+                      </div>
                     </div>
                   </div>
                 </ul>
@@ -112,10 +137,10 @@ export default {
   components: {
     draggable
   },
-
   events: {},
   data() {
     return {
+      editing: false,
       showModal: false,
       action: "",
       actor: "",
@@ -166,7 +191,43 @@ export default {
     this.fetchCaseItems();
     this.fetchCase();
   },
+
+  mounted() {
+    /*Echo.join(`note.${this.note.slug}`)
+      .here(users => {
+        this.usersEditing = users;
+      })
+      .joining(user => {
+        this.usersEditing.push(user);
+      })
+      .leaving(user => {
+        this.usersEditing = this.usersEditing.filter(u => u != user);
+      })
+      .listenForWhisper("editing", e => {
+        this.title = e.title;
+        this.body = e.body;
+      })
+      .listenForWhisper("saved", e => {
+        this.status = e.status;
+
+        // clear is status after 1s
+        setTimeout(() => {
+          this.status = "";
+        }, 1000);
+      });*/
+  },
   methods: {
+    editingCase() {
+      /*let channel = Echo.join(`note.${this.note.slug}`);
+
+      // show changes after 1s
+      setTimeout(() => {
+        channel.whisper("editing", {
+          title: this.title,
+          body: this.body
+        });
+      }, 1000);*/
+    },
     fetchCaseItems() {
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
@@ -225,12 +286,12 @@ export default {
       this.updated_item = {
         iid: Number(item_to_update.iid),
         i_content: item_to_update.i_content,
-        i_case: this.cid,
-        i_type: "2",
+        i_case: item_to_update.i_case,
+        i_type: item_to_update.i_type,
         order: Number(item_to_update.order),
-        i_name: "Updated Item"
+        i_name: item_to_update.i_name
       };
-      fetch("/item/"+ item_to_update.iid +"/update", {
+      fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -249,7 +310,6 @@ export default {
     },
     updateItems(items) {
       for (let item in this.items) {
-        this.items[item].i_content = "Updated content "+item;
         this.items[item].order = item;
         this.updateItem(this.items[item]);
       }
@@ -338,18 +398,14 @@ export default {
     },
     languageToggle() {},
     onEdit() {
-      this.cids = [];
-
-      for (let i in this.cids) {
-        this.cids.push(this.cids[i].cid);
-      }
+      this.editing = true;
     },
-    onSubmit() {
-      this.cids = [];
-
-      for (let i in this.cids) {
-        this.cids.push(this.cids[i].cid);
-      }
+    onSubmit(items) {
+      this.updateItems(items);
+      this.editing = false;
+    },
+    onCancel() {
+      this.editing = false;
     }
   }
 };
