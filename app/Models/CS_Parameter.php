@@ -16,9 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class cs_parameter extends Model
 {
-    public $table = 'Cs_Parameter';
+    public $table = 'CS_Parameter';
 
-    protected $dates = false;
+    //protected $dates = false;
 
     public $timestamps = false;
 

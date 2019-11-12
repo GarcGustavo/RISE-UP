@@ -1,6 +1,4 @@
 <template>
-  <!-- Team Members -->
-
   <div class="body mb-5 mt-5 border">
     <div class="container-fluid">
       <div class="row">
@@ -36,12 +34,13 @@
             </div>
           </div>
         </div>
+        <!-- Case Parameters -->
         <div class="col-md-9">
           <h4 class="card-title" style="margin-left: 50px;">Parameters</h4>
           <div class="row border" style="margin-left: 50px;" id="toc">
             <div
               class="col-sm-1 mx-auto-left"
-              v-for="(item, index) in items"
+              v-for="(case_parameter, index) in case_parameters"
               :key="index"
               style="margin: 50px;"
             >
@@ -51,14 +50,14 @@
                   type="button"
                   id="dropdownMenuButton"
                   data-toggle="dropdown"
-                >Action</button>
+                >{{case_parameter.csp_name}}</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a
                     class="dropdown-item"
                     href="#"
-                    v-for="(item, sd) in items"
+                    v-for="(option, sd) in filteredOptions(case_parameter.csp_id)"
                     :key="sd"
-                  >Action {{sd + 1}}</a>
+                  >{{sd + 1}}: {{option.o_content}}</a>
                 </div>
               </div>
             </div>
@@ -112,7 +111,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="form-control">
+                      <div class="form-control" v-if="!editing">
                         <p class="card-text">{{item.i_content}}</p>
                       </div>
                     </div>
@@ -131,7 +130,6 @@
 import Editor from "v-markdown-editor";
 import draggable from "vuedraggable";
 import "v-markdown-editor/dist/index.css";
-//Vue.use(Editor);
 export default {
   //name: 'app',
   components: {
@@ -158,6 +156,8 @@ export default {
       users: [],
       items: [],
       all_items: [],
+      case_parameters: [],
+      parameter_options:[],
       ready: false,
       cid: "",
       gid: "",
@@ -182,14 +182,14 @@ export default {
         i_type: "",
         order: "",
         i_name: ""
-      },
-      case_parameters: []
+      }
     };
   },
   created() {
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
+    this.fetchCaseParameters();
   },
 
   mounted() {
@@ -277,6 +277,38 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+    fetchCaseParameters() {
+      fetch("/parameters")
+        .then(res => res.json())
+        .then(res => {
+          this.case_parameters = res.data;
+          console.log(res.data);
+        })
+        .catch(err => console.log(err));
+        this.fetchParameterOptions();
+    },
+    fetchParameterOptions() {
+      fetch("/parameter/options")
+        .then(res => res.json())
+        .then(res => {
+          this.parameter_options = res.data;
+          console.log(res.data);
+        })
+        .catch(err => console.log(err));
+    },
+    filteredOptions(parameter) {
+      return this.parameter_options.filter(option => option.o_parameter == parameter);
+    },
+    updateCaseParameters() {
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items")
+        .then(res => res.json())
+        .then(res => {
+          this.items = res.data;
         })
         .catch(err => console.log(err));
     },
@@ -375,26 +407,6 @@ export default {
         });
       this.fetchCaseItems();
       this.fetchItems();
-    },
-    fetchCaseParameters() {
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items")
-        .then(res => res.json())
-        .then(res => {
-          this.items = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-    updateCaseParameters() {
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items")
-        .then(res => res.json())
-        .then(res => {
-          this.items = res.data;
-        })
-        .catch(err => console.log(err));
     },
     languageToggle() {},
     onEdit() {

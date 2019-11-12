@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CaseTableSeeder::class);
         $this->call(Item_TypeTableSeeder::class);
         $this->call(ItemTableSeeder::class);
+        $this->call(CS_ParameterTableSeeder::class);
 
     }
 }

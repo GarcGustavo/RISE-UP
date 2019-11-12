@@ -2762,10 +2762,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
- //Vue.use(Editor);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -2795,6 +2793,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       users: [],
       items: [],
       all_items: [],
+      case_parameters: [],
+      parameter_options: [],
       ready: false,
       cid: "",
       gid: "",
@@ -2819,12 +2819,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       i_type: "",
       order: "",
       i_name: ""
-    }), _defineProperty(_ref, "case_parameters", []), _ref;
+    }), _ref;
   },
   created: function created() {
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
+    this.fetchCaseParameters();
   },
   mounted: function mounted() {
     /*Echo.join(`note.${this.note.slug}`)
@@ -2930,6 +2931,49 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    fetchCaseParameters: function fetchCaseParameters() {
+      var _this6 = this;
+
+      fetch("/parameters").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this6.case_parameters = res.data;
+        console.log(res.data);
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+      this.fetchParameterOptions();
+    },
+    fetchParameterOptions: function fetchParameterOptions() {
+      var _this7 = this;
+
+      fetch("/parameter/options").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this7.parameter_options = res.data;
+        console.log(res.data);
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    filteredOptions: function filteredOptions(parameter) {
+      return this.parameter_options.filter(function (option) {
+        return option.o_parameter == parameter;
+      });
+    },
+    updateCaseParameters: function updateCaseParameters() {
+      var _this8 = this;
+
+      this.path = window.location.pathname.split("/");
+      this.cid = Number(this.path[this.path.length - 1]);
+      fetch("/case/" + this.cid + "/items").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this8.items = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
     updateItem: function updateItem(item_to_update) {
       this.path = window.location.pathname.split("/");
       this.cid = this.path[this.path.length - 2];
@@ -3022,32 +3066,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       this.fetchCaseItems();
       this.fetchItems();
-    },
-    fetchCaseParameters: function fetchCaseParameters() {
-      var _this6 = this;
-
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this6.items = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-    updateCaseParameters: function updateCaseParameters() {
-      var _this7 = this;
-
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this7.items = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
     },
     languageToggle: function languageToggle() {},
     onEdit: function onEdit() {
@@ -58769,7 +58787,7 @@ var render = function() {
               staticStyle: { "margin-left": "50px" },
               attrs: { id: "toc" }
             },
-            _vm._l(_vm.items, function(item, index) {
+            _vm._l(_vm.case_parameters, function(case_parameter, index) {
               return _c(
                 "div",
                 {
@@ -58789,7 +58807,7 @@ var render = function() {
                           "data-toggle": "dropdown"
                         }
                       },
-                      [_vm._v("Action")]
+                      [_vm._v(_vm._s(case_parameter.csp_name))]
                     ),
                     _vm._v(" "),
                     _c(
@@ -58798,17 +58816,24 @@ var render = function() {
                         staticClass: "dropdown-menu",
                         attrs: { "aria-labelledby": "dropdownMenuButton" }
                       },
-                      _vm._l(_vm.items, function(item, sd) {
-                        return _c(
-                          "a",
-                          {
-                            key: sd,
-                            staticClass: "dropdown-item",
-                            attrs: { href: "#" }
-                          },
-                          [_vm._v("Action " + _vm._s(sd + 1))]
-                        )
-                      }),
+                      _vm._l(
+                        _vm.filteredOptions(case_parameter.csp_id),
+                        function(option, sd) {
+                          return _c(
+                            "a",
+                            {
+                              key: sd,
+                              staticClass: "dropdown-item",
+                              attrs: { href: "#" }
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(sd + 1) + ": " + _vm._s(option.o_content)
+                              )
+                            ]
+                          )
+                        }
+                      ),
                       0
                     )
                   ])
@@ -59000,11 +59025,13 @@ var render = function() {
                                 ]
                               ),
                               _vm._v(" "),
-                              _c("div", { staticClass: "form-control" }, [
-                                _c("p", { staticClass: "card-text" }, [
-                                  _vm._v(_vm._s(item.i_content))
-                                ])
-                              ])
+                              !_vm.editing
+                                ? _c("div", { staticClass: "form-control" }, [
+                                    _c("p", { staticClass: "card-text" }, [
+                                      _vm._v(_vm._s(item.i_content))
+                                    ])
+                                  ])
+                                : _vm._e()
                             ])
                           ]
                         )

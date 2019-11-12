@@ -74,6 +74,12 @@ Route::get('/case/group/{id}', 'CaseController@show_case_group');
 //List case items
 Route::get('/case/{id}/items','ItemController@getCaseItems');
 
+//List parameters
+Route::get('/parameters','CS_ParameterController@getParameters');
+
+//List parameter options
+Route::get('/parameter/options','CS_ParameterController@getParameterOptions');
+
 //List case parameters
 Route::get('/case/{id}/parameters','Case_ParametersController@getCaseParameters');
 
