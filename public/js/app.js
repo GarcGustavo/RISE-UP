@@ -2876,10 +2876,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.cid = this.path[this.path.length - 2];
       this.updated_item = {
         iid: Number(item_to_update.iid),
-        i_content: "Updated content",
+        i_content: item_to_update.i_content,
         i_case: this.cid,
         i_type: "2",
-        order: "2",
+        order: Number(item_to_update.order),
         i_name: "Updated Item"
       };
       fetch("/item/" + item_to_update.iid + "/update", {
@@ -2897,6 +2897,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
+    },
+    updateItems: function updateItems(items) {
+      for (var item in this.items) {
+        this.items[item].i_content = "Updated content " + item;
+        this.items[item].order = item;
+        this.updateItem(this.items[item]);
+      }
+
       this.fetchItems();
       this.fetchCaseItems();
     },
@@ -58780,6 +58788,18 @@ var render = function() {
               }
             },
             [_vm._v("Add Item")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              on: {
+                click: function($event) {
+                  return _vm.updateItems(_vm.items)
+                }
+              }
+            },
+            [_vm._v("Submit Changes")]
           )
         ])
       ]),
@@ -58837,18 +58857,6 @@ var render = function() {
                                     }
                                   },
                                   [_vm._v("Delete")]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "button",
-                                  {
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.updateItem(item)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("Submit Changes")]
                                 )
                               ]),
                               _vm._v(" "),

@@ -67,6 +67,7 @@
         <div class="col-sm-12 mb-1">
           <button v-on:click="onEdit()">Edit</button>
           <button v-on:click="addItem(new_item)">Add Item</button>
+          <button v-on:click="updateItems(items)">Submit Changes</button>
         </div>
       </div>
       <div class="row">
@@ -87,7 +88,6 @@
                       <h4 class="card-title">
                         {{item.i_name }}
                         <button v-on:click="removeItem(item)">Delete</button>
-                        <button v-on:click="updateItem(item)">Submit Changes</button>
                       </h4>
                       <p class="card-text">{{item.i_content}}</p>
                     </div>
@@ -224,10 +224,10 @@ export default {
       this.cid = this.path[this.path.length - 2];
       this.updated_item = {
         iid: Number(item_to_update.iid),
-        i_content: "Updated content",
+        i_content: item_to_update.i_content,
         i_case: this.cid,
         i_type: "2",
-        order: "2",
+        order: Number(item_to_update.order),
         i_name: "Updated Item"
       };
       fetch("/item/"+ item_to_update.iid +"/update", {
@@ -246,6 +246,13 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
+    },
+    updateItems(items) {
+      for (let item in this.items) {
+        this.items[item].i_content = "Updated content "+item;
+        this.items[item].order = item;
+        this.updateItem(this.items[item]);
+      }
       this.fetchItems();
       this.fetchCaseItems();
     },
