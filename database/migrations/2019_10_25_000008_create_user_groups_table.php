@@ -19,7 +19,6 @@ class CreateUserGroupsTable extends Migration
             $table->unsignedBigInteger('uid');
             $table->foreign('gid')->references('gid')->on('Group')->onDelete('cascade');
             $table->foreign('uid')->references('uid')->on('User');
-
         });
     }
 

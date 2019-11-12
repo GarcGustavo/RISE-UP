@@ -449,9 +449,13 @@ export default {
 
 <style lang="scss" scoped>
 /* Set max height for content containers */
-#cases,
+
 #members {
   max-height: 580px;
+  overflow-y: auto;
+}
+#cases{
+max-height: 620px;
   overflow-y: auto;
 }
 
