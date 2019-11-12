@@ -449,7 +449,6 @@ export default {
 
 <style lang="scss" scoped>
 /* Set max height for content containers */
-
 #members {
   max-height: 580px;
   overflow-y: auto;
@@ -458,6 +457,8 @@ export default {
 max-height: 620px;
   overflow-y: auto;
 }
+/*********************/
+
 
 /* remove case cards borders */
 li {
