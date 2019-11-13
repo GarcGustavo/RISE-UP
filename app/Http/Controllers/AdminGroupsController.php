@@ -26,6 +26,8 @@ class AdminGroupsController extends Controller
             ->join('action_type', 'action_type.act_id', '=', 'action.a_type')
             ->join('group', 'group.gid', '=', 'user_groups.gid')
             ->join('user', 'user.uid', '=', 'group.g_owner')
+            ->orderBy('latest_action_date', 'desc')
+            //->orderBy('g_creation_date', 'desc')
             ->get();
 /*
         $groups = DB::table('group')

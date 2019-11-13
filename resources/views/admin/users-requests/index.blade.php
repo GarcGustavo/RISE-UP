@@ -55,7 +55,7 @@
                             </tr>
                             @empty
                                 <tr>
-                                    <td>Nadie</td>
+                                    <td>Nobody</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -105,7 +105,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td>Nadie</td>
+                                    <td>Nobody</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
