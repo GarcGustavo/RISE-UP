@@ -4,33 +4,40 @@
     <!-- buttons to create or remove a group -->
     <h1 class="mb-3">
       <!-- button if clicked, render confirmation dialogue box to validate user's action -->
-      <a
-        href="#action_confirm_dbox"
-        data-toggle="modal"
-        data-target="#action_confirm_dbox"
-        @click="action='Remove',
-        acted_on='group(s)',isGroupSelected()"
-      >
-        <div id="remove_icon">
-          <a>Remove</a>
-          <i class="material-icons">remove_circle_outline</i>
-        </div>
-      </a>
-      <!-- button if clicked, render create group input box -->
-      <div>
+      <span data-toggle="modal" data-target="#action_confirm_dbox">
         <a
-          href="#action_table_dbox"
-          data-toggle="modal"
-          data-target="#action_table_dbox"
-          @click="gname_box_show=true,
-        action='Create',
-        acted_on='group', fetchUsers()"
+          href="#action_confirm_dbox"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Click icon to delete a group"
+          @click="action='Remove',
+        acted_on='group(s)',isGroupSelected()"
         >
-          <div id="create_icon">
-            <a>Create</a>
-            <i class="material-icons">add_circle_outline</i>
+          <div id="remove_icon">
+            <a>Remove</a>
+            <i class="material-icons">remove_circle_outline</i>
           </div>
         </a>
+      </span>
+
+      <!-- button if clicked, render create group input box -->
+      <div>
+        <span data-toggle="modal" data-target="#action_table_dbox">
+          <a
+            href="#action_table_dbox"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Click icon to create a group"
+            @click="gname_box_show=true,
+        action='Create',
+        acted_on='group', fetchUsers()"
+          >
+            <div id="create_icon">
+              <a>Create</a>
+              <i class="material-icons">add_circle_outline</i>
+            </div>
+          </a>
+        </span>
       </div>
 
       <p>My groups</p>
@@ -55,55 +62,42 @@
       ></action_table_dbox>
     </div>
     <hr>
-    <!-- Table -->
-    <table id="group-table" class="table table-hover table-bordered table-sm" cellspacing="0">
-      <thead class="thead-dark">
-        <tr>
-          <th id="row-order">#</th>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!--list user's groups -->
-        <tr v-for="(group,index) in page_of_groups" :key="index">
-          <!-- if user is owner render with option to select -->
 
-          <td v-if="group.g_owner==curr_user">
-            <div class="check-box">
-              <input
-                class="checkbox"
-                type="checkbox"
-                id="checkbox"
-                v-model="selected_groups"
-                :value="group.gid"
-              >
-              <label for="checkbox">{{index+1}}</label>
-            </div>
-          </td>
-          <td v-else>
-            <!-- else render group without option to select -->
-            <div>
-              <label style="padding-top:18px;padding-left:18px;">{{index+1}}</label>
-            </div>
-          </td>
-          <td>
-            <a :href="'/user/'+curr_user+'/group/' + group.gid">{{group.g_name}}</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <!--number of entries per table page option -->
-    <div id="container">
+    <!-- table header - tabs and search bar -->
+    <div id="tabs" class="container">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            id="tab1"
+            href="#owned_groups"
+            data-toggle="tab"
+            role="tab"
+            @click="page_content=user_groups_is_owner, updatePaginator() "
+          >Groups I created</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            id="tab2"
+            href="#member_groups"
+            data-toggle="tab"
+            @click="page_content=user_groups_is_member, updatePaginator() "
+          >Groups I belong to</a>
+        </li>
+      </ul>
+    </div>
+    <div class="container" id="table_header">
       <div class="btn-group">
         <label id="entries_label">Entries:</label>
-        <!-- entries button -->
+        <!--entries button -->
         <button
           class="btn btn-primary btn-sm dropdown-toggle"
           type="button"
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
-        >{{entries_per_page_table}}</button>
+        >{{entries_per_table_page}}</button>
         <div class="dropdown-menu">
           <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
           <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
@@ -111,11 +105,85 @@
           <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
         </div>
       </div>
+      <!-- search bar -->
+      <div class="input-group">
+        <label>Search</label>
+        <div class="input-group-append search">
+          <input
+            type="text"
+            class="form-control input-sm"
+            maxlength="32"
+            v-model="search"
+            placeholder="Case title.."
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Table  -->
+    <div class="tab-content">
+      <div class="tab-pane active" id="owned_groups" role="tabpanel">
+        <table class="table table-hover table-bordered table-sm" cellspacing="0">
+          <thead class="thead-dark">
+            <tr>
+              <th id="row-order">#</th>
+              <th @click="sortedArray()">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!--list user's groups -->
+            <tr v-for="(group,index) in filterGroups" :key="index">
+              <!-- if user is owner render with option to select -->
+              <td>
+                <div class="check-box">
+                  <input
+                    class="checkbox"
+                    type="checkbox"
+                    id="checkbox"
+                    v-model="selected_groups"
+                    :value="group.gid"
+                  >
+                  <label for="checkbox">{{index+1}}</label>
+                </div>
+              </td>
+              <td>
+                <a :href="'/user/'+curr_user+'/group/' + group.gid">{{group.g_name}}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane" id="member_groups" role="tabpanel">
+        <table class="table table-hover table-bordered table-sm" cellspacing="0">
+          <thead class="thead-dark">
+            <tr>
+              <th id="row-order">#</th>
+              <th @click="sortedArray()">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!--list user's groups -->
+            <tr v-for="(group,index) in filterGroups" :key="index">
+              <!-- if user is owner render with option to select -->
+              <td>
+                <label style="padding-top:18px;padding-left:18px;font-size:18px">{{index+1}}</label>
+              </td>
+              <td>
+                <a :href="'/user/'+curr_user+'/group/' + group.gid">{{group.g_name}}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!--number of entries per table page option -->
+    <div id="container">
       <!-- paginator -->
       <div id="paginate" v-if="reload_paginator">
         <paginator
-          :items="user_groups"
-          :page_size="entries_per_page_table"
+          :items="page_content"
+          :page_size="entries_per_table_page"
           @changePage="onChangePage"
           class="pagination"
           style="display:inline-block"
@@ -139,13 +207,17 @@ export default {
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
+      search: "",
       path: "",
       uid: "",
 
       user_groups: [], // groups of the user
+      user_groups_is_owner: [], //list of groups the user has created
+      user_groups_is_member: [], //list of groups the user belongs to(member)
       selected_groups: [], // the groups the user selects
       groups_to_remove: [], // the groups to remove, sent to controller
       page_of_groups: [], //groups to show on table page
+      page_content: [], //groups to send to paginator
       users: [],
 
       group: {
@@ -157,8 +229,8 @@ export default {
         g_owner: ""
       },
 
-      entries_per_page_table: 4, //table entries
-
+      entries_per_table_page: 4, //table entries
+      sorted: "asc",
       reload_paginator: false, //used to update paginator
       isSelected: false, //has user made a selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
@@ -172,11 +244,42 @@ export default {
     this.fetchGroups();
   },
 
-  computed: {},
+  computed: {
+    /**
+     * @description filters groups by name search. Method is called per each key press
+     * @returns list of users in accordance to search.
+     */
+    filterGroups() {
+      return this.page_of_groups.filter(page_of_groups => {
+        return page_of_groups.g_name.includes(this.search);
+      });
+    }
+  },
   methods: {
+    sortedArray() {
+      if (this.sorted == "asc") {
+        function compare(a, b) {
+          if (a.g_name < b.g_name) return -1;
+          if (a.g_name > b.g_name) return 1;
+          return 0;
+        }
+
+        this.page_of_groups.sort(compare);
+        this.sorted = "desc";
+      } else {
+        function compare(a, b) {
+          if (a.g_name > b.g_name) return -1;
+          if (a.g_name < b.g_name) return 1;
+          return 0;
+        }
+
+        this.page_of_groups.sort(compare);
+        this.sorted = "asc";
+      }
+    },
     /**
      * @description - lists the set of groups of the current table page
-     * @param  {Array} page_of_groups - contains a list of set of groups sent by the paginator
+     * @param {Array} page_of_groups - contains a list of set of groups sent by the paginator
      */
     onChangePage(page_of_groups) {
       // update page of Groups
@@ -198,7 +301,8 @@ export default {
      * @param {Number} entry - variable containing the number of entries per page
      */
     selectEntries(entry) {
-      this.entries_per_page_table = entry;
+      this.entries_per_table_page = entry;
+      this.sorted = "asc"; //default value
       this.updatePaginator();
     },
 
@@ -247,12 +351,19 @@ export default {
      */
     fetchGroups() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
       fetch("/user_groups/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data;
-          this.page_of_groups = this.user_groups;
+
+          this.user_groups_is_owner = this.user_groups.filter(
+            x => x.g_owner == this.curr_user
+          );
+          this.user_groups_is_member = this.user_groups.filter(
+            x => x.g_owner !== this.curr_user
+          );
+          this.page_content = this.user_groups_is_owner; //SET ACTIVE DEFAULT
           this.uncheck(); //uncheck any selected items
           this.updatePaginator(); //refresh with updated group list
         })
@@ -362,7 +473,13 @@ table tr td a {
   display: block;
   font-size: 18px;
 }
+
+th {
+  cursor: pointer;
+}
 /* This is for row content style and alignment */
+/*When overflow occurs limit display -
+text overflow currently not used due to character limit*/
 td a {
   text-align: center;
   margin: auto;
@@ -416,7 +533,7 @@ h1 i {
 /* change icon background when hovered */
 h1 i:hover,
 h1 a:hover {
-  color: blue;
+  color: #428bca;
 }
 /* icon initial color */
 a {
@@ -447,9 +564,44 @@ a {
   padding-top: 12px;
   width: 100px;
 }
-/*entries label*/
-#container #entries_label {
-  padding-right: 5px;
-  padding-top: 5px;
+
+/*tabs header text color*/
+#tabs a {
+  color: #428bca;
+  font-weight: 500;
+}
+
+/*search label style*/
+.input-group label {
+  font-size: 18px;
+  padding: 0 0 0 0px;
+  margin: 5px;
+  margin-right: 10px;
+}
+/*page headers and tables margin*/
+#tabs {
+  margin-top: -25px;
+}
+
+#table_header {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -45px;
+}
+#table_header .btn-group {
+  display: inline;
+  padding-top: 33px;
+}
+
+#table_header .btn-group button {
+  background-color: #428bca;
+  margin-left: 60px;
+  margin-top: -60px;
+}
+
+#table_header .input-group {
+  margin-bottom: 15px;
+  margin-top: 25px;
+  margin-left: 650px;
 }
 </style>

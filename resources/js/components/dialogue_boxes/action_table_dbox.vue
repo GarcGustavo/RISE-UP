@@ -16,6 +16,18 @@
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
+              <div v-if="action=='Add'">
+                <p style="font-size:18px;margin:15px,padding-top:25px;" aria-hidden="true">
+                  Please select
+                  <strong>atleast</strong> one user to add.
+                </p>
+              </div>
+              <div v-else>
+                <p style="font-size:18px;margin:15px,padding-top:25px;" aria-hidden="true">
+                  Please select
+                  <strong>atleast</strong> one user to remove.
+                </p>
+              </div>
               <div class="input-group" v-if="gname_box_show==true">
                 <label>Group name</label>
                 <div class="input-group-append">

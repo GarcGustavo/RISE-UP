@@ -49,7 +49,7 @@ class CaseController extends Controller
         $case_study->c_owner = $request->input('c_owner');
         $case_study->c_group = $request->input('c_group');
         if ($case_study->save()) {
-        return response()->json(['message'=>'Case study has been created']);
+            return response()->json(['message'=>'Case study has been created']);
         }
     }
 

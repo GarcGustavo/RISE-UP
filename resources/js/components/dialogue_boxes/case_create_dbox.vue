@@ -17,12 +17,18 @@
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
-              <label>Title</label>
+              <label for="title">
+                Title
+                <span class="required">*</span>
+              </label>
               <div class="input-group">
                 <input
+                  id="title"
+                  aria-describedby="required-description"
                   class="form-control input-sm"
-                  style="width:350px;
+                  style="
                     height:35px;"
+                  required="required"
                   type="text"
                   maxlength="50"
                   v-model="title"
@@ -32,14 +38,15 @@
 
               <!-- group selection for table -->
               <div class="form-group">
-                <label for="group_select">Assign to a group(optional)</label>
+                <label for="group_select">Assign to a group</label>
                 <select
                   class="form-control"
                   id="group_select"
-                  style="height:35px"
+                  style="height:38px"
                   v-model="curr_group"
                   :disabled="disable_dropdown"
                 >
+                  <option></option>
                   <option
                     v-for="group in user_groups"
                     v-bind:key="group.gid"
@@ -49,11 +56,15 @@
               </div>
               <!-- case description -->
               <div class="form-group">
-                <label for="description">Description</label>
+                <label for="description">
+                  Description
+                  <span class="required">*</span>
+                </label>
                 <textarea
                   class="form-control"
                   id="description"
                   maxlength="140"
+                  required="required"
                   v-model="description"
                   v-on:keyup="countdown"
                 ></textarea>
@@ -62,6 +73,9 @@
             </div>
             <!-- footer -->
             <div class="modal-footer">
+              <p style="margin-right:495px;padding-top:15px;font-size:18px;" aria-hidden="true" id="required-description">
+                <span class="required">*</span>Required field
+              </p>
               <!--action button -->
               <button
                 type="button"
@@ -144,7 +158,7 @@ export default {
       close: false, //NOT USED
       hasError: false, //does description's character count exceed limit - NOT USED IN HTML
       valid_input: false, //is input valid
-      disable_dropdown:false //disable dropdown options for group
+      disable_dropdown: false //disable dropdown options for group
     };
   },
   /**
@@ -221,9 +235,10 @@ export default {
         //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
         this.curr_user = this.path[this.path.length - 3]; //get ID from path
         this.curr_group = this.group_selection;
-        this.disable_dropdown=true;
-      } else { //called by user_groups vue
-        this.curr_user = this.path[this.path.length - 2]; //get ID from path 
+        this.disable_dropdown = true;
+      } else {
+        //called by user_groups vue
+        this.curr_user = this.path[this.path.length - 2]; //get ID from path
       }
 
       fetch("/user_groups/" + this.curr_user)
@@ -241,7 +256,7 @@ export default {
     sendCaseStudyData() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-    //yyyy-mm-dd
+      //yyyy-mm-dd
       this.date = new Date().toJSON().slice(0, 10); //current date
 
       //append data to new case study
@@ -276,10 +291,12 @@ export default {
 <style lang="scss" scoped>
 /*the following style are for the search text and input text box(title)*/
 .modal-body label,
+.modal-body select,
 .modal-body input {
   font-size: 18px;
   display: inline-block;
   margin: 5px;
+
 }
 
 /*title input text box*/
@@ -300,5 +317,9 @@ textarea {
 /*set color for dialogue box popup background*/
 .modal {
   background: rgba(85, 85, 85, 0.5);
+}
+
+.required {
+  color: red;
 }
 </style>

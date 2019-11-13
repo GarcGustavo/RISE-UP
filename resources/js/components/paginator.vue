@@ -90,14 +90,15 @@ const default_styles = {
   li: {
     listStyle: "none",
     display: "inline",
-    textAlign: "center"
+    textAlign: "center",
+
   },
   a: {
     border: 0,
     cursor: "pointer",
     padding: "6px 12px",
     display: "block",
-    float: "left"
+    float: "left",
   }
 };
 

@@ -4,35 +4,41 @@
     <!-- buttons to create or remove a case study -->
     <h1 class="mb-3">
       <!-- remove button if clicked, render confirmation dialogue box to validate user's action -->
-      <a
-        href="#action_confirm_dbox"
-        data-toggle="modal"
-        data-target="#action_confirm_dbox"
-        @click="action='Remove',
-        acted_on='case study(s)', isCaseSelected()"
-      >
-        <div id="remove_icon">
-          <a>Remove</a>
-          <i class="material-icons">remove_circle_outline</i>
-        </div>
-      </a>
-      <!-- create button if clicked, render create case study dialogue box -->
-      <div>
+      <span data-toggle="modal" data-target="#action_confirm_dbox">
         <a
-          href="#case_create_dbox"
-          data-toggle="modal"
-          data-target="#case_create_dbox"
-          @click=" action='Create',
-        acted_on='case study'"
+          href="#action_confirm_dbox"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Click icon to delete a case study"
+          @click="action='Remove',
+        acted_on='case study(s)', isCaseSelected()"
         >
-          <div id="create_icon">
-            <a>Create</a>
-            <i class="material-icons">add_circle_outline</i>
+          <div id="remove_icon">
+            <a>Remove</a>
+            <i class="material-icons">remove_circle_outline</i>
           </div>
         </a>
+      </span>
+      <!-- create button if clicked, render create case study dialogue box -->
+      <div>
+        <span data-toggle="modal" data-target="#case_create_dbox">
+          <a
+            href="#case_create_dbox"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Click icon to create a case study"
+            @click=" action='Create',
+            acted_on='case study'"
+          >
+            <div id="create_icon">
+              <a>Create</a>
+              <i class="material-icons">add_circle_outline</i>
+            </div>
+          </a>
+        </span>
       </div>
 
-      <p>My cases</p>
+      <p>My case studies</p>
     </h1>
 
     <div v-if="action=='Remove'">
@@ -51,44 +57,33 @@
     </div>
 
     <hr>
-    <!-- Table -->
-    <table id="group-table" class="table table-hover table-bordered table-sm" cellspacing="0">
-      <thead class="thead-dark">
-        <tr>
-          <th id="row-order">#</th>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!--list user's case studies -->
-        <tr v-for="(case_study,index) in page_of_cases" :key="index">
-          <!-- if user is owner render with option to select -->
-          <td v-if="case_study.c_owner == curr_user">
-            <div class="check-box">
-              <input
-                class="checkbox"
-                type="checkbox"
-                id="checkbox"
-                v-model="selected_cases"
-                :value="case_study.cid"
-              >
-              <label for="checkbox">{{index+1}}</label>
-            </div>
-          </td>
-          <td v-else>
-            <!-- else render group without option to select -->
-            <div>
-              <label style="padding-top:18px;padding-left:18px;">{{index+1}}</label>
-            </div>
-          </td>
-          <td>
-            <a href="#">{{case_study.c_title}}</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <!--number of entries per table page option -->
-    <div id="container">
+
+    <!-- table header - tabs and search bar -->
+    <div id="tabs" class="container">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            id="tab1"
+            href="#owned_cases"
+            data-toggle="tab"
+            role="tab"
+            @click="page_content=user_cases_by_owner, updatePaginator() "
+          >Case studies I author</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            id="tab2"
+            href="#group_cases"
+            data-toggle="tab"
+            @click="page_content=user_cases_by_group, updatePaginator() "
+          >Group case studies</a>
+        </li>
+      </ul>
+
+    </div>
+    <div class="container" id="table_header">
       <div class="btn-group">
         <label id="entries_label">Entries:</label>
         <!--entries button -->
@@ -106,10 +101,94 @@
           <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
         </div>
       </div>
+        <!-- search bar -->
+      <div class="input-group">
+        <label>Search</label>
+        <div class="input-group-append search">
+          <input
+            type="text"
+            class="form-control input-sm"
+            maxlength="32"
+            v-model="search"
+            placeholder="Case title.."
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="tab-content">
+      <div class="tab-pane active" id="owned_cases" role="tabpanel">
+        <table
+          id="owned_cases_table"
+          class="table table-hover table-bordered table-sm"
+          cellspacing="0"
+        >
+          <thead class="thead-dark">
+            <tr>
+              <th id="row-order">#</th>
+              <th @click="sortedArray()">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!--list user's case studies -->
+            <tr v-for="(case_study,index) in filterCases" :key="index">
+              <!-- if user is owner render with option to select -->
+              <td>
+                <div class="check-box">
+                  <input
+                    class="checkbox"
+                    type="checkbox"
+                    id="checkbox"
+                    v-model="selected_cases"
+                    :value="case_study.cid"
+                  >
+                  <label for="checkbox">{{index+1}}</label>
+                </div>
+              </td>
+              <td>
+                <a href="#">{{case_study.c_title}}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane" id="group_cases" role="tabpanel">
+        <table
+          id="group_cases_table"
+          class="table table-hover table-bordered table-sm"
+          cellspacing="0"
+        >
+          <thead class="thead-dark">
+            <tr>
+              <th id="row-order">#</th>
+              <th @click="sortedArray()">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!--list user's case studies -->
+            <tr v-for="(case_study,index) in filterCases" :key="index">
+              <!-- if user is owner render with option to select -->
+              <td>
+                <div class="check-box">
+                  <label style="padding-left:18px;font-size:18px">{{index+1}}</label>
+                </div>
+              </td>
+              <td>
+                <a href="#">{{case_study.c_title}}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!--number of entries per table page option -->
+    <div id="container">
       <!-- paginator -->
       <div id="paginate" v-if="reload_paginator">
         <paginator
-          :items="user_cases"
+          :items="page_content"
           :page_size="entries_per_table_page"
           @changePage="onChangePage"
           class="pagination"
@@ -134,16 +213,20 @@ export default {
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
+      search: "",
 
       user_cases: [], // cases of the user
+      user_cases_by_owner: [], //list of cases the user has created
+      user_cases_by_group: [], //list of cases of the groups the user belongs to(member)
       selected_cases: [], // the cases the user selects
       cases_to_remove: [], // the cases to remove, sent to controller
       page_of_cases: [], //cases to show on table page
+      page_content: [], //cases to send to paginator
 
       case_study: { cid: "", c_title: "" }, //case attributes
 
       entries_per_table_page: 4, //table entries
-
+    sorted:"asc",
       reload_paginator: false, //used to update paginator
       isSelected: false, //has user made selection
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
@@ -155,7 +238,42 @@ export default {
   created() {
     this.fetchCases();
   },
+  computed: {
+    /**
+     * @description filters cases by title search. Method is called per each key press
+     * @returns list of cases in accordance to search.
+     */
+    filterCases() {
+      return this.page_of_cases.filter(page_of_cases => {
+        return page_of_cases.c_title.includes(this.search);
+      });
+    }
+  },
   methods: {
+
+sortedArray() {
+      if (this.sorted == "asc") {
+        function compare(a, b) {
+          if (a.c_title < b.c_title) return -1;
+          if (a.c_title > b.c_title) return 1;
+          return 0;
+        }
+
+        this.page_of_cases.sort(compare);
+        this.sorted = "desc";
+      } else {
+        function compare(a, b) {
+          if (a.c_title > b.c_title) return -1;
+          if (a.c_title < b.c_title) return 1;
+          return 0;
+        }
+
+        this.page_of_cases.sort(compare);
+        this.sorted = "asc";
+      }
+    },
+
+
     /**
      * @description - lists the set of cases of the current table page
      * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
@@ -183,6 +301,7 @@ export default {
      */
     selectEntries(entry) {
       this.entries_per_table_page = entry;
+       this.sorted = "asc"; //default value
       this.updatePaginator();
     },
 
@@ -191,6 +310,7 @@ export default {
      */
     updatePaginator() {
       // Remove paginator from the DOM
+      console.log(this.page_of_cases);
       this.reload_paginator = false;
 
       this.$nextTick().then(() => {
@@ -215,12 +335,20 @@ export default {
      */
     fetchCases() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = this.path[this.path.length - 2]; //get user id from path
+      this.curr_user = Number(this.path[this.path.length - 2]); //get user id from path
       fetch("/user_cases/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_cases = res.data;
-          this.page_of_cases = this.user_cases;
+
+          this.user_cases_by_owner = this.user_cases.filter(
+            x => x.c_owner == this.curr_user
+          );
+          this.user_cases_by_group = this.user_cases.filter(
+            x => x.c_owner !== this.curr_user
+          );
+          this.page_content = this.user_cases_by_owner; //SET ACTIVE DEFAULT
+
           this.uncheck();
           this.updatePaginator(); //refresh with updated list of cases
         })
@@ -356,7 +484,7 @@ h1 i {
 /* change icon background when hovered */
 h1 i:hover,
 h1 a:hover {
-  color: blue;
+  color: #428bca;
 }
 /* icon initial color */
 a {
@@ -389,9 +517,43 @@ a {
   width: 100px;
 }
 
-/*entries label*/
-#container #entries_label {
-  padding-right: 5px;
-  padding-top: 5px;
+/*tabs header text color*/
+#tabs a {
+  color: #428bca;
+  font-weight: 500;
+}
+
+/*search label style*/
+.input-group label {
+  font-size: 18px;
+  padding: 0 0 0 0px;
+  margin: 5px;
+  margin-right: 10px;
+}
+/*page headers and tables margin*/
+#tabs {
+  margin-top: -25px;
+}
+
+#table_header {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -45px;
+}
+#table_header .btn-group {
+  display: inline;
+  padding-top: 33px;
+}
+
+#table_header .btn-group button {
+  background-color: #428bca;
+  margin-left: 60px;
+  margin-top: -60px;
+}
+
+#table_header .input-group {
+  margin-bottom: 15px;
+  margin-top: 25px;
+  margin-left: 650px;
 }
 </style>

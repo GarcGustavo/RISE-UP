@@ -4,17 +4,29 @@
     <!-- group title -->
     <div v-if="!edit_title">
       <span class="text">
-        <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:45px;' : ''">
+        <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:100px;' : ''">
           {{group_name}}
           <!--render if user has permission-->
-          <a href="#" @click="enableEditTitle" v-if="rename_group_permission">
-            <i class="material-icons">create</i>
-          </a>
+          <div id="edit_icon">
+            <a
+              href="#"
+              style="padding-bottom:25px;float:right;"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click icon to edit the group's name"
+              @click="enableEditTitle"
+              v-if="rename_group_permission"
+            >
+              <a id="edit_title_desc">Edit group name</a>
+              <i class="material-icons">create</i>
+            </a>
+          </div>
         </h1>
       </span>
     </div>
     <!-- if edit mode is enabled -->
     <div v-if="edit_title">
+      <span class="required">*</span>
       <input v-model="tempValue" maxlength="32" class="input">
       <button @click="disableEditTitle">Cancel</button>
       <button
@@ -22,6 +34,9 @@
         data-target="#action_confirm_dbox"
         @click="saveEdit(), action='Rename'"
       >Save</button>
+      <p aria-hidden="true" style="margin:5px;display:inline" id="required-description">
+        <span class="required">*</span>Required field
+      </p>
     </div>
 
     <hr>
@@ -30,36 +45,39 @@
     <!-- render if user has permissions -->
     <h1 class="text-center mt-5 col-sm">
       <!--remove button -->
-      <a
-        v-if="add_remove_members_permission"
-        href="#action_table_dbox"
-        data-toggle="modal"
-        data-target="#action_table_dbox"
-        data-dismiss="modal"
-        @click=" action='Remove',
+      <span data-toggle="modal" data-target="#action_table_dbox" data-dismiss="modal">
+        <a
+          v-if="add_remove_members_permission"
+          href="#action_table_dbox"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Click icon to remove a member from the group"
+          @click=" action='Remove',
         acted_on='member(s)', fetchMembers()"
-      >
-        <div id="remove_icon">
-          <a>Remove</a>
-          <i class="material-icons">remove_circle_outline</i>
-        </div>
-      </a>
+        >
+          <div id="remove_icon">
+            <a>Remove user</a>
+            <i class="material-icons">remove_circle_outline</i>
+          </div>
+        </a>
+      </span>
       <!-- add button -->
-      <a
-        v-if="add_remove_members_permission"
-        href="#action_table_dbox"
-        data-toggle="modal"
-        data-target="#action_table_dbox"
-        data-dismiss="modal"
-        @click=" action='Add',
+      <span data-toggle="modal" data-target="#action_table_dbox" data-dismiss="modal">
+        <a
+          v-if="add_remove_members_permission"
+          href="#action_table_dbox"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Click icon to add a user to the group"
+          @click=" action='Add',
         acted_on='member(s)', fetchUsers()"
-      >
-        <div id="add_icon">
-          <a>Add</a>
-          <i class="material-icons">add_circle_outline</i>
-        </div>
-      </a>
-
+        >
+          <div id="add_icon">
+            <a>Add user</a>
+            <i class="material-icons">add_circle_outline</i>
+          </div>
+        </a>
+      </span>
       <p :style=" add_remove_members_permission ? 'margin-left:205px;' : ''">Members</p>
     </h1>
     <!-- show table dialogue when adding or removing members -->
@@ -106,16 +124,22 @@
 
     <!-- Create case button -->
     <h1 id="cases_header" class="mt-5 text-center">
-      <a
-        v-if="create_group_case_permission"
-        @click="action='Create'"
-        href="#case_create_dbox"
-        style="padding-top:5px;"
-        data-toggle="modal"
-        data-target="#case_create_dbox"
-      >Create case study</a>
-
-      <p :style="create_group_case_permission ? 'margin-left:165px;' : ''">Our Cases</p>
+      <span data-toggle="modal" data-target="#case_create_dbox">
+        <a
+          v-if="create_group_case_permission"
+          @click="action='Create'"
+          href="#case_create_dbox"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Click icon to create a group case study"
+        >
+          <div id="create_case_study_icon">
+            <a>Create case study</a>
+            <i class="material-icons">add_circle_outline</i>
+          </div>
+        </a>
+      </span>
+      <p :style="create_group_case_permission ? 'margin-left:110px;' : ''">Our Cases</p>
     </h1>
     <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
@@ -453,12 +477,11 @@ export default {
   max-height: 580px;
   overflow-y: auto;
 }
-#cases{
-max-height: 620px;
+#cases {
+  max-height: 620px;
   overflow-y: auto;
 }
 /*********************/
-
 
 /* remove case cards borders */
 li {
@@ -477,20 +500,12 @@ h1 i {
 /* change icon background when hovered */
 h1 i:hover,
 h1 a:hover {
-  color: blue;
+  color: #428bca;
 }
 
 /* icon initial color */
 a {
   color: black;
-}
-
-/* position create case study button */
-#cases_header a,
-#edit_btn a {
-  float: right;
-  font-size: 18px;
-  margin-top: 10px;
 }
 
 /*move remove icon to right */
@@ -518,5 +533,33 @@ a {
 #add_icon a {
   font-size: 18px;
   padding-top: 11px;
+}
+/*move edit title icon to right*/
+#edit_icon {
+  display: inline-flex;
+  float: right;
+  padding-top: 5px;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#edit_icon #edit_title_desc {
+  font-size: 18px;
+  padding-top: 11px;
+}
+/*move create study icon to right*/
+#create_case_study_icon {
+  display: inline-flex;
+  float: right;
+}
+
+/*remove label font size, and margin in relation to icon*/
+#create_case_study_icon a {
+  font-size: 18px;
+  padding-top: 11px;
+}
+
+/*asterisk color*/
+.required {
+  color: red;
 }
 </style>

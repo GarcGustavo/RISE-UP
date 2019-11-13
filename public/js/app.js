@@ -2245,6 +2245,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
@@ -2596,6 +2608,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  *This dialogue box is used to get input for a new case study
@@ -2752,7 +2778,7 @@ __webpack_require__.r(__webpack_exports__);
         this.disable_dropdown = true;
       } else {
         //called by user_groups vue
-        this.curr_user = this.path[this.path.length - 2]; //get ID from path 
+        this.curr_user = this.path[this.path.length - 2]; //get ID from path
       }
 
       fetch("/user_groups/" + this.curr_user).then(function (res) {
@@ -2868,6 +2894,30 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3898,6 +3948,85 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * this component is used to display the cases of a user
@@ -3915,14 +4044,21 @@ __webpack_require__.r(__webpack_exports__);
       //action the user is executing
       acted_on: "",
       //on what is the action being exected
+      search: "",
       user_cases: [],
       // cases of the user
+      user_cases_by_owner: [],
+      //list of cases the user has created
+      user_cases_by_group: [],
+      //list of cases of the groups the user belongs to(member)
       selected_cases: [],
       // the cases the user selects
       cases_to_remove: [],
       // the cases to remove, sent to controller
       page_of_cases: [],
       //cases to show on table page
+      page_content: [],
+      //cases to send to paginator
       case_study: {
         cid: "",
         c_title: ""
@@ -3930,6 +4066,7 @@ __webpack_require__.r(__webpack_exports__);
       //case attributes
       entries_per_table_page: 4,
       //table entries
+      sorted: "asc",
       reload_paginator: false,
       //used to update paginator
       isSelected: false,
@@ -3945,7 +4082,42 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.fetchCases();
   },
+  computed: {
+    /**
+     * @description filters cases by title search. Method is called per each key press
+     * @returns list of cases in accordance to search.
+     */
+    filterCases: function filterCases() {
+      var _this = this;
+
+      return this.page_of_cases.filter(function (page_of_cases) {
+        return page_of_cases.c_title.includes(_this.search);
+      });
+    }
+  },
   methods: {
+    sortedArray: function sortedArray() {
+      if (this.sorted == "asc") {
+        var compare = function compare(a, b) {
+          if (a.c_title < b.c_title) return -1;
+          if (a.c_title > b.c_title) return 1;
+          return 0;
+        };
+
+        this.page_of_cases.sort(compare);
+        this.sorted = "desc";
+      } else {
+        var _compare = function _compare(a, b) {
+          if (a.c_title > b.c_title) return -1;
+          if (a.c_title < b.c_title) return 1;
+          return 0;
+        };
+
+        this.page_of_cases.sort(_compare);
+        this.sorted = "asc";
+      }
+    },
+
     /**
      * @description - lists the set of cases of the current table page
      * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
@@ -3973,6 +4145,8 @@ __webpack_require__.r(__webpack_exports__);
      */
     selectEntries: function selectEntries(entry) {
       this.entries_per_table_page = entry;
+      this.sorted = "asc"; //default value
+
       this.updatePaginator();
     },
 
@@ -3980,13 +4154,14 @@ __webpack_require__.r(__webpack_exports__);
      * @description - refreshes the paginator
      */
     updatePaginator: function updatePaginator() {
-      var _this = this;
+      var _this2 = this;
 
       // Remove paginator from the DOM
+      console.log(this.page_of_cases);
       this.reload_paginator = false;
       this.$nextTick().then(function () {
         // Add the paginator back in
-        _this.reload_paginator = true;
+        _this2.reload_paginator = true;
       });
     },
 
@@ -4005,21 +4180,27 @@ __webpack_require__.r(__webpack_exports__);
      * @description gets all the cases of the current user
      */
     fetchCases: function fetchCases() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-      this.curr_user = this.path[this.path.length - 2]; //get user id from path
+      this.curr_user = Number(this.path[this.path.length - 2]); //get user id from path
 
       fetch("/user_cases/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.user_cases = res.data;
-        _this2.page_of_cases = _this2.user_cases;
+        _this3.user_cases = res.data;
+        _this3.user_cases_by_owner = _this3.user_cases.filter(function (x) {
+          return x.c_owner == _this3.curr_user;
+        });
+        _this3.user_cases_by_group = _this3.user_cases.filter(function (x) {
+          return x.c_owner !== _this3.curr_user;
+        });
+        _this3.page_content = _this3.user_cases_by_owner; //SET ACTIVE DEFAULT
 
-        _this2.uncheck();
+        _this3.uncheck();
 
-        _this2.updatePaginator(); //refresh with updated list of cases
+        _this3.updatePaginator(); //refresh with updated list of cases
 
       })["catch"](function (err) {
         return console.log(err);
@@ -4031,7 +4212,7 @@ __webpack_require__.r(__webpack_exports__);
      * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
      */
     createCaseStudy: function createCaseStudy(case_study) {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/case/create", {
         method: "post",
@@ -4047,7 +4228,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(case_study);
 
-        _this3.fetchCases();
+        _this4.fetchCases();
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -4057,7 +4238,7 @@ __webpack_require__.r(__webpack_exports__);
      * @description removes any selected user cases by making a delete request to caseController
      */
     removeCases: function removeCases() {
-      var _this4 = this;
+      var _this5 = this;
 
       for (var i in this.selected_cases) {
         this.cases_to_remove.push({
@@ -4079,12 +4260,12 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(_this4.cases_to_remove);
+        console.log(_this5.cases_to_remove);
 
-        _this4.fetchCases(); //update UI with latest cases
+        _this5.fetchCases(); //update UI with latest cases
 
 
-        _this4.cases_to_remove = []; //reset variable of cases to remove
+        _this5.cases_to_remove = []; //reset variable of cases to remove
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -4230,6 +4411,74 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * this component is used to display the groups of a user
@@ -4247,16 +4496,23 @@ __webpack_require__.r(__webpack_exports__);
       //action the user is executing
       acted_on: "",
       //on what is the action being exected
+      search: "",
       path: "",
       uid: "",
       user_groups: [],
       // groups of the user
+      user_groups_is_owner: [],
+      //list of groups the user has created
+      user_groups_is_member: [],
+      //list of groups the user belongs to(member)
       selected_groups: [],
       // the groups the user selects
       groups_to_remove: [],
       // the groups to remove, sent to controller
       page_of_groups: [],
       //groups to show on table page
+      page_content: [],
+      //groups to send to paginator
       users: [],
       group: {
         //group attributes
@@ -4266,8 +4522,9 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
-      entries_per_page_table: 4,
+      entries_per_table_page: 4,
       //table entries
+      sorted: "asc",
       reload_paginator: false,
       //used to update paginator
       isSelected: false,
@@ -4283,11 +4540,45 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.fetchGroups();
   },
-  computed: {},
+  computed: {
+    /**
+     * @description filters groups by name search. Method is called per each key press
+     * @returns list of users in accordance to search.
+     */
+    filterGroups: function filterGroups() {
+      var _this = this;
+
+      return this.page_of_groups.filter(function (page_of_groups) {
+        return page_of_groups.g_name.includes(_this.search);
+      });
+    }
+  },
   methods: {
+    sortedArray: function sortedArray() {
+      if (this.sorted == "asc") {
+        var compare = function compare(a, b) {
+          if (a.g_name < b.g_name) return -1;
+          if (a.g_name > b.g_name) return 1;
+          return 0;
+        };
+
+        this.page_of_groups.sort(compare);
+        this.sorted = "desc";
+      } else {
+        var _compare = function _compare(a, b) {
+          if (a.g_name > b.g_name) return -1;
+          if (a.g_name < b.g_name) return 1;
+          return 0;
+        };
+
+        this.page_of_groups.sort(_compare);
+        this.sorted = "asc";
+      }
+    },
+
     /**
      * @description - lists the set of groups of the current table page
-     * @param  {Array} page_of_groups - contains a list of set of groups sent by the paginator
+     * @param {Array} page_of_groups - contains a list of set of groups sent by the paginator
      */
     onChangePage: function onChangePage(page_of_groups) {
       // update page of Groups
@@ -4310,7 +4601,9 @@ __webpack_require__.r(__webpack_exports__);
      * @param {Number} entry - variable containing the number of entries per page
      */
     selectEntries: function selectEntries(entry) {
-      this.entries_per_page_table = entry;
+      this.entries_per_table_page = entry;
+      this.sorted = "asc"; //default value
+
       this.updatePaginator();
     },
 
@@ -4318,13 +4611,13 @@ __webpack_require__.r(__webpack_exports__);
      * @description refreshes the paginator
      */
     updatePaginator: function updatePaginator() {
-      var _this = this;
+      var _this2 = this;
 
       // Remove paginator from the DOM
       this.reload_paginator = false;
       this.$nextTick().then(function () {
         // Add the paginator back in
-        _this.reload_paginator = true;
+        _this2.reload_paginator = true;
       });
     },
 
@@ -4343,7 +4636,7 @@ __webpack_require__.r(__webpack_exports__);
      * @description get all of system's users when adding a user while creating a group
      */
     fetchUsers: function fetchUsers() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
@@ -4352,11 +4645,11 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users = res.data; //used in action_table_dbox
+        _this3.users = res.data; //used in action_table_dbox
         //filter user from list to show in table
 
-        _this2.users = _this2.users.filter(function (x) {
-          return x.uid !== _this2.curr_user;
+        _this3.users = _this3.users.filter(function (x) {
+          return x.uid !== _this3.curr_user;
         }); //filter owner
       })["catch"](function (err) {
         return console.log(err);
@@ -4367,22 +4660,28 @@ __webpack_require__.r(__webpack_exports__);
      * @description gets all the groups of the current user
      */
     fetchGroups: function fetchGroups() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
-      this.curr_user = this.path[this.path.length - 2]; //get ID from path
+      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
 
       fetch("/user_groups/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.user_groups = res.data;
-        _this3.page_of_groups = _this3.user_groups;
+        _this4.user_groups = res.data;
+        _this4.user_groups_is_owner = _this4.user_groups.filter(function (x) {
+          return x.g_owner == _this4.curr_user;
+        });
+        _this4.user_groups_is_member = _this4.user_groups.filter(function (x) {
+          return x.g_owner !== _this4.curr_user;
+        });
+        _this4.page_content = _this4.user_groups_is_owner; //SET ACTIVE DEFAULT
 
-        _this3.uncheck(); //uncheck any selected items
+        _this4.uncheck(); //uncheck any selected items
 
 
-        _this3.updatePaginator(); //refresh with updated group list
+        _this4.updatePaginator(); //refresh with updated group list
 
       })["catch"](function (err) {
         return console.log(err);
@@ -4395,7 +4694,7 @@ __webpack_require__.r(__webpack_exports__);
      * @param {Array} members - array of user id's to add to group
      */
     createGroup: function createGroup(group, members) {
-      var _this4 = this;
+      var _this5 = this;
 
       fetch("/group/create", {
         method: "post",
@@ -4412,10 +4711,10 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(group);
 
-        _this4.addUsers(members); //add users to group
+        _this5.addUsers(members); //add users to group
 
 
-        _this4.fetchGroups(); //updpate group list
+        _this5.fetchGroups(); //updpate group list
 
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -4449,7 +4748,7 @@ __webpack_require__.r(__webpack_exports__);
      * @description removes any selected groups by making a delete request to User_Groups controller
      */
     removeGroups: function removeGroups() {
-      var _this5 = this;
+      var _this6 = this;
 
       for (var i in this.selected_groups) {
         this.groups_to_remove.push({
@@ -4470,12 +4769,12 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(_this5.groups_to_remove);
+        console.log(_this6.groups_to_remove);
 
-        _this5.fetchGroups(); //update group list
+        _this6.fetchGroups(); //update group list
 
 
-        _this5.groups_to_remove = []; //reset variable
+        _this6.groups_to_remove = []; //reset variable
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -8999,7 +9298,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*the following style are for the search text and input text box(title)*/\n.modal-body label[data-v-8f585bc6],\n.modal-body input[data-v-8f585bc6] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*title input text box*/\n.input-group input[data-v-8f585bc6] {\n  border-radius: 3px;\n}\n\n/***********************************************************/\n/*description box attributes*/\ntextarea[data-v-8f585bc6] {\n  width: 100%;\n  height: 100px;\n  resize: none;\n}\n\n/*height and width for group dropdown and title input are defined in html element*/\n/*set color for dialogue box popup background*/\n.modal[data-v-8f585bc6] {\n  background: rgba(85, 85, 85, 0.5);\n}", ""]);
+exports.push([module.i, "/*the following style are for the search text and input text box(title)*/\n.modal-body label[data-v-8f585bc6],\n.modal-body select[data-v-8f585bc6],\n.modal-body input[data-v-8f585bc6] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*title input text box*/\n.input-group input[data-v-8f585bc6] {\n  border-radius: 3px;\n}\n\n/***********************************************************/\n/*description box attributes*/\ntextarea[data-v-8f585bc6] {\n  width: 100%;\n  height: 100px;\n  resize: none;\n}\n\n/*height and width for group dropdown and title input are defined in html element*/\n/*set color for dialogue box popup background*/\n.modal[data-v-8f585bc6] {\n  background: rgba(85, 85, 85, 0.5);\n}\n.required[data-v-8f585bc6] {\n  color: red;\n}", ""]);
 
 // exports
 
@@ -9037,7 +9336,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#members[data-v-027ff7c4] {\n  max-height: 580px;\n  overflow-y: auto;\n}\n#cases[data-v-027ff7c4] {\n  max-height: 620px;\n  overflow-y: auto;\n}\n\n/*********************/\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/*margin for headers*/\nh1 p[data-v-027ff7c4] {\n  margin-top: 75px;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-027ff7c4],\n#edit_btn a[data-v-027ff7c4] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  margin-left: 15px;\n  padding-top: 11px;\n}\n\n/*move add icon to right */\n#add_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#add_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  padding-top: 11px;\n}", ""]);
+exports.push([module.i, "/* Set max height for content containers */\n#members[data-v-027ff7c4] {\n  max-height: 580px;\n  overflow-y: auto;\n}\n#cases[data-v-027ff7c4] {\n  max-height: 620px;\n  overflow-y: auto;\n}\n\n/*********************/\n/* remove case cards borders */\nli[data-v-027ff7c4] {\n  border: none;\n}\n\n/*margin for headers*/\nh1 p[data-v-027ff7c4] {\n  margin-top: 75px;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-027ff7c4] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-027ff7c4]:hover,\nh1 a[data-v-027ff7c4]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-027ff7c4] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  margin-left: 15px;\n  padding-top: 11px;\n}\n\n/*move add icon to right */\n#add_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#add_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  padding-top: 11px;\n}\n\n/*move edit title icon to right*/\n#edit_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n  padding-top: 5px;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#edit_icon #edit_title_desc[data-v-027ff7c4] {\n  font-size: 18px;\n  padding-top: 11px;\n}\n\n/*move create study icon to right*/\n#create_case_study_icon[data-v-027ff7c4] {\n  display: inline-flex;\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_case_study_icon a[data-v-027ff7c4] {\n  font-size: 18px;\n  padding-top: 11px;\n}\n\n/*asterisk color*/\n.required[data-v-027ff7c4] {\n  color: red;\n}", ""]);
 
 // exports
 
@@ -9075,7 +9374,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n#paginate[data-v-4dce56da] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover,\nh1 a[data-v-4dce56da]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-4dce56da] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-4dce56da] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-4dce56da] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*entries label*/\n#container #entries_label[data-v-4dce56da] {\n  padding-right: 5px;\n  padding-top: 5px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-4dce56da] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-4dce56da] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-4dce56da] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-4dce56da] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-4dce56da] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-4dce56da] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-4dce56da] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-4dce56da] {\n  float: right;\n}\n#paginate[data-v-4dce56da] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-4dce56da] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-4dce56da]:hover,\nh1 a[data-v-4dce56da]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-4dce56da] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-4dce56da] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-4dce56da] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-4dce56da] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-4dce56da] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-4dce56da] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-4dce56da] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-4dce56da] {\n  margin-top: -25px;\n}\n#table_header[data-v-4dce56da] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n#table_header .btn-group[data-v-4dce56da] {\n  display: inline;\n  padding-top: 33px;\n}\n#table_header .btn-group button[data-v-4dce56da] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n#table_header .input-group[data-v-4dce56da] {\n  margin-bottom: 15px;\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -9094,7 +9393,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-79cc8066] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover,\nh1 a[data-v-79cc8066]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-79cc8066] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-79cc8066] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-79cc8066] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*entries label*/\n#container #entries_label[data-v-79cc8066] {\n  padding-right: 5px;\n  padding-top: 5px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-79cc8066] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-79cc8066] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-79cc8066] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\n/*When overflow occurs limit display -\ntext overflow currently not used due to character limit*/\ntd a[data-v-79cc8066] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-79cc8066] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-79cc8066] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-79cc8066] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-79cc8066] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-79cc8066] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-79cc8066] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-79cc8066] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-79cc8066]:hover,\nh1 a[data-v-79cc8066]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-79cc8066] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-79cc8066] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-79cc8066] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-79cc8066] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-79cc8066] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-79cc8066] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-79cc8066] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-79cc8066] {\n  margin-top: -25px;\n}\n#table_header[data-v-79cc8066] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n#table_header .btn-group[data-v-79cc8066] {\n  display: inline;\n  padding-top: 33px;\n}\n#table_header .btn-group button[data-v-79cc8066] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n#table_header .input-group[data-v-79cc8066] {\n  margin-bottom: 15px;\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -41194,6 +41493,46 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-body" }, [
+                  _vm.action == "Add"
+                    ? _c("div", [
+                        _c(
+                          "p",
+                          {
+                            staticStyle: {
+                              "font-size": "18px",
+                              margin: "15px,padding-top:25px"
+                            },
+                            attrs: { "aria-hidden": "true" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                Please select\n                "
+                            ),
+                            _c("strong", [_vm._v("atleast")]),
+                            _vm._v(" one user to add.\n              ")
+                          ]
+                        )
+                      ])
+                    : _c("div", [
+                        _c(
+                          "p",
+                          {
+                            staticStyle: {
+                              "font-size": "18px",
+                              margin: "15px,padding-top:25px"
+                            },
+                            attrs: { "aria-hidden": "true" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                Please select\n                "
+                            ),
+                            _c("strong", [_vm._v("atleast")]),
+                            _vm._v(" one user to remove.\n              ")
+                          ]
+                        )
+                      ]),
+                  _vm._v(" "),
                   _vm.gname_box_show == true
                     ? _c("div", { staticClass: "input-group" }, [
                         _c("label", [_vm._v("Group name")]),
@@ -41518,7 +41857,10 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-body" }, [
-                  _c("label", [_vm._v("Title")]),
+                  _c("label", { attrs: { for: "title" } }, [
+                    _vm._v("\n              Title\n              "),
+                    _c("span", { staticClass: "required" }, [_vm._v("*")])
+                  ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "input-group" }, [
                     _c("input", {
@@ -41531,8 +41873,11 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control input-sm",
-                      staticStyle: { width: "350px", height: "35px" },
+                      staticStyle: { height: "35px" },
                       attrs: {
+                        id: "title",
+                        "aria-describedby": "required-description",
+                        required: "required",
                         type: "text",
                         maxlength: "50",
                         placeholder: "Title..."
@@ -41551,7 +41896,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { attrs: { for: "group_select" } }, [
-                      _vm._v("Assign to a group(optional)")
+                      _vm._v("Assign to a group")
                     ]),
                     _vm._v(" "),
                     _c(
@@ -41566,7 +41911,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        staticStyle: { height: "35px" },
+                        staticStyle: { height: "38px" },
                         attrs: {
                           id: "group_select",
                           disabled: _vm.disable_dropdown
@@ -41587,20 +41932,25 @@ var render = function() {
                           }
                         }
                       },
-                      _vm._l(_vm.user_groups, function(group) {
-                        return _c(
-                          "option",
-                          { key: group.gid, domProps: { value: group.gid } },
-                          [_vm._v(_vm._s(group.g_name))]
-                        )
-                      }),
-                      0
+                      [
+                        _c("option"),
+                        _vm._v(" "),
+                        _vm._l(_vm.user_groups, function(group) {
+                          return _c(
+                            "option",
+                            { key: group.gid, domProps: { value: group.gid } },
+                            [_vm._v(_vm._s(group.g_name))]
+                          )
+                        })
+                      ],
+                      2
                     )
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("label", { attrs: { for: "description" } }, [
-                      _vm._v("Description")
+                      _vm._v("\n                Description\n                "),
+                      _c("span", { staticClass: "required" }, [_vm._v("*")])
                     ]),
                     _vm._v(" "),
                     _c("textarea", {
@@ -41613,7 +41963,11 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control",
-                      attrs: { id: "description", maxlength: "140" },
+                      attrs: {
+                        id: "description",
+                        maxlength: "140",
+                        required: "required"
+                      },
                       domProps: { value: _vm.description },
                       on: {
                         keyup: _vm.countdown,
@@ -41638,6 +41992,25 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-footer" }, [
+                  _c(
+                    "p",
+                    {
+                      staticStyle: {
+                        "margin-right": "495px",
+                        "padding-top": "15px",
+                        "font-size": "18px"
+                      },
+                      attrs: {
+                        "aria-hidden": "true",
+                        id: "required-description"
+                      }
+                    },
+                    [
+                      _c("span", { staticClass: "required" }, [_vm._v("*")]),
+                      _vm._v("Required field\n            ")
+                    ]
+                  ),
+                  _vm._v(" "),
                   _c(
                     "button",
                     {
@@ -41814,25 +42187,40 @@ var render = function() {
               "h1",
               {
                 staticClass: "text-center",
-                style: _vm.rename_group_permission ? "margin-left:45px;" : ""
+                style: _vm.rename_group_permission ? "margin-left:100px;" : ""
               },
               [
                 _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
                 _vm._v(" "),
-                _vm.rename_group_permission
-                  ? _c(
-                      "a",
-                      {
-                        attrs: { href: "#" },
-                        on: { click: _vm.enableEditTitle }
-                      },
-                      [
-                        _c("i", { staticClass: "material-icons" }, [
-                          _vm._v("create")
-                        ])
-                      ]
-                    )
-                  : _vm._e()
+                _c("div", { attrs: { id: "edit_icon" } }, [
+                  _vm.rename_group_permission
+                    ? _c(
+                        "a",
+                        {
+                          staticStyle: {
+                            "padding-bottom": "25px",
+                            float: "right"
+                          },
+                          attrs: {
+                            href: "#",
+                            "data-toggle": "tooltip",
+                            "data-placement": "bottom",
+                            title: "Click icon to edit the group's name"
+                          },
+                          on: { click: _vm.enableEditTitle }
+                        },
+                        [
+                          _c("a", { attrs: { id: "edit_title_desc" } }, [
+                            _vm._v("Edit group name")
+                          ]),
+                          _vm._v(" "),
+                          _c("i", { staticClass: "material-icons" }, [
+                            _vm._v("create")
+                          ])
+                        ]
+                      )
+                    : _vm._e()
+                ])
               ]
             )
           ])
@@ -41841,6 +42229,8 @@ var render = function() {
     _vm._v(" "),
     _vm.edit_title
       ? _c("div", [
+          _c("span", { staticClass: "required" }, [_vm._v("*")]),
+          _vm._v(" "),
           _c("input", {
             directives: [
               {
@@ -41881,56 +42271,82 @@ var render = function() {
               }
             },
             [_vm._v("Save")]
-          )
+          ),
+          _vm._v(" "),
+          _vm._m(0)
         ])
       : _vm._e(),
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
     _c("h1", { staticClass: "text-center mt-5 col-sm" }, [
-      _vm.add_remove_members_permission
-        ? _c(
-            "a",
-            {
-              attrs: {
-                href: "#action_table_dbox",
-                "data-toggle": "modal",
-                "data-target": "#action_table_dbox",
-                "data-dismiss": "modal"
-              },
-              on: {
-                click: function($event) {
-                  ;(_vm.action = "Remove"),
-                    (_vm.acted_on = "member(s)"),
-                    _vm.fetchMembers()
-                }
-              }
-            },
-            [_vm._m(0)]
-          )
-        : _vm._e(),
+      _c(
+        "span",
+        {
+          attrs: {
+            "data-toggle": "modal",
+            "data-target": "#action_table_dbox",
+            "data-dismiss": "modal"
+          }
+        },
+        [
+          _vm.add_remove_members_permission
+            ? _c(
+                "a",
+                {
+                  attrs: {
+                    href: "#action_table_dbox",
+                    "data-toggle": "tooltip",
+                    "data-placement": "bottom",
+                    title: "Click icon to remove a member from the group"
+                  },
+                  on: {
+                    click: function($event) {
+                      ;(_vm.action = "Remove"),
+                        (_vm.acted_on = "member(s)"),
+                        _vm.fetchMembers()
+                    }
+                  }
+                },
+                [_vm._m(1)]
+              )
+            : _vm._e()
+        ]
+      ),
       _vm._v(" "),
-      _vm.add_remove_members_permission
-        ? _c(
-            "a",
-            {
-              attrs: {
-                href: "#action_table_dbox",
-                "data-toggle": "modal",
-                "data-target": "#action_table_dbox",
-                "data-dismiss": "modal"
-              },
-              on: {
-                click: function($event) {
-                  ;(_vm.action = "Add"),
-                    (_vm.acted_on = "member(s)"),
-                    _vm.fetchUsers()
-                }
-              }
-            },
-            [_vm._m(1)]
-          )
-        : _vm._e(),
+      _c(
+        "span",
+        {
+          attrs: {
+            "data-toggle": "modal",
+            "data-target": "#action_table_dbox",
+            "data-dismiss": "modal"
+          }
+        },
+        [
+          _vm.add_remove_members_permission
+            ? _c(
+                "a",
+                {
+                  attrs: {
+                    href: "#action_table_dbox",
+                    "data-toggle": "tooltip",
+                    "data-placement": "top",
+                    title: "Click icon to add a user to the group"
+                  },
+                  on: {
+                    click: function($event) {
+                      ;(_vm.action = "Add"),
+                        (_vm.acted_on = "member(s)"),
+                        _vm.fetchUsers()
+                    }
+                  }
+                },
+                [_vm._m(2)]
+              )
+            : _vm._e()
+        ]
+      ),
       _vm._v(" "),
       _c(
         "p",
@@ -42028,30 +42444,41 @@ var render = function() {
       "h1",
       { staticClass: "mt-5 text-center", attrs: { id: "cases_header" } },
       [
-        _vm.create_group_case_permission
-          ? _c(
-              "a",
-              {
-                staticStyle: { "padding-top": "5px" },
-                attrs: {
-                  href: "#case_create_dbox",
-                  "data-toggle": "modal",
-                  "data-target": "#case_create_dbox"
-                },
-                on: {
-                  click: function($event) {
-                    _vm.action = "Create"
-                  }
-                }
-              },
-              [_vm._v("Create case study")]
-            )
-          : _vm._e(),
+        _c(
+          "span",
+          {
+            attrs: {
+              "data-toggle": "modal",
+              "data-target": "#case_create_dbox"
+            }
+          },
+          [
+            _vm.create_group_case_permission
+              ? _c(
+                  "a",
+                  {
+                    attrs: {
+                      href: "#case_create_dbox",
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Click icon to create a group case study"
+                    },
+                    on: {
+                      click: function($event) {
+                        _vm.action = "Create"
+                      }
+                    }
+                  },
+                  [_vm._m(3)]
+                )
+              : _vm._e()
+          ]
+        ),
         _vm._v(" "),
         _c(
           "p",
           {
-            style: _vm.create_group_case_permission ? "margin-left:165px;" : ""
+            style: _vm.create_group_case_permission ? "margin-left:110px;" : ""
           },
           [_vm._v("Our Cases")]
         )
@@ -42093,8 +42520,24 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c(
+      "p",
+      {
+        staticStyle: { margin: "5px", display: "inline" },
+        attrs: { "aria-hidden": "true", id: "required-description" }
+      },
+      [
+        _c("span", { staticClass: "required" }, [_vm._v("*")]),
+        _vm._v("Required field\n    ")
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { attrs: { id: "remove_icon" } }, [
-      _c("a", [_vm._v("Remove")]),
+      _c("a", [_vm._v("Remove user")]),
       _vm._v(" "),
       _c("i", { staticClass: "material-icons" }, [
         _vm._v("remove_circle_outline")
@@ -42106,7 +42549,17 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { attrs: { id: "add_icon" } }, [
-      _c("a", [_vm._v("Add")]),
+      _c("a", [_vm._v("Add user")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { attrs: { id: "create_case_study_icon" } }, [
+      _c("a", [_vm._v("Create case study")]),
       _vm._v(" "),
       _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
     ])
@@ -42706,44 +43159,68 @@ var render = function() {
   return _c("div", { staticClass: "body mb-5 mt-5" }, [
     _c("h1", { staticClass: "mb-3" }, [
       _c(
-        "a",
+        "span",
         {
           attrs: {
-            href: "#action_confirm_dbox",
             "data-toggle": "modal",
             "data-target": "#action_confirm_dbox"
-          },
-          on: {
-            click: function($event) {
-              ;(_vm.action = "Remove"),
-                (_vm.acted_on = "case study(s)"),
-                _vm.isCaseSelected()
-            }
           }
         },
-        [_vm._m(0)]
+        [
+          _c(
+            "a",
+            {
+              attrs: {
+                href: "#action_confirm_dbox",
+                "data-toggle": "tooltip",
+                "data-placement": "bottom",
+                title: "Click icon to delete a case study"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.action = "Remove"),
+                    (_vm.acted_on = "case study(s)"),
+                    _vm.isCaseSelected()
+                }
+              }
+            },
+            [_vm._m(0)]
+          )
+        ]
       ),
       _vm._v(" "),
       _c("div", [
         _c(
-          "a",
+          "span",
           {
             attrs: {
-              href: "#case_create_dbox",
               "data-toggle": "modal",
               "data-target": "#case_create_dbox"
-            },
-            on: {
-              click: function($event) {
-                ;(_vm.action = "Create"), (_vm.acted_on = "case study")
-              }
             }
           },
-          [_vm._m(1)]
+          [
+            _c(
+              "a",
+              {
+                attrs: {
+                  href: "#case_create_dbox",
+                  "data-toggle": "tooltip",
+                  "data-placement": "bottom",
+                  title: "Click icon to create a case study"
+                },
+                on: {
+                  click: function($event) {
+                    ;(_vm.action = "Create"), (_vm.acted_on = "case study")
+                  }
+                }
+              },
+              [_vm._m(1)]
+            )
+          ]
         )
       ]),
       _vm._v(" "),
-      _c("p", [_vm._v("My cases")])
+      _c("p", [_vm._v("My case studies")])
     ]),
     _vm._v(" "),
     _vm.action == "Remove"
@@ -42778,96 +43255,50 @@ var render = function() {
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
-    _c(
-      "table",
-      {
-        staticClass: "table table-hover table-bordered table-sm",
-        attrs: { id: "group-table", cellspacing: "0" }
-      },
-      [
-        _vm._m(2),
+    _c("div", { staticClass: "container", attrs: { id: "tabs" } }, [
+      _c("ul", { staticClass: "nav nav-tabs", attrs: { role: "tablist" } }, [
+        _c("li", { staticClass: "nav-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "nav-link active",
+              attrs: {
+                id: "tab1",
+                href: "#owned_cases",
+                "data-toggle": "tab",
+                role: "tab"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.page_content = _vm.user_cases_by_owner),
+                    _vm.updatePaginator()
+                }
+              }
+            },
+            [_vm._v("Case studies I author")]
+          )
+        ]),
         _vm._v(" "),
-        _c(
-          "tbody",
-          _vm._l(_vm.page_of_cases, function(case_study, index) {
-            return _c("tr", { key: index }, [
-              case_study.c_owner == _vm.curr_user
-                ? _c("td", [
-                    _c("div", { staticClass: "check-box" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.selected_cases,
-                            expression: "selected_cases"
-                          }
-                        ],
-                        staticClass: "checkbox",
-                        attrs: { type: "checkbox", id: "checkbox" },
-                        domProps: {
-                          value: case_study.cid,
-                          checked: Array.isArray(_vm.selected_cases)
-                            ? _vm._i(_vm.selected_cases, case_study.cid) > -1
-                            : _vm.selected_cases
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.selected_cases,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = case_study.cid,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.selected_cases = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.selected_cases = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
-                              }
-                            } else {
-                              _vm.selected_cases = $$c
-                            }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("label", { attrs: { for: "checkbox" } }, [
-                        _vm._v(_vm._s(index + 1))
-                      ])
-                    ])
-                  ])
-                : _c("td", [
-                    _c("div", [
-                      _c(
-                        "label",
-                        {
-                          staticStyle: {
-                            "padding-top": "18px",
-                            "padding-left": "18px"
-                          }
-                        },
-                        [_vm._v(_vm._s(index + 1))]
-                      )
-                    ])
-                  ]),
-              _vm._v(" "),
-              _c("td", [
-                _c("a", { attrs: { href: "#" } }, [
-                  _vm._v(_vm._s(case_study.c_title))
-                ])
-              ])
-            ])
-          }),
-          0
-        )
-      ]
-    ),
+        _c("li", { staticClass: "nav-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "nav-link",
+              attrs: { id: "tab2", href: "#group_cases", "data-toggle": "tab" },
+              on: {
+                click: function($event) {
+                  ;(_vm.page_content = _vm.user_cases_by_group),
+                    _vm.updatePaginator()
+                }
+              }
+            },
+            [_vm._v("Group case studies")]
+          )
+        ])
+      ])
+    ]),
     _vm._v(" "),
-    _c("div", { attrs: { id: "container" } }, [
+    _c("div", { staticClass: "container", attrs: { id: "table_header" } }, [
       _c("div", { staticClass: "btn-group" }, [
         _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
         _vm._v(" "),
@@ -42944,6 +43375,206 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
+      _c("div", { staticClass: "input-group" }, [
+        _c("label", [_vm._v("Search")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group-append search" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.search,
+                expression: "search"
+              }
+            ],
+            staticClass: "form-control input-sm",
+            attrs: {
+              type: "text",
+              maxlength: "32",
+              placeholder: "Case title.."
+            },
+            domProps: { value: _vm.search },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.search = $event.target.value
+              }
+            }
+          })
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "tab-content" }, [
+      _c(
+        "div",
+        {
+          staticClass: "tab-pane active",
+          attrs: { id: "owned_cases", role: "tabpanel" }
+        },
+        [
+          _c(
+            "table",
+            {
+              staticClass: "table table-hover table-bordered table-sm",
+              attrs: { id: "owned_cases_table", cellspacing: "0" }
+            },
+            [
+              _c("thead", { staticClass: "thead-dark" }, [
+                _c("tr", [
+                  _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      on: {
+                        click: function($event) {
+                          return _vm.sortedArray()
+                        }
+                      }
+                    },
+                    [_vm._v("Name")]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.filterCases, function(case_study, index) {
+                  return _c("tr", { key: index }, [
+                    _c("td", [
+                      _c("div", { staticClass: "check-box" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.selected_cases,
+                              expression: "selected_cases"
+                            }
+                          ],
+                          staticClass: "checkbox",
+                          attrs: { type: "checkbox", id: "checkbox" },
+                          domProps: {
+                            value: case_study.cid,
+                            checked: Array.isArray(_vm.selected_cases)
+                              ? _vm._i(_vm.selected_cases, case_study.cid) > -1
+                              : _vm.selected_cases
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.selected_cases,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = case_study.cid,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    (_vm.selected_cases = $$a.concat([$$v]))
+                                } else {
+                                  $$i > -1 &&
+                                    (_vm.selected_cases = $$a
+                                      .slice(0, $$i)
+                                      .concat($$a.slice($$i + 1)))
+                                }
+                              } else {
+                                _vm.selected_cases = $$c
+                              }
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("label", { attrs: { for: "checkbox" } }, [
+                          _vm._v(_vm._s(index + 1))
+                        ])
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v(_vm._s(case_study.c_title))
+                      ])
+                    ])
+                  ])
+                }),
+                0
+              )
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "tab-pane",
+          attrs: { id: "group_cases", role: "tabpanel" }
+        },
+        [
+          _c(
+            "table",
+            {
+              staticClass: "table table-hover table-bordered table-sm",
+              attrs: { id: "group_cases_table", cellspacing: "0" }
+            },
+            [
+              _c("thead", { staticClass: "thead-dark" }, [
+                _c("tr", [
+                  _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      on: {
+                        click: function($event) {
+                          return _vm.sortedArray()
+                        }
+                      }
+                    },
+                    [_vm._v("Name")]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.filterCases, function(case_study, index) {
+                  return _c("tr", { key: index }, [
+                    _c("td", [
+                      _c("div", { staticClass: "check-box" }, [
+                        _c(
+                          "label",
+                          {
+                            staticStyle: {
+                              "padding-left": "18px",
+                              "font-size": "18px"
+                            }
+                          },
+                          [_vm._v(_vm._s(index + 1))]
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v(_vm._s(case_study.c_title))
+                      ])
+                    ])
+                  ])
+                }),
+                0
+              )
+            ]
+          )
+        ]
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { attrs: { id: "container" } }, [
       _vm.reload_paginator
         ? _c(
             "div",
@@ -42953,7 +43584,7 @@ var render = function() {
                 staticClass: "pagination",
                 staticStyle: { display: "inline-block" },
                 attrs: {
-                  items: _vm.user_cases,
+                  items: _vm.page_content,
                   page_size: _vm.entries_per_table_page
                 },
                 on: { changePage: _vm.onChangePage }
@@ -42987,18 +43618,6 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", { staticClass: "thead-dark" }, [
-      _c("tr", [
-        _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Name")])
-      ])
-    ])
   }
 ]
 render._withStripped = true
@@ -43025,43 +43644,67 @@ var render = function() {
   return _c("div", { staticClass: "body mb-5 mt-5" }, [
     _c("h1", { staticClass: "mb-3" }, [
       _c(
-        "a",
+        "span",
         {
           attrs: {
-            href: "#action_confirm_dbox",
             "data-toggle": "modal",
             "data-target": "#action_confirm_dbox"
-          },
-          on: {
-            click: function($event) {
-              ;(_vm.action = "Remove"),
-                (_vm.acted_on = "group(s)"),
-                _vm.isGroupSelected()
-            }
           }
         },
-        [_vm._m(0)]
+        [
+          _c(
+            "a",
+            {
+              attrs: {
+                href: "#action_confirm_dbox",
+                "data-toggle": "tooltip",
+                "data-placement": "bottom",
+                title: "Click icon to delete a group"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.action = "Remove"),
+                    (_vm.acted_on = "group(s)"),
+                    _vm.isGroupSelected()
+                }
+              }
+            },
+            [_vm._m(0)]
+          )
+        ]
       ),
       _vm._v(" "),
       _c("div", [
         _c(
-          "a",
+          "span",
           {
             attrs: {
-              href: "#action_table_dbox",
               "data-toggle": "modal",
               "data-target": "#action_table_dbox"
-            },
-            on: {
-              click: function($event) {
-                ;(_vm.gname_box_show = true),
-                  (_vm.action = "Create"),
-                  (_vm.acted_on = "group"),
-                  _vm.fetchUsers()
-              }
             }
           },
-          [_vm._m(1)]
+          [
+            _c(
+              "a",
+              {
+                attrs: {
+                  href: "#action_table_dbox",
+                  "data-toggle": "tooltip",
+                  "data-placement": "bottom",
+                  title: "Click icon to create a group"
+                },
+                on: {
+                  click: function($event) {
+                    ;(_vm.gname_box_show = true),
+                      (_vm.action = "Create"),
+                      (_vm.acted_on = "group"),
+                      _vm.fetchUsers()
+                  }
+                }
+              },
+              [_vm._m(1)]
+            )
+          ]
         )
       ]),
       _vm._v(" "),
@@ -43105,102 +43748,54 @@ var render = function() {
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
-    _c(
-      "table",
-      {
-        staticClass: "table table-hover table-bordered table-sm",
-        attrs: { id: "group-table", cellspacing: "0" }
-      },
-      [
-        _vm._m(2),
+    _c("div", { staticClass: "container", attrs: { id: "tabs" } }, [
+      _c("ul", { staticClass: "nav nav-tabs", attrs: { role: "tablist" } }, [
+        _c("li", { staticClass: "nav-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "nav-link active",
+              attrs: {
+                id: "tab1",
+                href: "#owned_groups",
+                "data-toggle": "tab",
+                role: "tab"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.page_content = _vm.user_groups_is_owner),
+                    _vm.updatePaginator()
+                }
+              }
+            },
+            [_vm._v("Groups I created")]
+          )
+        ]),
         _vm._v(" "),
-        _c(
-          "tbody",
-          _vm._l(_vm.page_of_groups, function(group, index) {
-            return _c("tr", { key: index }, [
-              group.g_owner == _vm.curr_user
-                ? _c("td", [
-                    _c("div", { staticClass: "check-box" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.selected_groups,
-                            expression: "selected_groups"
-                          }
-                        ],
-                        staticClass: "checkbox",
-                        attrs: { type: "checkbox", id: "checkbox" },
-                        domProps: {
-                          value: group.gid,
-                          checked: Array.isArray(_vm.selected_groups)
-                            ? _vm._i(_vm.selected_groups, group.gid) > -1
-                            : _vm.selected_groups
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.selected_groups,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = group.gid,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.selected_groups = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.selected_groups = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
-                              }
-                            } else {
-                              _vm.selected_groups = $$c
-                            }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("label", { attrs: { for: "checkbox" } }, [
-                        _vm._v(_vm._s(index + 1))
-                      ])
-                    ])
-                  ])
-                : _c("td", [
-                    _c("div", [
-                      _c(
-                        "label",
-                        {
-                          staticStyle: {
-                            "padding-top": "18px",
-                            "padding-left": "18px"
-                          }
-                        },
-                        [_vm._v(_vm._s(index + 1))]
-                      )
-                    ])
-                  ]),
-              _vm._v(" "),
-              _c("td", [
-                _c(
-                  "a",
-                  {
-                    attrs: {
-                      href: "/user/" + _vm.curr_user + "/group/" + group.gid
-                    }
-                  },
-                  [_vm._v(_vm._s(group.g_name))]
-                )
-              ])
-            ])
-          }),
-          0
-        )
-      ]
-    ),
+        _c("li", { staticClass: "nav-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "nav-link",
+              attrs: {
+                id: "tab2",
+                href: "#member_groups",
+                "data-toggle": "tab"
+              },
+              on: {
+                click: function($event) {
+                  ;(_vm.page_content = _vm.user_groups_is_member),
+                    _vm.updatePaginator()
+                }
+              }
+            },
+            [_vm._v("Groups I belong to")]
+          )
+        ])
+      ])
+    ]),
     _vm._v(" "),
-    _c("div", { attrs: { id: "container" } }, [
+    _c("div", { staticClass: "container", attrs: { id: "table_header" } }, [
       _c("div", { staticClass: "btn-group" }, [
         _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
         _vm._v(" "),
@@ -43215,7 +43810,7 @@ var render = function() {
               "aria-expanded": "false"
             }
           },
-          [_vm._v(_vm._s(_vm.entries_per_page_table))]
+          [_vm._v(_vm._s(_vm.entries_per_table_page))]
         ),
         _vm._v(" "),
         _c("div", { staticClass: "dropdown-menu" }, [
@@ -43277,6 +43872,219 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
+      _c("div", { staticClass: "input-group" }, [
+        _c("label", [_vm._v("Search")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group-append search" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.search,
+                expression: "search"
+              }
+            ],
+            staticClass: "form-control input-sm",
+            attrs: {
+              type: "text",
+              maxlength: "32",
+              placeholder: "Case title.."
+            },
+            domProps: { value: _vm.search },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.search = $event.target.value
+              }
+            }
+          })
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "tab-content" }, [
+      _c(
+        "div",
+        {
+          staticClass: "tab-pane active",
+          attrs: { id: "owned_groups", role: "tabpanel" }
+        },
+        [
+          _c(
+            "table",
+            {
+              staticClass: "table table-hover table-bordered table-sm",
+              attrs: { cellspacing: "0" }
+            },
+            [
+              _c("thead", { staticClass: "thead-dark" }, [
+                _c("tr", [
+                  _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      on: {
+                        click: function($event) {
+                          return _vm.sortedArray()
+                        }
+                      }
+                    },
+                    [_vm._v("Name")]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.filterGroups, function(group, index) {
+                  return _c("tr", { key: index }, [
+                    _c("td", [
+                      _c("div", { staticClass: "check-box" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.selected_groups,
+                              expression: "selected_groups"
+                            }
+                          ],
+                          staticClass: "checkbox",
+                          attrs: { type: "checkbox", id: "checkbox" },
+                          domProps: {
+                            value: group.gid,
+                            checked: Array.isArray(_vm.selected_groups)
+                              ? _vm._i(_vm.selected_groups, group.gid) > -1
+                              : _vm.selected_groups
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.selected_groups,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = group.gid,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    (_vm.selected_groups = $$a.concat([$$v]))
+                                } else {
+                                  $$i > -1 &&
+                                    (_vm.selected_groups = $$a
+                                      .slice(0, $$i)
+                                      .concat($$a.slice($$i + 1)))
+                                }
+                              } else {
+                                _vm.selected_groups = $$c
+                              }
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("label", { attrs: { for: "checkbox" } }, [
+                          _vm._v(_vm._s(index + 1))
+                        ])
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c(
+                        "a",
+                        {
+                          attrs: {
+                            href:
+                              "/user/" + _vm.curr_user + "/group/" + group.gid
+                          }
+                        },
+                        [_vm._v(_vm._s(group.g_name))]
+                      )
+                    ])
+                  ])
+                }),
+                0
+              )
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "tab-pane",
+          attrs: { id: "member_groups", role: "tabpanel" }
+        },
+        [
+          _c(
+            "table",
+            {
+              staticClass: "table table-hover table-bordered table-sm",
+              attrs: { cellspacing: "0" }
+            },
+            [
+              _c("thead", { staticClass: "thead-dark" }, [
+                _c("tr", [
+                  _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      on: {
+                        click: function($event) {
+                          return _vm.sortedArray()
+                        }
+                      }
+                    },
+                    [_vm._v("Name")]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.filterGroups, function(group, index) {
+                  return _c("tr", { key: index }, [
+                    _c("td", [
+                      _c(
+                        "label",
+                        {
+                          staticStyle: {
+                            "padding-top": "18px",
+                            "padding-left": "18px",
+                            "font-size": "18px"
+                          }
+                        },
+                        [_vm._v(_vm._s(index + 1))]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c(
+                        "a",
+                        {
+                          attrs: {
+                            href:
+                              "/user/" + _vm.curr_user + "/group/" + group.gid
+                          }
+                        },
+                        [_vm._v(_vm._s(group.g_name))]
+                      )
+                    ])
+                  ])
+                }),
+                0
+              )
+            ]
+          )
+        ]
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { attrs: { id: "container" } }, [
       _vm.reload_paginator
         ? _c(
             "div",
@@ -43286,8 +44094,8 @@ var render = function() {
                 staticClass: "pagination",
                 staticStyle: { display: "inline-block" },
                 attrs: {
-                  items: _vm.user_groups,
-                  page_size: _vm.entries_per_page_table
+                  items: _vm.page_content,
+                  page_size: _vm.entries_per_table_page
                 },
                 on: { changePage: _vm.onChangePage }
               })
@@ -43319,18 +44127,6 @@ var staticRenderFns = [
       _c("a", [_vm._v("Create")]),
       _vm._v(" "),
       _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", { staticClass: "thead-dark" }, [
-      _c("tr", [
-        _c("th", { attrs: { id: "row-order" } }, [_vm._v("#")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Name")])
-      ])
     ])
   }
 ]
