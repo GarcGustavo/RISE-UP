@@ -4,7 +4,7 @@
     <!-- group title -->
     <div v-if="!edit_title">
       <span class="text">
-        <h1 class="text-center" :style=" rename_group_permission ? 'margin-left:100px;' : ''">
+        <h1 class="text-center p-1" :style=" rename_group_permission ? 'margin-left:110px;' : ''">
           {{group_name}}
           <!--render if user has permission-->
           <div id="edit_icon">
@@ -28,8 +28,9 @@
     <div v-if="edit_title">
       <span class="required">*</span>
       <input v-model="tempValue" maxlength="32" class="input">
-      <button @click="disableEditTitle">Cancel</button>
+      <button class="btn btn-secondary" @click="disableEditTitle">Cancel</button>
       <button
+        class="btn btn-primary"
         data-toggle="modal"
         data-target="#action_confirm_dbox"
         @click="saveEdit(), action='Rename'"
@@ -70,7 +71,7 @@
           data-placement="top"
           title="Click icon to add a user to the group"
           @click=" action='Add',
-        acted_on='member(s)', fetchUsers()"
+        acted_on='user(s)', fetchUsers()"
         >
           <div id="add_icon">
             <a>Add user</a>
@@ -105,16 +106,18 @@
       ></case_create_dbox>
     </div>
     <!-- Members -->
-    <div class="row mt-1 mb-5" id="members">
-      <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
-        <div class="card h-100 text-center shadow">
-          <i class="material-icons pt-2" style="font-size: 125px">person</i>
-          <div class="card-body">
-            <h4 class="card-title">{{member.first_name}} {{member.last_name}}</h4>
-            <h6 class="card-subtitle text-muted"></h6>
-          </div>
-          <div class="card-footer">
-            <label>{{member.email}}</label>
+    <div class="card mb-5" id="scrollable">
+      <div class="row mt-1 pt-2 pl-4" id="members">
+        <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
+          <div class="card h-100 text-center shadow">
+            <i class="material-icons pt-2" style="font-size: 125px">person</i>
+            <div class="card-body">
+              <h4 class="card-title">{{member.first_name}} {{member.last_name}}</h4>
+              <h6 class="card-subtitle text-muted"></h6>
+            </div>
+            <div class="card-footer">
+              <label>{{member.email}}</label>
+            </div>
           </div>
         </div>
       </div>
@@ -473,12 +476,20 @@ export default {
 
 <style lang="scss" scoped>
 /* Set max height for content containers */
-#members {
-  max-height: 580px;
+#scrollable {
   overflow-y: auto;
+  overflow-x: hidden;
+}
+#scrollable,
+#members {
+  padding-top: 10px;
+  padding-right: 10px;
+  min-height: 150px;
+  max-height: 620px;
 }
 #cases {
-  max-height: 620px;
+  min-height: 200px;
+  max-height: 610px;
   overflow-y: auto;
 }
 /*********************/

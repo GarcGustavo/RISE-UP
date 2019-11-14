@@ -22,14 +22,17 @@
                   <strong>atleast</strong> one user to add.
                 </p>
               </div>
-              <div v-else>
+              <div v-if="action=='Remove'">
                 <p style="font-size:18px;margin:15px,padding-top:25px;" aria-hidden="true">
                   Please select
                   <strong>atleast</strong> one user to remove.
                 </p>
               </div>
               <div class="input-group" v-if="gname_box_show==true">
-                <label>Group name</label>
+                <label>
+                  <span class="required">*</span>
+                  Group name
+                </label>
                 <div class="input-group-append">
                   <input
                     type="text"
@@ -61,7 +64,9 @@
                 <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
                   <thead class="thead-dark">
                     <tr>
-                      <th id="row-checkbox">#</th>
+                      <th id="row-checkbox">
+                        <input type="checkbox" @click="checkAll()" v-model="all_selected">#
+                      </th>
                       <th>Email</th>
                       <th>Name</th>
                     </tr>
@@ -76,6 +81,7 @@
                             type="checkbox"
                             v-model="selected_users"
                             :value="user.uid"
+                            @click="select()"
                           >
                           <label for="checkbox">{{index+1}}</label>
                         </div>
@@ -93,6 +99,22 @@
             </div>
             <div class="modal-footer">
               <!--Remove user from group  -->
+              <p
+                v-if="action=='Add'"
+                style="margin-right:510px;padding-top:15px;font-size:18px;"
+                aria-hidden="true"
+                id="required-description"
+              >
+                <span class="required">*</span>Required field
+              </p>
+              <p
+                v-else
+                style="margin-right:485px;padding-top:15px;font-size:18px;"
+                aria-hidden="true"
+                id="required-description"
+              >
+                <span class="required">*</span>Required field
+              </p>
               <div v-if="action=='Remove'">
                 <button
                   type="button"
@@ -123,7 +145,7 @@
                   :data-dismiss="close_dialog"
                   data-toggle="modal"
                   data-target="#action_confirm_dbox"
-                  @click="isUserSelected(), validateInput()"
+                  @click=" validateInput()"
                 >{{action}}</button>
               </div>
 
@@ -133,7 +155,7 @@
                   type="button"
                   class="btn btn-secondary"
                   data-dismiss="modal"
-                  @click="uncheck(), resetInputFields()"
+                  @click="select(),uncheck(), resetInputFields()"
                 >Close</button>
               </div>
             </div>
@@ -145,7 +167,7 @@
         <action_confirm_dbox
           :action_confirm="action"
           :acted_on="acted_on"
-          :isSelected="isSelected"
+          :is_selected="is_selected"
           :errors="errors"
           @sendUsers="sendUsers"
           @sendGroupData="sendGroupData"
@@ -211,7 +233,8 @@ export default {
       },
 
       valid_input: false, //validate input
-      isSelected: false //validate if user has made a selection to add or remove a user
+      is_selected: true, //validate if user has made a selection to add or remove a user
+      all_selected: false
     };
   },
   /**
@@ -234,6 +257,19 @@ export default {
   },
 
   methods: {
+    checkAll() {
+      this.selected_users = [];
+      if (!this.all_selected) {
+        for (let i in this.users) {
+          this.selected_users.push(this.users[i].uid);
+        }
+      }
+    },
+
+    select() {
+      this.all_selected = false;
+    },
+
     /**
      * @description unchecks any selection of users that has been made
      */
@@ -248,16 +284,17 @@ export default {
      * @description verifies if a selection has been made when performing action(add/remove)
      */
     isUserSelected() {
-      if (this.selected_users.length == 0) {
-        this.isSelected = false;
-        this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
-      } else {
-        this.isSelected = true;
-        this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
-        if (this.action == "Add") {
-          this.sendUsers();
+        if (this.selected_users.length == 0) {
+          this.is_selected = false;
+          this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
+        } else {
+          this.is_selected = true;
+          this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
+          if (this.action == "Add") {
+            this.sendUsers();
+          }
         }
-      }
+
     },
     /**
      * @description resets all input fields
@@ -320,13 +357,14 @@ export default {
         });
       }
       //emit data to parent
-      if (this.isSelected) {
+      if (this.is_selected) {
         if (this.action == "Add") {
           this.$emit("addUsers", this.users_to_add_remove);
         } else {
           //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
         }
+        this.select();
         this.uncheck(); // uncheck all values when finished
         this.resetInputFields();
       }
@@ -361,7 +399,7 @@ export default {
         });
       }
 
-      if (this.isSelected || this.action == "Create") {
+      if (this.is_selected || this.action == "Create") {
         this.$emit(
           //call method with data
           "createGroup",
@@ -378,7 +416,7 @@ export default {
         g_creation_date: "",
         g_owner: ""
       };
-
+      this.select();
       this.uncheck();
       this.resetInputFields();
     }
@@ -451,5 +489,9 @@ input[type="checkbox"] {
   background: rgba(85, 85, 85, 0.5);
 
   /*width for group name input and search is defined in HTML elements*/
+}
+
+.required {
+  color: red;
 }
 </style>

@@ -31,7 +31,7 @@
             </div>
           </div>
           <!-- if no option was selected when adding/removing users from group or removing a case/group -->
-          <div v-else-if="!isSelected">
+          <div v-else-if="!is_selected">
             <!-- alert content for user to make selection  -->
             <p>Please select {{acted_on}} to {{action_confirm}}</p>
           </div>
@@ -56,12 +56,12 @@
         <div class="modal-footer">
           <!-- if action to execute is not remove, or if a selection has not been made or there are errors, render ok button only -->
           <div
-            v-if="action_confirm=='Add'||action_confirm=='Create' || action_confirm=='Rename' || !isSelected || errors.length"
+            v-if="action_confirm=='Add'||action_confirm=='Create' || action_confirm=='Rename' || !is_selected || errors.length"
           >
             <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
           </div>
           <!-- if action is to remove and a case/group/user has been selected -->
-          <div v-if="action_confirm=='Remove' && isSelected">
+          <div v-if="action_confirm=='Remove' && is_selected">
             <div v-if="acted_on=='member(s)'">
               <!--Remove member action -->
               <button
@@ -91,7 +91,7 @@
             </div>
           </div>
           <!-- if action is to remove and case/group/user has been selected -->
-          <div v-if="action_confirm=='Remove' && isSelected">
+          <div v-if="action_confirm=='Remove' && is_selected">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default {
       //on what is the action being executed
       type: String
     },
-    isSelected: {
+    is_selected: {
       //user selection on cases, groups, or users
       type: Boolean,
       default: true

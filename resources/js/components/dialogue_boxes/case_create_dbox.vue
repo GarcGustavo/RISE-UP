@@ -73,7 +73,11 @@
             </div>
             <!-- footer -->
             <div class="modal-footer">
-              <p style="margin-right:495px;padding-top:15px;font-size:18px;" aria-hidden="true" id="required-description">
+              <p
+                style="margin-right:495px;padding-top:15px;font-size:18px;"
+                aria-hidden="true"
+                id="required-description"
+              >
                 <span class="required">*</span>Required field
               </p>
               <!--action button -->
@@ -296,7 +300,6 @@ export default {
   font-size: 18px;
   display: inline-block;
   margin: 5px;
-
 }
 
 /*title input text box*/

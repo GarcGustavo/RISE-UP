@@ -69,7 +69,6 @@
 
 <script>
 import paginate from "jw-paginate";
-
 const default_labels = {
   //labels for options
   first: "First",
@@ -79,7 +78,6 @@ const default_labels = {
   skip_prev: "<<",
   skip_next: ">>"
 };
-
 const default_styles = {
   //paginator default style
   ul: {
@@ -90,18 +88,16 @@ const default_styles = {
   li: {
     listStyle: "none",
     display: "inline",
-    textAlign: "center",
-
+    textAlign: "center"
   },
   a: {
     border: 0,
     cursor: "pointer",
     padding: "6px 12px",
     display: "block",
-    float: "left",
+    float: "left"
   }
 };
-
 export default {
   props: {
     items: {
@@ -151,21 +147,18 @@ export default {
     if (!this.$listeners.changePage) {
       throw 'Missing required event listener: "changePage"';
     }
-
     // set default styles unless disabled
     if (!this.disable_default_styles) {
       this.ul_styles = default_styles.ul;
       this.li_styles = default_styles.li;
       this.a_styles = default_styles.a;
     }
-
     // merge custom styles with default styles
     if (this.styles) {
       this.ul_styles = { ...this.ul_styles, ...this.styles.ul };
       this.li_styles = { ...this.li_styles, ...this.styles.li };
       this.a_styles = { ...this.a_styles, ...this.styles.a };
     }
-
     // set page if items array isn't empty
     if (this.items && this.items.length) {
       this.setPage(this.initial_page);
@@ -174,16 +167,12 @@ export default {
   methods: {
     setPage(page) {
       const { items, page_size, max_pages } = this;
-
       // get new pager object for specified page
       const pager = paginate(items.length, page, page_size, max_pages);
-
       // get new page of items from items array
       const page_of_items = items.slice(pager.startIndex, pager.endIndex + 1);
-
       // update pager
       this.pager = pager;
-
       // emit change page event to parent component
       this.$emit("changePage", page_of_items);
     }

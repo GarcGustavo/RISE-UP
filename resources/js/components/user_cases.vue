@@ -46,7 +46,7 @@
       <action_confirm_dbox
         :action_confirm="action"
         :acted_on="acted_on"
-        :isSelected="isSelected"
+        :is_select="is_selected"
         @removeCases="removeCases"
       ></action_confirm_dbox>
     </div>
@@ -58,42 +58,50 @@
 
     <hr>
 
-    <!-- table header - tabs and search bar -->
+    <!-- tables tabs and search bar -->
     <div id="tabs" class="container">
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
           <a
             class="nav-link active"
             id="tab1"
-            href="#owned_cases"
             data-toggle="tab"
+            data-placement="bottom"
+            title="Case studies i created"
+            href="#owned_cases"
             role="tab"
-            @click="page_content=user_cases_by_owner, updatePaginator() "
-          >Case studies I author</a>
+            @click="page_content=cases_user_is_owner, updatePaginator() "
+          >Case studies i created</a>
         </li>
         <li class="nav-item">
           <a
             class="nav-link"
             id="tab2"
-            href="#group_cases"
             data-toggle="tab"
+            data-placement="bottom"
+            title="Case studies from groups i belong to"
+            href="#group_cases"
+            role="tab"
             @click="page_content=user_cases_by_group, updatePaginator() "
-          >Group case studies</a>
+          >Case studies by groups</a>
         </li>
       </ul>
-
     </div>
-    <div class="container" id="table_header">
+    <div class="container" id="entries_search">
       <div class="btn-group">
         <label id="entries_label">Entries:</label>
         <!--entries button -->
-        <button
-          class="btn btn-primary btn-sm dropdown-toggle"
-          type="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >{{entries_per_table_page}}</button>
+        <span data-toggle="dropdown">
+          <button
+            class="btn btn-primary btn-sm dropdown-toggle"
+            type="button"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Select number of items to show per table page"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >{{entries_per_table_page}}</button>
+        </span>
         <div class="dropdown-menu">
           <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
           <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
@@ -101,7 +109,7 @@
           <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
         </div>
       </div>
-        <!-- search bar -->
+      <!-- search bar -->
       <div class="input-group">
         <label>Search</label>
         <div class="input-group-append search">
@@ -116,71 +124,46 @@
       </div>
     </div>
 
-    <!-- Table -->
+    <!-- Table of case studies the user has created-->
     <div class="tab-content">
       <div class="tab-pane active" id="owned_cases" role="tabpanel">
-        <table
-          id="owned_cases_table"
-          class="table table-hover table-bordered table-sm"
-          cellspacing="0"
-        >
-          <thead class="thead-dark">
-            <tr>
-              <th id="row-order">#</th>
-              <th @click="sortedArray()">Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!--list user's case studies -->
-            <tr v-for="(case_study,index) in filterCases" :key="index">
-              <!-- if user is owner render with option to select -->
-              <td>
-                <div class="check-box">
-                  <input
-                    class="checkbox"
-                    type="checkbox"
-                    id="checkbox"
-                    v-model="selected_cases"
-                    :value="case_study.cid"
-                  >
-                  <label for="checkbox">{{index+1}}</label>
-                </div>
-              </td>
-              <td>
-                <a href="#">{{case_study.c_title}}</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <b-table head-variant="light" hover :items="filterCases" :fields="fields">
+          <template v-slot:head(index)>
+            <input type="checkbox" @click="checkAll()" v-model="all_selected">
+            Select All
+          </template>
+          <template v-slot:cell(index)="data">
+            <div class="p-2">
+              <input
+                class="checkbox"
+                type="checkbox"
+                id="checkbox"
+                @click="select()"
+                v-model="selected_cases"
+                :value="data.item.cid"
+              >
+              {{data.index +1}}
+            </div>
+          </template>
+          <template v-slot:cell(c_title)="data">
+            <div>
+              <b-link class="p-2" href="#">{{data.item.c_title}}</b-link>
+            </div>
+          </template>
+        </b-table>
       </div>
-
+      <!-- Table of case studies belonging to the groups of the user -->
       <div class="tab-pane" id="group_cases" role="tabpanel">
-        <table
-          id="group_cases_table"
-          class="table table-hover table-bordered table-sm"
-          cellspacing="0"
-        >
-          <thead class="thead-dark">
-            <tr>
-              <th id="row-order">#</th>
-              <th @click="sortedArray()">Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!--list user's case studies -->
-            <tr v-for="(case_study,index) in filterCases" :key="index">
-              <!-- if user is owner render with option to select -->
-              <td>
-                <div class="check-box">
-                  <label style="padding-left:18px;font-size:18px">{{index+1}}</label>
-                </div>
-              </td>
-              <td>
-                <a href="#">{{case_study.c_title}}</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <b-table head-variant="light" hover :items="filterCases" :fields="fields">
+          <template v-slot:cell(index)="data">
+            <div class="p-2">{{data.index +1}}</div>
+          </template>
+          <template v-slot:cell(c_title)="data">
+            <div>
+              <b-link class="p-2" href="#">{{data.item.c_title}}</b-link>
+            </div>
+          </template>
+        </b-table>
       </div>
     </div>
     <!--number of entries per table page option -->
@@ -200,6 +183,8 @@
 </template>
 
 <script>
+import BootstrapVue, { BTable, BLink } from "bootstrap-vue";
+
 /**
  * this component is used to display the cases of a user
  */
@@ -208,15 +193,20 @@ export default {
    * @description declaration of global variables
    * @returns array of all variables
    */
+
+  components: {
+    "b-table": BTable,
+    "b-link": BLink
+  },
   data() {
     return {
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
-      search: "",
+      search: "", //table search string
 
       user_cases: [], // cases of the user
-      user_cases_by_owner: [], //list of cases the user has created
+      cases_user_is_owner: [], //list of cases the user has created
       user_cases_by_group: [], //list of cases of the groups the user belongs to(member)
       selected_cases: [], // the cases the user selects
       cases_to_remove: [], // the cases to remove, sent to controller
@@ -225,10 +215,19 @@ export default {
 
       case_study: { cid: "", c_title: "" }, //case attributes
 
+      fields: [
+        { index: { thStyle: { width: "120px" } } },
+        {
+          key: "c_title",
+          label: "Title",
+
+          sortable: true
+        }
+      ],
       entries_per_table_page: 4, //table entries
-    sorted:"asc",
       reload_paginator: false, //used to update paginator
-      isSelected: false, //has user made selection
+      is_selected: false, //has user made selection
+      all_selected: false,
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
@@ -244,36 +243,33 @@ export default {
      * @returns list of cases in accordance to search.
      */
     filterCases() {
+      if (this.page_content.length == 0) {
+        return [];
+      }
       return this.page_of_cases.filter(page_of_cases => {
         return page_of_cases.c_title.includes(this.search);
       });
     }
   },
   methods: {
-
-sortedArray() {
-      if (this.sorted == "asc") {
-        function compare(a, b) {
-          if (a.c_title < b.c_title) return -1;
-          if (a.c_title > b.c_title) return 1;
-          return 0;
+    /**
+     * @description  checks all checkboxes when user selects "select all" option
+     */
+    checkAll() {
+      this.selected_cases = [];
+      if (!this.all_selected) {
+        for (let i in this.cases_user_is_owner) {
+          this.selected_cases.push(this.cases_user_is_owner[i].cid);
         }
-
-        this.page_of_cases.sort(compare);
-        this.sorted = "desc";
-      } else {
-        function compare(a, b) {
-          if (a.c_title > b.c_title) return -1;
-          if (a.c_title < b.c_title) return 1;
-          return 0;
-        }
-
-        this.page_of_cases.sort(compare);
-        this.sorted = "asc";
       }
     },
 
-
+    /**
+     * @description if checkbox is checked again remove all selections
+     */
+    select() {
+      this.all_selected = false;
+    },
     /**
      * @description - lists the set of cases of the current table page
      * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
@@ -281,6 +277,7 @@ sortedArray() {
      */
     onChangePage(page_of_cases) {
       // update page of Cases
+
       this.page_of_cases = page_of_cases;
     },
 
@@ -289,9 +286,9 @@ sortedArray() {
      */
     isCaseSelected() {
       if (this.selected_cases.length == 0) {
-        this.isSelected = false;
+        this.is_selected = false;
       } else {
-        this.isSelected = true;
+        this.is_selected = true;
       }
     },
 
@@ -301,7 +298,6 @@ sortedArray() {
      */
     selectEntries(entry) {
       this.entries_per_table_page = entry;
-       this.sorted = "asc"; //default value
       this.updatePaginator();
     },
 
@@ -310,13 +306,13 @@ sortedArray() {
      */
     updatePaginator() {
       // Remove paginator from the DOM
-      console.log(this.page_of_cases);
       this.reload_paginator = false;
-
       this.$nextTick().then(() => {
         // Add the paginator back in
         this.reload_paginator = true;
       });
+      this.sort_dir = "asc"; //default value
+      this.show_both_sort_arrows = true;
     },
 
     /**
@@ -341,14 +337,14 @@ sortedArray() {
         .then(res => {
           this.user_cases = res.data;
 
-          this.user_cases_by_owner = this.user_cases.filter(
+          this.cases_user_is_owner = this.user_cases.filter(
             x => x.c_owner == this.curr_user
           );
           this.user_cases_by_group = this.user_cases.filter(
             x => x.c_owner !== this.curr_user
           );
-          this.page_content = this.user_cases_by_owner; //SET ACTIVE DEFAULT
-
+          this.page_content = this.cases_user_is_owner; //SET ACTIVE DEFAULT
+          this.select();
           this.uncheck();
           this.updatePaginator(); //refresh with updated list of cases
         })
@@ -429,6 +425,11 @@ table tr td a {
   display: block;
   font-size: 18px;
 }
+
+th {
+  cursor: pointer;
+}
+
 /* This is for row content style and alignment */
 td a {
   text-align: center;
@@ -534,24 +535,25 @@ a {
 #tabs {
   margin-top: -25px;
 }
-
-#table_header {
+/*entries and search bar container positioning*/
+#entries_search {
   display: flex;
   justify-content: space-between;
   margin-top: -45px;
 }
-#table_header .btn-group {
+/*entries and search bar elements position rules*/
+#entries_search .btn-group {
   display: inline;
   padding-top: 33px;
 }
-
-#table_header .btn-group button {
+/*entries positioning*/
+#entries_search .btn-group button {
   background-color: #428bca;
   margin-left: 60px;
   margin-top: -60px;
 }
-
-#table_header .input-group {
+/*search bar positioning*/
+#entries_search .input-group {
   margin-bottom: 15px;
   margin-top: 25px;
   margin-left: 650px;
