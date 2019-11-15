@@ -1,11 +1,9 @@
 <template>
   <!-- member group action confirmation -->
   <div
-    class="modal fade"
+    class="modal"
     id="action_confirm_dbox"
     tabindex="-1"
-    data-keyboard="false"
-    data-backdrop="static"
     role="dialog"
   >
     <div class="modal-dialog" role="document">

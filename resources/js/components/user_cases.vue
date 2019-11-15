@@ -227,7 +227,7 @@ export default {
       entries_per_table_page: 4, //table entries
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made selection
-      all_selected: false,
+      all_selected: false, //has the option to select all case studies been checked
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
@@ -257,7 +257,7 @@ export default {
      */
     checkAll() {
       this.selected_cases = [];
-      if (!this.all_selected) {
+      if (!this.all_selected) { //push all case studies to array
         for (let i in this.cases_user_is_owner) {
           this.selected_cases.push(this.cases_user_is_owner[i].cid);
         }

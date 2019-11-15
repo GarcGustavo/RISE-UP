@@ -252,7 +252,7 @@ export default {
       show_both_sort_arrows: true,
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made a selection,
-      all_selected: false,
+      all_selected: false, //has the option to select all groups been checked
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
     };
   },
@@ -284,7 +284,7 @@ export default {
      */
     checkAll() {
       this.selected_groups = [];
-      if (!this.all_selected) {
+      if (!this.all_selected) { //push all groups to array
         for (let i in this.groups_user_is_owner) {
           this.selected_groups.push(this.groups_user_is_owner[i].gid);
         }

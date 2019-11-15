@@ -2035,8 +2035,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 /**
  * This is a dialogue box that serves the multipurpose of alerting,confirming, and throwing error warnings.btn-group
@@ -2269,16 +2267,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
@@ -2342,7 +2330,8 @@ __webpack_require__.r(__webpack_exports__);
       //validate input
       is_selected: true,
       //validate if user has made a selection to add or remove a user
-      all_selected: false
+      all_selected: false //has the option to select all users been checked
+
     };
   },
 
@@ -2351,6 +2340,13 @@ __webpack_require__.r(__webpack_exports__);
    */
   created: function created() {
     this.totalGroups();
+  },
+
+  /**
+   * @descriptcion handles modal closing event
+   */
+  mounted: function mounted() {
+    $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   computed: {
     /**
@@ -2414,6 +2410,8 @@ __webpack_require__.r(__webpack_exports__);
       this.search = "";
       this.group_name_input = "";
       this.users_to_add_remove = [];
+      this.select();
+      this.uncheck();
     },
 
     /**
@@ -2652,18 +2650,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /**
  *This dialogue box is used to get input for a new case study
@@ -2739,6 +2725,13 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.fetchGroups();
     this.totalCases();
+  },
+
+  /**
+   * @descriptcion handles modal closing event
+   */
+  mounted: function mounted() {
+    $(this.$refs.case_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   methods: {
     /**
@@ -4117,6 +4110,7 @@ __webpack_require__.r(__webpack_exports__);
       is_selected: false,
       //has user made selection
       all_selected: false,
+      //has the option to select all case studies been checked
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
@@ -4153,6 +4147,7 @@ __webpack_require__.r(__webpack_exports__);
       this.selected_cases = [];
 
       if (!this.all_selected) {
+        //push all case studies to array
         for (var i in this.cases_user_is_owner) {
           this.selected_cases.push(this.cases_user_is_owner[i].cid);
         }
@@ -4604,6 +4599,7 @@ __webpack_require__.r(__webpack_exports__);
       is_selected: false,
       //has user made a selection,
       all_selected: false,
+      //has the option to select all groups been checked
       gname_box_show: false //boolean to append group name input to dialogue box when creating a group
 
     };
@@ -4640,6 +4636,7 @@ __webpack_require__.r(__webpack_exports__);
       this.selected_groups = [];
 
       if (!this.all_selected) {
+        //push all groups to array
         for (var i in this.groups_user_is_owner) {
           this.selected_groups.push(this.groups_user_is_owner[i].gid);
         }
@@ -70702,14 +70699,8 @@ var render = function() {
   return _c(
     "div",
     {
-      staticClass: "modal fade",
-      attrs: {
-        id: "action_confirm_dbox",
-        tabindex: "-1",
-        "data-keyboard": "false",
-        "data-backdrop": "static",
-        role: "dialog"
-      }
+      staticClass: "modal",
+      attrs: { id: "action_confirm_dbox", tabindex: "-1", role: "dialog" }
     },
     [
       _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
@@ -70895,14 +70886,9 @@ var render = function() {
       _c(
         "div",
         {
-          staticClass: "modal fade",
-          attrs: {
-            id: "action_table_dbox",
-            tabindex: "-1",
-            "data-keyboard": "false",
-            "data-backdrop": "static",
-            role: "dialog"
-          }
+          ref: "action_modal",
+          staticClass: "modal",
+          attrs: { id: "action_table_dbox", tabindex: "-1", role: "dialog" }
         },
         [
           _c(
@@ -71180,47 +71166,51 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-footer" }, [
-                  _vm.action == "Add"
-                    ? _c(
-                        "p",
-                        {
-                          staticStyle: {
-                            "margin-right": "510px",
-                            "padding-top": "15px",
-                            "font-size": "18px"
-                          },
-                          attrs: {
-                            "aria-hidden": "true",
-                            id: "required-description"
-                          }
-                        },
-                        [
-                          _c("span", { staticClass: "required" }, [
-                            _vm._v("*")
-                          ]),
-                          _vm._v("Required field\n            ")
-                        ]
-                      )
-                    : _c(
-                        "p",
-                        {
-                          staticStyle: {
-                            "margin-right": "485px",
-                            "padding-top": "15px",
-                            "font-size": "18px"
-                          },
-                          attrs: {
-                            "aria-hidden": "true",
-                            id: "required-description"
-                          }
-                        },
-                        [
-                          _c("span", { staticClass: "required" }, [
-                            _vm._v("*")
-                          ]),
-                          _vm._v("Required field\n            ")
-                        ]
-                      ),
+                  _vm.action == "Create"
+                    ? _c("div", [
+                        _vm.action == "Add"
+                          ? _c(
+                              "p",
+                              {
+                                staticStyle: {
+                                  "margin-right": "510px",
+                                  "padding-top": "15px",
+                                  "font-size": "18px"
+                                },
+                                attrs: {
+                                  "aria-hidden": "true",
+                                  id: "required-description"
+                                }
+                              },
+                              [
+                                _c("span", { staticClass: "required" }, [
+                                  _vm._v("*")
+                                ]),
+                                _vm._v("Required field\n            ")
+                              ]
+                            )
+                          : _c(
+                              "p",
+                              {
+                                staticStyle: {
+                                  "margin-right": "485px",
+                                  "padding-top": "15px",
+                                  "font-size": "18px"
+                                },
+                                attrs: {
+                                  "aria-hidden": "true",
+                                  id: "required-description"
+                                }
+                              },
+                              [
+                                _c("span", { staticClass: "required" }, [
+                                  _vm._v("*")
+                                ]),
+                                _vm._v("Required field\n            ")
+                              ]
+                            )
+                      ])
+                    : _vm._e(),
                   _vm._v(" "),
                   _vm.action == "Remove"
                     ? _c("div", [
@@ -71292,12 +71282,7 @@ var render = function() {
                       "button",
                       {
                         staticClass: "btn btn-secondary",
-                        attrs: { type: "button", "data-dismiss": "modal" },
-                        on: {
-                          click: function($event) {
-                            _vm.select(), _vm.uncheck(), _vm.resetInputFields()
-                          }
-                        }
+                        attrs: { type: "button", "data-dismiss": "modal" }
                       },
                       [_vm._v("Close")]
                     )
@@ -71354,14 +71339,9 @@ var render = function() {
       _c(
         "div",
         {
-          staticClass: "modal fade",
-          attrs: {
-            id: "case_create_dbox",
-            tabindex: "-1",
-            "data-keyboard": "false",
-            "data-backdrop": "static",
-            role: "dialog"
-          }
+          ref: "case_modal",
+          staticClass: "modal",
+          attrs: { id: "case_create_dbox", tabindex: "-1", role: "dialog" }
         },
         [
           _c(
@@ -71556,12 +71536,7 @@ var render = function() {
                     "button",
                     {
                       staticClass: "btn btn-secondary",
-                      attrs: { type: "button", "data-dismiss": "modal" },
-                      on: {
-                        click: function($event) {
-                          return _vm.resetInputFields()
-                        }
-                      }
+                      attrs: { type: "button", "data-dismiss": "modal" }
                     },
                     [_vm._v("Close")]
                   )

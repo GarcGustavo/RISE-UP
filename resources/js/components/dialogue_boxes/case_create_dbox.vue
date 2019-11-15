@@ -2,14 +2,7 @@
   <transition>
     <div>
       <!-- Dialogue Component to create case study -->
-      <div
-        class="modal fade"
-        id="case_create_dbox"
-        tabindex="-1"
-        data-keyboard="false"
-        data-backdrop="static"
-        role="dialog"
-      >
+      <div class="modal" id="case_create_dbox" tabindex="-1" role="dialog" ref="case_modal">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -90,12 +83,7 @@
                 @click="validateInput()"
               >{{action}}</button>
               <!-- close button -->
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
-                @click="resetInputFields()"
-              >Close</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
@@ -172,6 +160,12 @@ export default {
   created() {
     this.fetchGroups();
     this.totalCases();
+  },
+  /**
+   * @descriptcion handles modal closing event
+   */
+  mounted() {
+    $(this.$refs.case_modal).on("hidden.bs.modal", this.resetInputFields);
   },
 
   methods: {

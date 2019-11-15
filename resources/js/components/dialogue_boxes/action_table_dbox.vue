@@ -1,14 +1,7 @@
 <template>
   <transition>
     <div>
-      <div
-        class="modal fade"
-        id="action_table_dbox"
-        tabindex="-1"
-        data-keyboard="false"
-        data-backdrop="static"
-        role="dialog"
-      >
+      <div class="modal" id="action_table_dbox" tabindex="-1" role="dialog" ref="action_modal">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -99,6 +92,7 @@
             </div>
             <div class="modal-footer">
               <!--Remove user from group  -->
+              <div v-if="action=='Create'">
               <p
                 v-if="action=='Add'"
                 style="margin-right:510px;padding-top:15px;font-size:18px;"
@@ -115,6 +109,7 @@
               >
                 <span class="required">*</span>Required field
               </p>
+              </div>
               <div v-if="action=='Remove'">
                 <button
                   type="button"
@@ -151,12 +146,7 @@
 
               <!-- close button -->
               <div>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-dismiss="modal"
-                  @click="select(),uncheck(), resetInputFields()"
-                >Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -234,7 +224,7 @@ export default {
 
       valid_input: false, //validate input
       is_selected: true, //validate if user has made a selection to add or remove a user
-      all_selected: false
+      all_selected: false //has the option to select all users been checked
     };
   },
   /**
@@ -242,6 +232,13 @@ export default {
    */
   created() {
     this.totalGroups();
+  },
+
+  /**
+   * @descriptcion handles modal closing event
+   */
+  mounted() {
+    $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
 
   computed: {
@@ -284,17 +281,16 @@ export default {
      * @description verifies if a selection has been made when performing action(add/remove)
      */
     isUserSelected() {
-        if (this.selected_users.length == 0) {
-          this.is_selected = false;
-          this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
-        } else {
-          this.is_selected = true;
-          this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
-          if (this.action == "Add") {
-            this.sendUsers();
-          }
+      if (this.selected_users.length == 0) {
+        this.is_selected = false;
+        this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
+      } else {
+        this.is_selected = true;
+        this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
+        if (this.action == "Add") {
+          this.sendUsers();
         }
-
+      }
     },
     /**
      * @description resets all input fields
@@ -303,6 +299,8 @@ export default {
       this.search = "";
       this.group_name_input = "";
       this.users_to_add_remove = [];
+      this.select();
+      this.uncheck();
     },
 
     /**
