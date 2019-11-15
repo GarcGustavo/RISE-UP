@@ -4,7 +4,7 @@
     <!-- group title -->
     <div v-if="!edit_title">
       <span class="text">
-        <h1 class="text-center p-1" :style=" rename_group_permission ? 'margin-left:110px;' : ''">
+        <h1 class="text-center p-1" :style=" rename_group_permission ? 'margin-left:185px;' : ''">
           {{group_name}}
           <!--render if user has permission-->
           <div id="edit_icon">
@@ -79,7 +79,7 @@
           </div>
         </a>
       </span>
-      <p :style=" add_remove_members_permission ? 'margin-left:205px;' : ''">Members</p>
+      <p :style=" add_remove_members_permission ? 'margin-left:288px;' : ''">Members</p>
     </h1>
     <!-- show table dialogue when adding or removing members -->
     <div v-if="action=='Add'|| action=='Remove'">
@@ -142,7 +142,7 @@
           </div>
         </a>
       </span>
-      <p :style="create_group_case_permission ? 'margin-left:110px;' : ''">Our Cases</p>
+      <p :style="create_group_case_permission ? 'margin-left:195px;' : ''" >Our Cases</p>
     </h1>
     <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
@@ -518,6 +518,8 @@ h1 a:hover {
 a {
   color: black;
 }
+
+
 
 /*move remove icon to right */
 #remove_icon {

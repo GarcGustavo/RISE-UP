@@ -2328,10 +2328,11 @@ __webpack_require__.r(__webpack_exports__);
       },
       valid_input: false,
       //validate input
-      is_selected: true,
+      is_selected: false,
       //validate if user has made a selection to add or remove a user
-      all_selected: false //has the option to select all users been checked
-
+      all_selected: false,
+      //has the option to select all users been checked
+      ready: false
     };
   },
 
@@ -2346,7 +2347,9 @@ __webpack_require__.r(__webpack_exports__);
    * @descriptcion handles modal closing event
    */
   mounted: function mounted() {
-    $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
+    if (this.ready) {
+      $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
+    }
   },
   computed: {
     /**
@@ -2370,6 +2373,8 @@ __webpack_require__.r(__webpack_exports__);
           this.selected_users.push(this.users[i].uid);
         }
       }
+
+      console.log(this.selected_users);
     },
     select: function select() {
       this.all_selected = false;
@@ -2464,6 +2469,8 @@ __webpack_require__.r(__webpack_exports__);
 
       this.gid = this.path[this.path.length - 1]; //get group id from path
 
+      console.log(this.selected_users);
+
       for (var i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
@@ -2479,12 +2486,12 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
-        }
+        } // this.select();
+        //  this.uncheck(); // uncheck all values when finished
 
-        this.select();
-        this.uncheck(); // uncheck all values when finished
 
         this.resetInputFields();
+        this.ready = true;
       }
     },
 
@@ -2806,6 +2813,7 @@ __webpack_require__.r(__webpack_exports__);
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
       if (this.group_selection) {
+        //call from group view, default selection is made
         //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
         this.curr_user = this.path[this.path.length - 3]; //get ID from path
 
@@ -71684,7 +71692,7 @@ var render = function() {
               "h1",
               {
                 staticClass: "text-center p-1",
-                style: _vm.rename_group_permission ? "margin-left:110px;" : ""
+                style: _vm.rename_group_permission ? "margin-left:185px;" : ""
               },
               [
                 _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
@@ -71854,7 +71862,7 @@ var render = function() {
       _c(
         "p",
         {
-          style: _vm.add_remove_members_permission ? "margin-left:205px;" : ""
+          style: _vm.add_remove_members_permission ? "margin-left:288px;" : ""
         },
         [_vm._v("Members")]
       )
@@ -71983,7 +71991,7 @@ var render = function() {
         _c(
           "p",
           {
-            style: _vm.create_group_case_permission ? "margin-left:110px;" : ""
+            style: _vm.create_group_case_permission ? "margin-left:195px;" : ""
           },
           [_vm._v("Our Cases")]
         )

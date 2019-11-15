@@ -223,8 +223,9 @@ export default {
       },
 
       valid_input: false, //validate input
-      is_selected: true, //validate if user has made a selection to add or remove a user
-      all_selected: false //has the option to select all users been checked
+      is_selected: false, //validate if user has made a selection to add or remove a user
+      all_selected: false, //has the option to select all users been checked
+      ready:false
     };
   },
   /**
@@ -238,7 +239,9 @@ export default {
    * @descriptcion handles modal closing event
    */
   mounted() {
+      if(this.ready){
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
+      }
   },
 
   computed: {
@@ -261,6 +264,7 @@ export default {
           this.selected_users.push(this.users[i].uid);
         }
       }
+    console.log(this.selected_users);
     },
 
     select() {
@@ -347,6 +351,7 @@ export default {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
       this.gid = this.path[this.path.length - 1]; //get group id from path
 
+console.log(this.selected_users);
       for (let i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
@@ -354,6 +359,7 @@ export default {
           gid: this.gid
         });
       }
+
       //emit data to parent
       if (this.is_selected) {
         if (this.action == "Add") {
@@ -362,9 +368,10 @@ export default {
           //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
         }
-        this.select();
-        this.uncheck(); // uncheck all values when finished
+       // this.select();
+      //  this.uncheck(); // uncheck all values when finished
         this.resetInputFields();
+        this.ready=true;
       }
     },
 

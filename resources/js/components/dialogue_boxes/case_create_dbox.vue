@@ -229,11 +229,11 @@ export default {
      */
     fetchGroups() {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      if (this.group_selection) {
+      if (this.group_selection) { //call from group view, default selection is made
         //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
         this.curr_user = this.path[this.path.length - 3]; //get ID from path
         this.curr_group = this.group_selection;
-        this.disable_dropdown = true;
+        this.disable_dropdown = true; 
       } else {
         //called by user_groups vue
         this.curr_user = this.path[this.path.length - 2]; //get ID from path
