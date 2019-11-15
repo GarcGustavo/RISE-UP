@@ -46,7 +46,7 @@
       <action_confirm_dbox
         :action_confirm="action"
         :acted_on="acted_on"
-        :is_select="is_selected"
+        :is_selected="is_selected"
         @removeCases="removeCases"
       ></action_confirm_dbox>
     </div>
@@ -70,7 +70,7 @@
             title="Case studies i created"
             href="#owned_cases"
             role="tab"
-            @click="page_content=cases_user_is_owner, updatePaginator() "
+            @click="page_content=cases_user_is_owner, curr_tab=1, updatePaginator() "
           >Case studies i created</a>
         </li>
         <li class="nav-item">
@@ -82,7 +82,7 @@
             title="Case studies from groups i belong to"
             href="#group_cases"
             role="tab"
-            @click="page_content=user_cases_by_group, updatePaginator() "
+            @click="page_content=user_cases_by_group, curr_tab=2, updatePaginator() "
           >Case studies by groups</a>
         </li>
       </ul>
@@ -224,11 +224,14 @@ export default {
           sortable: true
         }
       ],
+
+      curr_tab:1, //current opened tab DEFAULT
       entries_per_table_page: 4, //table entries
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made selection
       all_selected: false, //has the option to select all case studies been checked
-      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
+      gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
+      initial_load:true
     };
   },
   /**
@@ -311,8 +314,7 @@ export default {
         // Add the paginator back in
         this.reload_paginator = true;
       });
-      this.sort_dir = "asc"; //default value
-      this.show_both_sort_arrows = true;
+
     },
 
     /**
@@ -343,7 +345,18 @@ export default {
           this.user_cases_by_group = this.user_cases.filter(
             x => x.c_owner !== this.curr_user
           );
-          this.page_content = this.cases_user_is_owner; //SET ACTIVE DEFAULT
+      //initial content load
+          if (this.initial_load) {
+            this.page_content = this.cases_user_is_owner;
+            this.initial_load = false;
+          }
+
+          //content varies according to tab
+          if (this.curr_tab == 1) {
+            this.page_content = this.cases_user_is_owner;
+          } else {
+            this.page_content = this.user_cases_by_group;
+          }
           this.select();
           this.uncheck();
           this.updatePaginator(); //refresh with updated list of cases

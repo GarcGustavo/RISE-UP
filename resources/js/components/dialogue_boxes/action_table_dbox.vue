@@ -53,69 +53,60 @@
               </div>
               <!-- table -->
               <div class="table-wrapper">
-                <!-- change table id -->
-                <table id="group-table" class="table table-hover table-bordered" cellspacing="0">
-                  <thead class="thead-dark">
-                    <tr>
-                      <th id="row-checkbox">
-                        <input type="checkbox" @click="checkAll()" v-model="all_selected">#
-                      </th>
-                      <th>Email</th>
-                      <th>Name</th>
-                    </tr>
-                  </thead>
-                  <!-- list users to add -->
-                  <tbody>
-                    <tr v-for="(user,index) in filterUsers" v-bind:key="index">
-                      <td>
-                        <div class="check-box">
-                          <input
-                            class="checkbox"
-                            type="checkbox"
-                            v-model="selected_users"
-                            :value="user.uid"
-                            @click="select()"
-                          >
-                          <label for="checkbox">{{index+1}}</label>
-                        </div>
-                      </td>
-                      <td>
-                        <label>{{user.email}}</label>
-                      </td>
-                      <td>
-                        <label>{{user.first_name}} {{user.last_name}}</label>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <b-table head-variant="light" :fields="fields" :items="filterUsers">
+                  <!-- A virtual column -->
+                  <template v-slot:head(index)>
+                    <input type="checkbox" @click="checkAll()" v-model="all_selected">
+                    Select All
+                  </template>
+                  <template v-slot:cell(index)="data">
+                    <input
+                      class="checkbox"
+                      type="checkbox"
+                      id="checkbox"
+                      @click="select()"
+                      v-model="selected_users"
+                      :value="data.item.uid"
+                    >
+                    {{data.index +1}}
+                  </template>
+
+                  <!-- A custom formatted column -->
+                  <template v-slot:cell(email)="data">{{ data.item.email }}</template>
+
+                  <!-- A virtual composite column -->
+                  <template
+                    v-slot:cell(first_name)="data"
+                  >{{ data.item.first_name }} {{ data.item.last_name }}</template>
+                </b-table>
               </div>
             </div>
             <div class="modal-footer">
               <!--Remove user from group  -->
               <div v-if="action=='Create'">
-              <p
-                v-if="action=='Add'"
-                style="margin-right:510px;padding-top:15px;font-size:18px;"
-                aria-hidden="true"
-                id="required-description"
-              >
-                <span class="required">*</span>Required field
-              </p>
-              <p
-                v-else
-                style="margin-right:485px;padding-top:15px;font-size:18px;"
-                aria-hidden="true"
-                id="required-description"
-              >
-                <span class="required">*</span>Required field
-              </p>
+                <p
+                  v-if="action=='Add'"
+                  style="margin-right:510px;padding-top:15px;font-size:18px;"
+                  aria-hidden="true"
+                  id="required-description"
+                >
+                  <span class="required">*</span>Required field
+                </p>
+                <p
+                  v-else
+                  style="margin-right:485px;padding-top:15px;font-size:18px;"
+                  aria-hidden="true"
+                  id="required-description"
+                >
+                  <span class="required">*</span>Required field
+                </p>
               </div>
               <div v-if="action=='Remove'">
                 <button
                   type="button"
                   class="btn btn-primary"
-                  :data-dismiss="close_dialog"
                   data-toggle="modal"
+                  :data-dismiss="close_dialog"
                   data-target="#action_confirm_dbox"
                   @click="isUserSelected()"
                 >{{action}}</button>
@@ -140,7 +131,7 @@
                   :data-dismiss="close_dialog"
                   data-toggle="modal"
                   data-target="#action_confirm_dbox"
-                  @click=" validateInput()"
+                  @click=" validateInput(), is_selected=true"
                 >{{action}}</button>
               </div>
 
@@ -168,6 +159,7 @@
 </template>
 
 <script>
+import BootstrapVue, { BTable, BLink } from "bootstrap-vue";
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
     user to a new group
@@ -187,7 +179,11 @@ export default {
       type: Boolean,
       default: false
     },
-    users: {
+    users_to_add: {
+      //array of users to add or remove
+      type: Array
+    },
+    users_to_remove: {
       //array of users to add or remove
       type: Array
     }
@@ -197,6 +193,10 @@ export default {
    * @description declaration of global variables
    * @returns array of all variables
    */
+  components: {
+    "b-table": BTable,
+    "b-link": BLink
+  },
   data() {
     return {
       group_name_input: "", //input for group name
@@ -222,10 +222,26 @@ export default {
         g_owner: ""
       },
 
+      fields: [
+        { index: { thStyle: { width: "120px" } } },
+        {
+          key: "email",
+          label: "Email",
+
+          sortable: true
+        },
+        {
+          key: "first_name",
+          label: "Name",
+
+          sortable: true
+        }
+      ],
+
       valid_input: false, //validate input
       is_selected: false, //validate if user has made a selection to add or remove a user
-      all_selected: false, //has the option to select all users been checked
-      ready:false
+      all_selected: false //has the option to select all users been checked
+      // ready: false //has the user finished adding/removing
     };
   },
   /**
@@ -239,9 +255,8 @@ export default {
    * @descriptcion handles modal closing event
    */
   mounted() {
-      if(this.ready){
+    //when removing process has been completed reset input fields
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
-      }
   },
 
   computed: {
@@ -250,21 +265,33 @@ export default {
      * @returns list of users in accordance to search.
      */
     filterUsers() {
-      return this.users.filter(user => {
-        return user.email.includes(this.search);
-      });
+      if (this.action == "Add" || this.action == "Create") {
+        return this.users_to_add.filter(user => {
+          return user.email.includes(this.search);
+        });
+      } else {
+        return this.users_to_remove.filter(user => {
+          return user.email.includes(this.search);
+        });
+      }
     }
   },
 
   methods: {
     checkAll() {
       this.selected_users = [];
+
       if (!this.all_selected) {
-        for (let i in this.users) {
-          this.selected_users.push(this.users[i].uid);
+        if (this.action == "Add" || this.action == "Create") {
+          for (let i in this.users_to_add) {
+            this.selected_users.push(this.users_to_add[i].uid);
+          }
+        } else {
+          for (let i in this.users_to_remove) {
+            this.selected_users.push(this.users_to_remove[i].uid);
+          }
         }
       }
-    console.log(this.selected_users);
     },
 
     select() {
@@ -287,11 +314,13 @@ export default {
     isUserSelected() {
       if (this.selected_users.length == 0) {
         this.is_selected = false;
-        this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
+        //keep component opened if user has not made a selection when performing an action
       } else {
         this.is_selected = true;
-        this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
+
+        //close component if user has made a selection when perfoming action
         if (this.action == "Add") {
+          // this.close_dialog = "modal";
           this.sendUsers();
         }
       }
@@ -351,7 +380,6 @@ export default {
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
       this.gid = this.path[this.path.length - 1]; //get group id from path
 
-console.log(this.selected_users);
       for (let i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
@@ -368,10 +396,10 @@ console.log(this.selected_users);
           //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
         }
-       // this.select();
-      //  this.uncheck(); // uncheck all values when finished
+
+        //this.close_dialog = "modal";
+
         this.resetInputFields();
-        this.ready=true;
       }
     },
 
@@ -421,8 +449,7 @@ console.log(this.selected_users);
         g_creation_date: "",
         g_owner: ""
       };
-      this.select();
-      this.uncheck();
+
       this.resetInputFields();
     }
   }

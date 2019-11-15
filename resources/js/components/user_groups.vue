@@ -57,7 +57,7 @@
         :action="action"
         :acted_on="acted_on"
         :gname_box_show="gname_box_show"
-        :users="users"
+        :users_to_add="users"
         @createGroup="createGroup"
       ></action_table_dbox>
     </div>
@@ -75,7 +75,7 @@
             title="Groups i created"
             href="#owned_groups"
             role="tab"
-            @click="page_content=groups_user_is_owner, updatePaginator() "
+            @click="page_content=groups_user_is_owner, curr_tab=1, updatePaginator() "
           >Groups I created</a>
         </li>
         <li class="nav-item">
@@ -87,7 +87,7 @@
             title="Groups i belong to"
             href="#member_groups"
             role="tab"
-            @click="page_content=groups_user_is_member, updatePaginator() "
+            @click="page_content=groups_user_is_member, curr_tab=2, updatePaginator() "
           >Groups I belong to</a>
         </li>
       </ul>
@@ -247,13 +247,15 @@ export default {
           sortable: true
         }
       ],
-
+      curr_tab: 1, //current opened tab DEFAULT
       entries_per_table_page: 4, //table entries
+
       show_both_sort_arrows: true,
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made a selection,
       all_selected: false, //has the option to select all groups been checked
-      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
+      gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
+      initial_load: true
     };
   },
 
@@ -284,7 +286,8 @@ export default {
      */
     checkAll() {
       this.selected_groups = [];
-      if (!this.all_selected) { //push all groups to array
+      if (!this.all_selected) {
+        //push all groups to array
         for (let i in this.groups_user_is_owner) {
           this.selected_groups.push(this.groups_user_is_owner[i].gid);
         }
@@ -384,8 +387,18 @@ export default {
           this.groups_user_is_member = this.user_groups.filter(
             x => x.g_owner !== this.curr_user
           );
-          this.page_content = this.groups_user_is_owner; //SET ACTIVE DEFAULT
+          //initial content load
+          if (this.initial_load) {
+            this.page_content = this.groups_user_is_owner;
+            this.initial_load = false;
+          }
 
+          //content varies according to tab
+          if (this.curr_tab == 1) {
+            this.page_content = this.groups_user_is_owner;
+          } else {
+            this.page_content = this.groups_user_is_member;
+          }
           this.select();
           this.uncheck(); //uncheck any selected items
           this.updatePaginator(); //refresh with updated group list

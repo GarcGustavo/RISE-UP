@@ -86,8 +86,10 @@
       <action_table_dbox
         :action="action"
         :acted_on="acted_on"
-        :users="users_add_remove"
+        :users_to_add="users_to_add"
+        :users_to_remove="users_to_remove"
         :curr_user_id="curr_user"
+        :ready="ready"
         @addUsers="addUsers"
         @removeUsers="removeUsers"
       ></action_table_dbox>
@@ -142,7 +144,7 @@
           </div>
         </a>
       </span>
-      <p :style="create_group_case_permission ? 'margin-left:195px;' : ''" >Our Cases</p>
+      <p :style="create_group_case_permission ? 'margin-left:197px;' : ''" >Our Cases</p>
     </h1>
     <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
@@ -184,6 +186,8 @@ export default {
 
       group_members: [], //members of group
       users_add_remove: [], //users to add or remove from group
+      users_to_add:[],
+      users_to_remove:[],
       group_cases: [], //cases that belong to group
       errors: [], //input errors
 
@@ -194,6 +198,7 @@ export default {
       rename_group_permission: false, //does curr user have permission to rename group
       create_group_case_permission: false, //does curr user have permission to create group case
       error: false, //are there errors. Currently not being used on html
+      ready:false,
 
       tempValue: null
     };
@@ -305,14 +310,15 @@ export default {
       fetch("/users")
         .then(res => res.json())
         .then(res => {
-          this.users_add_remove = res.data; //to send to action_table_dbox when adding users
+          this.users_to_add = res.data; //to send to action_table_dbox when adding users
           //filter users from list to show in table
           for (let k = 0; k < this.group_members.length; k++) {
             //filter out group members from user list when adding new users to group
-            this.users_add_remove = this.users_add_remove.filter(
+            this.users_to_add = this.users_to_add.filter(
               x => x.uid !== this.group_members[k].uid
             );
           }
+          console.log(this.users_to_add);
         })
         .catch(err => console.log(err));
     },
@@ -328,9 +334,9 @@ export default {
       fetch("/group/" + this.curr_group + "/members")
         .then(res => res.json())
         .then(res => {
-          this.users_add_remove = res.data; //populates action_table_dbox when removing a member from group
+          this.users_to_remove = res.data; //populates action_table_dbox when removing a member from group
           if (this.is_owner) {
-            this.users_add_remove = this.users_add_remove.filter(
+            this.users_to_remove = this.users_to_remove.filter(
               x => x.uid !== this.curr_user
             ); //filter owner out so he can't remove himself
           }
@@ -411,8 +417,8 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_add);
+            this.fetchMembers(); //update member list
           this.fetchUsers(); //update user list
-          this.fetchMembers(); //update member list
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -437,8 +443,10 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_remove);
-          this.fetchUsers(); //update user list
+          this.ready=true;
           this.fetchMembers(); //update member list
+          this.fetchUsers(); //update user list
+
         })
         .catch(err => {
           console.error("Error: ", err);

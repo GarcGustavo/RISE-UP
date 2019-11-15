@@ -2098,15 +2098,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
+/* harmony import */ var bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap-vue */ "./node_modules/bootstrap-vue/esm/index.js");
 //
 //
 //
@@ -2272,6 +2264,7 @@ __webpack_require__.r(__webpack_exports__);
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
     user to a new group
  */
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     action: {
@@ -2287,7 +2280,11 @@ __webpack_require__.r(__webpack_exports__);
       type: Boolean,
       "default": false
     },
-    users: {
+    users_to_add: {
+      //array of users to add or remove
+      type: Array
+    },
+    users_to_remove: {
       //array of users to add or remove
       type: Array
     }
@@ -2297,6 +2294,10 @@ __webpack_require__.r(__webpack_exports__);
    * @description declaration of global variables
    * @returns array of all variables
    */
+  components: {
+    "b-table": bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__["BTable"],
+    "b-link": bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__["BLink"]
+  },
   data: function data() {
     return {
       group_name_input: "",
@@ -2326,13 +2327,28 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
+      fields: [{
+        index: {
+          thStyle: {
+            width: "120px"
+          }
+        }
+      }, {
+        key: "email",
+        label: "Email",
+        sortable: true
+      }, {
+        key: "first_name",
+        label: "Name",
+        sortable: true
+      }],
       valid_input: false,
       //validate input
       is_selected: false,
       //validate if user has made a selection to add or remove a user
-      all_selected: false,
-      //has the option to select all users been checked
-      ready: false
+      all_selected: false //has the option to select all users been checked
+      // ready: false //has the user finished adding/removing
+
     };
   },
 
@@ -2347,9 +2363,8 @@ __webpack_require__.r(__webpack_exports__);
    * @descriptcion handles modal closing event
    */
   mounted: function mounted() {
-    if (this.ready) {
-      $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
-    }
+    //when removing process has been completed reset input fields
+    $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   computed: {
     /**
@@ -2359,9 +2374,15 @@ __webpack_require__.r(__webpack_exports__);
     filterUsers: function filterUsers() {
       var _this = this;
 
-      return this.users.filter(function (user) {
-        return user.email.includes(_this.search);
-      });
+      if (this.action == "Add" || this.action == "Create") {
+        return this.users_to_add.filter(function (user) {
+          return user.email.includes(_this.search);
+        });
+      } else {
+        return this.users_to_remove.filter(function (user) {
+          return user.email.includes(_this.search);
+        });
+      }
     }
   },
   methods: {
@@ -2369,12 +2390,16 @@ __webpack_require__.r(__webpack_exports__);
       this.selected_users = [];
 
       if (!this.all_selected) {
-        for (var i in this.users) {
-          this.selected_users.push(this.users[i].uid);
+        if (this.action == "Add" || this.action == "Create") {
+          for (var i in this.users_to_add) {
+            this.selected_users.push(this.users_to_add[i].uid);
+          }
+        } else {
+          for (var _i in this.users_to_remove) {
+            this.selected_users.push(this.users_to_remove[_i].uid);
+          }
         }
       }
-
-      console.log(this.selected_users);
     },
     select: function select() {
       this.all_selected = false;
@@ -2396,13 +2421,12 @@ __webpack_require__.r(__webpack_exports__);
      */
     isUserSelected: function isUserSelected() {
       if (this.selected_users.length == 0) {
-        this.is_selected = false;
-        this.close_dialog = ""; //keep component opened if user has not made a selection when performing an action
+        this.is_selected = false; //keep component opened if user has not made a selection when performing an action
       } else {
-        this.is_selected = true;
-        this.close_dialog = "modal"; //close component if user has made a selection when perfoming action
+        this.is_selected = true; //close component if user has made a selection when perfoming action
 
         if (this.action == "Add") {
+          // this.close_dialog = "modal";
           this.sendUsers();
         }
       }
@@ -2469,8 +2493,6 @@ __webpack_require__.r(__webpack_exports__);
 
       this.gid = this.path[this.path.length - 1]; //get group id from path
 
-      console.log(this.selected_users);
-
       for (var i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
@@ -2486,12 +2508,10 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
-        } // this.select();
-        //  this.uncheck(); // uncheck all values when finished
+        } //this.close_dialog = "modal";
 
 
         this.resetInputFields();
-        this.ready = true;
       }
     },
 
@@ -2541,8 +2561,6 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       };
-      this.select();
-      this.uncheck();
       this.resetInputFields();
     }
   }
@@ -3102,6 +3120,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /**
  * this component displays a group page
@@ -3131,6 +3151,8 @@ __webpack_require__.r(__webpack_exports__);
       //members of group
       users_add_remove: [],
       //users to add or remove from group
+      users_to_add: [],
+      users_to_remove: [],
       group_cases: [],
       //cases that belong to group
       errors: [],
@@ -3149,6 +3171,7 @@ __webpack_require__.r(__webpack_exports__);
       //does curr user have permission to create group case
       error: false,
       //are there errors. Currently not being used on html
+      ready: false,
       tempValue: null
     };
   },
@@ -3267,12 +3290,12 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.users_add_remove = res.data; //to send to action_table_dbox when adding users
+        _this.users_to_add = res.data; //to send to action_table_dbox when adding users
         //filter users from list to show in table
 
         var _loop = function _loop(k) {
           //filter out group members from user list when adding new users to group
-          _this.users_add_remove = _this.users_add_remove.filter(function (x) {
+          _this.users_to_add = _this.users_to_add.filter(function (x) {
             return x.uid !== _this.group_members[k].uid;
           });
         };
@@ -3280,6 +3303,8 @@ __webpack_require__.r(__webpack_exports__);
         for (var k = 0; k < _this.group_members.length; k++) {
           _loop(k);
         }
+
+        console.log(_this.users_to_add);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -3300,10 +3325,10 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/group/" + this.curr_group + "/members").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.users_add_remove = res.data; //populates action_table_dbox when removing a member from group
+        _this2.users_to_remove = res.data; //populates action_table_dbox when removing a member from group
 
         if (_this2.is_owner) {
-          _this2.users_add_remove = _this2.users_add_remove.filter(function (x) {
+          _this2.users_to_remove = _this2.users_to_remove.filter(function (x) {
             return x.uid !== _this2.curr_user;
           }); //filter owner out so he can't remove himself
         }
@@ -3400,10 +3425,10 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
         console.log(users_to_add);
 
-        _this5.fetchUsers(); //update user list
-
-
         _this5.fetchMembers(); //update member list
+
+
+        _this5.fetchUsers(); //update user list
 
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -3430,11 +3455,12 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         console.log(res);
         console.log(users_to_remove);
-
-        _this6.fetchUsers(); //update user list
-
+        _this6.ready = true;
 
         _this6.fetchMembers(); //update member list
+
+
+        _this6.fetchUsers(); //update user list
 
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -4111,6 +4137,8 @@ __webpack_require__.r(__webpack_exports__);
         label: "Title",
         sortable: true
       }],
+      curr_tab: 1,
+      //current opened tab DEFAULT
       entries_per_table_page: 4,
       //table entries
       reload_paginator: false,
@@ -4119,8 +4147,9 @@ __webpack_require__.r(__webpack_exports__);
       //has user made selection
       all_selected: false,
       //has the option to select all case studies been checked
-      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
-
+      gname_box_show: false,
+      //boolean to append group name input to dialogue box when creating a group
+      initial_load: true
     };
   },
 
@@ -4211,9 +4240,6 @@ __webpack_require__.r(__webpack_exports__);
         // Add the paginator back in
         _this2.reload_paginator = true;
       });
-      this.sort_dir = "asc"; //default value
-
-      this.show_both_sort_arrows = true;
     },
 
     /**
@@ -4246,8 +4272,19 @@ __webpack_require__.r(__webpack_exports__);
         });
         _this3.user_cases_by_group = _this3.user_cases.filter(function (x) {
           return x.c_owner !== _this3.curr_user;
-        });
-        _this3.page_content = _this3.cases_user_is_owner; //SET ACTIVE DEFAULT
+        }); //initial content load
+
+        if (_this3.initial_load) {
+          _this3.page_content = _this3.cases_user_is_owner;
+          _this3.initial_load = false;
+        } //content varies according to tab
+
+
+        if (_this3.curr_tab == 1) {
+          _this3.page_content = _this3.cases_user_is_owner;
+        } else {
+          _this3.page_content = _this3.user_cases_by_group;
+        }
 
         _this3.select();
 
@@ -4599,6 +4636,8 @@ __webpack_require__.r(__webpack_exports__);
         label: "Name",
         sortable: true
       }],
+      curr_tab: 1,
+      //current opened tab DEFAULT
       entries_per_table_page: 4,
       //table entries
       show_both_sort_arrows: true,
@@ -4608,8 +4647,9 @@ __webpack_require__.r(__webpack_exports__);
       //has user made a selection,
       all_selected: false,
       //has the option to select all groups been checked
-      gname_box_show: false //boolean to append group name input to dialogue box when creating a group
-
+      gname_box_show: false,
+      //boolean to append group name input to dialogue box when creating a group
+      initial_load: true
     };
   },
 
@@ -4756,8 +4796,19 @@ __webpack_require__.r(__webpack_exports__);
         });
         _this4.groups_user_is_member = _this4.user_groups.filter(function (x) {
           return x.g_owner !== _this4.curr_user;
-        });
-        _this4.page_content = _this4.groups_user_is_owner; //SET ACTIVE DEFAULT
+        }); //initial content load
+
+        if (_this4.initial_load) {
+          _this4.page_content = _this4.groups_user_is_owner;
+          _this4.initial_load = false;
+        } //content varies according to tab
+
+
+        if (_this4.curr_tab == 1) {
+          _this4.page_content = _this4.groups_user_is_owner;
+        } else {
+          _this4.page_content = _this4.groups_user_is_member;
+        }
 
         _this4.select();
 
@@ -71031,146 +71082,154 @@ var render = function() {
                     ])
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "table-wrapper" }, [
-                    _c(
-                      "table",
-                      {
-                        staticClass: "table table-hover table-bordered",
-                        attrs: { id: "group-table", cellspacing: "0" }
-                      },
-                      [
-                        _c("thead", { staticClass: "thead-dark" }, [
-                          _c("tr", [
-                            _c("th", { attrs: { id: "row-checkbox" } }, [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.all_selected,
-                                    expression: "all_selected"
-                                  }
-                                ],
-                                attrs: { type: "checkbox" },
-                                domProps: {
-                                  checked: Array.isArray(_vm.all_selected)
-                                    ? _vm._i(_vm.all_selected, null) > -1
-                                    : _vm.all_selected
-                                },
-                                on: {
-                                  click: function($event) {
-                                    return _vm.checkAll()
+                  _c(
+                    "div",
+                    { staticClass: "table-wrapper" },
+                    [
+                      _c("b-table", {
+                        attrs: {
+                          "head-variant": "light",
+                          fields: _vm.fields,
+                          items: _vm.filterUsers
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "head(index)",
+                            fn: function() {
+                              return [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.all_selected,
+                                      expression: "all_selected"
+                                    }
+                                  ],
+                                  attrs: { type: "checkbox" },
+                                  domProps: {
+                                    checked: Array.isArray(_vm.all_selected)
+                                      ? _vm._i(_vm.all_selected, null) > -1
+                                      : _vm.all_selected
                                   },
-                                  change: function($event) {
-                                    var $$a = _vm.all_selected,
-                                      $$el = $event.target,
-                                      $$c = $$el.checked ? true : false
-                                    if (Array.isArray($$a)) {
-                                      var $$v = null,
-                                        $$i = _vm._i($$a, $$v)
-                                      if ($$el.checked) {
-                                        $$i < 0 &&
-                                          (_vm.all_selected = $$a.concat([$$v]))
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.checkAll()
+                                    },
+                                    change: function($event) {
+                                      var $$a = _vm.all_selected,
+                                        $$el = $event.target,
+                                        $$c = $$el.checked ? true : false
+                                      if (Array.isArray($$a)) {
+                                        var $$v = null,
+                                          $$i = _vm._i($$a, $$v)
+                                        if ($$el.checked) {
+                                          $$i < 0 &&
+                                            (_vm.all_selected = $$a.concat([
+                                              $$v
+                                            ]))
+                                        } else {
+                                          $$i > -1 &&
+                                            (_vm.all_selected = $$a
+                                              .slice(0, $$i)
+                                              .concat($$a.slice($$i + 1)))
+                                        }
                                       } else {
-                                        $$i > -1 &&
-                                          (_vm.all_selected = $$a
-                                            .slice(0, $$i)
-                                            .concat($$a.slice($$i + 1)))
+                                        _vm.all_selected = $$c
                                       }
-                                    } else {
-                                      _vm.all_selected = $$c
                                     }
                                   }
-                                }
-                              }),
-                              _vm._v("#\n                    ")
-                            ]),
-                            _vm._v(" "),
-                            _c("th", [_vm._v("Email")]),
-                            _vm._v(" "),
-                            _c("th", [_vm._v("Name")])
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c(
-                          "tbody",
-                          _vm._l(_vm.filterUsers, function(user, index) {
-                            return _c("tr", { key: index }, [
-                              _c("td", [
-                                _c("div", { staticClass: "check-box" }, [
-                                  _c("input", {
-                                    directives: [
-                                      {
-                                        name: "model",
-                                        rawName: "v-model",
-                                        value: _vm.selected_users,
-                                        expression: "selected_users"
-                                      }
-                                    ],
-                                    staticClass: "checkbox",
-                                    attrs: { type: "checkbox" },
-                                    domProps: {
-                                      value: user.uid,
-                                      checked: Array.isArray(_vm.selected_users)
-                                        ? _vm._i(_vm.selected_users, user.uid) >
-                                          -1
-                                        : _vm.selected_users
+                                }),
+                                _vm._v(
+                                  "\n                  Select All\n                "
+                                )
+                              ]
+                            },
+                            proxy: true
+                          },
+                          {
+                            key: "cell(index)",
+                            fn: function(data) {
+                              return [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.selected_users,
+                                      expression: "selected_users"
+                                    }
+                                  ],
+                                  staticClass: "checkbox",
+                                  attrs: { type: "checkbox", id: "checkbox" },
+                                  domProps: {
+                                    value: data.item.uid,
+                                    checked: Array.isArray(_vm.selected_users)
+                                      ? _vm._i(
+                                          _vm.selected_users,
+                                          data.item.uid
+                                        ) > -1
+                                      : _vm.selected_users
+                                  },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.select()
                                     },
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.select()
-                                      },
-                                      change: function($event) {
-                                        var $$a = _vm.selected_users,
-                                          $$el = $event.target,
-                                          $$c = $$el.checked ? true : false
-                                        if (Array.isArray($$a)) {
-                                          var $$v = user.uid,
-                                            $$i = _vm._i($$a, $$v)
-                                          if ($$el.checked) {
-                                            $$i < 0 &&
-                                              (_vm.selected_users = $$a.concat([
-                                                $$v
-                                              ]))
-                                          } else {
-                                            $$i > -1 &&
-                                              (_vm.selected_users = $$a
-                                                .slice(0, $$i)
-                                                .concat($$a.slice($$i + 1)))
-                                          }
+                                    change: function($event) {
+                                      var $$a = _vm.selected_users,
+                                        $$el = $event.target,
+                                        $$c = $$el.checked ? true : false
+                                      if (Array.isArray($$a)) {
+                                        var $$v = data.item.uid,
+                                          $$i = _vm._i($$a, $$v)
+                                        if ($$el.checked) {
+                                          $$i < 0 &&
+                                            (_vm.selected_users = $$a.concat([
+                                              $$v
+                                            ]))
                                         } else {
-                                          _vm.selected_users = $$c
+                                          $$i > -1 &&
+                                            (_vm.selected_users = $$a
+                                              .slice(0, $$i)
+                                              .concat($$a.slice($$i + 1)))
                                         }
+                                      } else {
+                                        _vm.selected_users = $$c
                                       }
                                     }
-                                  }),
-                                  _vm._v(" "),
-                                  _c("label", { attrs: { for: "checkbox" } }, [
-                                    _vm._v(_vm._s(index + 1))
-                                  ])
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c("label", [_vm._v(_vm._s(user.email))])
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c("label", [
-                                  _vm._v(
-                                    _vm._s(user.first_name) +
-                                      " " +
-                                      _vm._s(user.last_name)
-                                  )
-                                ])
-                              ])
-                            ])
-                          }),
-                          0
-                        )
-                      ]
-                    )
-                  ])
+                                  }
+                                }),
+                                _vm._v(
+                                  "\n                  " +
+                                    _vm._s(data.index + 1) +
+                                    "\n                "
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "cell(email)",
+                            fn: function(data) {
+                              return [_vm._v(_vm._s(data.item.email))]
+                            }
+                          },
+                          {
+                            key: "cell(first_name)",
+                            fn: function(data) {
+                              return [
+                                _vm._v(
+                                  _vm._s(data.item.first_name) +
+                                    " " +
+                                    _vm._s(data.item.last_name)
+                                )
+                              ]
+                            }
+                          }
+                        ])
+                      })
+                    ],
+                    1
+                  )
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-footer" }, [
@@ -71194,7 +71253,7 @@ var render = function() {
                                 _c("span", { staticClass: "required" }, [
                                   _vm._v("*")
                                 ]),
-                                _vm._v("Required field\n            ")
+                                _vm._v("Required field\n              ")
                               ]
                             )
                           : _c(
@@ -71214,7 +71273,7 @@ var render = function() {
                                 _c("span", { staticClass: "required" }, [
                                   _vm._v("*")
                                 ]),
-                                _vm._v("Required field\n            ")
+                                _vm._v("Required field\n              ")
                               ]
                             )
                       ])
@@ -71228,8 +71287,8 @@ var render = function() {
                             staticClass: "btn btn-primary",
                             attrs: {
                               type: "button",
-                              "data-dismiss": _vm.close_dialog,
                               "data-toggle": "modal",
+                              "data-dismiss": _vm.close_dialog,
                               "data-target": "#action_confirm_dbox"
                             },
                             on: {
@@ -71276,7 +71335,7 @@ var render = function() {
                             },
                             on: {
                               click: function($event) {
-                                return _vm.validateInput()
+                                _vm.validateInput(), (_vm.is_selected = true)
                               }
                             }
                           },
@@ -71876,8 +71935,10 @@ var render = function() {
               attrs: {
                 action: _vm.action,
                 acted_on: _vm.acted_on,
-                users: _vm.users_add_remove,
-                curr_user_id: _vm.curr_user
+                users_to_add: _vm.users_to_add,
+                users_to_remove: _vm.users_to_remove,
+                curr_user_id: _vm.curr_user,
+                ready: _vm.ready
               },
               on: { addUsers: _vm.addUsers, removeUsers: _vm.removeUsers }
             })
@@ -71991,7 +72052,7 @@ var render = function() {
         _c(
           "p",
           {
-            style: _vm.create_group_case_permission ? "margin-left:195px;" : ""
+            style: _vm.create_group_case_permission ? "margin-left:197px;" : ""
           },
           [_vm._v("Our Cases")]
         )
@@ -72744,7 +72805,7 @@ var render = function() {
               attrs: {
                 action_confirm: _vm.action,
                 acted_on: _vm.acted_on,
-                is_select: _vm.is_selected
+                is_selected: _vm.is_selected
               },
               on: { removeCases: _vm.removeCases }
             })
@@ -72786,6 +72847,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   ;(_vm.page_content = _vm.cases_user_is_owner),
+                    (_vm.curr_tab = 1),
                     _vm.updatePaginator()
                 }
               }
@@ -72810,6 +72872,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   ;(_vm.page_content = _vm.user_cases_by_group),
+                    (_vm.curr_tab = 2),
                     _vm.updatePaginator()
                 }
               }
@@ -73293,7 +73356,7 @@ var render = function() {
                 action: _vm.action,
                 acted_on: _vm.acted_on,
                 gname_box_show: _vm.gname_box_show,
-                users: _vm.users
+                users_to_add: _vm.users
               },
               on: { createGroup: _vm.createGroup }
             })
@@ -73322,6 +73385,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   ;(_vm.page_content = _vm.groups_user_is_owner),
+                    (_vm.curr_tab = 1),
                     _vm.updatePaginator()
                 }
               }
@@ -73346,6 +73410,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   ;(_vm.page_content = _vm.groups_user_is_member),
+                    (_vm.curr_tab = 2),
                     _vm.updatePaginator()
                 }
               }
