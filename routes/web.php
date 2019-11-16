@@ -95,7 +95,20 @@ Route::delete('user_cases/remove', 'CaseController@destroy');
 //List of login choices
 Route::get('/login', 'LoginController@list_of_choices');
 
-Route::put('/profile_creation', 'UserController@store');
+//Redirect to UPRM IDP
+Route::get('/login_shibboleth', 'LoginController@shibboleth');
 
+//Create profile
+Route::put('/profile_creation/{', 'UserController@store');
 
+//Find user if has been create before
+Route::get('user_match/{email}', 'UserController@find');
 
+//Find user if has been create before
+Route::get('home/{id}', 'HomeController@set');
+
+//Find user if has been create before
+Route::get('request_collab/{id}', 'UserController@request_collab');
+
+//Find user if has been create before
+Route::get('request_collab/{id}', 'UserController@request_collab');

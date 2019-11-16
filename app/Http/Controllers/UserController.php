@@ -40,7 +40,6 @@ class UserController extends Controller
     {
         $user = $request->isMethod('put') ? User::findOrFail($request->uid): new User;
 
-        $user->uid = $request -> input('uid');
         $user->first_name = $request -> input('first_name');
         $user->last_name = $request -> input('last_name');
         $user->email = $request -> input('email');

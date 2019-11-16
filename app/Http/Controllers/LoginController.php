@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    choices[] = {"UPRM Email"};
     /**
      * Display a listing of the resource.
      *
@@ -14,8 +13,8 @@ class LoginController extends Controller
      */
     public function list_of_choices()
     {
-        $users = "UPRM Email";
+        $choices = "UPRM Email";
 
-        return $users;
+        return $choices;
     }
 }
