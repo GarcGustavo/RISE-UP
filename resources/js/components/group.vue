@@ -54,7 +54,7 @@
           data-placement="bottom"
           title="Click icon to remove a member from the group"
           @click=" action='Remove',
-        acted_on='member(s)', fetchMembers()"
+        acted_on='member(s)', show_modal=true, fetchMembers()"
         >
           <div id="remove_icon">
             <a>Remove user</a>
@@ -71,7 +71,7 @@
           data-placement="top"
           title="Click icon to add a user to the group"
           @click=" action='Add',
-        acted_on='user(s)', fetchUsers()"
+        acted_on='user(s)', show_modal=true, fetchUsers()"
         >
           <div id="add_icon">
             <a>Add user</a>
@@ -82,14 +82,13 @@
       <p :style=" add_remove_members_permission ? 'margin-left:288px;' : ''">Members</p>
     </h1>
     <!-- show table dialogue when adding or removing members -->
-    <div v-if="action=='Add'|| action=='Remove'">
+    <div v-if="action=='Add'|| action=='Remove' && show_modal">
       <action_table_dbox
         :action="action"
         :acted_on="acted_on"
         :users_to_add="users_to_add"
         :users_to_remove="users_to_remove"
         :curr_user_id="curr_user"
-        :ready="ready"
         @addUsers="addUsers"
         @removeUsers="removeUsers"
       ></action_table_dbox>
@@ -144,7 +143,7 @@
           </div>
         </a>
       </span>
-      <p :style="create_group_case_permission ? 'margin-left:197px;' : ''" >Our Cases</p>
+      <p :style="create_group_case_permission ? 'margin-left:197px;' : ''">Our Cases</p>
     </h1>
     <!-- list group's case studies -->
     <div class="mt-1 card mb-5" id="cases">
@@ -186,8 +185,8 @@ export default {
 
       group_members: [], //members of group
       users_add_remove: [], //users to add or remove from group
-      users_to_add:[],
-      users_to_remove:[],
+      users_to_add: [],
+      users_to_remove: [],
       group_cases: [], //cases that belong to group
       errors: [], //input errors
 
@@ -198,7 +197,8 @@ export default {
       rename_group_permission: false, //does curr user have permission to rename group
       create_group_case_permission: false, //does curr user have permission to create group case
       error: false, //are there errors. Currently not being used on html
-      ready:false,
+      ready: false,
+      show_modal: false,
 
       tempValue: null
     };
@@ -417,7 +417,10 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_add);
-            this.fetchMembers(); //update member list
+
+          //hide action table dialogue box
+
+          this.fetchMembers(); //update member list
           this.fetchUsers(); //update user list
         })
         .catch(err => {
@@ -443,10 +446,13 @@ export default {
         .then(res => {
           console.log(res);
           console.log(users_to_remove);
-          this.ready=true;
+
+          //hide action table dialogue box
+          this.show_modal = false;
+          $(".modal-backdrop").hide();
+
           this.fetchMembers(); //update member list
           this.fetchUsers(); //update user list
-
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -526,8 +532,6 @@ h1 a:hover {
 a {
   color: black;
 }
-
-
 
 /*move remove icon to right */
 #remove_icon {

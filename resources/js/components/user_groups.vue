@@ -92,28 +92,57 @@
         </li>
       </ul>
     </div>
+
     <div class="container" id="entries_search">
-      <div class="btn-group">
-        <label id="entries_label">Entries:</label>
-        <!--entries button -->
-        <span data-toggle="dropdown">
-          <button
-            class="btn btn-primary btn-sm dropdown-toggle"
-            type="button"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Select number of items to show per table page"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >{{entries_per_table_page}}</button>
-        </span>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
-          <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
-          <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
-          <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+      <!--entries for tab1 -->
+      <div v-if="curr_tab==1">
+        <div class="btn-group">
+          <label id="entries_label">Entries:</label>
+          <!--entries button -->
+          <span data-toggle="dropdown">
+            <button
+              class="btn btn-primary btn-sm dropdown-toggle"
+              type="button"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Select number of items to show per table page"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >{{entries_per_table_page_tab1}}</button>
+          </span>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+          </div>
         </div>
       </div>
+      <!-- entries for tab2 -->
+      <div v-if="curr_tab==2">
+        <div class="btn-group">
+          <label id="entries_label">Entries:</label>
+          <!--entries button -->
+          <span data-toggle="dropdown">
+            <button
+              class="btn btn-primary btn-sm dropdown-toggle"
+              type="button"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Select number of items to show per table page"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >{{entries_per_table_page_tab2}}</button>
+          </span>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+          </div>
+        </div>
+      </div>
+
       <!-- search bar -->
       <div class="input-group">
         <label>Search</label>
@@ -129,7 +158,7 @@
       </div>
     </div>
 
-    <!-- table of groups user created -->
+    <!-- table of groups user created for tab1-->
     <div class="tab-content">
       <div class="tab-pane active" id="owned_groups" role="tabpanel">
         <b-table head-variant="light" hover :items="filterGroups" :fields="fields">
@@ -161,7 +190,7 @@
         </b-table>
       </div>
 
-      <!-- table of groups user belongs to -->
+      <!-- table of groups user belongs to for tab2 -->
       <div class="tab-pane" id="member_groups" role="tabpanel">
         <b-table head-variant="light" hover :items="filterGroups" :fields="fields">
           <template v-slot:cell(index)="data">
@@ -181,11 +210,21 @@
 
     <!--number of entries per table page option -->
     <div id="container">
-      <!-- paginator -->
-      <div id="paginate" v-if="reload_paginator">
+      <!-- paginator for tab1 -->
+      <div id="paginate" v-if="reload_paginator && curr_tab==1">
         <paginator
           :items="page_content"
-          :page_size="entries_per_table_page"
+          :page_size="entries_per_table_page_tab1"
+          @changePage="onChangePage"
+          class="pagination"
+          style="display:inline-block"
+        ></paginator>
+      </div>
+      <!-- paginator for tab2 -->
+      <div id="paginate" v-if="reload_paginator && curr_tab==2">
+        <paginator
+          :items="page_content"
+          :page_size="entries_per_table_page_tab2"
           @changePage="onChangePage"
           class="pagination"
           style="display:inline-block"
@@ -248,9 +287,9 @@ export default {
         }
       ],
       curr_tab: 1, //current opened tab DEFAULT
-      entries_per_table_page: 4, //table entries
+      entries_per_table_page_tab1: 4, //table entries
+      entries_per_table_page_tab2: 4, //table entries
 
-      show_both_sort_arrows: true,
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made a selection,
       all_selected: false, //has the option to select all groups been checked
@@ -295,7 +334,7 @@ export default {
     },
 
     /**
-     * @description if checkbox is checked again remove all selections
+     * @description if checkbox is checked again uncheck all selections
      */
     select() {
       this.all_selected = false;
@@ -324,7 +363,11 @@ export default {
      * @param {Number} entry - variable containing the number of entries per page
      */
     selectEntries(entry) {
-      this.entries_per_table_page = entry;
+      if (this.curr_tab == 1) {
+        this.entries_per_table_page_tab1 = entry;
+      } else {
+        this.entries_per_table_page_tab2 = entry;
+      }
       this.updatePaginator();
     },
 
@@ -393,7 +436,7 @@ export default {
             this.initial_load = false;
           }
 
-          //content varies according to tab
+          //window content varies according to tab
           if (this.curr_tab == 1) {
             this.page_content = this.groups_user_is_owner;
           } else {
@@ -425,7 +468,9 @@ export default {
         .then(res => {
           console.log(res);
           console.log(group);
+
           this.addUsers(members); //add users to group
+
           this.fetchGroups(); //updpate group list
         })
         .catch(err => {

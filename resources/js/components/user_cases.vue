@@ -88,25 +88,53 @@
       </ul>
     </div>
     <div class="container" id="entries_search">
-      <div class="btn-group">
-        <label id="entries_label">Entries:</label>
-        <!--entries button -->
-        <span data-toggle="dropdown">
-          <button
-            class="btn btn-primary btn-sm dropdown-toggle"
-            type="button"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Select number of items to show per table page"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >{{entries_per_table_page}}</button>
-        </span>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
-          <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
-          <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
-          <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+      <!--entries for tab1 -->
+      <div v-if="curr_tab==1">
+        <div class="btn-group">
+          <label id="entries_label">Entries:</label>
+          <!--entries button -->
+          <span data-toggle="dropdown">
+            <button
+              class="btn btn-primary btn-sm dropdown-toggle"
+              type="button"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Select number of items to show per table page"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >{{entries_per_table_page_tab1}}</button>
+          </span>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+          </div>
+        </div>
+      </div>
+      <!-- entries for tab2 -->
+
+      <div v-if="curr_tab==2">
+        <div class="btn-group">
+          <label id="entries_label">Entries:</label>
+          <!--entries button -->
+          <span data-toggle="dropdown">
+            <button
+              class="btn btn-primary btn-sm dropdown-toggle"
+              type="button"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Select number of items to show per table page"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >{{entries_per_table_page_tab2}}</button>
+          </span>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+          </div>
         </div>
       </div>
       <!-- search bar -->
@@ -124,7 +152,7 @@
       </div>
     </div>
 
-    <!-- Table of case studies the user has created-->
+    <!-- Table of case studies the user has created for tab1-->
     <div class="tab-content">
       <div class="tab-pane active" id="owned_cases" role="tabpanel">
         <b-table head-variant="light" hover :items="filterCases" :fields="fields">
@@ -152,7 +180,7 @@
           </template>
         </b-table>
       </div>
-      <!-- Table of case studies belonging to the groups of the user -->
+      <!-- Table of case studies belonging to the groups of the user for tab2-->
       <div class="tab-pane" id="group_cases" role="tabpanel">
         <b-table head-variant="light" hover :items="filterCases" :fields="fields">
           <template v-slot:cell(index)="data">
@@ -168,11 +196,21 @@
     </div>
     <!--number of entries per table page option -->
     <div id="container">
-      <!-- paginator -->
-      <div id="paginate" v-if="reload_paginator">
+      <!-- paginator for tab1-->
+      <div id="paginate" v-if="reload_paginator && curr_tab==1">
         <paginator
           :items="page_content"
-          :page_size="entries_per_table_page"
+          :page_size="entries_per_table_page_tab1"
+          @changePage="onChangePage"
+          class="pagination"
+          style="display:inline-block"
+        ></paginator>
+      </div>
+      <!-- paginator for tab2-->
+      <div id="paginate" v-if="reload_paginator && curr_tab==2">
+        <paginator
+          :items="page_content"
+          :page_size="entries_per_table_page_tab2"
           @changePage="onChangePage"
           class="pagination"
           style="display:inline-block"
@@ -216,6 +254,7 @@ export default {
       case_study: { cid: "", c_title: "" }, //case attributes
 
       fields: [
+        //sortable column used in b-table and index column style definition
         { index: { thStyle: { width: "120px" } } },
         {
           key: "c_title",
@@ -225,13 +264,15 @@ export default {
         }
       ],
 
-      curr_tab:1, //current opened tab DEFAULT
-      entries_per_table_page: 4, //table entries
+      curr_tab: 1, //current opened tab DEFAULT
+      entries_per_table_page_tab1: 4, //table entries
+      entries_per_table_page_tab2: 4, //table entries
+
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made selection
       all_selected: false, //has the option to select all case studies been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
-      initial_load:true
+      initial_load: true
     };
   },
   /**
@@ -260,7 +301,8 @@ export default {
      */
     checkAll() {
       this.selected_cases = [];
-      if (!this.all_selected) { //push all case studies to array
+      if (!this.all_selected) {
+        //push all case studies to array
         for (let i in this.cases_user_is_owner) {
           this.selected_cases.push(this.cases_user_is_owner[i].cid);
         }
@@ -268,7 +310,7 @@ export default {
     },
 
     /**
-     * @description if checkbox is checked again remove all selections
+     * @description if checkbox is checked again uncheck all selections
      */
     select() {
       this.all_selected = false;
@@ -300,7 +342,11 @@ export default {
      * @param {Number} entry - variable containing the number of entries per page
      */
     selectEntries(entry) {
-      this.entries_per_table_page = entry;
+      if (this.curr_tab == 1) {
+        this.entries_per_table_page_tab1 = entry;
+      } else {
+        this.entries_per_table_page_tab2 = entry;
+      }
       this.updatePaginator();
     },
 
@@ -314,7 +360,6 @@ export default {
         // Add the paginator back in
         this.reload_paginator = true;
       });
-
     },
 
     /**
@@ -345,7 +390,7 @@ export default {
           this.user_cases_by_group = this.user_cases.filter(
             x => x.c_owner !== this.curr_user
           );
-      //initial content load
+          //initial content load
           if (this.initial_load) {
             this.page_content = this.cases_user_is_owner;
             this.initial_load = false;

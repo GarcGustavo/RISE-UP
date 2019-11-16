@@ -53,7 +53,7 @@ class case_study extends Model
         'c_description' => 'string',
         'c_thumbnail' => 'string',
         'c_status' => 'string',
-        'c_date' => 'date',
+        'c_date' => 'date:Y-m-d',
         'c_owner' => 'integer',
         'c_group' => 'integer'
     ];

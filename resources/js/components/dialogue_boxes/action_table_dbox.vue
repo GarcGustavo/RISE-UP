@@ -82,7 +82,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <!--Remove user from group  -->
+              <!-- footer  -->
               <div v-if="action=='Create'">
                 <p
                   v-if="action=='Add'"
@@ -101,22 +101,25 @@
                   <span class="required">*</span>Required field
                 </p>
               </div>
+              <!-- remove user -->
+              <!-- current dialogue box is dismissed in group vue after removing users -->
               <div v-if="action=='Remove'">
                 <button
                   type="button"
                   class="btn btn-primary"
                   data-toggle="modal"
-                  :data-dismiss="close_dialog"
                   data-target="#action_confirm_dbox"
                   @click="isUserSelected()"
                 >{{action}}</button>
               </div>
+
+              <!--add user to group -->
+              <!--current dialogue box is dismissed by confirm box -->
               <div v-else-if="action=='Add'">
-                <!--add user to group -->
                 <button
                   type="button"
                   class="btn btn-primary"
-                  :data-dismiss="close_dialog"
+                  data-dismiss="modal"
                   data-toggle="modal"
                   data-target="#action_confirm_dbox"
                   @click="isUserSelected()"
@@ -124,6 +127,7 @@
               </div>
 
               <!-- create group -->
+              <!-- current dialogue box is dismissed by close_dialo variable -->
               <div v-else-if="action=='Create'">
                 <button
                   type="button"
@@ -223,6 +227,7 @@ export default {
       },
 
       fields: [
+        //sortable columns used in b-table and index column style definition
         { index: { thStyle: { width: "120px" } } },
         {
           key: "email",
@@ -241,7 +246,6 @@ export default {
       valid_input: false, //validate input
       is_selected: false, //validate if user has made a selection to add or remove a user
       all_selected: false //has the option to select all users been checked
-      // ready: false //has the user finished adding/removing
     };
   },
   /**
@@ -255,7 +259,9 @@ export default {
    * @descriptcion handles modal closing event
    */
   mounted() {
-    //when removing process has been completed reset input fields
+    /**
+     * @descriptcion handles modal closing event
+     */
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
 
@@ -278,6 +284,9 @@ export default {
   },
 
   methods: {
+    /**
+     * @description  checks all checkboxes when user selects "select all" option
+     */
     checkAll() {
       this.selected_users = [];
 
@@ -293,7 +302,9 @@ export default {
         }
       }
     },
-
+    /**
+     * @description if checkbox is checked again uncheck all selections
+     */
     select() {
       this.all_selected = false;
     },
@@ -396,9 +407,6 @@ export default {
           //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
         }
-
-        //this.close_dialog = "modal";
-
         this.resetInputFields();
       }
     },
@@ -441,7 +449,7 @@ export default {
         );
       }
       this.totalGroups(); //update total groups
-      //reset fields
+      //reset attributes
       this.group_to_create = {
         gid: "",
         g_name: "",
@@ -465,22 +473,9 @@ export default {
   width: 775px;
   height: 500px;
   white-space: nowrap;
+  
 }
-/*table cell attrbites*/
-table tr td {
-  text-align: center;
-  vertical-align: middle;
-  padding-top: 18px;
-  padding-bottom: 18px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 386px;
-}
-/*set checkbock row's width*/
-#row-checkbox {
-  width: 15%;
-}
+
 /*the following style are for the search text and input bar*/
 .modal-body label,
 .modal-body input {

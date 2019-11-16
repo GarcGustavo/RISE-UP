@@ -33,23 +33,55 @@
     <!-- Nav options -->
     <ul class="navbar-nav mr-3">
       <li class="nav-item">
-        <a class="nav-link" href>Collaborate</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Create case study"
+          href
+        >Collaborate</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/help">Help</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Help"
+          href="/help"
+        >Help</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/about">About</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="About"
+          href="/about"
+        >About</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href>Language</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Change languages"
+          href
+        >Language</a>
       </li>
 
       <!-- User menu -->
       <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-          <i class="material-icons" style="font-size: 25px">person</i>
-        </a>
+        <span data-toggle="dropdown">
+          <a
+            href="#"
+            class="nav-link dropdown-toggle"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Profile"
+          >
+            <i class="material-icons" style="font-size: 25px">person</i>
+          </a>
+        </span>
         <div class="dropdown-menu dropdown-menu-right">
           <div class="profile-usertitle">
             <div class="profile-usertitle-name">Melvin J Malave</div>

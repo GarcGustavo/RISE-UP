@@ -2259,6 +2259,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
@@ -2327,7 +2331,8 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
-      fields: [{
+      fields: [//sortable columns used in b-table and index column style definition
+      {
         index: {
           thStyle: {
             width: "120px"
@@ -2347,7 +2352,6 @@ __webpack_require__.r(__webpack_exports__);
       is_selected: false,
       //validate if user has made a selection to add or remove a user
       all_selected: false //has the option to select all users been checked
-      // ready: false //has the user finished adding/removing
 
     };
   },
@@ -2363,7 +2367,9 @@ __webpack_require__.r(__webpack_exports__);
    * @descriptcion handles modal closing event
    */
   mounted: function mounted() {
-    //when removing process has been completed reset input fields
+    /**
+     * @descriptcion handles modal closing event
+     */
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   computed: {
@@ -2386,6 +2392,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    /**
+     * @description  checks all checkboxes when user selects "select all" option
+     */
     checkAll: function checkAll() {
       this.selected_users = [];
 
@@ -2401,6 +2410,10 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     },
+
+    /**
+     * @description if checkbox is checked again uncheck all selections
+     */
     select: function select() {
       this.all_selected = false;
     },
@@ -2508,8 +2521,7 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           //default action is to delete
           this.$emit("removeUsers", this.users_to_add_remove);
-        } //this.close_dialog = "modal";
-
+        }
 
         this.resetInputFields();
       }
@@ -2552,7 +2564,7 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.totalGroups(); //update total groups
-      //reset fields
+      //reset attributes
 
       this.group_to_create = {
         gid: "",
@@ -3121,7 +3133,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 /**
  * this component displays a group page
@@ -3172,6 +3183,7 @@ __webpack_require__.r(__webpack_exports__);
       error: false,
       //are there errors. Currently not being used on html
       ready: false,
+      show_modal: false,
       tempValue: null
     };
   },
@@ -3423,7 +3435,7 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(users_to_add);
+        console.log(users_to_add); //hide action table dialogue box
 
         _this5.fetchMembers(); //update member list
 
@@ -3454,8 +3466,10 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(users_to_remove);
-        _this6.ready = true;
+        console.log(users_to_remove); //hide action table dialogue box
+
+        _this6.show_modal = false;
+        $(".modal-backdrop").hide();
 
         _this6.fetchMembers(); //update member list
 
@@ -3508,6 +3522,38 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4083,6 +4129,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * this component is used to display the cases of a user
@@ -4126,7 +4210,8 @@ __webpack_require__.r(__webpack_exports__);
         c_title: ""
       },
       //case attributes
-      fields: [{
+      fields: [//sortable column used in b-table and index column style definition
+      {
         index: {
           thStyle: {
             width: "120px"
@@ -4139,7 +4224,9 @@ __webpack_require__.r(__webpack_exports__);
       }],
       curr_tab: 1,
       //current opened tab DEFAULT
-      entries_per_table_page: 4,
+      entries_per_table_page_tab1: 4,
+      //table entries
+      entries_per_table_page_tab2: 4,
       //table entries
       reload_paginator: false,
       //used to update paginator
@@ -4192,7 +4279,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description if checkbox is checked again remove all selections
+     * @description if checkbox is checked again uncheck all selections
      */
     select: function select() {
       this.all_selected = false;
@@ -4224,7 +4311,12 @@ __webpack_require__.r(__webpack_exports__);
      * @param {Number} entry - variable containing the number of entries per page
      */
     selectEntries: function selectEntries(entry) {
-      this.entries_per_table_page = entry;
+      if (this.curr_tab == 1) {
+        this.entries_per_table_page_tab1 = entry;
+      } else {
+        this.entries_per_table_page_tab2 = entry;
+      }
+
       this.updatePaginator();
     },
 
@@ -4572,6 +4664,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * this component is used to display the groups of a user
@@ -4638,9 +4769,10 @@ __webpack_require__.r(__webpack_exports__);
       }],
       curr_tab: 1,
       //current opened tab DEFAULT
-      entries_per_table_page: 4,
+      entries_per_table_page_tab1: 4,
       //table entries
-      show_both_sort_arrows: true,
+      entries_per_table_page_tab2: 4,
+      //table entries
       reload_paginator: false,
       //used to update paginator
       is_selected: false,
@@ -4692,7 +4824,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description if checkbox is checked again remove all selections
+     * @description if checkbox is checked again uncheck all selections
      */
     select: function select() {
       this.all_selected = false;
@@ -4723,7 +4855,12 @@ __webpack_require__.r(__webpack_exports__);
      * @param {Number} entry - variable containing the number of entries per page
      */
     selectEntries: function selectEntries(entry) {
-      this.entries_per_table_page = entry;
+      if (this.curr_tab == 1) {
+        this.entries_per_table_page_tab1 = entry;
+      } else {
+        this.entries_per_table_page_tab2 = entry;
+      }
+
       this.updatePaginator();
     },
 
@@ -4801,7 +4938,7 @@ __webpack_require__.r(__webpack_exports__);
         if (_this4.initial_load) {
           _this4.page_content = _this4.groups_user_is_owner;
           _this4.initial_load = false;
-        } //content varies according to tab
+        } //window content varies according to tab
 
 
         if (_this4.curr_tab == 1) {
@@ -38099,7 +38236,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-b4dffb22] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*table cell attrbites*/\ntable tr td[data-v-b4dffb22] {\n  text-align: center;\n  vertical-align: middle;\n  padding-top: 18px;\n  padding-bottom: 18px;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  max-width: 386px;\n}\n\n/*set checkbock row's width*/\n#row-checkbox[data-v-b4dffb22] {\n  width: 15%;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-b4dffb22],\n.modal-body input[data-v-b4dffb22] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*elements margins*/\n.input-group[data-v-b4dffb22] {\n  margin-bottom: 10px;\n}\n\n/*input box radius*/\n.input-group-append input[data-v-b4dffb22] {\n  border-radius: 3px;\n}\n\n/*input height*/\n.form-control[data-v-b4dffb22] {\n  height: 30px;\n}\n\n/***********************************************************/\n/*checkbox and label attributes*/\ninput[type=checkbox] + label[data-v-b4dffb22] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/*checkbox sizing */\ninput[type=checkbox][data-v-b4dffb22] {\n  transform: scale(1.2);\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-b4dffb22] {\n  background: rgba(85, 85, 85, 0.5);\n  /*width for group name input and search is defined in HTML elements*/\n}\n.required[data-v-b4dffb22] {\n  color: red;\n}", ""]);
+exports.push([module.i, "/*set table's main attributes*/\n.table-wrapper[data-v-b4dffb22] {\n  font-size: 18px;\n  overflow-y: auto;\n  overflow-x: auto;\n  width: 775px;\n  height: 500px;\n  white-space: nowrap;\n}\n\n/*the following style are for the search text and input bar*/\n.modal-body label[data-v-b4dffb22],\n.modal-body input[data-v-b4dffb22] {\n  font-size: 18px;\n  display: inline-block;\n  margin: 5px;\n}\n\n/*elements margins*/\n.input-group[data-v-b4dffb22] {\n  margin-bottom: 10px;\n}\n\n/*input box radius*/\n.input-group-append input[data-v-b4dffb22] {\n  border-radius: 3px;\n}\n\n/*input height*/\n.form-control[data-v-b4dffb22] {\n  height: 30px;\n}\n\n/***********************************************************/\n/*checkbox and label attributes*/\ninput[type=checkbox] + label[data-v-b4dffb22] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/*checkbox sizing */\ninput[type=checkbox][data-v-b4dffb22] {\n  transform: scale(1.2);\n}\n\n/*set color for dialogue box popup background*/\n.modal[data-v-b4dffb22] {\n  background: rgba(85, 85, 85, 0.5);\n  /*width for group name input and search is defined in HTML elements*/\n}\n.required[data-v-b4dffb22] {\n  color: red;\n}", ""]);
 
 // exports
 
@@ -71288,7 +71425,6 @@ var render = function() {
                             attrs: {
                               type: "button",
                               "data-toggle": "modal",
-                              "data-dismiss": _vm.close_dialog,
                               "data-target": "#action_confirm_dbox"
                             },
                             on: {
@@ -71308,7 +71444,7 @@ var render = function() {
                             staticClass: "btn btn-primary",
                             attrs: {
                               type: "button",
-                              "data-dismiss": _vm.close_dialog,
+                              "data-dismiss": "modal",
                               "data-toggle": "modal",
                               "data-target": "#action_confirm_dbox"
                             },
@@ -71874,6 +72010,7 @@ var render = function() {
                     click: function($event) {
                       ;(_vm.action = "Remove"),
                         (_vm.acted_on = "member(s)"),
+                        (_vm.show_modal = true),
                         _vm.fetchMembers()
                     }
                   }
@@ -71908,6 +72045,7 @@ var render = function() {
                     click: function($event) {
                       ;(_vm.action = "Add"),
                         (_vm.acted_on = "user(s)"),
+                        (_vm.show_modal = true),
                         _vm.fetchUsers()
                     }
                   }
@@ -71927,7 +72065,7 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _vm.action == "Add" || _vm.action == "Remove"
+    _vm.action == "Add" || (_vm.action == "Remove" && _vm.show_modal)
       ? _c(
           "div",
           [
@@ -71937,8 +72075,7 @@ var render = function() {
                 acted_on: _vm.acted_on,
                 users_to_add: _vm.users_to_add,
                 users_to_remove: _vm.users_to_remove,
-                curr_user_id: _vm.curr_user,
-                ready: _vm.ready
+                curr_user_id: _vm.curr_user
               },
               on: { addUsers: _vm.addUsers, removeUsers: _vm.removeUsers }
             })
@@ -72282,9 +72419,19 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("li", { staticClass: "nav-item" }, [
-      _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-        _vm._v("Collaborate")
-      ])
+      _c(
+        "a",
+        {
+          staticClass: "nav-link",
+          attrs: {
+            "data-toggle": "tooltip",
+            "data-placement": "bottom",
+            title: "Create case study",
+            href: ""
+          }
+        },
+        [_vm._v("Collaborate")]
+      )
     ])
   },
   function() {
@@ -72292,9 +72439,19 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("li", { staticClass: "nav-item" }, [
-      _c("a", { staticClass: "nav-link", attrs: { href: "/help" } }, [
-        _vm._v("Help")
-      ])
+      _c(
+        "a",
+        {
+          staticClass: "nav-link",
+          attrs: {
+            "data-toggle": "tooltip",
+            "data-placement": "bottom",
+            title: "Help",
+            href: "/help"
+          }
+        },
+        [_vm._v("Help")]
+      )
     ])
   },
   function() {
@@ -72302,9 +72459,19 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("li", { staticClass: "nav-item" }, [
-      _c("a", { staticClass: "nav-link", attrs: { href: "/about" } }, [
-        _vm._v("About")
-      ])
+      _c(
+        "a",
+        {
+          staticClass: "nav-link",
+          attrs: {
+            "data-toggle": "tooltip",
+            "data-placement": "bottom",
+            title: "About",
+            href: "/about"
+          }
+        },
+        [_vm._v("About")]
+      )
     ])
   },
   function() {
@@ -72312,32 +72479,49 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("li", { staticClass: "nav-item" }, [
-      _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-        _vm._v("Language")
-      ])
+      _c(
+        "a",
+        {
+          staticClass: "nav-link",
+          attrs: {
+            "data-toggle": "tooltip",
+            "data-placement": "bottom",
+            title: "Change languages",
+            href: ""
+          }
+        },
+        [_vm._v("Language")]
+      )
     ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "nav-link dropdown-toggle",
-        attrs: { href: "#", "data-toggle": "dropdown" }
-      },
-      [
-        _c(
-          "i",
-          {
-            staticClass: "material-icons",
-            staticStyle: { "font-size": "25px" }
-          },
-          [_vm._v("person")]
-        )
-      ]
-    )
+    return _c("span", { attrs: { "data-toggle": "dropdown" } }, [
+      _c(
+        "a",
+        {
+          staticClass: "nav-link dropdown-toggle",
+          attrs: {
+            href: "#",
+            "data-toggle": "tooltip",
+            "data-placement": "bottom",
+            title: "Profile"
+          }
+        },
+        [
+          _c(
+            "i",
+            {
+              staticClass: "material-icons",
+              staticStyle: { "font-size": "25px" }
+            },
+            [_vm._v("person")]
+          )
+        ]
+      )
+    ])
   },
   function() {
     var _vm = this
@@ -72884,85 +73068,177 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "container", attrs: { id: "entries_search" } }, [
-      _c("div", { staticClass: "btn-group" }, [
-        _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
-        _vm._v(" "),
-        _c("span", { attrs: { "data-toggle": "dropdown" } }, [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary btn-sm dropdown-toggle",
-              attrs: {
-                type: "button",
-                "data-toggle": "tooltip",
-                "data-placement": "bottom",
-                title: "Select number of items to show per table page",
-                "aria-haspopup": "true",
-                "aria-expanded": "false"
-              }
-            },
-            [_vm._v(_vm._s(_vm.entries_per_table_page))]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "dropdown-menu" }, [
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(4)
-                }
-              }
-            },
-            [_vm._v("4")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(8)
-                }
-              }
-            },
-            [_vm._v("8")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(16)
-                }
-              }
-            },
-            [_vm._v("16")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(32)
-                }
-              }
-            },
-            [_vm._v("32")]
-          )
-        ])
-      ]),
+      _vm.curr_tab == 1
+        ? _c("div", [
+            _c("div", { staticClass: "btn-group" }, [
+              _c("label", { attrs: { id: "entries_label" } }, [
+                _vm._v("Entries:")
+              ]),
+              _vm._v(" "),
+              _c("span", { attrs: { "data-toggle": "dropdown" } }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary btn-sm dropdown-toggle",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Select number of items to show per table page",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [_vm._v(_vm._s(_vm.entries_per_table_page_tab1))]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(4)
+                      }
+                    }
+                  },
+                  [_vm._v("4")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(8)
+                      }
+                    }
+                  },
+                  [_vm._v("8")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(16)
+                      }
+                    }
+                  },
+                  [_vm._v("16")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(32)
+                      }
+                    }
+                  },
+                  [_vm._v("32")]
+                )
+              ])
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.curr_tab == 2
+        ? _c("div", [
+            _c("div", { staticClass: "btn-group" }, [
+              _c("label", { attrs: { id: "entries_label" } }, [
+                _vm._v("Entries:")
+              ]),
+              _vm._v(" "),
+              _c("span", { attrs: { "data-toggle": "dropdown" } }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary btn-sm dropdown-toggle",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Select number of items to show per table page",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [_vm._v(_vm._s(_vm.entries_per_table_page_tab2))]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(4)
+                      }
+                    }
+                  },
+                  [_vm._v("4")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(8)
+                      }
+                    }
+                  },
+                  [_vm._v("8")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(16)
+                      }
+                    }
+                  },
+                  [_vm._v("16")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(32)
+                      }
+                    }
+                  },
+                  [_vm._v("32")]
+                )
+              ])
+            ])
+          ])
+        : _vm._e(),
       _vm._v(" "),
       _c("div", { staticClass: "input-group" }, [
         _c("label", [_vm._v("Search")]),
@@ -73194,7 +73470,7 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { attrs: { id: "container" } }, [
-      _vm.reload_paginator
+      _vm.reload_paginator && _vm.curr_tab == 1
         ? _c(
             "div",
             { attrs: { id: "paginate" } },
@@ -73204,7 +73480,26 @@ var render = function() {
                 staticStyle: { display: "inline-block" },
                 attrs: {
                   items: _vm.page_content,
-                  page_size: _vm.entries_per_table_page
+                  page_size: _vm.entries_per_table_page_tab1
+                },
+                on: { changePage: _vm.onChangePage }
+              })
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.reload_paginator && _vm.curr_tab == 2
+        ? _c(
+            "div",
+            { attrs: { id: "paginate" } },
+            [
+              _c("paginator", {
+                staticClass: "pagination",
+                staticStyle: { display: "inline-block" },
+                attrs: {
+                  items: _vm.page_content,
+                  page_size: _vm.entries_per_table_page_tab2
                 },
                 on: { changePage: _vm.onChangePage }
               })
@@ -73422,85 +73717,177 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "container", attrs: { id: "entries_search" } }, [
-      _c("div", { staticClass: "btn-group" }, [
-        _c("label", { attrs: { id: "entries_label" } }, [_vm._v("Entries:")]),
-        _vm._v(" "),
-        _c("span", { attrs: { "data-toggle": "dropdown" } }, [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary btn-sm dropdown-toggle",
-              attrs: {
-                type: "button",
-                "data-toggle": "tooltip",
-                "data-placement": "bottom",
-                title: "Select number of items to show per table page",
-                "aria-haspopup": "true",
-                "aria-expanded": "false"
-              }
-            },
-            [_vm._v(_vm._s(_vm.entries_per_table_page))]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "dropdown-menu" }, [
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(4)
-                }
-              }
-            },
-            [_vm._v("4")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(8)
-                }
-              }
-            },
-            [_vm._v("8")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(16)
-                }
-              }
-            },
-            [_vm._v("16")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.selectEntries(32)
-                }
-              }
-            },
-            [_vm._v("32")]
-          )
-        ])
-      ]),
+      _vm.curr_tab == 1
+        ? _c("div", [
+            _c("div", { staticClass: "btn-group" }, [
+              _c("label", { attrs: { id: "entries_label" } }, [
+                _vm._v("Entries:")
+              ]),
+              _vm._v(" "),
+              _c("span", { attrs: { "data-toggle": "dropdown" } }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary btn-sm dropdown-toggle",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Select number of items to show per table page",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [_vm._v(_vm._s(_vm.entries_per_table_page_tab1))]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(4)
+                      }
+                    }
+                  },
+                  [_vm._v("4")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(8)
+                      }
+                    }
+                  },
+                  [_vm._v("8")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(16)
+                      }
+                    }
+                  },
+                  [_vm._v("16")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(32)
+                      }
+                    }
+                  },
+                  [_vm._v("32")]
+                )
+              ])
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.curr_tab == 2
+        ? _c("div", [
+            _c("div", { staticClass: "btn-group" }, [
+              _c("label", { attrs: { id: "entries_label" } }, [
+                _vm._v("Entries:")
+              ]),
+              _vm._v(" "),
+              _c("span", { attrs: { "data-toggle": "dropdown" } }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary btn-sm dropdown-toggle",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Select number of items to show per table page",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [_vm._v(_vm._s(_vm.entries_per_table_page_tab2))]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(4)
+                      }
+                    }
+                  },
+                  [_vm._v("4")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(8)
+                      }
+                    }
+                  },
+                  [_vm._v("8")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(16)
+                      }
+                    }
+                  },
+                  [_vm._v("16")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.selectEntries(32)
+                      }
+                    }
+                  },
+                  [_vm._v("32")]
+                )
+              ])
+            ])
+          ])
+        : _vm._e(),
       _vm._v(" "),
       _c("div", { staticClass: "input-group" }, [
         _c("label", [_vm._v("Search")]),
@@ -73750,7 +74137,7 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { attrs: { id: "container" } }, [
-      _vm.reload_paginator
+      _vm.reload_paginator && _vm.curr_tab == 1
         ? _c(
             "div",
             { attrs: { id: "paginate" } },
@@ -73760,7 +74147,26 @@ var render = function() {
                 staticStyle: { display: "inline-block" },
                 attrs: {
                   items: _vm.page_content,
-                  page_size: _vm.entries_per_table_page
+                  page_size: _vm.entries_per_table_page_tab1
+                },
+                on: { changePage: _vm.onChangePage }
+              })
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.reload_paginator && _vm.curr_tab == 2
+        ? _c(
+            "div",
+            { attrs: { id: "paginate" } },
+            [
+              _c("paginator", {
+                staticClass: "pagination",
+                staticStyle: { display: "inline-block" },
+                attrs: {
+                  items: _vm.page_content,
+                  page_size: _vm.entries_per_table_page_tab2
                 },
                 on: { changePage: _vm.onChangePage }
               })
