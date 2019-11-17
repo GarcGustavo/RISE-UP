@@ -1,8 +1,8 @@
-<template>
-  <div class="body mb-5 mt-5 border shadow">
+k<template>
+  <div class="body mb-5 mt-5 border shadow" style="background: #c0c0c0;">
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-12">
+      <div class="row" style="margin: 50px;">
+        <div class="col-md-12 border shadow" style="background: white;">
           <template v-if="case_to_show">
             <h1 class="text-center mt-3" v-for="(case_study,index) in case_to_show" :key="index">
               <div class="form-group">
@@ -11,10 +11,11 @@
                   class="form-control"
                   v-model="case_study.c_title"
                   v-if="editing"
+                  :maxlength="32"
                   @keydown="editingCase"
                 />
               </div>
-              <h1 class="text-capitalize" v-if="!editing" >{{case_study.c_title}}</h1>
+              <h1 class="text-capitalize" v-if="!editing">{{case_study.c_title}}</h1>
             </h1>
             <h5
               class="text-center mt-3"
@@ -25,30 +26,18 @@
               class="text-center mt-3"
               v-for="(group,index) in groups"
               :key="index + 20"
+              style="margin-bottom: 50px;"
             >Group: {{group.g_name}}</h5>
           </template>
         </div>
       </div>
-      <div class="row" style="margin: 50px;">
-        <div class="col-md-3">
-          <!-- Table of Contents -->
-          <h4 class="text-center card-title">Table of Contents</h4>
-          <div class="row mt-2 card mb-5" id="toc">
-            <div class="toc_list">
-              <ul class="list-group list-group-flush border-0">
-                <li class="list-group-item" v-for="(item, index) in items" :key="index">
-                  <a href="#">{{index + 1}}: {{item.i_name}}</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+      <div class="row" style="margin: 50px; background: white;">
         <!-- Case Parameters -->
-        <div class="col-md-9">
-          <h4 class="card-title" style="margin-left: 50px;">Parameters</h4>
-          <div class="row border" style="margin-left: 50px;" id="toc">
+        <div class="col-md-12">
+          <h4 class="card-title border-0">Parameters</h4>
+          <div class="row border" id="toc">
             <div
-              class="col-sm-4 mx-auto-left"
+              class="col-sm-2 mx-auto-left"
               v-for="(case_parameter, index) in case_parameters"
               :key="index"
               style="margin: 50px;"
@@ -57,6 +46,7 @@
                 <button
                   class="btn btn-primary dropdown-toggle"
                   type="button"
+                  style="background: #c0c0c0; border-color: #c0c0c0; color: black"
                   id="dropdownMenuButton"
                   data-toggle="dropdown"
                 >{{case_parameter.csp_name}}: Selection</button>
@@ -72,31 +62,70 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-12 mb-1">
-          <button v-on:click="onEdit()" v-if="!this.editing">Edit</button>
-          <button v-on:click="addItem(new_item)" v-if="this.editing">Add Item</button>
-          <button v-on:click="onSubmit(items)" v-if="this.editing">Submit Changes</button>
-        </div>
       </div>
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-2" style="margin-left: 25px;">
+          <!-- Table of Contents -->
+          <h4 class="card text-center card-title" style="background: white;">Table of Contents</h4>
+          <div class="row mt-2 card mb-5" id="toc">
+            <div class="toc_list">
+              <ul class="list-group list-group-flush border-0">
+                <li class="list-group-item" v-for="(item, index) in items" :key="index">
+                  <a href="#">{{index + 1}}: {{item.i_name}}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-sm-12 card" style="background: white;">
+            <button
+              class="btn btn-primary btn-sm mb-2"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black; margin: 10px"
+              v-on:click="onEdit()"
+              v-if="!this.editing"
+            >Edit</button>
+            <button
+              class="btn btn-primary btn-sm mb-2"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black; margin: 10px"
+              v-on:click="onCancel()"
+              v-if="this.editing"
+            >Cancel</button>
+            <button
+              class="btn btn-primary btn-sm mb-2"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black"
+              v-on:click="addItem(new_item)"
+              v-if="this.editing"
+            >Add Item</button>
+            <button
+              class="btn btn-primary btn-sm mb-2"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black"
+              v-on:click="onSubmit(items)"
+              v-if="this.editing"
+            >Submit Changes</button>
+          </div>
+        </div>
+        <div class="col-md">
           <!-- Case Body -->
           <div class="row mt-2 card mb-5" id="items">
             <draggable
               v-model="items"
               animation="250"
-              group="items"
               :options="{disabled: !editing}"
               @start="drag=true"
               @end="drag=false"
             >
-              <div class="col-sm-12 mb-3" v-for="(item,index) in items" :key="index">
-                <ul class="list-items">
-                  <div class="card h-100 text-left shadow" style="margin: 50px;">
+              <div
+                class="col-md"
+                style="margin: 25px; margin-left: 0px;"
+                v-for="(item,index) in items"
+                :key="index"
+              >
+                <ul class="list-items" style="margin: 25px; margin-left: 0px;">
+                  <div class="card h-100 text-left shadow">
                     <div class="card-body">
                       <h4 class="card-title" v-if="!editing">{{item.i_name }}</h4>
                       <button
-                        class="col-sm-2 mb-3 right"
+                        class="btn btn-primary mb-3"
+                        style="background: #c0c0c0; border-color: #c0c0c0; color: black"
                         v-on:click="removeItem(item)"
                         v-if="editing"
                       >Delete</button>
@@ -106,6 +135,7 @@
                             <input
                               type="text"
                               class="form-control"
+                              :maxlength="32"
                               v-model="item.i_name"
                               v-if="editing"
                               no-resize
@@ -115,7 +145,7 @@
                           <div class="form-group">
                             <textarea
                               class="form-control"
-                              rows="10"
+                              rows="3"
                               min-height="50px"
                               v-model="item.i_content"
                               v-if="editing"
@@ -125,7 +155,7 @@
                         </div>
                       </div>
                       <div
-                        class="form-group"
+                        class="form-group text-break"
                         v-if="!editing"
                         style="white-space: pre-line;"
                       >{{item.i_content}}</div>
@@ -142,7 +172,6 @@
 </template>
 
 <script>
-import Editor from "v-markdown-editor";
 import draggable from "vuedraggable";
 import "v-markdown-editor/dist/index.css";
 export default {
@@ -208,7 +237,7 @@ export default {
   },
 
   mounted() {
-    /*Echo.join(`note.${this.note.slug}`)
+    Echo.join(`note.${this.note.slug}`)
       .here(users => {
         this.usersEditing = users;
       })
@@ -229,11 +258,11 @@ export default {
         setTimeout(() => {
           this.status = "";
         }, 1000);
-      });*/
+      });
   },
   methods: {
     editingCase() {
-      /*let channel = Echo.join(`note.${this.note.slug}`);
+      let channel = Echo.join(`note.${this.note.slug}`);
 
       // show changes after 1s
       setTimeout(() => {
@@ -241,7 +270,7 @@ export default {
           title: this.title,
           body: this.body
         });
-      }, 1000);*/
+      }, 1000);
     },
     fetchCaseItems() {
       this.path = window.location.pathname.split("/");
@@ -406,29 +435,35 @@ export default {
     },
     removeItem(item_to_remove) {
       console.log(item_to_remove.iid);
-      if(confirm("Do you want to delete this item permanently?")){
-      fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
-        method: "delete",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        body: JSON.stringify(item_to_remove)
-      })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
+      if (confirm("Do you want to delete this item permanently?")) {
+        fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
+          method: "delete",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            "Access-Control-Origin": "*",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+          }),
+          body: JSON.stringify(item_to_remove)
         })
-        .catch(err => {
-          console.error("Error: ", err);
-        });}
+          .then(res => res.text())
+          .then(text => {
+            console.log(text);
+          })
+          .catch(err => {
+            console.error("Error: ", err);
+          });
+      }
       this.fetchCaseItems();
       this.fetchItems();
     },
     languageToggle() {},
     onEdit() {
       this.editing = true;
+    },
+    onCancel() {
+      //this.fetchItems();
+      //this.fetchCaseItems();
+      this.editing = false;
     },
     onSubmit(items) {
       this.updateItems(items);
@@ -444,8 +479,10 @@ export default {
 <style lang="scss" scoped>
 /* Set max height for content containers */
 #items {
-  //max-height: 475px;
-  margin: 50px;
+  max-height: 875px;
+  margin: 25px;
+  margin-left: 0px;
+  //overflow-x: auto;
   overflow-y: auto;
 }
 #toc {
