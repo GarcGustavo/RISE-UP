@@ -24,17 +24,16 @@ window.Vue = require('vue');
 
 //web pages components
 Vue.component('paginator', require('./components/paginator.vue').default);
-Vue.component('action_table_dbox', require('./components/dialogue_boxes/action_table_dbox.vue').default);
-Vue.component('action_confirm_dbox', require('./components/dialogue_boxes/action_confirm_dbox.vue').default);
-Vue.component('case_create_dbox', require('./components/dialogue_boxes/case_create_dbox.vue').default);
+Vue.component('action-table-dbox', require('./components/dialogue-boxes/action-table-dbox.vue').default);
+Vue.component('case-create-dbox', require('./components/dialogue-boxes/case-create-dbox.vue').default);
 //web pages
-Vue.component('iren_header', require('./components/header.vue').default);
-Vue.component('iren_footer', require('./components/footer.vue').default);
-Vue.component('iren_help', require('./components/help.vue').default);
-Vue.component('iren_about', require('./components/about.vue').default);
-Vue.component('iren_group', require('./components/group.vue').default);
-Vue.component('iren_user_groups', require('./components/user_groups.vue').default);
-Vue.component('iren_user_cases', require('./components/user_cases.vue').default);
+Vue.component('iren-header', require('./components/header.vue').default);
+Vue.component('iren-footer', require('./components/footer.vue').default);
+Vue.component('iren-help', require('./components/help.vue').default);
+Vue.component('iren-about', require('./components/about.vue').default);
+Vue.component('iren-group', require('./components/group.vue').default);
+Vue.component('iren-user-groups', require('./components/user-groups.vue').default);
+Vue.component('iren-user-cases', require('./components/user-cases.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -43,4 +42,4 @@ Vue.component('iren_user_cases', require('./components/user_cases.vue').default)
 
 const app = new Vue({
     el: '#app',
-});
+})

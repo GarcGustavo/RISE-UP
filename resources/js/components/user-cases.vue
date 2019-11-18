@@ -4,13 +4,13 @@
     <!-- buttons to create or remove a case study -->
     <h1 class="mb-3">
       <!-- remove button if clicked, render confirmation dialogue box to validate user's action -->
-      <span data-toggle="modal" data-target="#action_confirm_dbox">
+      <div>
         <a
-          href="#action_confirm_dbox"
+          href="#"
           data-toggle="tooltip"
           data-placement="bottom"
           title="Click icon to delete a case study"
-          @click="action='Remove',
+          @click.prevent="action='Remove',
         acted_on='case study(s)', isCaseSelected()"
         >
           <div id="remove_icon">
@@ -18,17 +18,17 @@
             <i class="material-icons">remove_circle_outline</i>
           </div>
         </a>
-      </span>
+      </div>
       <!-- create button if clicked, render create case study dialogue box -->
       <div>
         <span data-toggle="modal" data-target="#case_create_dbox">
           <a
-            href="#case_create_dbox"
+            href="#"
             data-toggle="tooltip"
             data-placement="bottom"
             title="Click icon to create a case study"
-            @click=" action='Create',
-            acted_on='case study'"
+            @click.prevent=" action='Create',
+            acted_on='case study', show_dialogue=true"
           >
             <div id="create_icon">
               <a>Create</a>
@@ -41,19 +41,15 @@
       <p>My case studies</p>
     </h1>
 
-    <div v-if="action=='Remove'">
-      <!--  confirmation dialogue box to validate user's request-->
-      <action_confirm_dbox
-        :action_confirm="action"
-        :acted_on="acted_on"
-        :is_selected="is_selected"
-        @removeCases="removeCases"
-      ></action_confirm_dbox>
-    </div>
-
-    <div v-if="action=='Create'">
+    <div v-if="action=='Create' && show_dialogue">
       <!-- if action is to create group(s) render confirmation dialogue alerting execution of said action-->
-      <case_create_dbox :action="action" :acted_on="acted_on" @createCaseStudy="createCaseStudy"></case_create_dbox>
+      <case-create-dbox
+        :action="action"
+        :acted_on="acted_on"
+        :errors="errors"
+        @close="resetErrors"
+        @createCaseStudy="createCaseStudy"
+      ></case-create-dbox>
     </div>
 
     <hr>
@@ -70,7 +66,7 @@
             title="Case studies i created"
             href="#owned_cases"
             role="tab"
-            @click="page_content=cases_user_is_owner, curr_tab=1, updatePaginator() "
+            @click.prevent="page_content=cases_user_is_owner, curr_tab=1, updatePaginator() "
           >Case studies i created</a>
         </li>
         <li class="nav-item">
@@ -82,7 +78,7 @@
             title="Case studies from groups i belong to"
             href="#group_cases"
             role="tab"
-            @click="page_content=user_cases_by_group, curr_tab=2, updatePaginator() "
+            @click.prevent="page_content=user_cases_by_group, curr_tab=2, updatePaginator() "
           >Case studies by groups</a>
         </li>
       </ul>
@@ -105,10 +101,10 @@
             >{{entries_per_table_page_tab1}}</button>
           </span>
           <div class="dropdown-menu">
-            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
-            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
-            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
-            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
           </div>
         </div>
       </div>
@@ -130,10 +126,10 @@
             >{{entries_per_table_page_tab2}}</button>
           </span>
           <div class="dropdown-menu">
-            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
-            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
-            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
-            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
           </div>
         </div>
       </div>
@@ -155,13 +151,19 @@
     <!-- Table of case studies the user has created for tab1-->
     <div class="tab-content">
       <div class="tab-pane active" id="owned_cases" role="tabpanel">
-        <b-table head-variant="light" hover :items="filterCases" :fields="fields">
+        <b-table
+          sticky-header="600px"
+          head-variant="light"
+          hover
+          :items="filterCases"
+          :fields="fields"
+        >
           <template v-slot:head(index)>
             <input type="checkbox" @click="checkAll()" v-model="all_selected">
             Select All
           </template>
           <template v-slot:cell(index)="data">
-            <div class="p-2">
+            <div class="p-2 pl-4">
               <input
                 class="checkbox"
                 type="checkbox"
@@ -182,7 +184,13 @@
       </div>
       <!-- Table of case studies belonging to the groups of the user for tab2-->
       <div class="tab-pane" id="group_cases" role="tabpanel">
-        <b-table head-variant="light" hover :items="filterCases" :fields="fields">
+        <b-table
+          sticky-header="600px"
+          head-variant="light"
+          hover
+          :items="filterCases"
+          :fields="fields"
+        >
           <template v-slot:cell(index)="data">
             <div class="p-2">{{data.index +1}}</div>
           </template>
@@ -222,7 +230,7 @@
 
 <script>
 import BootstrapVue, { BTable, BLink } from "bootstrap-vue";
-
+import bootbox from "bootbox";
 /**
  * this component is used to display the cases of a user
  */
@@ -250,6 +258,7 @@ export default {
       cases_to_remove: [], // the cases to remove, sent to controller
       page_of_cases: [], //cases to show on table page
       page_content: [], //cases to send to paginator
+      errors: [],
 
       case_study: { cid: "", c_title: "" }, //case attributes
 
@@ -259,8 +268,9 @@ export default {
         {
           key: "c_title",
           label: "Title",
-
-          sortable: true
+          class: "text-center",
+          sortable: true,
+           thStyle:{paddingLeft:"20px"}
         }
       ],
 
@@ -272,7 +282,8 @@ export default {
       is_selected: false, //has user made selection
       all_selected: false, //has the option to select all case studies been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
-      initial_load: true
+      initial_load: true, //load initial table tab content when page loads
+      show_dialogue: false
     };
   },
   /**
@@ -327,14 +338,15 @@ export default {
     },
 
     /**
-     * @description verifies if user has made a selection of a case
+     * @description - refreshes the paginator
      */
-    isCaseSelected() {
-      if (this.selected_cases.length == 0) {
-        this.is_selected = false;
-      } else {
-        this.is_selected = true;
-      }
+    updatePaginator() {
+      // Remove paginator from the DOM
+      this.reload_paginator = false;
+      this.$nextTick().then(() => {
+        // Add the paginator back in
+        this.reload_paginator = true;
+      });
     },
 
     /**
@@ -351,18 +363,6 @@ export default {
     },
 
     /**
-     * @description - refreshes the paginator
-     */
-    updatePaginator() {
-      // Remove paginator from the DOM
-      this.reload_paginator = false;
-      this.$nextTick().then(() => {
-        // Add the paginator back in
-        this.reload_paginator = true;
-      });
-    },
-
-    /**
      * @description unchecks any selection of cases the user has made
      */
     uncheck() {
@@ -373,6 +373,38 @@ export default {
       }
     },
 
+    resetErrors() {
+      this.errors = [];
+    },
+
+    /**
+     * @description verifies if user has made a selection of a case
+     */
+    isCaseSelected() {
+      if (this.selected_cases.length == 0) {
+        this.is_selected = false;
+        //alert box
+        this.dialogue = bootbox.alert({
+          title: "Remove",
+          message: "Please select case study(s) to remove",
+          backdrop: true,
+
+          className: "text-center"
+        });
+        //alert box CSS styling
+        this.dialogue.find(".modal-content").css({
+          height: "250px",
+          "font-size": "18px",
+          "text-align": "center"
+        });
+        this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+
+        //if selection made remove selected groups
+      } else {
+        this.is_selected = true;
+        this.removeCases();
+      }
+    },
     /**
      * @description gets all the cases of the current user
      */
@@ -426,8 +458,34 @@ export default {
         .then(res => res.json())
         .then(res => {
           console.log(res);
-          console.log(case_study);
-          this.fetchCases();
+
+          if (!res.errors) {
+            this.fetchCases(); //update case study list
+            //hide action table dbox
+            this.show_dialogue = false;
+            //remove component's backdrop
+            $("body").removeClass("modal-open");
+            $(".modal-backdrop").remove();
+            //alert box
+            this.dialogue = bootbox.alert({
+              title: "Create",
+              message: "Case study has been created!",
+              backdrop: true,
+              className: "text-center"
+            });
+
+            //alert box CSS styling
+            this.dialogue.find(".modal-content").css({
+              height: "250px",
+              "font-size": "18px",
+              "text-align": "center"
+            });
+            this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+
+            this.errors = []; //reset
+          } else {
+            this.errors = res.errors;
+          }
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -438,31 +496,63 @@ export default {
      * @description removes any selected user cases by making a delete request to caseController
      */
     removeCases() {
-      for (let i in this.selected_cases) {
-        this.cases_to_remove.push({
-          //push selected cases id's as cid attribute
-          cid: this.selected_cases[i]
-        });
-      }
-      fetch("/user_cases/remove", {
-        method: "delete",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        body: JSON.stringify(this.cases_to_remove) //append data to the body of request
-      })
-        .then(res => res.json())
-        .then(res => {
-          console.log(res);
-          console.log(this.cases_to_remove);
-          this.fetchCases(); //update UI with latest cases
-          this.cases_to_remove = []; //reset variable of cases to remove
-        })
-        .catch(err => {
-          console.error("Error: ", err);
-        });
+      var curr = this;
+
+      //confirmation dialogue box
+      this.dialogue = bootbox.confirm({
+        title: "Remove",
+        message: "Do you want to remove selected case study(s)?",
+        backdrop: true,
+
+        buttons: {
+          confirm: {
+            label: "No", //inverted roles, switched bootbox default order
+            className: "btn btn-secondary"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        }, //Callback function with user's input
+        callback: function(result) {
+          if (!result) {
+            //if yes
+            for (let i in curr.selected_cases) {
+              curr.cases_to_remove.push({
+                //push selected group id's as gid attributes
+                cid: curr.selected_cases[i]
+              });
+            }
+            //send request
+            fetch("/user_cases/remove", {
+              method: "delete",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                "Access-Control-Origin": "*",
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+              }),
+              body: JSON.stringify(curr.cases_to_remove)
+            })
+              .then(res => res.json())
+              .then(res => {
+                  console.log(res);
+                curr.fetchCases(); //update group list
+                curr.cases_to_remove = []; //reset variable
+              })
+              .catch(err => {
+                console.error("Error: ", err);
+              });
+          } //end if
+        } //end callback
+      }); //end alert
+
+      //alert box CSS styling
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
   }
 };

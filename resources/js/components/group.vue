@@ -1,10 +1,10 @@
 <template>
   <!-- Team Members -->
-  <div class="body mb-5 mt-5">
+  <div class="body mb-5 mt-5" >
     <!-- group title -->
-    <div v-if="!edit_title">
+    <div v-if="!edit_title" >
       <span class="text">
-        <h1 class="text-center p-1" :style=" rename_group_permission ? 'margin-left:185px;' : ''">
+        <h1 class="text-center p-1" :style=" rename_group_permission ? 'margin-left:185px;margin-top:25px' : ''">
           {{group_name}}
           <!--render if user has permission-->
           <div id="edit_icon">
@@ -14,7 +14,7 @@
               data-toggle="tooltip"
               data-placement="bottom"
               title="Click icon to edit the group's name"
-              @click="enableEditTitle"
+              @click.prevent="enableEditTitle"
               v-if="rename_group_permission"
             >
               <a id="edit_title_desc">Edit group name</a>
@@ -29,15 +29,20 @@
       <span class="required">*</span>
       <input v-model="tempValue" maxlength="32" class="input">
       <button class="btn btn-secondary" @click="disableEditTitle">Cancel</button>
-      <button
-        class="btn btn-primary"
-        data-toggle="modal"
-        data-target="#action_confirm_dbox"
-        @click="saveEdit(), action='Rename'"
-      >Save</button>
+      <button class="btn btn-primary" @click="saveEdit(), action='Rename'">Save</button>
       <p aria-hidden="true" style="margin:5px;display:inline" id="required-description">
         <span class="required">*</span>Required field
       </p>
+      <div v-if="errors.length">
+        <div>
+          <label>Please correct the following error(s):</label>
+          <div class="alert alert-danger">
+            <ul style="margin:10px;">
+              <li v-for="(error,index) in errors" :key="index" style="margin:10px;">{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
 
     <hr>
@@ -46,15 +51,15 @@
     <!-- render if user has permissions -->
     <h1 class="text-center mt-5 col-sm">
       <!--remove button -->
-      <span data-toggle="modal" data-target="#action_table_dbox" data-dismiss="modal">
+      <span data-toggle="modal" data-target="#action_table_dbox">
         <a
           v-if="add_remove_members_permission"
-          href="#action_table_dbox"
+          href="#"
           data-toggle="tooltip"
           data-placement="bottom"
           title="Click icon to remove a member from the group"
-          @click=" action='Remove',
-        acted_on='member(s)', show_modal=true, fetchMembers()"
+          @click.prevent=" action='Remove',
+        acted_on='member(s)', show_dialogue=true, fetchMembers()"
         >
           <div id="remove_icon">
             <a>Remove user</a>
@@ -63,15 +68,15 @@
         </a>
       </span>
       <!-- add button -->
-      <span data-toggle="modal" data-target="#action_table_dbox" data-dismiss="modal">
+      <span data-toggle="modal" data-target="#action_table_dbox">
         <a
           v-if="add_remove_members_permission"
-          href="#action_table_dbox"
+          href="#"
           data-toggle="tooltip"
           data-placement="top"
           title="Click icon to add a user to the group"
-          @click=" action='Add',
-        acted_on='user(s)', show_modal=true, fetchUsers()"
+          @click.prevent=" action='Add',
+        acted_on='user(s)', show_dialogue=true, fetchUsers()"
         >
           <div id="add_icon">
             <a>Add user</a>
@@ -82,8 +87,8 @@
       <p :style=" add_remove_members_permission ? 'margin-left:288px;' : ''">Members</p>
     </h1>
     <!-- show table dialogue when adding or removing members -->
-    <div v-if="action=='Add'|| action=='Remove' && show_modal">
-      <action_table_dbox
+    <div v-if="(action=='Add'|| action=='Remove') && show_dialogue">
+      <action-table-dbox
         :action="action"
         :acted_on="acted_on"
         :users_to_add="users_to_add"
@@ -91,26 +96,25 @@
         :curr_user_id="curr_user"
         @addUsers="addUsers"
         @removeUsers="removeUsers"
-      ></action_table_dbox>
+      ></action-table-dbox>
     </div>
-    <!-- show confirmation box when renaming group -->
-    <div v-if="action=='Rename'">
-      <action_confirm_dbox :action_confirm="action" :errors="errors"></action_confirm_dbox>
-    </div>
+
     <!-- show case study dialogue box when creating it from group -->
-    <div v-if="action=='Create'">
-      <case_create_dbox
+    <div v-if="action=='Create' && show_dialogue">
+      <case-create-dbox
         :action="'Create'"
         :acted_on="'case study'"
+        :errors="errors"
         :group_selection="curr_group"
+        @close="resetErrors"
         @createCaseStudy="createCaseStudy"
-      ></case_create_dbox>
+      ></case-create-dbox>
     </div>
     <!-- Members -->
-    <div class="card mb-5" id="scrollable">
+    <div class="card mb-5 shadow" id="scrollable">
       <div class="row mt-1 pt-2 pl-4" id="members">
         <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
-          <div class="card h-100 text-center shadow">
+          <div class="card h-100 text-center ">
             <i class="material-icons pt-2" style="font-size: 125px">person</i>
             <div class="card-body">
               <h4 class="card-title">{{member.first_name}} {{member.last_name}}</h4>
@@ -127,11 +131,11 @@
     <hr>
 
     <!-- Create case button -->
-    <h1 id="cases_header" class="mt-5 text-center">
+    <h1 id="cases_header" class="mt-5 text-center ">
       <span data-toggle="modal" data-target="#case_create_dbox">
         <a
           v-if="create_group_case_permission"
-          @click="action='Create'"
+          @click.prevent="action='Create', show_dialogue=true"
           href="#case_create_dbox"
           data-toggle="tooltip"
           data-placement="bottom"
@@ -146,7 +150,7 @@
       <p :style="create_group_case_permission ? 'margin-left:197px;' : ''">Our Cases</p>
     </h1>
     <!-- list group's case studies -->
-    <div class="mt-1 card mb-5" id="cases">
+    <div class="mt-1 card mb-5 shadow" id="cases">
       <div class="col-sm-12 mb-3">
         <ul class="list-group list-group-flush border-0">
           <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
@@ -165,6 +169,7 @@
 </template>
 
 <script>
+import bootbox from "bootbox";
 /**
  * this component displays a group page
  */
@@ -182,6 +187,7 @@ export default {
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
       curr_group: "", //current user id
+      temp: "",
 
       group_members: [], //members of group
       users_add_remove: [], //users to add or remove from group
@@ -197,8 +203,7 @@ export default {
       rename_group_permission: false, //does curr user have permission to rename group
       create_group_case_permission: false, //does curr user have permission to create group case
       error: false, //are there errors. Currently not being used on html
-      ready: false,
-      show_modal: false,
+      show_dialogue: false,
 
       tempValue: null
     };
@@ -214,7 +219,6 @@ export default {
     this.fetchGroupInfo();
     this.fetchCases();
   },
-
   methods: {
     /**
      * @description determine user priveleges in group
@@ -275,29 +279,18 @@ export default {
     disableEditTitle() {
       this.tempValue = null;
       this.edit_title = false;
-      this.error = false;
       this.errors = []; //reset errors
     },
     /**
      * @description save changes to group name
      */
     saveEdit() {
-      this.temp_name = this.tempValue.trim();
+      this.temp = this.tempValue;
+      this.changeGroupName(); //send request
+    },
 
-      if (this.temp_name) {
-        //if not empty
-        this.group_name = this.temp_name;
-        this.changeGroupName(); //send request
-        this.disableEditTitle(); //disable edit mode
-      } else {
-        this.errors = [];
-
-        if (!this.temp_name) {
-          this.errors.push("Group name required.");
-        }
-
-        this.error = true;
-      }
+    resetErrors() {
+      this.errors = [];
     },
 
     /**
@@ -318,7 +311,6 @@ export default {
               x => x.uid !== this.group_members[k].uid
             );
           }
-          console.log(this.users_to_add);
         })
         .catch(err => console.log(err));
     },
@@ -381,18 +373,43 @@ export default {
     changeGroupName() {
       this.path = window.location.pathname.split("/");
       this.curr_group = this.path[this.path.length - 1];
-      fetch("/group/" + this.curr_group + "/update", {
+
+      fetch("/group/name/update", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify({ g_name: this.group_name })
+        body: JSON.stringify({gid:this.curr_group, g_name: this.temp })
       })
         .then(res => res.json())
         .then(res => {
-          console.log(res);
+             console.log(res);
+          if (!res.errors) {
+
+            this.group_name = this.temp;
+            this.disableEditTitle();
+            //alert box
+            this.dialogue = bootbox.alert({
+              title: "Rename",
+              message: "Group name has been changed!",
+              backdrop: true,
+              className: "text-center"
+            });
+
+            //alert box CSS styling
+            this.dialogue.find(".modal-content").css({
+              height: "250px",
+              "font-size": "18px",
+              "text-align": "center"
+            });
+            this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+
+            this.errors = []; //reset
+          } else {
+            this.errors = res.errors;
+          }
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -415,13 +432,33 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-          console.log(res);
-          console.log(users_to_add);
+            console.log(res);
+          if (!res.errors) {
+            //hide action table dbox
+            this.show_dialogue = false;
+            //remove component's backdrop
+            $("body").removeClass("modal-open");
+            $(".modal-backdrop").remove();
+            //alert box
+            this.dialogue = bootbox.alert({
+              title: "Add",
+              message: "User(s) has been added!",
+              backdrop: true,
+              className: "text-center"
+            });
 
-          //hide action table dialogue box
+            //alert box CSS styling
+            this.dialogue.find(".modal-content").css({
+              height: "250px",
+              "font-size": "18px",
+              "text-align": "center"
+            });
+            this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-          this.fetchMembers(); //update member list
-          this.fetchUsers(); //update user list
+            this.fetchMembers(); //update member list
+            this.fetchUsers(); //update user list
+            this.errors = []; //reset
+          }
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -433,30 +470,64 @@ export default {
      * @param {Array} users_to_remove - array of user id's to remove group - data is sent by the action_table_dbox dialogue
      */
     removeUsers(users_to_remove) {
-      fetch("/group/members/remove", {
-        method: "delete",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        body: JSON.stringify(users_to_remove)
-      })
-        .then(res => res.json())
-        .then(res => {
-          console.log(res);
-          console.log(users_to_remove);
+      var curr = this;
+      this.users_add_remove = users_to_remove;
+      //confirmation dialogue box
+      this.dialogue = bootbox.confirm({
+        title: "Remove?",
+        message: "Do you want to remove selected user(s)?",
+        backdrop: true,
 
-          //hide action table dialogue box
-          this.show_modal = false;
-          $(".modal-backdrop").hide();
+        buttons: {
+          confirm: {
+            label: "No", //inverted roles, switched bootbox default order
+            className: "btn btn-secondary"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        }, //Callback function with user's input
+        callback: function(result) {
+          if (!result) {
+            //if yes
+            //send request
+            fetch("/group/members/remove", {
+              method: "delete",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                "Access-Control-Origin": "*",
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+              }),
+              body: JSON.stringify(curr.users_add_remove)
+            })
+              .then(res => res.json())
+              .then(res => {
+                  console.log(res);
+                //hide action table dbox
+                curr.show_dialogue = false;
+                //remove component's backdrop
+                $("body").removeClass("modal-open");
+                $(".modal-backdrop").remove();
 
-          this.fetchMembers(); //update member list
-          this.fetchUsers(); //update user list
-        })
-        .catch(err => {
-          console.error("Error: ", err);
-        });
+                curr.fetchMembers(); //update member list
+                curr.fetchUsers(); //update user list
+                curr.users_add_remove = []; //reset variable
+              })
+              .catch(err => {
+                console.error("Error: ", err);
+              });
+          } //end if
+        } //end callback
+      }); //end alert
+
+      //alert box CSS styling
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     },
 
     /**
@@ -477,7 +548,33 @@ export default {
         .then(res => {
           console.log(res);
           console.log(case_study);
-          this.fetchCases(); //update case list
+          if (!res.errors) {
+            this.fetchCases(); //update case study list
+            //hide action table dbox
+            this.show_dialogue = false;
+            //remove component's backdrop
+            $("body").removeClass("modal-open");
+            $(".modal-backdrop").remove();
+            //alert box
+            this.dialogue = bootbox.alert({
+              title: "Create",
+              message: "Case study has been created!",
+              backdrop: true,
+              className: "text-center"
+            });
+
+            //alert box CSS styling
+            this.dialogue.find(".modal-content").css({
+              height: "250px",
+              "font-size": "18px",
+              "text-align": "center"
+            });
+            this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+
+            this.errors = []; //reset
+          } else {
+            this.errors = res.errors;
+          }
         })
         .catch(err => {
           console.error("Error: ", err);

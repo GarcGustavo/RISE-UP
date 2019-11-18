@@ -2,6 +2,6 @@
 
 @section('content')
 
-<iren_user_cases></iren_user_cases>
+<iren-user-groups></iren-user-groups>
 
 @endsection

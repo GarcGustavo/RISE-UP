@@ -1,6 +1,6 @@
 <template>
   <!-- Navigation -->
-  <nav class="navbar fixed-top navbar-expand-lg navbar-custom">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
     <a class="navbar-brand" href="#">Interdisciplinary Research Network</a>
     <button
       class="navbar-toggler"
@@ -125,7 +125,8 @@ export default {
 /*style for navbar*/
 .navbar-custom {
   background-color: #333333;
-  border: 0;
+ //background-color: white;
+border: 0;
 }
 
 /* change the brand and text color */
@@ -138,12 +139,15 @@ export default {
 /* change the link color */
 .navbar-custom .navbar-nav .nav-link {
   color: rgba(255, 255, 255, 0.5);
+
+ //color:black;
 }
 
 /* change the color of active or hovered links */
 .navbar-custom .nav-item.active .nav-link,
 .navbar-custom .nav-item:hover .nav-link {
   color: #ffffff;
+
 }
 
 /* for dropdown only - change the color of dropdown */

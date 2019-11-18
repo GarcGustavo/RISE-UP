@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\case_study;
 use App\Models\User_Groups;
 use App\Http\Resources\Case_Study as Case_StudyResource;
@@ -39,6 +40,33 @@ class CaseController extends Controller
      */
     public function store(Request $request)
     {
+        $attributes = array(
+            'cid' => 'case study id',
+            'c_title' => 'case study title',
+            'c_description'  => 'case study description',
+            'c-thumbnail' => 'case study thumbnail',
+            'c_status' => 'case study status',
+            'c_date' => 'case study creation date',
+            'c_owner' => 'case study author',
+            'c_group' => 'case study group'
+        );
+        $validator = Validator::make($request->all(), [
+
+            'cid' => 'bail|required|unique:Case',
+            'c_title' => 'bail|required|max:32',
+            'c_description'  => 'bail|required|max:140',
+            'c-thumbnail' => 'nullable',
+            'c_status' => 'bail|required',
+            'c_date' => 'bail|required|date_format:Y-m-d',
+            'c_owner' => 'bail|required',
+            'c_group' => 'nullable',
+        ]);
+
+        $validator->setAttributeNames($attributes);
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+
         $case_study = $request->isMethod('put') ? case_study::findOrFail($request->cid) : new case_study;
         $case_study->cid = $request->input('cid');
         $case_study->c_title = $request->input('c_title');
@@ -48,9 +76,14 @@ class CaseController extends Controller
         $case_study->c_date = $request->input('c_date');
         $case_study->c_owner = $request->input('c_owner');
         $case_study->c_group = $request->input('c_group');
+
         if ($case_study->save()) {
             return response()->json(['message'=>'Case study has been created']);
         }
+        else{
+            return response()->json(['errors'=>'Error creating case study from controller']);
+        }
+
     }
 
     /**
@@ -126,6 +159,20 @@ class CaseController extends Controller
      */
     public function destroy(Request $request)
     {
+
+        $data = [ 'data' => $request->all() ];
+
+        $attributes = array(
+            'data.*.cid' => 'case study id',
+        );
+        $validator = Validator::make($data, [
+            'data.*.cid' => 'bail|exists:Case|required|integer'
+        ]);
+        $validator->setAttributeNames($attributes);
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+
         $to_delete = $request->all();
         $cids_to_delete = array_map(function ($item) {
             return $item['cid'];

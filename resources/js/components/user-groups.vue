@@ -4,33 +4,32 @@
     <!-- buttons to create or remove a group -->
     <h1 class="mb-3">
       <!-- button if clicked, render confirmation dialogue box to validate user's action -->
-      <span data-toggle="modal" data-target="#action_confirm_dbox">
+      <div>
         <a
-          href="#action_confirm_dbox"
+          href="#"
           data-toggle="tooltip"
           data-placement="bottom"
           title="Click icon to delete a group"
-          @click="action='Remove',
-        acted_on='group(s)', isGroupSelected()"
+          @click.prevent="action='Remove',
+          acted_on='group(s)', isGroupSelected()"
         >
           <div id="remove_icon">
             <a>Remove</a>
             <i class="material-icons">remove_circle_outline</i>
           </div>
         </a>
-      </span>
-
+      </div>
       <!-- button if clicked, render create group input box -->
       <div>
         <span data-toggle="modal" data-target="#action_table_dbox">
           <a
-            href="#action_table_dbox"
+            href="#"
             data-toggle="tooltip"
             data-placement="bottom"
             title="Click icon to create a group"
-            @click="gname_box_show=true,
-        action='Create',
-        acted_on='group', fetchUsers()"
+            @click.prevent="gname_box_show=true, show_dialogue=true,
+            action='Create',
+            acted_on='group', fetchUsers()"
           >
             <div id="create_icon">
               <a>Create</a>
@@ -42,24 +41,18 @@
 
       <p>My groups</p>
     </h1>
-    <div v-if="action=='Remove'">
-      <!-- if action is to remove group(s) render confirmation dialogue to validate user's request-->
-      <action_confirm_dbox
-        :action_confirm="action"
-        :acted_on="acted_on"
-        :is_selected="is_selected"
-        @removeGroups="removeGroups"
-      ></action_confirm_dbox>
-    </div>
-    <div v-if="action=='Create'">
-      <!-- if action is to create group(s) render confirmation dialogue alerting execution of said action-->
-      <action_table_dbox
+
+    <div v-if="action=='Create' && show_dialogue">
+      <!-- if action is to create group(s) render action table dialogue box-->
+      <action-table-dbox
         :action="action"
         :acted_on="acted_on"
         :gname_box_show="gname_box_show"
+        :errors="errors"
+        @close="resetErrors"
         :users_to_add="users"
         @createGroup="createGroup"
-      ></action_table_dbox>
+      ></action-table-dbox>
     </div>
     <hr>
 
@@ -75,7 +68,7 @@
             title="Groups i created"
             href="#owned_groups"
             role="tab"
-            @click="page_content=groups_user_is_owner, curr_tab=1, updatePaginator() "
+            @click.prevent="page_content=groups_user_is_owner, curr_tab=1, updatePaginator() "
           >Groups I created</a>
         </li>
         <li class="nav-item">
@@ -87,7 +80,7 @@
             title="Groups i belong to"
             href="#member_groups"
             role="tab"
-            @click="page_content=groups_user_is_member, curr_tab=2, updatePaginator() "
+            @click.prevent="page_content=groups_user_is_member, curr_tab=2, updatePaginator() "
           >Groups I belong to</a>
         </li>
       </ul>
@@ -111,10 +104,10 @@
             >{{entries_per_table_page_tab1}}</button>
           </span>
           <div class="dropdown-menu">
-            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
-            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
-            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
-            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
           </div>
         </div>
       </div>
@@ -135,10 +128,10 @@
             >{{entries_per_table_page_tab2}}</button>
           </span>
           <div class="dropdown-menu">
-            <a class="dropdown-item" @click="selectEntries(4)" href="#">4</a>
-            <a class="dropdown-item" @click="selectEntries(8)" href="#">8</a>
-            <a class="dropdown-item" @click="selectEntries(16)" href="#">16</a>
-            <a class="dropdown-item" @click="selectEntries(32)" href="#">32</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
+            <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
           </div>
         </div>
       </div>
@@ -161,13 +154,19 @@
     <!-- table of groups user created for tab1-->
     <div class="tab-content">
       <div class="tab-pane active" id="owned_groups" role="tabpanel">
-        <b-table head-variant="light" hover :items="filterGroups" :fields="fields">
+        <b-table
+          sticky-header="600px"
+          head-variant="light"
+          hover
+          :items="filterGroups"
+          :fields="fields"
+        >
           <template v-slot:head(index)>
             <input type="checkbox" @click="checkAll()" v-model="all_selected">
             Select All
           </template>
           <template v-slot:cell(index)="data">
-            <div class="p-2">
+            <div class="p-2 pl-4">
               <input
                 class="checkbox"
                 type="checkbox"
@@ -192,7 +191,13 @@
 
       <!-- table of groups user belongs to for tab2 -->
       <div class="tab-pane" id="member_groups" role="tabpanel">
-        <b-table head-variant="light" hover :items="filterGroups" :fields="fields">
+        <b-table
+          sticky-header="600px"
+          head-variant="light"
+          hover
+          :items="filterGroups"
+          :fields="fields"
+        >
           <template v-slot:cell(index)="data">
             <div class="p-2">{{data.index +1}}</div>
           </template>
@@ -239,6 +244,7 @@
  * this component is used to display the groups of a user
  */
 import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
+import bootbox from "bootbox";
 export default {
   /**
    * @description declaration of global variables
@@ -257,6 +263,7 @@ export default {
       search: "", //search table string
       path: "", //URL
       uid: "", // curr user id - NOT USED
+      close: "",
 
       user_groups: [], // groups of the user
       groups_user_is_owner: [], //list of groups the user has created
@@ -266,6 +273,7 @@ export default {
       page_of_groups: [], //groups to show on table page
       page_content: [], //groups to send to paginator
       users: [],
+      errors: [],
 
       group: {
         //group attributes
@@ -282,8 +290,9 @@ export default {
         {
           key: "g_name",
           label: "Name",
-
-          sortable: true
+          class: "text-center",
+          sortable: true,
+          thStyle: { paddingLeft: "23px" }
         }
       ],
       curr_tab: 1, //current opened tab DEFAULT
@@ -294,7 +303,8 @@ export default {
       is_selected: false, //has user made a selection,
       all_selected: false, //has the option to select all groups been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
-      initial_load: true
+      initial_load: true,
+      show_dialogue: false
     };
   },
 
@@ -347,15 +357,18 @@ export default {
       // update page of Groups
       this.page_of_groups = page_of_groups;
     },
+
     /**
-     * @description @description verifies if user has made a selection of a group
+     * @description refreshes the paginator
      */
-    isGroupSelected() {
-      if (this.selected_groups.length == 0) {
-        this.is_selected = false;
-      } else {
-        this.is_selected = true;
-      }
+    updatePaginator() {
+      // Remove paginator from the DOM
+      this.reload_paginator = false;
+
+      this.$nextTick().then(() => {
+        // Add the paginator back in
+        this.reload_paginator = true;
+      });
     },
 
     /**
@@ -372,21 +385,6 @@ export default {
     },
 
     /**
-     * @description refreshes the paginator
-     */
-    updatePaginator() {
-      // Remove paginator from the DOM
-      this.reload_paginator = false;
-
-      this.$nextTick().then(() => {
-        // Add the paginator back in
-        this.reload_paginator = true;
-      });
-      //  this.sort_dir = "asc"; //default value
-      //   this.show_both_sort_arrows = true;
-    },
-
-    /**
      * @description unchecks any selection of groups the user has made
      */
     uncheck() {
@@ -397,6 +395,39 @@ export default {
       }
     },
 
+    resetErrors() {
+      this.errors = [];
+    },
+
+    /**
+     * @description @description verifies if user has made a selection of a group
+     */
+
+    isGroupSelected() {
+      if (this.selected_groups.length == 0) {
+        this.is_selected = false;
+        //alert box
+        this.dialogue = bootbox.alert({
+          title: "Remove",
+          message: "Please select group(s) to remove",
+          backdrop: true,
+
+          className: "text-center"
+        });
+        //alert box CSS styling
+        this.dialogue.find(".modal-content").css({
+          height: "250px",
+          "font-size": "18px",
+          "text-align": "center"
+        });
+        this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+
+        //if selection made remove selected groups
+      } else {
+        this.is_selected = true;
+        this.removeGroups();
+      }
+    },
     /**
      * @description get all of system's users when adding a user while creating a group
      */
@@ -423,10 +454,11 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data;
-
+          //filter groups where user is owner
           this.groups_user_is_owner = this.user_groups.filter(
             x => x.g_owner == this.curr_user
           );
+          //filter groups where user is a member
           this.groups_user_is_member = this.user_groups.filter(
             x => x.g_owner !== this.curr_user
           );
@@ -466,12 +498,35 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-          console.log(res);
-          console.log(group);
+            console.log(res);
+          if (!res.errors) {
+            this.addUsers(members); //add users to group
+            this.fetchGroups(); //updpate group list
+            //hide action table dbox
+            this.show_dialogue = false;
+            //remove component's backdrop
+            $("body").removeClass("modal-open");
+            $(".modal-backdrop").remove();
+            //alert box
+            this.dialogue = bootbox.alert({
+              title: "Create",
+              message: "Group has been created!",
+              backdrop: true,
+              className: "text-center"
+            });
 
-          this.addUsers(members); //add users to group
+            //alert box CSS styling
+            this.dialogue.find(".modal-content").css({
+              height: "250px",
+              "font-size": "18px",
+              "text-align": "center"
+            });
+            this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-          this.fetchGroups(); //updpate group list
+            this.errors = []; //reset
+          } else {
+            this.errors = res.errors;
+          }
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -490,12 +545,11 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body: JSON.stringify(this.lol)
       })
         .then(res => res.json())
         .then(res => {
           console.log(res);
-          console.log(users_to_add);
           // this.fetchGroups();
         })
         .catch(err => {
@@ -507,33 +561,65 @@ export default {
      * @description removes any selected groups by making a delete request to User_Groups controller
      */
     removeGroups() {
-      for (let i in this.selected_groups) {
-        this.groups_to_remove.push({
-          //push selected group id's as gid attributes
-          gid: this.selected_groups[i]
-        });
-      }
+      var curr = this;
 
-      fetch("/user_groups/remove", {
-        method: "delete",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        body: JSON.stringify(this.groups_to_remove)
-      })
-        .then(res => res.json())
-        .then(res => {
-          console.log(res);
-          console.log(this.groups_to_remove);
+      //confirmation dialogue box
+      this.dialogue = bootbox.confirm({
+        title: "Remove?",
+        message: "Do you want to remove selected groups?",
+        backdrop: true,
 
-          this.fetchGroups(); //update group list
-          this.groups_to_remove = []; //reset variable
-        })
-        .catch(err => {
-          console.error("Error: ", err);
-        });
+        buttons: {
+          confirm: {
+            label: "No", //inverted roles, switched bootbox default order
+            className: "btn btn-secondary"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        }, //Callback function with user's input
+        callback: function(result) {
+          if (!result) {
+            //if yes
+            for (let i in curr.selected_groups) {
+              curr.groups_to_remove.push({
+                //push selected group id's as gid attributes
+                gid: curr.selected_groups[i]
+              });
+            }
+            //send request
+            fetch("/user_groups/remove", {
+              method: "delete",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                "Access-Control-Origin": "*",
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+              }),
+              body: JSON.stringify(curr.groups_to_remove)
+            })
+              .then(res => res.json())
+              .then(res => {
+                  console.log(res);
+                if (!res.errors) {
+                  curr.fetchGroups(); //update group list
+                  curr.groups_to_remove = []; //reset variable
+                }
+              })
+              .catch(err => {
+                console.error("Error: ", err);
+              });
+          } //end if
+        } //end callback
+      }); //end alert
+
+      //alert box CSS styling
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
   }
 };
@@ -542,8 +628,7 @@ export default {
 
 <style lang="scss" scoped>
 /* align table to center */
-table,
-b-table {
+table {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
@@ -551,6 +636,7 @@ b-table {
 /* control column display format for and content size
 *Block is display to make whole row selectable
 */
+
 tr td a {
   display: block;
   font-size: 18px;
@@ -576,18 +662,9 @@ td a {
   max-width: 775px;
 }
 
-/* check box and label styling - DEPRECATED */
-input[type="checkbox"] + label {
-  font-size: 18px;
-  height: 18px;
-  width: 18px;
-  display: inline-block;
-  padding: 0 0 0 0px;
-}
 /* change checkbox size */
 input[type="checkbox"] {
   transform: scale(1.3);
-  padding-left: 5px;
 }
 /* paginate component position in body */
 .pagination {

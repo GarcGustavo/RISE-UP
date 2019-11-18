@@ -28,12 +28,12 @@ Route::get('/user/{uid}/group/{gid}', function () {
 
 
 Route::get('/user/{id}/groups', function () {
-    return view('user_groups');
+    return view('user-groups');
 });
 
 
 Route::get('/user/{id}/cases', function () {
-    return view('user_cases');
+    return view('user-cases');
 });
 
 Route::get('/Home', function () {
@@ -76,7 +76,7 @@ Route::get('/group/{id}/cases', 'CaseController@showGroupCases');
 Route::post('/group/create', 'GroupController@store');
 
 //Update group name
-Route::post('/group/{id}/update', 'GroupController@update');
+Route::post('/group/name/update', 'GroupController@update');
 
 //Add users to group
 Route::post('/group/members/add', 'User_GroupsController@store');

@@ -22,7 +22,9 @@
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
         </script>
 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+            integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
 
 
@@ -37,11 +39,11 @@
 
     <body>
         <div id="app">
-            <iren_header></iren_header>
+            <iren-header></iren-header>
             <div class="container">
                 @yield('content')
             </div>
-            <iren_footer></iren_footer>
+            <iren-footer></iren-footer>
         </div>
         <script src="{{asset('js/app.js')}}">
         </script>

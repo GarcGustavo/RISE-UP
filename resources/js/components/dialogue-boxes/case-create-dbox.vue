@@ -10,6 +10,20 @@
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
+              <div v-if="errors.length">
+                <div>
+                  <label>Please correct the following error(s):</label>
+                  <div class="alert alert-danger">
+                    <ul style="margin:10px;">
+                      <li
+                        v-for="(error,index) in errors"
+                        :key="index"
+                        style="margin:10px;"
+                      >{{ error }}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
               <label for="title">
                 Title
                 <span class="required">*</span>
@@ -62,6 +76,7 @@
                   v-on:keyup="countdown"
                 ></textarea>
               </div>
+              <!-- error not used due to character limit -->
               <p class="text-right h6" v-bind:class="{'text-danger': hasError }">{{remainingCount}}</p>
             </div>
             <!-- footer -->
@@ -74,23 +89,12 @@
                 <span class="required">*</span>Required field
               </p>
               <!--action button -->
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-toggle="modal"
-                :data-dismiss="close_dialog"
-                data-target="#action_confirm_dbox"
-                @click="validateInput()"
-              >{{action}}</button>
+              <button type="button" class="btn btn-primary" @click="sendCaseStudyData()">{{action}}</button>
               <!-- close button -->
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      </div>
-      <!--confirmation dialogue box -->
-      <div>
-        <action_confirm_dbox :action_confirm="action" :acted_on="acted_on" :errors="errors"></action_confirm_dbox>
       </div>
     </div>
   </transition>
@@ -104,15 +108,24 @@ export default {
   props: {
     action: {
       //action the user is executing
-      type: String
+      type: String,
+      default: ""
     },
     acted_on: {
       //on what is the action being executed
-      type: String
+      type: String,
+      default: ""
     },
     group_selection: {
       //curr group user is viewing, append as default option for groups
-      type: String
+      type: String,
+      default: ""
+    },
+    errors: {
+      type: Array,
+      default: function() {
+        return [];
+      }
     }
   },
 
@@ -130,7 +143,6 @@ export default {
 
       all_cases: [], //all cases of the system. Used to determine ID of new case study
       user_groups: [], //groups of curr user
-      errors: [], //list of all input errors
 
       case_study: {
         //case study attributes
@@ -186,30 +198,7 @@ export default {
         this.curr_group = "";
       }
       this.remainingCount = 140;
-    },
-
-    /**
-     * @description validates all case study input fields
-     */
-    validateInput() {
-      if (this.title.trim() && this.description.trim()) {
-        this.sendCaseStudyData();
-        this.valid_input = true;
-        this.close_dialog = "modal"; //dismiss component if inputs are valid
-        this.errors = []; //reset errors
-      } else {
-        this.close_dialog = ""; //keep component opened if there are errors
-        this.valid_input = false;
-
-        this.errors = [];
-
-        if (!this.title.trim()) {
-          this.errors.push("title required.");
-        }
-        if (!this.description.trim()) {
-          this.errors.push("description required.");
-        }
-      }
+      this.$emit("close"); //reset error prop
     },
 
     /**
@@ -233,7 +222,7 @@ export default {
         //call from group view, default selection is made
         //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
         this.curr_user = this.path[this.path.length - 3]; //get ID from path
-        this.curr_group = this.group_selection;
+        this.curr_group = this.group_selection; //default dropdown selection
         this.disable_dropdown = true;
       } else {
         //called by user_groups vue
@@ -281,7 +270,6 @@ export default {
         c_owner: "",
         c_group: ""
       };
-      this.resetInputFields(); //reset fields
     }
   }
 };

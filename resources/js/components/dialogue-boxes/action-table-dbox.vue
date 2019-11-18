@@ -9,6 +9,7 @@
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
+              <!--Body description -->
               <div v-if="action=='Add'">
                 <p style="font-size:18px;margin:15px,padding-top:25px;" aria-hidden="true">
                   Please select
@@ -20,6 +21,20 @@
                   Please select
                   <strong>atleast</strong> one user to remove.
                 </p>
+              </div>
+              <div v-if="errors.length">
+                <div>
+                  <label>Please correct the following error(s):</label>
+                  <div class="alert alert-danger">
+                    <ul style="margin:10px;">
+                      <li
+                        v-for="(error,index) in errors"
+                        :key="index"
+                        style="margin:10px;"
+                      >{{ error }}</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
               <div class="input-group" v-if="gname_box_show==true">
                 <label>
@@ -102,40 +117,24 @@
                 </p>
               </div>
               <!-- remove user -->
-              <!-- current dialogue box is dismissed in group vue after removing users -->
+              <!-- current dialogue box is dismissed by group vue after removing users -->
               <div v-if="action=='Remove'">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-toggle="modal"
-                  data-target="#action_confirm_dbox"
-                  @click="isUserSelected()"
-                >{{action}}</button>
+                <button type="button" class="btn btn-primary" @click="isUserSelected()">{{action}}</button>
               </div>
 
               <!--add user to group -->
               <!--current dialogue box is dismissed by confirm box -->
               <div v-else-if="action=='Add'">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-dismiss="modal"
-                  data-toggle="modal"
-                  data-target="#action_confirm_dbox"
-                  @click="isUserSelected()"
-                >{{action}}</button>
+                <button type="button" class="btn btn-primary" @click="isUserSelected()">{{action}}</button>
               </div>
 
               <!-- create group -->
-              <!-- current dialogue box is dismissed by close_dialo variable -->
+              <!-- current dialogue box is dismissed by close_dialog variable -->
               <div v-else-if="action=='Create'">
                 <button
                   type="button"
                   class="btn btn-primary"
-                  :data-dismiss="close_dialog"
-                  data-toggle="modal"
-                  data-target="#action_confirm_dbox"
-                  @click=" validateInput(), is_selected=true"
+                  @click=" sendGroupData(),is_selected=true"
                 >{{action}}</button>
               </div>
 
@@ -147,23 +146,13 @@
           </div>
         </div>
       </div>
-      <!--confirmation dialogue box -->
-      <div>
-        <action_confirm_dbox
-          :action_confirm="action"
-          :acted_on="acted_on"
-          :is_selected="is_selected"
-          :errors="errors"
-          @sendUsers="sendUsers"
-          @sendGroupData="sendGroupData"
-        ></action_confirm_dbox>
-      </div>
     </div>
   </transition>
 </template>
 
 <script>
 import BootstrapVue, { BTable, BLink } from "bootstrap-vue";
+import bootbox from "bootbox";
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
     user to a new group
@@ -172,11 +161,13 @@ export default {
   props: {
     action: {
       //action the user is executing
-      type: String
+      type: String,
+      default: ""
     },
     acted_on: {
       //on what is the action being executed
-      type: String
+      type: String,
+      default: ""
     },
     gname_box_show: {
       //boolean to show group name input box to dialogue
@@ -185,11 +176,23 @@ export default {
     },
     users_to_add: {
       //array of users to add or remove
-      type: Array
+      type: Array,
+      default: function() {
+        return [];
+      }
     },
     users_to_remove: {
       //array of users to add or remove
-      type: Array
+      type: Array,
+      default: function() {
+        return [];
+      }
+    },
+    errors: {
+      type: Array,
+      default: function() {
+        return [];
+      }
     }
   },
 
@@ -210,7 +213,6 @@ export default {
       users_to_add_remove: [], //list of users to add or remove
       selected_users: [], //list of selected users to add or remove
       groups: [], //list of all the groups in the system, used to determine ID of new group
-      errors: [], //list of errors
 
       user: {
         //user attributes to use on table
@@ -319,23 +321,7 @@ export default {
         this.selected_users.push(this.selected_users[i].uid);
       }
     },
-    /**
-     * @description verifies if a selection has been made when performing action(add/remove)
-     */
-    isUserSelected() {
-      if (this.selected_users.length == 0) {
-        this.is_selected = false;
-        //keep component opened if user has not made a selection when performing an action
-      } else {
-        this.is_selected = true;
 
-        //close component if user has made a selection when perfoming action
-        if (this.action == "Add") {
-          // this.close_dialog = "modal";
-          this.sendUsers();
-        }
-      }
-    },
     /**
      * @description resets all input fields
      */
@@ -343,31 +329,9 @@ export default {
       this.search = "";
       this.group_name_input = "";
       this.users_to_add_remove = [];
+      this.$emit("close"); //reset error prop 
       this.select();
       this.uncheck();
-    },
-
-    /**
-     * @description validates group name input field
-     */
-    validateInput() {
-      this.group_name_input.trim();
-      if (this.group_name_input) {
-        this.sendGroupData();
-        this.close_dialog = "modal"; //dismiss component if inputs are valid
-        this.valid_input = true;
-        this.errors = []; //reset
-      } else {
-        this.close_dialog = ""; //keep component opened if there are errors
-        this.valid_input = false;
-
-        this.errors = [];
-
-        if (!this.group_name_input) {
-          //add error
-          this.errors.push("Group name required.");
-        }
-      }
     },
 
     /**
@@ -400,14 +364,39 @@ export default {
       }
 
       //emit data to parent
-      if (this.is_selected) {
-        if (this.action == "Add") {
-          this.$emit("addUsers", this.users_to_add_remove);
-        } else {
-          //default action is to delete
-          this.$emit("removeUsers", this.users_to_add_remove);
-        }
-        this.resetInputFields();
+      if (this.action == "Add") {
+        this.$emit("addUsers", this.users_to_add_remove);
+      } else {
+        //default action is to delete
+        this.$emit("removeUsers", this.users_to_add_remove);
+      }
+    },
+
+    /**
+     * @description verifies if a selection has been made when performing action(add/remove)
+     */
+    isUserSelected() {
+      if (this.selected_users.length == 0) {
+        this.is_selected = false;
+        //alert box
+        this.dialogue = bootbox.alert({
+          title: "Remove",
+          message: "Please select user(s) to remove",
+          backdrop: true,
+          className: "text-center"
+        });
+        //alert box CSS styling
+        this.dialogue.find(".modal-content").css({
+          height: "250px",
+          "font-size": "18px",
+          "text-align": "center"
+        });
+        this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+
+        //if selection made remove selected groups
+      } else {
+        this.is_selected = true;
+        this.sendUsers();
       }
     },
 
@@ -457,8 +446,6 @@ export default {
         g_creation_date: "",
         g_owner: ""
       };
-
-      this.resetInputFields();
     }
   }
 };
@@ -473,7 +460,6 @@ export default {
   width: 775px;
   height: 500px;
   white-space: nowrap;
-  
 }
 
 /*the following style are for the search text and input bar*/

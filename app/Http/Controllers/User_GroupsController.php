@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use App\Models\User_Groups;
 use App\Http\Resources\User_Groups as User_GroupsResource;
 use App\Http\Resources\User as UserResource;
@@ -37,6 +39,42 @@ class User_GroupsController extends Controller
      */
     public function store(Request $request)
     {
+        //store groups id's
+        $gids= array_map(function ($item) {
+            return $item['gid'];
+        }, $request->all());
+
+        //store user id's
+        $uids = array_map(function ($item) {
+            return $item['uid'];
+        }, $request->all());
+
+        //data array
+        $data_arr = [ 'data' => $request->all() ];
+
+        //renaming attributes for messages
+        $attributes = array(
+            'data.*.gid' => 'group id',
+            'data.*.uid' => 'user id'
+        );
+
+        //validate each gid/uid
+        $validator = Validator::make($data_arr, [
+
+            'data.*.gid' => 'bail|required|integer',
+            'data.*.uid' => ['bail','required', 'integer',
+            //verifies if record already exist
+            Rule::unique('User_Groups')->where(function ($query) use ($gids,$uids) {
+                return $query->whereIn('gid', $gids)
+                ->whereIn('uid', $uids);
+            })
+            ]//custom message
+        ], ['data.*.uid.unique' => 'The user id already exists in this group.']);
+        $validator->setAttributeNames($attributes); //apply renaming attributes
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //if validated add records
         $data = $request->all();
         $user_group = [];
         foreach ($data as $key=>$value) {
@@ -99,6 +137,40 @@ class User_GroupsController extends Controller
      */
     public function destroy(Request $request)
     {
+        //store group id's
+        $gids= array_map(function ($item) {
+            return $item['gid'];
+        }, $request->all());
+        //store user d's i
+        $uids = array_map(function ($item) {
+            return $item['uid'];
+        }, $request->all());
+
+        //data array
+        $data = [ 'data' => $request->all() ];
+
+        //renaming attributes for messages
+        $attributes = array(
+            'data.*.gid' => 'group id',
+            'data.*.uid' => 'user id'
+        );
+
+        //validate records
+        $validator = Validator::make($data, [
+            'data.*.gid' => 'bail|required|integer',
+            'data.*.uid' => ['bail','required','integer',
+            //verifies if record exists
+            Rule::exists('User_Groups')->where(function ($query) use ($gids,$uids) {
+                return $query->whereIn('gid', $gids)
+                ->whereIn('uid', $uids);
+            })
+            ]//custom message
+        ],['data.*.uid.exists' => 'The user id does not exists in this group.']);
+        $validator->setAttributeNames($attributes);
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //if validated remove records
         $to_delete = $request->all();
         $gids_to_delete = array_map(function ($item) {
             return $item['gid'];
