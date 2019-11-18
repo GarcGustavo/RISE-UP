@@ -98,12 +98,10 @@ class GroupController extends Controller
         //$group = Group::findOrFail($id);
 
         //  return new GroupResource($group);
-
         $uid = $id;
         $groups = User_Groups::
         where('User_Groups.uid', $uid)
-        ->join('User', 'User_Groups.uid', '=', 'User.uid')
-        ->join('Group', 'User_Groups.gid', '=', 'Group.gid')
+        ->join('Group', 'User_Groups.gid', 'Group.gid')
         ->whereNull('Group.deleted_at')
         ->select('Group.*')
         ->orderBy('gid', 'DESC')
@@ -174,6 +172,7 @@ class GroupController extends Controller
         $validator = Validator::make($data, [
             'data.*.gid' => 'bail|exists:Group|required|integer'
         ],['data.*.gid.exists' => 'The group id does not exist.']);
+
         $validator->setAttributeNames($attributes);
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);

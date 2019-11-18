@@ -2668,7 +2668,7 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/user_groups/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.user_groups = res.data;
+        _this2.user_groups = res.data; //dropdown options 
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -3810,6 +3810,10 @@ var default_styles = {
   },
   data: function data() {
     return {
+      //   sorting: -1,
+      //  enable_sort: false,
+      //sort_temp:-1,
+      temp: [],
       pager: {},
       ul_styles: {},
       li_styles: {},
@@ -4101,6 +4105,56 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /**
@@ -4138,8 +4192,9 @@ __webpack_require__.r(__webpack_exports__);
       // the cases to remove, sent to controller
       page_of_cases: [],
       //cases to show on table page
-      page_content: [],
+      page_content_tab1: [],
       //cases to send to paginator
+      page_content_tab2: [],
       errors: [],
       case_study: {
         cid: "",
@@ -4157,9 +4212,8 @@ __webpack_require__.r(__webpack_exports__);
         key: "c_title",
         label: "Title",
         "class": "text-center",
-        sortable: true,
         thStyle: {
-          paddingLeft: "20px"
+          paddingLeft: "30px"
         }
       }],
       curr_tab: 1,
@@ -4168,6 +4222,14 @@ __webpack_require__.r(__webpack_exports__);
       //table entries
       entries_per_table_page_tab2: 4,
       //table entries
+      sorting_tab1: -1,
+      //sorting order, 1 is descending, -1 is ascending
+      sorting_tab2: -1,
+      //sorting order, 1 is descending, -1 is ascending
+      sort_order_tab1_icon: 0,
+      //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
+      sort_order_tab2_icon: 0,
+      //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
       reload_paginator: false,
       //used to update paginator
       is_selected: false,
@@ -4178,7 +4240,12 @@ __webpack_require__.r(__webpack_exports__);
       //boolean to append group name input to dialogue box when creating a group
       initial_load: true,
       //load initial table tab content when page loads
-      show_dialogue: false
+      show_dialogue: false,
+      //opens/closes action-table
+      enable_sorting_tab1: false,
+      //not used - can be used to revert back to tab1 original state
+      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+
     };
   },
 
@@ -4196,8 +4263,14 @@ __webpack_require__.r(__webpack_exports__);
     filterCases: function filterCases() {
       var _this = this;
 
-      if (this.page_content.length == 0) {
-        return [];
+      if (this.curr_tab == 1) {
+        if (this.page_content_tab1.length == 0) {
+          return [];
+        } else {
+          if (this.page_content_tab2.length == 0) {
+            return [];
+          }
+        }
       }
 
       return this.page_of_cases.filter(function (page_of_cases) {
@@ -4206,6 +4279,46 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    sortItems: function sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1; //  this.enable_sorting_tab1 = true;
+      } else {
+        this.sorting_tab2 *= -1; //   this.enable_sorting_tab2 = true;
+      }
+
+      this.sortArr();
+    },
+    sortArr: function sortArr() {
+      var _this2 = this;
+
+      if (this.curr_tab == 1) {
+        this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
+          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this2.sorting_tab1 : -_this2.sorting_tab1;
+        });
+        this.sort_order_tab1_icon = this.sorting_tab1;
+      } else {
+        this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
+          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this2.sorting_tab2 : -_this2.sorting_tab2;
+        });
+        this.sort_order_tab2_icon = this.sorting_tab2;
+      }
+
+      this.updatePaginator();
+    },
+    deSort: function deSort() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 = -1;
+        this.sort_order_tab1_icon = 0;
+        this.page_content_tab1 = this.cases_user_is_owner;
+      } else {
+        this.sorting_tab2 = -1;
+        this.sort_order_tab2_icon = 0;
+        this.page_content_tab2 = this.user_cases_by_group;
+      }
+
+      this.updatePaginator();
+    },
+
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -4241,13 +4354,13 @@ __webpack_require__.r(__webpack_exports__);
      * @description - refreshes the paginator
      */
     updatePaginator: function updatePaginator() {
-      var _this2 = this;
+      var _this3 = this;
 
       // Remove paginator from the DOM
       this.reload_paginator = false;
       this.$nextTick().then(function () {
         // Add the paginator back in
-        _this2.reload_paginator = true;
+        _this3.reload_paginator = true;
       });
     },
 
@@ -4311,7 +4424,7 @@ __webpack_require__.r(__webpack_exports__);
      * @description gets all the cases of the current user
      */
     fetchCases: function fetchCases() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
@@ -4320,31 +4433,22 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/user_cases/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.user_cases = res.data;
-        _this3.cases_user_is_owner = _this3.user_cases.filter(function (x) {
-          return x.c_owner == _this3.curr_user;
+        _this4.user_cases = res.data;
+        _this4.cases_user_is_owner = _this4.user_cases.filter(function (x) {
+          return x.c_owner == _this4.curr_user;
         });
-        _this3.user_cases_by_group = _this3.user_cases.filter(function (x) {
-          return x.c_owner !== _this3.curr_user;
-        }); //initial content load
+        _this4.user_cases_by_group = _this4.user_cases.filter(function (x) {
+          return x.c_owner !== _this4.curr_user;
+        }); //content varies according to tab
 
-        if (_this3.initial_load) {
-          _this3.page_content = _this3.cases_user_is_owner;
-          _this3.initial_load = false;
-        } //content varies according to tab
+        _this4.page_content_tab1 = _this4.cases_user_is_owner;
+        _this4.page_content_tab2 = _this4.user_cases_by_group;
 
+        _this4.select();
 
-        if (_this3.curr_tab == 1) {
-          _this3.page_content = _this3.cases_user_is_owner;
-        } else {
-          _this3.page_content = _this3.user_cases_by_group;
-        }
+        _this4.uncheck();
 
-        _this3.select();
-
-        _this3.uncheck();
-
-        _this3.updatePaginator(); //refresh with updated list of cases
+        _this4.updatePaginator(); //refresh with updated list of cases
 
       })["catch"](function (err) {
         return console.log(err);
@@ -4356,7 +4460,7 @@ __webpack_require__.r(__webpack_exports__);
      * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
      */
     createCaseStudy: function createCaseStudy(case_study) {
-      var _this4 = this;
+      var _this5 = this;
 
       fetch("/case/create", {
         method: "post",
@@ -4372,35 +4476,35 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this4.fetchCases(); //update case study list
+          _this5.fetchCases(); //update case study list
           //hide action table dbox
 
 
-          _this4.show_dialogue = false; //remove component's backdrop
+          _this5.show_dialogue = false; //remove component's backdrop
 
           $("body").removeClass("modal-open");
           $(".modal-backdrop").remove(); //alert box
 
-          _this4.dialogue = bootbox__WEBPACK_IMPORTED_MODULE_1___default.a.alert({
+          _this5.dialogue = bootbox__WEBPACK_IMPORTED_MODULE_1___default.a.alert({
             title: "Create",
             message: "Case study has been created!",
             backdrop: true,
             className: "text-center"
           }); //alert box CSS styling
 
-          _this4.dialogue.find(".modal-content").css({
+          _this5.dialogue.find(".modal-content").css({
             height: "250px",
             "font-size": "18px",
             "text-align": "center"
           });
 
-          _this4.dialogue.find(".modal-body").css({
+          _this5.dialogue.find(".modal-body").css({
             "padding-top": "40px"
           });
 
-          _this4.errors = []; //reset
+          _this5.errors = []; //reset
         } else {
-          _this4.errors = res.errors;
+          _this5.errors = res.errors;
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -4732,6 +4836,55 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * this component is used to display the groups of a user
@@ -4763,6 +4916,7 @@ __webpack_require__.r(__webpack_exports__);
       uid: "",
       // curr user id - NOT USED
       close: "",
+      sort_icon_dir: "",
       user_groups: [],
       // groups of the user
       groups_user_is_owner: [],
@@ -4775,10 +4929,14 @@ __webpack_require__.r(__webpack_exports__);
       // the groups to remove, sent to controller
       page_of_groups: [],
       //groups to show on table page
-      page_content: [],
-      //groups to send to paginator
+      page_content_tab1: [],
+      //groups to send to paginator for tab1
+      page_content_tab2: [],
+      //groups to send to paginator for tab2
       users: [],
+      //system's users(populates action-table)
       errors: [],
+      //input errors
       group: {
         //group attributes
         gid: "",
@@ -4798,9 +4956,8 @@ __webpack_require__.r(__webpack_exports__);
         key: "g_name",
         label: "Name",
         "class": "text-center",
-        sortable: true,
         thStyle: {
-          paddingLeft: "23px"
+          paddingLeft: "30px"
         }
       }],
       curr_tab: 1,
@@ -4809,6 +4966,14 @@ __webpack_require__.r(__webpack_exports__);
       //table entries
       entries_per_table_page_tab2: 4,
       //table entries
+      sorting_tab1: -1,
+      //sorting order, 1 is descending, -1 is ascending
+      sorting_tab2: -1,
+      //sorting order, 1 is descending, -1 is ascending
+      sort_order_tab1_icon: 0,
+      //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
+      sort_order_tab2_icon: 0,
+      //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
       reload_paginator: false,
       //used to update paginator
       is_selected: false,
@@ -4817,8 +4982,12 @@ __webpack_require__.r(__webpack_exports__);
       //has the option to select all groups been checked
       gname_box_show: false,
       //boolean to append group name input to dialogue box when creating a group
-      initial_load: true,
-      show_dialogue: false
+      show_dialogue: false,
+      //opens/closes action-table
+      enable_sorting_tab1: false,
+      //not used - can be used to revert back to tab1 original state
+      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+
     };
   },
 
@@ -4836,8 +5005,14 @@ __webpack_require__.r(__webpack_exports__);
     filterGroups: function filterGroups() {
       var _this = this;
 
-      if (this.page_content.length == 0) {
-        return [];
+      if (this.curr_tab == 1) {
+        if (this.page_content_tab1.length == 0) {
+          return [];
+        } else {
+          if (this.page_content_tab2.length == 0) {
+            return [];
+          }
+        }
       }
 
       return this.page_of_groups.filter(function (page_of_groups) {
@@ -4846,6 +5021,63 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    /**
+     * @description sets sorting direction for current tab and call sorting method
+     */
+    sortItems: function sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1; //  this.enable_sorting_tab1 = true;
+      } else {
+        //curr tab is 2
+        this.sorting_tab2 *= -1; //   this.enable_sorting_tab2 = true;
+      }
+
+      this.sortArr(); //call sorting algorithm
+    },
+
+    /**
+     * @description Sorts the content of the current opened tab
+     */
+    sortArr: function sortArr() {
+      var _this2 = this;
+
+      if (this.curr_tab == 1) {
+        //current tab content will be filtered content
+        this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
+          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this2.sorting_tab1 : -_this2.sorting_tab1;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab1_icon = this.sorting_tab1;
+      } else {
+        //curr tab is 2
+        //current tab content will be filtered content
+        this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
+          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this2.sorting_tab2 : -_this2.sorting_tab2;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab2_icon = this.sorting_tab2;
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description resets all sort variables and icons
+     */
+    deSort: function deSort() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 = -1;
+        this.sort_order_tab1_icon = 0;
+        this.page_content_tab1 = this.groups_user_is_owner;
+      } else {
+        this.sorting_tab2 = -1;
+        this.sort_order_tab2_icon = 0;
+        this.page_content_tab2 = this.groups_user_is_member;
+      }
+
+      this.updatePaginator();
+    },
+
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -4880,13 +5112,13 @@ __webpack_require__.r(__webpack_exports__);
      * @description refreshes the paginator
      */
     updatePaginator: function updatePaginator() {
-      var _this2 = this;
+      var _this3 = this;
 
       // Remove paginator from the DOM
       this.reload_paginator = false;
       this.$nextTick().then(function () {
         // Add the paginator back in
-        _this2.reload_paginator = true;
+        _this3.reload_paginator = true;
       });
     },
 
@@ -4950,7 +5182,7 @@ __webpack_require__.r(__webpack_exports__);
      * @description get all of system's users when adding a user while creating a group
      */
     fetchUsers: function fetchUsers() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
@@ -4959,11 +5191,11 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.users = res.data; //used in action_table_dbox
+        _this4.users = res.data; //used in action_table_dbox
         //filter user from list to show in table
 
-        _this3.users = _this3.users.filter(function (x) {
-          return x.uid !== _this3.curr_user;
+        _this4.users = _this4.users.filter(function (x) {
+          return x.uid !== _this4.curr_user;
         }); //filter owner
       })["catch"](function (err) {
         return console.log(err);
@@ -4974,7 +5206,7 @@ __webpack_require__.r(__webpack_exports__);
      * @description gets all the groups of the current user
      */
     fetchGroups: function fetchGroups() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.path = window.location.pathname.split("/"); //slice URL in array to get ID
 
@@ -4983,34 +5215,26 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/user_groups/" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.user_groups = res.data; //filter groups where user is owner
+        _this5.user_groups = res.data;
+        console.log(_this5.user_groups); //filter groups where user is owner
 
-        _this4.groups_user_is_owner = _this4.user_groups.filter(function (x) {
-          return x.g_owner == _this4.curr_user;
+        _this5.groups_user_is_owner = _this5.user_groups.filter(function (x) {
+          return x.g_owner == _this5.curr_user;
         }); //filter groups where user is a member
 
-        _this4.groups_user_is_member = _this4.user_groups.filter(function (x) {
-          return x.g_owner !== _this4.curr_user;
-        }); //initial content load
+        _this5.groups_user_is_member = _this5.user_groups.filter(function (x) {
+          return x.g_owner !== _this5.curr_user;
+        }); //window content varies according to tab
 
-        if (_this4.initial_load) {
-          _this4.page_content = _this4.groups_user_is_owner;
-          _this4.initial_load = false;
-        } //window content varies according to tab
+        _this5.page_content_tab1 = _this5.groups_user_is_owner;
+        _this5.page_content_tab2 = _this5.groups_user_is_member;
 
+        _this5.select();
 
-        if (_this4.curr_tab == 1) {
-          _this4.page_content = _this4.groups_user_is_owner;
-        } else {
-          _this4.page_content = _this4.groups_user_is_member;
-        }
-
-        _this4.select();
-
-        _this4.uncheck(); //uncheck any selected items
+        _this5.uncheck(); //uncheck any selected items
 
 
-        _this4.updatePaginator(); //refresh with updated group list
+        _this5.updatePaginator(); //refresh with updated group list
 
       })["catch"](function (err) {
         return console.log(err);
@@ -5023,7 +5247,7 @@ __webpack_require__.r(__webpack_exports__);
      * @param {Array} members - array of user id's to add to group
      */
     createGroup: function createGroup(group, members) {
-      var _this5 = this;
+      var _this6 = this;
 
       fetch("/group/create", {
         method: "post",
@@ -5040,38 +5264,38 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this5.addUsers(members); //add users to group
+          _this6.addUsers(members); //add users to group
 
 
-          _this5.fetchGroups(); //updpate group list
+          _this6.fetchGroups(); //updpate group list
           //hide action table dbox
 
 
-          _this5.show_dialogue = false; //remove component's backdrop
+          _this6.show_dialogue = false; //remove component's backdrop
 
           $("body").removeClass("modal-open");
           $(".modal-backdrop").remove(); //alert box
 
-          _this5.dialogue = bootbox__WEBPACK_IMPORTED_MODULE_1___default.a.alert({
+          _this6.dialogue = bootbox__WEBPACK_IMPORTED_MODULE_1___default.a.alert({
             title: "Create",
             message: "Group has been created!",
             backdrop: true,
             className: "text-center"
           }); //alert box CSS styling
 
-          _this5.dialogue.find(".modal-content").css({
+          _this6.dialogue.find(".modal-content").css({
             height: "250px",
             "font-size": "18px",
             "text-align": "center"
           });
 
-          _this5.dialogue.find(".modal-body").css({
+          _this6.dialogue.find(".modal-body").css({
             "padding-top": "40px"
           });
 
-          _this5.errors = []; //reset
+          _this6.errors = []; //reset
         } else {
-          _this5.errors = res.errors;
+          _this6.errors = res.errors;
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -5090,7 +5314,7 @@ __webpack_require__.r(__webpack_exports__);
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.lol)
+        body: JSON.stringify(users_to_add)
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -5104,7 +5328,8 @@ __webpack_require__.r(__webpack_exports__);
      * @description removes any selected groups by making a delete request to User_Groups controller
      */
     removeGroups: function removeGroups() {
-      var curr = this; //confirmation dialogue box
+      var curr = this;
+      console.log(this.selected_groups); //confirmation dialogue box
 
       this.dialogue = bootbox__WEBPACK_IMPORTED_MODULE_1___default.a.confirm({
         title: "Remove?",
@@ -39820,7 +40045,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  transform: scale(1.2);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-bottom: 15px;\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-bottom: 15px;\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -39877,7 +40102,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
 
 // exports
 
@@ -74375,9 +74600,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   $event.preventDefault()
-                  ;(_vm.page_content = _vm.cases_user_is_owner),
-                    (_vm.curr_tab = 1),
-                    _vm.updatePaginator()
+                  _vm.curr_tab = 1
                 }
               }
             },
@@ -74401,9 +74624,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   $event.preventDefault()
-                  ;(_vm.page_content = _vm.user_cases_by_group),
-                    (_vm.curr_tab = 2),
-                    _vm.updatePaginator()
+                  _vm.curr_tab = 2
                 }
               }
             },
@@ -74688,7 +74909,76 @@ var render = function() {
                         }
                       }
                     }),
-                    _vm._v("\n          Select All\n        ")
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.deSort()
+                          }
+                        }
+                      },
+                      [_vm._v("Select All")]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "head(c_title)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.sortItems()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n            Title\n            "),
+                        _vm.sort_order_tab1_icon == 0
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab1_icon == -1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-up",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab1_icon == 1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-down",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e()
+                      ]
+                    )
                   ]
                 },
                 proxy: true
@@ -74769,7 +75059,27 @@ var render = function() {
                 }
               }
             ])
-          })
+          }),
+          _vm._v(" "),
+          _vm.reload_paginator && _vm.curr_tab == 1
+            ? _c(
+                "div",
+                { attrs: { id: "paginate" } },
+                [
+                  _c("paginator", {
+                    ref: "paginate",
+                    staticClass: "pagination",
+                    staticStyle: { display: "inline-block" },
+                    attrs: {
+                      items: _vm.page_content_tab1,
+                      page_size: _vm.entries_per_table_page_tab1
+                    },
+                    on: { changePage: _vm.onChangePage }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
         ],
         1
       ),
@@ -74790,6 +75100,84 @@ var render = function() {
               fields: _vm.fields
             },
             scopedSlots: _vm._u([
+              {
+                key: "head(index)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.deSort()
+                          }
+                        }
+                      },
+                      [_vm._v("Index")]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "head(c_title)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.sortItems()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n            Title\n            "),
+                        _vm.sort_order_tab2_icon == 0
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab2_icon == -1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-up",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab2_icon == 1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-down",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e()
+                      ]
+                    )
+                  ]
+                },
+                proxy: true
+              },
               {
                 key: "cell(index)",
                 fn: function(data) {
@@ -74819,51 +75207,33 @@ var render = function() {
                 }
               }
             ])
-          })
+          }),
+          _vm._v(" "),
+          _vm.reload_paginator && _vm.curr_tab == 2
+            ? _c(
+                "div",
+                { attrs: { id: "paginate" } },
+                [
+                  _c("paginator", {
+                    ref: "paginate2",
+                    staticClass: "pagination",
+                    staticStyle: { display: "inline-block" },
+                    attrs: {
+                      items: _vm.page_content_tab2,
+                      page_size: _vm.entries_per_table_page_tab2
+                    },
+                    on: { changePage: _vm.onChangePage }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
         ],
         1
       )
     ]),
     _vm._v(" "),
-    _c("div", { attrs: { id: "container" } }, [
-      _vm.reload_paginator && _vm.curr_tab == 1
-        ? _c(
-            "div",
-            { attrs: { id: "paginate" } },
-            [
-              _c("paginator", {
-                staticClass: "pagination",
-                staticStyle: { display: "inline-block" },
-                attrs: {
-                  items: _vm.page_content,
-                  page_size: _vm.entries_per_table_page_tab1
-                },
-                on: { changePage: _vm.onChangePage }
-              })
-            ],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.reload_paginator && _vm.curr_tab == 2
-        ? _c(
-            "div",
-            { attrs: { id: "paginate" } },
-            [
-              _c("paginator", {
-                staticClass: "pagination",
-                staticStyle: { display: "inline-block" },
-                attrs: {
-                  items: _vm.page_content,
-                  page_size: _vm.entries_per_table_page_tab2
-                },
-                on: { changePage: _vm.onChangePage }
-              })
-            ],
-            1
-          )
-        : _vm._e()
-    ])
+    _c("div", { attrs: { id: "container" } })
   ])
 }
 var staticRenderFns = [
@@ -75014,9 +75384,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   $event.preventDefault()
-                  ;(_vm.page_content = _vm.groups_user_is_owner),
-                    (_vm.curr_tab = 1),
-                    _vm.updatePaginator()
+                  _vm.curr_tab = 1
                 }
               }
             },
@@ -75040,9 +75408,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   $event.preventDefault()
-                  ;(_vm.page_content = _vm.groups_user_is_member),
-                    (_vm.curr_tab = 2),
-                    _vm.updatePaginator()
+                  _vm.curr_tab = 2
                 }
               }
             },
@@ -75327,7 +75693,76 @@ var render = function() {
                         }
                       }
                     }),
-                    _vm._v("\n          Select All\n        ")
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.deSort()
+                          }
+                        }
+                      },
+                      [_vm._v("Select All")]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "head(g_name)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.sortItems()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n            Name\n            "),
+                        _vm.sort_order_tab1_icon == 0
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab1_icon == -1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-up",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab1_icon == 1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-down",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e()
+                      ]
+                    )
                   ]
                 },
                 proxy: true
@@ -75417,7 +75852,27 @@ var render = function() {
                 }
               }
             ])
-          })
+          }),
+          _vm._v(" "),
+          _vm.reload_paginator && _vm.curr_tab == 1
+            ? _c(
+                "div",
+                { attrs: { id: "paginate" } },
+                [
+                  _c("paginator", {
+                    ref: "paginate",
+                    staticClass: "pagination",
+                    staticStyle: { display: "inline-block" },
+                    attrs: {
+                      items: _vm.page_content_tab1,
+                      page_size: _vm.entries_per_table_page_tab1
+                    },
+                    on: { changePage: _vm.onChangePage }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
         ],
         1
       ),
@@ -75438,6 +75893,84 @@ var render = function() {
               fields: _vm.fields
             },
             scopedSlots: _vm._u([
+              {
+                key: "head(index)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.deSort()
+                          }
+                        }
+                      },
+                      [_vm._v("Index")]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "head(g_name)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.sortItems()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n            Name\n            "),
+                        _vm.sort_order_tab2_icon == 0
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab2_icon == -1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-up",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab2_icon == 1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-down",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e()
+                      ]
+                    )
+                  ]
+                },
+                proxy: true
+              },
               {
                 key: "cell(index)",
                 fn: function(data) {
@@ -75476,51 +76009,33 @@ var render = function() {
                 }
               }
             ])
-          })
+          }),
+          _vm._v(" "),
+          _vm.reload_paginator && _vm.curr_tab == 2
+            ? _c(
+                "div",
+                { attrs: { id: "paginate" } },
+                [
+                  _c("paginator", {
+                    ref: "paginate2",
+                    staticClass: "pagination",
+                    staticStyle: { display: "inline-block" },
+                    attrs: {
+                      items: _vm.page_content_tab2,
+                      page_size: _vm.entries_per_table_page_tab2
+                    },
+                    on: { changePage: _vm.onChangePage }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
         ],
         1
       )
     ]),
     _vm._v(" "),
-    _c("div", { attrs: { id: "container" } }, [
-      _vm.reload_paginator && _vm.curr_tab == 1
-        ? _c(
-            "div",
-            { attrs: { id: "paginate" } },
-            [
-              _c("paginator", {
-                staticClass: "pagination",
-                staticStyle: { display: "inline-block" },
-                attrs: {
-                  items: _vm.page_content,
-                  page_size: _vm.entries_per_table_page_tab1
-                },
-                on: { changePage: _vm.onChangePage }
-              })
-            ],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.reload_paginator && _vm.curr_tab == 2
-        ? _c(
-            "div",
-            { attrs: { id: "paginate" } },
-            [
-              _c("paginator", {
-                staticClass: "pagination",
-                staticStyle: { display: "inline-block" },
-                attrs: {
-                  items: _vm.page_content,
-                  page_size: _vm.entries_per_table_page_tab2
-                },
-                on: { changePage: _vm.onChangePage }
-              })
-            ],
-            1
-          )
-        : _vm._e()
-    ])
+    _c("div", { attrs: { id: "container" } })
   ])
 }
 var staticRenderFns = [

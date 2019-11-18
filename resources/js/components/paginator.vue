@@ -137,6 +137,10 @@ export default {
   },
   data() {
     return {
+      //   sorting: -1,
+      //  enable_sort: false,
+      //sort_temp:-1,
+      temp: [],
       pager: {},
       ul_styles: {},
       li_styles: {},
@@ -164,20 +168,22 @@ export default {
       this.setPage(this.initial_page);
     }
   },
+
   methods: {
     setPage(page) {
       const { items, page_size, max_pages } = this;
+
       // get new pager object for specified page
       const pager = paginate(items.length, page, page_size, max_pages);
       // get new page of items from items array
       const page_of_items = items.slice(pager.startIndex, pager.endIndex + 1);
+
       // update pager
       this.pager = pager;
+
       // emit change page event to parent component
       this.$emit("changePage", page_of_items);
-    }
-
-
+    },
   }
 };
 </script>
@@ -196,5 +202,4 @@ To use custom styles disable the default styles by adding the property :disableD
 .pagination li.previous - The 'Previous' pagination element
 .pagination li.next - The 'Next' pagination element
 */
-
 </style>

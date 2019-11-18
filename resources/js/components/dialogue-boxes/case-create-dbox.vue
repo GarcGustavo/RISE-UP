@@ -232,7 +232,7 @@ export default {
       fetch("/user_groups/" + this.curr_user)
         .then(res => res.json())
         .then(res => {
-          this.user_groups = res.data;
+          this.user_groups = res.data; //dropdown options 
         })
         .catch(err => console.log(err));
     },

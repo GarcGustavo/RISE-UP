@@ -68,7 +68,9 @@
             title="Groups i created"
             href="#owned_groups"
             role="tab"
-            @click.prevent="page_content=groups_user_is_owner, curr_tab=1, updatePaginator() "
+            @click.prevent="
+            curr_tab=1
+           "
           >Groups I created</a>
         </li>
         <li class="nav-item">
@@ -80,7 +82,9 @@
             title="Groups i belong to"
             href="#member_groups"
             role="tab"
-            @click.prevent="page_content=groups_user_is_member, curr_tab=2, updatePaginator() "
+            @click.prevent="
+            curr_tab=2
+             "
           >Groups I belong to</a>
         </li>
       </ul>
@@ -163,7 +167,27 @@
         >
           <template v-slot:head(index)>
             <input type="checkbox" @click="checkAll()" v-model="all_selected">
-            Select All
+            <a href="#" @click.prevent="deSort()">Select All</a>
+          </template>
+          <template v-slot:head(g_name)>
+            <a href="#" style="display:block" @click.prevent="sortItems()">
+              Name
+              <i
+                v-if="sort_order_tab1_icon==0"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort"
+              ></i>
+              <i
+                v-if="sort_order_tab1_icon==-1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-up"
+              ></i>
+              <i
+                v-if="sort_order_tab1_icon==1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-down"
+              ></i>
+            </a>
           </template>
           <template v-slot:cell(index)="data">
             <div class="p-2 pl-4">
@@ -187,6 +211,16 @@
             </div>
           </template>
         </b-table>
+        <div id="paginate" v-if="reload_paginator && curr_tab==1">
+          <paginator
+            ref="paginate"
+            :items="page_content_tab1"
+            :page_size="entries_per_table_page_tab1"
+            @changePage="onChangePage"
+            class="pagination"
+            style="display:inline-block"
+          ></paginator>
+        </div>
       </div>
 
       <!-- table of groups user belongs to for tab2 -->
@@ -198,6 +232,29 @@
           :items="filterGroups"
           :fields="fields"
         >
+          <template v-slot:head(index)>
+            <a href="#" style="display:block" @click.prevent="deSort()">Index</a>
+          </template>
+          <template v-slot:head(g_name)>
+            <a href="#" style="display:block" @click.prevent="sortItems()">
+              Name
+              <i
+                v-if="sort_order_tab2_icon==0"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort"
+              ></i>
+              <i
+                v-if="sort_order_tab2_icon==-1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-up"
+              ></i>
+              <i
+                v-if="sort_order_tab2_icon==1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-down"
+              ></i>
+            </a>
+          </template>
           <template v-slot:cell(index)="data">
             <div class="p-2">{{data.index +1}}</div>
           </template>
@@ -210,31 +267,23 @@
             </div>
           </template>
         </b-table>
+        <div id="paginate" v-if="reload_paginator && curr_tab==2">
+          <paginator
+            ref="paginate2"
+            :items="page_content_tab2"
+            :page_size="entries_per_table_page_tab2"
+            @changePage="onChangePage"
+            class="pagination"
+            style="display:inline-block"
+          ></paginator>
+        </div>
       </div>
     </div>
 
     <!--number of entries per table page option -->
     <div id="container">
       <!-- paginator for tab1 -->
-      <div id="paginate" v-if="reload_paginator && curr_tab==1">
-        <paginator
-          :items="page_content"
-          :page_size="entries_per_table_page_tab1"
-          @changePage="onChangePage"
-          class="pagination"
-          style="display:inline-block"
-        ></paginator>
-      </div>
       <!-- paginator for tab2 -->
-      <div id="paginate" v-if="reload_paginator && curr_tab==2">
-        <paginator
-          :items="page_content"
-          :page_size="entries_per_table_page_tab2"
-          @changePage="onChangePage"
-          class="pagination"
-          style="display:inline-block"
-        ></paginator>
-      </div>
     </div>
   </div>
 </template>
@@ -264,6 +313,7 @@ export default {
       path: "", //URL
       uid: "", // curr user id - NOT USED
       close: "",
+      sort_icon_dir: "",
 
       user_groups: [], // groups of the user
       groups_user_is_owner: [], //list of groups the user has created
@@ -271,9 +321,10 @@ export default {
       selected_groups: [], // the groups the user selects
       groups_to_remove: [], // the groups to remove, sent to controller
       page_of_groups: [], //groups to show on table page
-      page_content: [], //groups to send to paginator
-      users: [],
-      errors: [],
+      page_content_tab1: [], //groups to send to paginator for tab1
+      page_content_tab2: [], //groups to send to paginator for tab2
+      users: [], //system's users(populates action-table)
+      errors: [], //input errors
 
       group: {
         //group attributes
@@ -291,20 +342,25 @@ export default {
           key: "g_name",
           label: "Name",
           class: "text-center",
-          sortable: true,
-          thStyle: { paddingLeft: "23px" }
+          thStyle: { paddingLeft: "30px" }
         }
       ],
+
       curr_tab: 1, //current opened tab DEFAULT
       entries_per_table_page_tab1: 4, //table entries
       entries_per_table_page_tab2: 4, //table entries
+      sorting_tab1: -1, //sorting order, 1 is descending, -1 is ascending
+      sorting_tab2: -1, //sorting order, 1 is descending, -1 is ascending
+      sort_order_tab1_icon: 0, //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
+      sort_order_tab2_icon: 0, //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
 
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made a selection,
       all_selected: false, //has the option to select all groups been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
-      initial_load: true,
-      show_dialogue: false
+      show_dialogue: false, //opens/closes action-table
+      enable_sorting_tab1: false, //not used - can be used to revert back to tab1 original state
+      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
     };
   },
 
@@ -321,15 +377,85 @@ export default {
      * @returns list of users in accordance to search.
      */
     filterGroups() {
-      if (this.page_content.length == 0) {
-        return [];
+      if (this.curr_tab == 1) {
+        if (this.page_content_tab1.length == 0) {
+          return [];
+        } else {
+          if (this.page_content_tab2.length == 0) {
+            return [];
+          }
+        }
       }
       return this.page_of_groups.filter(page_of_groups => {
         return page_of_groups.g_name.includes(this.search);
       });
     }
   },
+
   methods: {
+
+/**
+ * @description sets sorting direction for current tab and call sorting method
+ */
+    sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1;
+        //  this.enable_sorting_tab1 = true;
+      } else { //curr tab is 2
+        this.sorting_tab2 *= -1;
+        //   this.enable_sorting_tab2 = true;
+      }
+      this.sortArr(); //call sorting algorithm
+    },
+
+    /**
+     * @description Sorts the content of the current opened tab
+     */
+
+    sortArr() {
+      if (this.curr_tab == 1) {
+          //current tab content will be filtered content
+        this.page_content_tab1 = this.page_content_tab1
+          .slice(0)
+          .sort((a, b) =>
+            a.g_name.toLowerCase() < b.g_name.toLowerCase()
+              ? this.sorting_tab1
+              : -this.sorting_tab1
+          );
+          //sort icon display is set to sort direction
+        this.sort_order_tab1_icon = this.sorting_tab1;
+      } else { //curr tab is 2
+          //current tab content will be filtered content
+        this.page_content_tab2 = this.page_content_tab2
+          .slice(0)
+          .sort((a, b) =>
+            a.g_name.toLowerCase() < b.g_name.toLowerCase()
+              ? this.sorting_tab2
+              : -this.sorting_tab2
+          );
+        //sort icon display is set to sort direction
+        this.sort_order_tab2_icon = this.sorting_tab2;
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description resets all sort variables and icons
+     */
+
+    deSort() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 = -1;
+        this.sort_order_tab1_icon = 0;
+        this.page_content_tab1 = this.groups_user_is_owner;
+      } else {
+        this.sorting_tab2 = -1;
+        this.sort_order_tab2_icon = 0;
+        this.page_content_tab2 = this.groups_user_is_member;
+      }
+      this.updatePaginator();
+    },
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -454,6 +580,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data;
+          console.log(this.user_groups);
           //filter groups where user is owner
           this.groups_user_is_owner = this.user_groups.filter(
             x => x.g_owner == this.curr_user
@@ -462,18 +589,13 @@ export default {
           this.groups_user_is_member = this.user_groups.filter(
             x => x.g_owner !== this.curr_user
           );
-          //initial content load
-          if (this.initial_load) {
-            this.page_content = this.groups_user_is_owner;
-            this.initial_load = false;
-          }
 
           //window content varies according to tab
-          if (this.curr_tab == 1) {
-            this.page_content = this.groups_user_is_owner;
-          } else {
-            this.page_content = this.groups_user_is_member;
-          }
+
+          this.page_content_tab1 = this.groups_user_is_owner;
+
+          this.page_content_tab2 = this.groups_user_is_member;
+
           this.select();
           this.uncheck(); //uncheck any selected items
           this.updatePaginator(); //refresh with updated group list
@@ -498,7 +620,7 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+          console.log(res);
           if (!res.errors) {
             this.addUsers(members); //add users to group
             this.fetchGroups(); //updpate group list
@@ -545,7 +667,7 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.lol)
+        body: JSON.stringify(users_to_add)
       })
         .then(res => res.json())
         .then(res => {
@@ -562,7 +684,7 @@ export default {
      */
     removeGroups() {
       var curr = this;
-
+      console.log(this.selected_groups);
       //confirmation dialogue box
       this.dialogue = bootbox.confirm({
         title: "Remove?",
@@ -600,7 +722,7 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
-                  console.log(res);
+                console.log(res);
                 if (!res.errors) {
                   curr.fetchGroups(); //update group list
                   curr.groups_to_remove = []; //reset variable

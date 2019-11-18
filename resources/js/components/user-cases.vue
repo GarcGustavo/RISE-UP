@@ -66,7 +66,9 @@
             title="Case studies i created"
             href="#owned_cases"
             role="tab"
-            @click.prevent="page_content=cases_user_is_owner, curr_tab=1, updatePaginator() "
+            @click.prevent="
+            curr_tab=1
+          "
           >Case studies i created</a>
         </li>
         <li class="nav-item">
@@ -78,7 +80,9 @@
             title="Case studies from groups i belong to"
             href="#group_cases"
             role="tab"
-            @click.prevent="page_content=user_cases_by_group, curr_tab=2, updatePaginator() "
+            @click.prevent="
+            curr_tab=2
+             "
           >Case studies by groups</a>
         </li>
       </ul>
@@ -160,8 +164,29 @@
         >
           <template v-slot:head(index)>
             <input type="checkbox" @click="checkAll()" v-model="all_selected">
-            Select All
+            <a href="#" @click.prevent="deSort()">Select All</a>
           </template>
+          <template v-slot:head(c_title)>
+            <a href="#" style="display:block" @click.prevent="sortItems()">
+              Title
+              <i
+                v-if="sort_order_tab1_icon==0"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort"
+              ></i>
+              <i
+                v-if="sort_order_tab1_icon==-1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-up"
+              ></i>
+              <i
+                v-if="sort_order_tab1_icon==1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-down"
+              ></i>
+            </a>
+          </template>
+
           <template v-slot:cell(index)="data">
             <div class="p-2 pl-4">
               <input
@@ -181,6 +206,16 @@
             </div>
           </template>
         </b-table>
+        <div id="paginate" v-if="reload_paginator && curr_tab==1">
+          <paginator
+            ref="paginate"
+            :items="page_content_tab1"
+            :page_size="entries_per_table_page_tab1"
+            @changePage="onChangePage"
+            class="pagination"
+            style="display:inline-block"
+          ></paginator>
+        </div>
       </div>
       <!-- Table of case studies belonging to the groups of the user for tab2-->
       <div class="tab-pane" id="group_cases" role="tabpanel">
@@ -191,6 +226,29 @@
           :items="filterCases"
           :fields="fields"
         >
+          <template v-slot:head(index)>
+            <a href="#" style="display:block" @click.prevent="deSort()">Index</a>
+          </template>
+          <template v-slot:head(c_title)>
+            <a href="#" style="display:block" @click.prevent="sortItems()">
+              Title
+              <i
+                v-if="sort_order_tab2_icon==0"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort"
+              ></i>
+              <i
+                v-if="sort_order_tab2_icon==-1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-up"
+              ></i>
+              <i
+                v-if="sort_order_tab2_icon==1"
+                style="color:grey;float:right;padding-top:4px"
+                class="fa fa-fw fa-sort-down"
+              ></i>
+            </a>
+          </template>
           <template v-slot:cell(index)="data">
             <div class="p-2">{{data.index +1}}</div>
           </template>
@@ -200,30 +258,22 @@
             </div>
           </template>
         </b-table>
+        <div id="paginate" v-if="reload_paginator && curr_tab==2">
+          <paginator
+            ref="paginate2"
+            :items="page_content_tab2"
+            :page_size="entries_per_table_page_tab2"
+            @changePage="onChangePage"
+            class="pagination"
+            style="display:inline-block"
+          ></paginator>
+        </div>
       </div>
     </div>
     <!--number of entries per table page option -->
     <div id="container">
       <!-- paginator for tab1-->
-      <div id="paginate" v-if="reload_paginator && curr_tab==1">
-        <paginator
-          :items="page_content"
-          :page_size="entries_per_table_page_tab1"
-          @changePage="onChangePage"
-          class="pagination"
-          style="display:inline-block"
-        ></paginator>
-      </div>
       <!-- paginator for tab2-->
-      <div id="paginate" v-if="reload_paginator && curr_tab==2">
-        <paginator
-          :items="page_content"
-          :page_size="entries_per_table_page_tab2"
-          @changePage="onChangePage"
-          class="pagination"
-          style="display:inline-block"
-        ></paginator>
-      </div>
     </div>
   </div>
 </template>
@@ -257,7 +307,8 @@ export default {
       selected_cases: [], // the cases the user selects
       cases_to_remove: [], // the cases to remove, sent to controller
       page_of_cases: [], //cases to show on table page
-      page_content: [], //cases to send to paginator
+      page_content_tab1: [], //cases to send to paginator
+      page_content_tab2: [],
       errors: [],
 
       case_study: { cid: "", c_title: "" }, //case attributes
@@ -269,21 +320,26 @@ export default {
           key: "c_title",
           label: "Title",
           class: "text-center",
-          sortable: true,
-           thStyle:{paddingLeft:"20px"}
+          thStyle: { paddingLeft: "30px" }
         }
       ],
 
       curr_tab: 1, //current opened tab DEFAULT
       entries_per_table_page_tab1: 4, //table entries
       entries_per_table_page_tab2: 4, //table entries
+      sorting_tab1: -1, //sorting order, 1 is descending, -1 is ascending
+      sorting_tab2: -1, //sorting order, 1 is descending, -1 is ascending
+      sort_order_tab1_icon: 0, //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
+      sort_order_tab2_icon: 0, //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
 
       reload_paginator: false, //used to update paginator
       is_selected: false, //has user made selection
       all_selected: false, //has the option to select all case studies been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
       initial_load: true, //load initial table tab content when page loads
-      show_dialogue: false
+      show_dialogue: false, //opens/closes action-table
+      enable_sorting_tab1: false, //not used - can be used to revert back to tab1 original state
+      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
     };
   },
   /**
@@ -298,8 +354,14 @@ export default {
      * @returns list of cases in accordance to search.
      */
     filterCases() {
-      if (this.page_content.length == 0) {
-        return [];
+      if (this.curr_tab == 1) {
+        if (this.page_content_tab1.length == 0) {
+          return [];
+        } else {
+          if (this.page_content_tab2.length == 0) {
+            return [];
+          }
+        }
       }
       return this.page_of_cases.filter(page_of_cases => {
         return page_of_cases.c_title.includes(this.search);
@@ -307,6 +369,54 @@ export default {
     }
   },
   methods: {
+    sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1;
+        //  this.enable_sorting_tab1 = true;
+      } else {
+        this.sorting_tab2 *= -1;
+        //   this.enable_sorting_tab2 = true;
+      }
+      this.sortArr();
+    },
+
+    sortArr() {
+      if (this.curr_tab == 1) {
+        this.page_content_tab1 = this.page_content_tab1
+          .slice(0)
+          .sort((a, b) =>
+            a.c_title.toLowerCase() < b.c_title.toLowerCase()
+              ? this.sorting_tab1
+              : -this.sorting_tab1
+          );
+        this.sort_order_tab1_icon = this.sorting_tab1;
+      } else {
+        this.page_content_tab2 = this.page_content_tab2
+          .slice(0)
+          .sort((a, b) =>
+            a.c_title.toLowerCase() < b.c_title.toLowerCase()
+              ? this.sorting_tab2
+              : -this.sorting_tab2
+          );
+        this.sort_order_tab2_icon = this.sorting_tab2;
+      }
+
+      this.updatePaginator();
+    },
+
+    deSort() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 = -1;
+        this.sort_order_tab1_icon = 0;
+        this.page_content_tab1 = this.cases_user_is_owner;
+      } else {
+        this.sorting_tab2 = -1;
+        this.sort_order_tab2_icon = 0;
+        this.page_content_tab2 = this.user_cases_by_group;
+      }
+      this.updatePaginator();
+    },
+
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -422,18 +532,13 @@ export default {
           this.user_cases_by_group = this.user_cases.filter(
             x => x.c_owner !== this.curr_user
           );
-          //initial content load
-          if (this.initial_load) {
-            this.page_content = this.cases_user_is_owner;
-            this.initial_load = false;
-          }
 
           //content varies according to tab
-          if (this.curr_tab == 1) {
-            this.page_content = this.cases_user_is_owner;
-          } else {
-            this.page_content = this.user_cases_by_group;
-          }
+
+          this.page_content_tab1 = this.cases_user_is_owner;
+
+          this.page_content_tab2 = this.user_cases_by_group;
+
           this.select();
           this.uncheck();
           this.updatePaginator(); //refresh with updated list of cases
@@ -535,7 +640,7 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
-                  console.log(res);
+                console.log(res);
                 curr.fetchCases(); //update group list
                 curr.cases_to_remove = []; //reset variable
               })
@@ -610,7 +715,7 @@ input[type="checkbox"] + label {
 }
 /* change checkbox size */
 input[type="checkbox"] {
-  transform: scale(1.2);
+  transform: scale(1.3);
 }
 /* paginate component position in body */
 .pagination {
