@@ -1,10 +1,13 @@
 <template>
   <!-- Team Members -->
-  <div class="body mb-5 mt-5" >
+  <div class="body mb-5 mt-5">
     <!-- group title -->
-    <div v-if="!edit_title" >
+    <div v-if="!edit_title">
       <span class="text">
-        <h1 class="text-center p-1" :style=" rename_group_permission ? 'margin-left:185px;margin-top:25px' : ''">
+        <h1
+          class="text-center p-1"
+          :style=" rename_group_permission ? 'margin-left:185px;margin-top:25px' : ''"
+        >
           {{group_name}}
           <!--render if user has permission-->
           <div id="edit_icon">
@@ -114,7 +117,7 @@
     <div class="card mb-5 shadow" id="scrollable">
       <div class="row mt-1 pt-2 pl-4" id="members">
         <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
-          <div class="card h-100 text-center ">
+          <div class="card h-100 text-center">
             <i class="material-icons pt-2" style="font-size: 125px">person</i>
             <div class="card-body">
               <h4 class="card-title">{{member.first_name}} {{member.last_name}}</h4>
@@ -131,7 +134,7 @@
     <hr>
 
     <!-- Create case button -->
-    <h1 id="cases_header" class="mt-5 text-center ">
+    <h1 id="cases_header" class="mt-5 text-center">
       <span data-toggle="modal" data-target="#case_create_dbox">
         <a
           v-if="create_group_case_permission"
@@ -215,7 +218,6 @@ export default {
    * gets all group cases to populate case section when the page is loaded
    */
   created() {
-    this.fetchMembers();
     this.fetchGroupInfo();
     this.fetchCases();
   },
@@ -298,8 +300,6 @@ export default {
      *
      */
     fetchUsers() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
       fetch("/users")
         .then(res => res.json())
         .then(res => {
@@ -319,11 +319,7 @@ export default {
      * @description gets all of the current group's users
      */
     fetchMembers() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
-      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
-
-      fetch("/group/" + this.curr_group + "/members")
+      fetch("/group/members?gid=" + this.curr_group)
         .then(res => res.json())
         .then(res => {
           this.users_to_remove = res.data; //populates action_table_dbox when removing a member from group
@@ -333,6 +329,7 @@ export default {
             ); //filter owner out so he can't remove himself
           }
           this.group_members = res.data; //to render in view
+          this.userPriveleges();
         })
         .catch(err => console.log(err));
     },
@@ -341,7 +338,7 @@ export default {
      * @description gets all of the cases of the current group
      */
     fetchCases() {
-      fetch("/group/" + this.curr_group + "/cases")
+      fetch("/group/cases?gid=" + this.curr_group)
         .then(res => res.json())
         .then(res => {
           this.group_cases = res.data;
@@ -353,16 +350,18 @@ export default {
      * @description gets info of the current group
      */
     fetchGroupInfo() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
-      fetch("/group/" + this.curr_group + "/info")
+      //define variables
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+      this.curr_group = this.urlParams.get("gid"); //get group id
+      fetch("/group/info?gid=" + this.curr_group)
         .then(res => res.json())
         .then(res => {
+          console.log(res);
           this.group_data = res.data;
           this.group_name = this.group_data[0].g_name; //name of group
           this.group_owner = this.group_data[0].g_owner; // id of owner
-
-          this.userPriveleges(); //set user priveleges
+          this.fetchMembers();
         })
         .catch(err => console.log(err));
     },
@@ -371,9 +370,6 @@ export default {
      * @description outputs to the groupController a JSON request to rename group
      */
     changeGroupName() {
-      this.path = window.location.pathname.split("/");
-      this.curr_group = this.path[this.path.length - 1];
-
       fetch("/group/name/update", {
         method: "post",
         headers: new Headers({
@@ -381,14 +377,13 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify({gid:this.curr_group, g_name: this.temp })
+        body: JSON.stringify({ gid: this.curr_group, g_name: this.temp })
       })
         .then(res => res.json())
         .then(res => {
-             console.log(res);
+          console.log(res);
           if (!res.errors) {
-
-            this.group_name = this.temp;
+            this.group_name = this.temp; //group name is the updated name
             this.disableEditTitle();
             //alert box
             this.dialogue = bootbox.alert({
@@ -432,7 +427,7 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+          console.log(res);
           if (!res.errors) {
             //hide action table dbox
             this.show_dialogue = false;
@@ -503,7 +498,7 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
-                  console.log(res);
+                console.log(res);
                 //hide action table dbox
                 curr.show_dialogue = false;
                 //remove component's backdrop

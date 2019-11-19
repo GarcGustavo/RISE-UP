@@ -162,13 +162,30 @@
           :items="filterCases"
           :fields="fields"
         >
+          <!--table headers -->
+          <!-- index header -->
           <template v-slot:head(index)>
             <input type="checkbox" @click="checkAll()" v-model="all_selected">
-            <a href="#" @click.prevent="deSort()">Select All</a>
+            <a
+              href="#"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to unsort table"
+              @click.prevent="unSort()"
+            >Select All</a>
           </template>
+          <!-- title header -->
           <template v-slot:head(c_title)>
-            <a href="#" style="display:block" @click.prevent="sortItems()">
+            <a
+              href="#"
+              style="display:block"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to sort table"
+              @click.prevent="sortItems()"
+            >
               Title
+              <!-- icons -->
               <i
                 v-if="sort_order_tab1_icon==0"
                 style="color:grey;float:right;padding-top:4px"
@@ -187,6 +204,8 @@
             </a>
           </template>
 
+          <!--table rows -->
+          <!-- index column -->
           <template v-slot:cell(index)="data">
             <div class="p-2 pl-4">
               <input
@@ -200,12 +219,14 @@
               {{data.index +1}}
             </div>
           </template>
+          <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
               <b-link class="p-2" href="#">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
+        <!--paginator -->
         <div id="paginate" v-if="reload_paginator && curr_tab==1">
           <paginator
             ref="paginate"
@@ -226,12 +247,30 @@
           :items="filterCases"
           :fields="fields"
         >
+          <!-- table headers -->
+          <!-- index header -->
           <template v-slot:head(index)>
-            <a href="#" style="display:block" @click.prevent="deSort()">Index</a>
+            <a
+              href="#"
+              style="display:block"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to unsort table"
+              @click.prevent="unSort()"
+            >Index</a>
           </template>
+          <!-- title header -->
           <template v-slot:head(c_title)>
-            <a href="#" style="display:block" @click.prevent="sortItems()">
+            <a
+              href="#"
+              style="display:block"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to sort table"
+              @click.prevent="sortItems()"
+            >
               Title
+              <!--icons -->
               <i
                 v-if="sort_order_tab2_icon==0"
                 style="color:grey;float:right;padding-top:4px"
@@ -249,15 +288,19 @@
               ></i>
             </a>
           </template>
+          <!--table rows -->
+          <!-- index column -->
           <template v-slot:cell(index)="data">
             <div class="p-2">{{data.index +1}}</div>
           </template>
+          <!-- title column -->
           <template v-slot:cell(c_title)="data">
             <div>
               <b-link class="p-2" href="#">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
+        <!--paginator -->
         <div id="paginate" v-if="reload_paginator && curr_tab==2">
           <paginator
             ref="paginate2"
@@ -271,10 +314,6 @@
       </div>
     </div>
     <!--number of entries per table page option -->
-    <div id="container">
-      <!-- paginator for tab1-->
-      <!-- paginator for tab2-->
-    </div>
   </div>
 </template>
 
@@ -362,26 +401,31 @@ export default {
             return [];
           }
         }
-      }
+      } //search fiter
       return this.page_of_cases.filter(page_of_cases => {
         return page_of_cases.c_title.includes(this.search);
       });
     }
   },
   methods: {
-    sortItems() {
-      if (this.curr_tab == 1) {
-        this.sorting_tab1 *= -1;
-        //  this.enable_sorting_tab1 = true;
-      } else {
-        this.sorting_tab2 *= -1;
-        //   this.enable_sorting_tab2 = true;
-      }
-      this.sortArr();
+    /**
+     * @description - refreshes the paginator
+     */
+    updatePaginator() {
+      // Remove paginator from the DOM
+      this.reload_paginator = false;
+      this.$nextTick().then(() => {
+        // Add the paginator back in
+        this.reload_paginator = true;
+      });
     },
 
+    /**
+     * @description Sorts the content of the current opened tab
+     */
     sortArr() {
       if (this.curr_tab == 1) {
+        //current tab content will be filtered content
         this.page_content_tab1 = this.page_content_tab1
           .slice(0)
           .sort((a, b) =>
@@ -389,8 +433,11 @@ export default {
               ? this.sorting_tab1
               : -this.sorting_tab1
           );
+        //sort icon display is set to sort direction
         this.sort_order_tab1_icon = this.sorting_tab1;
       } else {
+        //curr tab is 2
+        //current tab content will be filtered content
         this.page_content_tab2 = this.page_content_tab2
           .slice(0)
           .sort((a, b) =>
@@ -398,21 +445,41 @@ export default {
               ? this.sorting_tab2
               : -this.sorting_tab2
           );
+
+        //sort icon display is set to sort direction
         this.sort_order_tab2_icon = this.sorting_tab2;
       }
 
       this.updatePaginator();
     },
 
-    deSort() {
+    /**
+     * @description sets sorting direction for current tab and call sorting method
+     */
+    sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1;
+        //  this.enable_sorting_tab1 = true;
+      } else {
+        //curr tab is 2
+        this.sorting_tab2 *= -1;
+        //   this.enable_sorting_tab2 = true;
+      }
+      this.sortArr(); //call sorting algorithm
+    },
+
+    /**
+     * @description resets all sort variables and icons
+     */
+    unSort() {
       if (this.curr_tab == 1) {
         this.sorting_tab1 = -1;
         this.sort_order_tab1_icon = 0;
-        this.page_content_tab1 = this.cases_user_is_owner;
+        this.page_content_tab1 = this.cases_user_is_owner; //original content
       } else {
         this.sorting_tab2 = -1;
         this.sort_order_tab2_icon = 0;
-        this.page_content_tab2 = this.user_cases_by_group;
+        this.page_content_tab2 = this.user_cases_by_group; //original content
       }
       this.updatePaginator();
     },
@@ -445,18 +512,6 @@ export default {
       // update page of Cases
 
       this.page_of_cases = page_of_cases;
-    },
-
-    /**
-     * @description - refreshes the paginator
-     */
-    updatePaginator() {
-      // Remove paginator from the DOM
-      this.reload_paginator = false;
-      this.$nextTick().then(() => {
-        // Add the paginator back in
-        this.reload_paginator = true;
-      });
     },
 
     /**
@@ -519,28 +574,29 @@ export default {
      * @description gets all the cases of the current user
      */
     fetchCases() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = Number(this.path[this.path.length - 2]); //get user id from path
-      fetch("/user_cases/" + this.curr_user)
+
+     this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+     this.curr_user = Number(this.urlParams.get('uid')); //get user id - numeric conversion for filter user
+
+      fetch("/user-cases/show?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_cases = res.data;
-
+            //filter cases where user is owner
           this.cases_user_is_owner = this.user_cases.filter(
             x => x.c_owner == this.curr_user
           );
+          //filter cases that the user has through group relation
           this.user_cases_by_group = this.user_cases.filter(
             x => x.c_owner !== this.curr_user
           );
 
           //content varies according to tab
-
           this.page_content_tab1 = this.cases_user_is_owner;
-
           this.page_content_tab2 = this.user_cases_by_group;
 
-          this.select();
-          this.uncheck();
+          this.select(); //unselect all
+          this.uncheck(); //uncheck
           this.updatePaginator(); //refresh with updated list of cases
         })
         .catch(err => console.log(err));
@@ -629,7 +685,7 @@ export default {
               });
             }
             //send request
-            fetch("/user_cases/remove", {
+            fetch("/user-cases/remove", {
               method: "delete",
               headers: new Headers({
                 "Content-Type": "application/json",

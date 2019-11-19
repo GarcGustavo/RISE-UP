@@ -22,6 +22,7 @@
                   <strong>atleast</strong> one user to remove.
                 </p>
               </div>
+              <!-- errors -->
               <div v-if="errors.length">
                 <div>
                   <label>Please correct the following error(s):</label>
@@ -36,6 +37,7 @@
                   </div>
                 </div>
               </div>
+              <!-- group name input -->
               <div class="input-group" v-if="gname_box_show==true">
                 <label>
                   <span class="required">*</span>
@@ -117,19 +119,16 @@
                 </p>
               </div>
               <!-- remove user -->
-              <!-- current dialogue box is dismissed by group vue after removing users -->
               <div v-if="action=='Remove'">
                 <button type="button" class="btn btn-primary" @click="isUserSelected()">{{action}}</button>
               </div>
 
               <!--add user to group -->
-              <!--current dialogue box is dismissed by confirm box -->
               <div v-else-if="action=='Add'">
                 <button type="button" class="btn btn-primary" @click="isUserSelected()">{{action}}</button>
               </div>
 
               <!-- create group -->
-              <!-- current dialogue box is dismissed by close_dialog variable -->
               <div v-else-if="action=='Create'">
                 <button
                   type="button"
@@ -209,6 +208,8 @@ export default {
       group_name_input: "", //input for group name
       search: "", //search input
       close_dialog: "", //to close action table
+      uid: "",
+      gid: "",
 
       users_to_add_remove: [], //list of users to add or remove
       selected_users: [], //list of selected users to add or remove
@@ -229,7 +230,7 @@ export default {
       },
 
       fields: [
-        //sortable columns used in b-table and index column style definition
+        //sortable columns used in b-table and index column style definition - uses btable built in sort
         { index: { thStyle: { width: "120px" } } },
         {
           key: "email",
@@ -258,11 +259,11 @@ export default {
   },
 
   /**
-   * @descriptcion handles modal closing event
+   * @description handles modal closing event
    */
   mounted() {
     /**
-     * @descriptcion handles modal closing event
+     * @description handles modal closing event
      */
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
@@ -297,7 +298,7 @@ export default {
           for (let i in this.users_to_add) {
             this.selected_users.push(this.users_to_add[i].uid);
           }
-        } else {
+        } else { //remove action
           for (let i in this.users_to_remove) {
             this.selected_users.push(this.users_to_remove[i].uid);
           }
@@ -329,7 +330,7 @@ export default {
       this.search = "";
       this.group_name_input = "";
       this.users_to_add_remove = [];
-      this.$emit("close"); //reset error prop 
+      this.$emit("close"); //reset error prop
       this.select();
       this.uncheck();
     },
@@ -338,6 +339,11 @@ export default {
      * @description gets all of the system's groups
      */
     totalGroups() {
+        //define id variables
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.uid = this.urlParams.get("uid"); //get user id
+      this.gid = this.urlParams.get("gid"); //get group id
+
       fetch("/groups")
         .then(res => res.json())
         .then(res => {
@@ -351,10 +357,6 @@ export default {
      *  and sends the user data to be processed
      */
     sendUsers() {
-      //send selected users to parent component to add users
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.gid = this.path[this.path.length - 1]; //get group id from path
-
       for (let i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
@@ -405,8 +407,6 @@ export default {
      *  and sends the data for the new case study
      */
     sendGroupData() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.uid = this.path[this.path.length - 2]; //get user id from path
       this.date = new Date().toJSON().slice(0, 10);
       //append data to new group
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;

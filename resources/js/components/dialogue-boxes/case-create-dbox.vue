@@ -10,6 +10,7 @@
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
+                <!--errors -->
               <div v-if="errors.length">
                 <div>
                   <label>Please correct the following error(s):</label>
@@ -24,6 +25,7 @@
                   </div>
                 </div>
               </div>
+              <!-- title --> 
               <label for="title">
                 Title
                 <span class="required">*</span>
@@ -217,22 +219,18 @@ export default {
      * @description gets all the groups of the current user
      */
     fetchGroups() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+       this.curr_user = this.urlParams.get("uid"); //get user id
       if (this.group_selection) {
-        //call from group view, default selection is made
+
         //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
-        this.curr_user = this.path[this.path.length - 3]; //get ID from path
         this.curr_group = this.group_selection; //default dropdown selection
         this.disable_dropdown = true;
-      } else {
-        //called by user_groups vue
-        this.curr_user = this.path[this.path.length - 2]; //get ID from path
       }
-
-      fetch("/user_groups/" + this.curr_user)
+      fetch("/user-groups/show?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
-          this.user_groups = res.data; //dropdown options 
+          this.user_groups = res.data; //dropdown options
         })
         .catch(err => console.log(err));
     },
@@ -242,8 +240,6 @@ export default {
      *  and sends the data for the new case study
      */
     sendCaseStudyData() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-
       //yyyy-mm-dd
       this.date = new Date().toJSON().slice(0, 10); //current date
 

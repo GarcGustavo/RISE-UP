@@ -60,7 +60,6 @@ class User_GroupsController extends Controller
 
         //validate each gid/uid
         $validator = Validator::make($data_arr, [
-
             'data.*.gid' => 'bail|required|integer',
             'data.*.uid' => ['bail','required', 'integer',
             //verifies if record already exist
@@ -71,6 +70,7 @@ class User_GroupsController extends Controller
             ]//custom message
         ], ['data.*.uid.unique' => 'The user id already exists in this group.']);
         $validator->setAttributeNames($attributes); //apply renaming attributes
+        //validate request
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
@@ -93,9 +93,25 @@ class User_GroupsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function showMembers($id)
+    public function showMembers(Request $request)
     {
-        $gid = $id;
+        //renaming attributes
+        $attributes = array(
+            'gid' => 'group id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'gid' => 'bail|exists:Group|required|integer'
+        ],['gid.exists' => 'The group id does not exists.']);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //process request
+        $gid = $request->input('gid');
+
         $members = User_Groups::
         where('gid', $gid)
         ->join('User', 'User_Groups.uid', '=', 'User.uid')
@@ -155,7 +171,7 @@ class User_GroupsController extends Controller
             'data.*.uid' => 'user id'
         );
 
-        //validate records
+        //validation rules
         $validator = Validator::make($data, [
             'data.*.gid' => 'bail|required|integer',
             'data.*.uid' => ['bail','required','integer',
@@ -164,9 +180,11 @@ class User_GroupsController extends Controller
                 return $query->whereIn('gid', $gids)
                 ->whereIn('uid', $uids);
             })
-            ]//custom message
+            ]//custom error message if uid does not exist
         ],['data.*.uid.exists' => 'The user id does not exists in this group.']);
+        //apply renaming attributes
         $validator->setAttributeNames($attributes);
+        //valida request
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
@@ -178,6 +196,7 @@ class User_GroupsController extends Controller
         $uids_to_delete = array_map(function ($item) {
             return $item['uid'];
         }, $to_delete);
+        //process request
         User_Groups::whereIn('gid', $gids_to_delete)->whereIn('uid', $uids_to_delete)->delete();
         return response()->json(['message'=>'User(s) has been removed from group']);
     }

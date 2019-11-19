@@ -165,13 +165,30 @@
           :items="filterGroups"
           :fields="fields"
         >
+          <!--table headers -->
+          <!-- index header -->
           <template v-slot:head(index)>
             <input type="checkbox" @click="checkAll()" v-model="all_selected">
-            <a href="#" @click.prevent="deSort()">Select All</a>
+            <a
+              href="#"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to unsort table"
+              @click.prevent="deSort()"
+            >Select All</a>
           </template>
+          <!-- name header -->
           <template v-slot:head(g_name)>
-            <a href="#" style="display:block" @click.prevent="sortItems()">
+            <a
+              href="#"
+              style="display:block"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to sort table"
+              @click.prevent="sortItems()"
+            >
               Name
+              <!-- icons -->
               <i
                 v-if="sort_order_tab1_icon==0"
                 style="color:grey;float:right;padding-top:4px"
@@ -189,6 +206,8 @@
               ></i>
             </a>
           </template>
+
+          <!--table rows -->
           <template v-slot:cell(index)="data">
             <div class="p-2 pl-4">
               <input
@@ -202,15 +221,17 @@
               {{data.index +1}}
             </div>
           </template>
+          <!--group name column -->
           <template v-slot:cell(g_name)="data">
             <div>
               <b-link
                 class="p-2"
-                :href="'/user/'+curr_user+'/group/' + data.item.gid"
+                :href="'/user/group?uid='+curr_user+'&gid=' + data.item.gid"
               >{{data.item.g_name}}</b-link>
             </div>
           </template>
         </b-table>
+        <!--paginator-->
         <div id="paginate" v-if="reload_paginator && curr_tab==1">
           <paginator
             ref="paginate"
@@ -232,12 +253,30 @@
           :items="filterGroups"
           :fields="fields"
         >
+          <!--table headers -->
+          <!-- index header -->
           <template v-slot:head(index)>
-            <a href="#" style="display:block" @click.prevent="deSort()">Index</a>
+            <a
+              href="#"
+              style="display:block"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to unsort table"
+              @click.prevent="deSort()"
+            >Index</a>
           </template>
+          <!-- name header -->
           <template v-slot:head(g_name)>
-            <a href="#" style="display:block" @click.prevent="sortItems()">
+            <a
+              href="#"
+              style="display:block"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click to sort table"
+              @click.prevent="sortItems()"
+            >
               Name
+              <!-- icons -->
               <i
                 v-if="sort_order_tab2_icon==0"
                 style="color:grey;float:right;padding-top:4px"
@@ -255,18 +294,23 @@
               ></i>
             </a>
           </template>
+
+          <!-- table columns -->
           <template v-slot:cell(index)="data">
             <div class="p-2">{{data.index +1}}</div>
           </template>
+          <!-- group name column-->
           <template v-slot:cell(g_name)="data">
             <div>
               <b-link
                 class="p-2"
-                :href="'/user/'+curr_user+'/group/' + data.item.gid"
+                :href="'/user/group?uid='+curr_user+'&gid=' + data.item.gid"
               >{{data.item.g_name}}</b-link>
             </div>
           </template>
         </b-table>
+
+        <!--paginator-->
         <div id="paginate" v-if="reload_paginator && curr_tab==2">
           <paginator
             ref="paginate2"
@@ -278,12 +322,6 @@
           ></paginator>
         </div>
       </div>
-    </div>
-
-    <!--number of entries per table page option -->
-    <div id="container">
-      <!-- paginator for tab1 -->
-      <!-- paginator for tab2 -->
     </div>
   </div>
 </template>
@@ -385,7 +423,7 @@ export default {
             return [];
           }
         }
-      }
+      }//search filter
       return this.page_of_groups.filter(page_of_groups => {
         return page_of_groups.g_name.includes(this.search);
       });
@@ -393,28 +431,25 @@ export default {
   },
 
   methods: {
+    /**
+     * @description refreshes the paginator
+     */
+    updatePaginator() {
+      // Remove paginator from the DOM
+      this.reload_paginator = false;
 
-/**
- * @description sets sorting direction for current tab and call sorting method
- */
-    sortItems() {
-      if (this.curr_tab == 1) {
-        this.sorting_tab1 *= -1;
-        //  this.enable_sorting_tab1 = true;
-      } else { //curr tab is 2
-        this.sorting_tab2 *= -1;
-        //   this.enable_sorting_tab2 = true;
-      }
-      this.sortArr(); //call sorting algorithm
+      this.$nextTick().then(() => {
+        // Add the paginator back in
+        this.reload_paginator = true;
+      });
     },
 
     /**
      * @description Sorts the content of the current opened tab
      */
-
     sortArr() {
       if (this.curr_tab == 1) {
-          //current tab content will be filtered content
+        //current tab content will be filtered content
         this.page_content_tab1 = this.page_content_tab1
           .slice(0)
           .sort((a, b) =>
@@ -422,10 +457,11 @@ export default {
               ? this.sorting_tab1
               : -this.sorting_tab1
           );
-          //sort icon display is set to sort direction
+        //sort icon display is set to sort direction
         this.sort_order_tab1_icon = this.sorting_tab1;
-      } else { //curr tab is 2
-          //current tab content will be filtered content
+      } else {
+        //curr tab is 2
+        //current tab content will be filtered content
         this.page_content_tab2 = this.page_content_tab2
           .slice(0)
           .sort((a, b) =>
@@ -441,6 +477,21 @@ export default {
     },
 
     /**
+     * @description sets sorting direction for current tab and call sorting method
+     */
+    sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1;
+        //  this.enable_sorting_tab1 = true;
+      } else {
+        //curr tab is 2
+        this.sorting_tab2 *= -1;
+        //   this.enable_sorting_tab2 = true;
+      }
+      this.sortArr(); //call sorting algorithm
+    },
+
+    /**
      * @description resets all sort variables and icons
      */
 
@@ -448,11 +499,11 @@ export default {
       if (this.curr_tab == 1) {
         this.sorting_tab1 = -1;
         this.sort_order_tab1_icon = 0;
-        this.page_content_tab1 = this.groups_user_is_owner;
+        this.page_content_tab1 = this.groups_user_is_owner; //original content
       } else {
         this.sorting_tab2 = -1;
         this.sort_order_tab2_icon = 0;
-        this.page_content_tab2 = this.groups_user_is_member;
+        this.page_content_tab2 = this.groups_user_is_member; //original content
       }
       this.updatePaginator();
     },
@@ -482,19 +533,6 @@ export default {
     onChangePage(page_of_groups) {
       // update page of Groups
       this.page_of_groups = page_of_groups;
-    },
-
-    /**
-     * @description refreshes the paginator
-     */
-    updatePaginator() {
-      // Remove paginator from the DOM
-      this.reload_paginator = false;
-
-      this.$nextTick().then(() => {
-        // Add the paginator back in
-        this.reload_paginator = true;
-      });
     },
 
     /**
@@ -558,8 +596,6 @@ export default {
      * @description get all of system's users when adding a user while creating a group
      */
     fetchUsers() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
       fetch("/users")
         .then(res => res.json())
         .then(res => {
@@ -574,9 +610,11 @@ export default {
      * @description gets all the groups of the current user
      */
     fetchGroups() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
-      fetch("/user_groups/" + this.curr_user)
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+
+      // fetch("/user_groups/" + this.curr_user)
+      fetch("/user-groups/show?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data;
@@ -596,7 +634,7 @@ export default {
 
           this.page_content_tab2 = this.groups_user_is_member;
 
-          this.select();
+          this.select(); //deselect all
           this.uncheck(); //uncheck any selected items
           this.updatePaginator(); //refresh with updated group list
         })
@@ -672,7 +710,6 @@ export default {
         .then(res => res.json())
         .then(res => {
           console.log(res);
-          // this.fetchGroups();
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -711,7 +748,7 @@ export default {
               });
             }
             //send request
-            fetch("/user_groups/remove", {
+            fetch("/user-groups/remove", {
               method: "delete",
               headers: new Headers({
                 "Content-Type": "application/json",

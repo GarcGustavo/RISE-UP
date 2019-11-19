@@ -22,17 +22,17 @@ Route::get('/help', function () {
     return view('help');
 });
 
-Route::get('/user/{uid}/group/{gid}', function () {
+Route::get('/user/group', function () {
    return view('group');
 })->name('group');
 
 
-Route::get('/user/{id}/groups', function () {
+Route::get('/user/groups', function () {
     return view('user-groups');
 });
 
 
-Route::get('/user/{id}/cases', function () {
+Route::get('/user/cases', function () {
     return view('user-cases');
 });
 
@@ -61,16 +61,16 @@ Route::get('/users', 'UserController@index');
 Route::get('/groups', 'GroupController@index');
 
 //List groups of a user
-Route::get('/user_groups/{id}', 'GroupController@showGroups');
+Route::get('/user-groups/show', 'GroupController@showGroups');
 
 //List group info
-Route::get('/group/{id}/info', 'GroupController@info');
+Route::get('/group/info', 'GroupController@info');
 
 //List members of a group
-Route::get('/group/{id}/members', 'User_GroupsController@showMembers');
+Route::get('/group/members', 'User_GroupsController@showMembers');
 
 //List cases of a group
-Route::get('/group/{id}/cases', 'CaseController@showGroupCases');
+Route::get('/group/cases', 'CaseController@showGroupCases');
 
 //Create a group
 Route::post('/group/create', 'GroupController@store');
@@ -82,7 +82,7 @@ Route::post('/group/name/update', 'GroupController@update');
 Route::post('/group/members/add', 'User_GroupsController@store');
 
 //Delete group
-Route::delete('user_groups/remove', 'GroupController@destroy');
+Route::delete('user-groups/remove', 'GroupController@destroy');
 
 //Remove users from group
 Route::delete('/group/members/remove', 'User_GroupsController@destroy');
@@ -94,12 +94,12 @@ Route::delete('/group/members/remove', 'User_GroupsController@destroy');
 Route::get('/cases', 'CaseController@index');
 
 //List all case studies of a user(author and group cases)
-Route::get('/user_cases/{id}', 'CaseController@showAllUserCases');
+Route::get('/user-cases/show', 'CaseController@showAllUserCases');
 
 //Create a case study
 Route::post('/case/create', 'CaseController@store');
 
 //Delete case study
-Route::delete('user_cases/remove', 'CaseController@destroy');
+Route::delete('user-cases/remove', 'CaseController@destroy');
 
 

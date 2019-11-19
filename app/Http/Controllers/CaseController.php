@@ -40,6 +40,7 @@ class CaseController extends Controller
      */
     public function store(Request $request)
     {
+        //renaming attributes
         $attributes = array(
             'cid' => 'case study id',
             'c_title' => 'case study title',
@@ -50,6 +51,7 @@ class CaseController extends Controller
             'c_owner' => 'case study author',
             'c_group' => 'case study group'
         );
+        //validation rules
         $validator = Validator::make($request->all(), [
 
             'cid' => 'bail|required|unique:Case',
@@ -61,12 +63,13 @@ class CaseController extends Controller
             'c_owner' => 'bail|required',
             'c_group' => 'nullable',
         ]);
-
+        //apply renaming validation
         $validator->setAttributeNames($attributes);
+        //validate request
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
-
+        //create case study
         $case_study = $request->isMethod('put') ? case_study::findOrFail($request->cid) : new case_study;
         $case_study->cid = $request->input('cid');
         $case_study->c_title = $request->input('c_title');
@@ -76,7 +79,7 @@ class CaseController extends Controller
         $case_study->c_date = $request->input('c_date');
         $case_study->c_owner = $request->input('c_owner');
         $case_study->c_group = $request->input('c_group');
-
+        //process request
         if ($case_study->save()) {
             return response()->json(['message'=>'Case study has been created']);
         }
@@ -97,18 +100,51 @@ class CaseController extends Controller
         //
     }
 
-    public function showGroupCases($id)
+    public function showGroupCases(Request $request)
     {
-        $gid = $id;
+
+        //renaming attributes
+        $attributes = array(
+            'gid' => 'group id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'gid' => 'bail|exists:Group|required|integer'
+        //custom error message if group does not exist
+        ],['gid.exists' => 'The group id does not exists.']);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //process request
+        $gid = $request->input('gid');
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
         return Case_StudyResource::collection($cases);
     }
 
-    public function showAllUserCases($id)
+    public function showAllUserCases(Request $request)
     {
-        $uid = $id;
-
+        //renaming attributes
+        $attributes = array(
+            'uid' => 'user id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'uid' => 'bail|exists:User|required|integer'
+            //custom error message if user does not exist
+        ],['uid.exists' => 'The user id does not exists.']);
+        //apply validation attributes
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //process request
+        $uid = $request->input('uid');
+        //cases by ownership and group relation
         $cases = Case_Study::where('Case.c_owner', $uid)->get();
         $group_cases = User_Groups::
         where('User_Groups.uid', $uid)
@@ -159,20 +195,24 @@ class CaseController extends Controller
      */
     public function destroy(Request $request)
     {
-
+        //data array
         $data = [ 'data' => $request->all() ];
 
+        //renaming attributes
         $attributes = array(
             'data.*.cid' => 'case study id',
         );
+        //validation rules
         $validator = Validator::make($data, [
             'data.*.cid' => 'bail|exists:Case|required|integer'
-        ]);
+            //custom error message if cid does not exist
+        ],['data.*.cid.exists' => 'The case study id does not exists.']);
+        //apply renaming attributes
         $validator->setAttributeNames($attributes);
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
-
+        //process request
         $to_delete = $request->all();
         $cids_to_delete = array_map(function ($item) {
             return $item['cid'];

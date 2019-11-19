@@ -89,8 +89,8 @@
           </div>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Profile</a>
-          <a :href="'/user/'+uid+'/cases'" class="dropdown-item">Cases</a>
-          <a :href="'/user/'+uid+'/groups'" class="dropdown-item">Groups</a>
+          <a :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
+          <a :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Logout</a>
         </div>

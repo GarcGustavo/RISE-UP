@@ -23,9 +23,27 @@ class GroupController extends Controller
         return GroupResource::collection($groups);
     }
 
-    public function info($id)
+    public function info(Request $request)
+
     {
-        $group = Group::where('gid', $id)->get();
+        //renaming attributes
+        $attributes = array(
+            'gid' => 'group id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'gid' => 'bail|exists:Group|required|integer'
+        ],['gid.exists' => 'The group id does not exists.']);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //process request
+        $gid = $request->input('gid');
+
+        $group = Group::where('gid', $gid)->get();
 
         return GroupResource::collection($group);
     }
@@ -50,7 +68,7 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-//rename attributes
+        //rename attributes
         $attributes = array(
             'gid' => 'group id',
             'g_name' => 'group name',
@@ -78,7 +96,7 @@ class GroupController extends Controller
         $group->g_status = $request -> input('g_status');
         $group->g_creation_date = $request -> input('g_creation_date');
         $group->g_owner = $request -> input('g_owner');
-
+        //process request
         if ($group->save()) {
             return response()->json(['message'=>'Group has been created']);
         } else {
@@ -93,12 +111,26 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function showGroups($id)
+    public function showGroups(Request $request)
     {
-        //$group = Group::findOrFail($id);
-
-        //  return new GroupResource($group);
-        $uid = $id;
+        //renaming attributes
+        $attributes = array(
+            'uid' => 'user id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'uid' => 'bail|exists:User|required|integer'
+            //custom error message if uid does not exist
+        ],['uid.exists' => 'The user id does not exists.']);
+        //apply validation request
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //process request
+        $uid = $request->input('uid');
+        //groups by member relation
         $groups = User_Groups::
         where('User_Groups.uid', $uid)
         ->join('Group', 'User_Groups.gid', 'Group.gid')
@@ -137,15 +169,18 @@ class GroupController extends Controller
             'g_name' => 'group name',
 
         );
+        //validation rules
         $validator = Validator::make($request->all(), [
             'gid' => 'bail|exists:Group|required|',
             'g_name' => 'bail|required|max:32',
+            //custom error message if gid does not exist
         ],['gid.exists' => 'The group id does not exists.']);
+        //apply renaming attributes
         $validator->setAttributeNames($attributes);
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
-
+        //process request
         $group = Group::where('gid', $request->input('gid'))->first();
         $group->g_name=$request->input('g_name');
         if ($group->save()) {
@@ -163,28 +198,30 @@ class GroupController extends Controller
      */
     public function destroy(Request $request)
     {
-
+        //assign request to data array
         $data = [ 'data' => $request->all() ];
-
+        //renaming attributes
         $attributes = array(
             'data.*.gid' => 'group id',
         );
+        //validate request rules
         $validator = Validator::make($data, [
             'data.*.gid' => 'bail|exists:Group|required|integer'
+            //custom error message if gid does not exist
         ],['data.*.gid.exists' => 'The group id does not exist.']);
-
+        //apply renaming attributes
         $validator->setAttributeNames($attributes);
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
-
+        //process request
         $to_delete = $request->all();
         $gids_to_delete = array_map(function ($item) {
             return $item['gid'];
         }, $to_delete);
         Group::whereIn('gid', $gids_to_delete)->update(['g_status'=>'disabled']);
         Group::whereIn('gid', $gids_to_delete)->delete();
-
+        //return response
         return response()->json(['message'=>'Group(s) has been removed']);
     }
 }

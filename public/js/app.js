@@ -2089,7 +2089,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 /**
@@ -2152,6 +2151,8 @@ __webpack_require__.r(__webpack_exports__);
       //search input
       close_dialog: "",
       //to close action table
+      uid: "",
+      gid: "",
       users_to_add_remove: [],
       //list of users to add or remove
       selected_users: [],
@@ -2171,7 +2172,7 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
-      fields: [//sortable columns used in b-table and index column style definition
+      fields: [//sortable columns used in b-table and index column style definition - uses btable built in sort
       {
         index: {
           thStyle: {
@@ -2204,11 +2205,11 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /**
-   * @descriptcion handles modal closing event
+   * @description handles modal closing event
    */
   mounted: function mounted() {
     /**
-     * @descriptcion handles modal closing event
+     * @description handles modal closing event
      */
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
@@ -2244,6 +2245,7 @@ __webpack_require__.r(__webpack_exports__);
             this.selected_users.push(this.users_to_add[i].uid);
           }
         } else {
+          //remove action
           for (var _i in this.users_to_remove) {
             this.selected_users.push(this.users_to_remove[_i].uid);
           }
@@ -2276,7 +2278,7 @@ __webpack_require__.r(__webpack_exports__);
       this.search = "";
       this.group_name_input = "";
       this.users_to_add_remove = [];
-      this.$emit("close"); //reset error prop 
+      this.$emit("close"); //reset error prop
 
       this.select();
       this.uncheck();
@@ -2287,6 +2289,13 @@ __webpack_require__.r(__webpack_exports__);
      */
     totalGroups: function totalGroups() {
       var _this2 = this;
+
+      //define id variables
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.uid = this.urlParams.get("uid"); //get user id
+
+      this.gid = this.urlParams.get("gid"); //get group id
 
       fetch("/groups").then(function (res) {
         return res.json();
@@ -2302,11 +2311,6 @@ __webpack_require__.r(__webpack_exports__);
      *  and sends the user data to be processed
      */
     sendUsers: function sendUsers() {
-      //send selected users to parent component to add users
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-
-      this.gid = this.path[this.path.length - 1]; //get group id from path
-
       for (var i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
@@ -2357,10 +2361,6 @@ __webpack_require__.r(__webpack_exports__);
      *  and sends the data for the new case study
      */
     sendGroupData: function sendGroupData() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-
-      this.uid = this.path[this.path.length - 2]; //get user id from path
-
       this.date = new Date().toJSON().slice(0, 10); //append data to new group
 
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
@@ -2413,6 +2413,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -2650,25 +2652,21 @@ __webpack_require__.r(__webpack_exports__);
     fetchGroups: function fetchGroups() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.curr_user = this.urlParams.get("uid"); //get user id
 
       if (this.group_selection) {
-        //call from group view, default selection is made
         //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
-        this.curr_user = this.path[this.path.length - 3]; //get ID from path
-
         this.curr_group = this.group_selection; //default dropdown selection
 
         this.disable_dropdown = true;
-      } else {
-        //called by user_groups vue
-        this.curr_user = this.path[this.path.length - 2]; //get ID from path
       }
 
-      fetch("/user_groups/" + this.curr_user).then(function (res) {
+      fetch("/user-groups/show?uid=" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.user_groups = res.data; //dropdown options 
+        _this2.user_groups = res.data; //dropdown options
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -2679,9 +2677,7 @@ __webpack_require__.r(__webpack_exports__);
      *  and sends the data for the new case study
      */
     sendCaseStudyData: function sendCaseStudyData() {
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
       //yyyy-mm-dd
-
       this.date = new Date().toJSON().slice(0, 10); //current date
       //append data to new case study
 
@@ -2949,6 +2945,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /**
  * this component displays a group page
@@ -3011,7 +3010,6 @@ __webpack_require__.r(__webpack_exports__);
    * gets all group cases to populate case section when the page is loaded
    */
   created: function created() {
-    this.fetchMembers();
     this.fetchGroupInfo();
     this.fetchCases();
   },
@@ -3099,10 +3097,6 @@ __webpack_require__.r(__webpack_exports__);
     fetchUsers: function fetchUsers() {
       var _this = this;
 
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-
-      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
-
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -3130,13 +3124,7 @@ __webpack_require__.r(__webpack_exports__);
     fetchMembers: function fetchMembers() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-
-      this.curr_user = Number(this.path[this.path.length - 3]); //get ID from path and perform Numeric conversion for filter
-
-      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
-
-      fetch("/group/" + this.curr_group + "/members").then(function (res) {
+      fetch("/group/members?gid=" + this.curr_group).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this2.users_to_remove = res.data; //populates action_table_dbox when removing a member from group
@@ -3148,6 +3136,8 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         _this2.group_members = res.data; //to render in view
+
+        _this2.userPriveleges();
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -3159,7 +3149,7 @@ __webpack_require__.r(__webpack_exports__);
     fetchCases: function fetchCases() {
       var _this3 = this;
 
-      fetch("/group/" + this.curr_group + "/cases").then(function (res) {
+      fetch("/group/cases?gid=" + this.curr_group).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this3.group_cases = res.data;
@@ -3174,20 +3164,23 @@ __webpack_require__.r(__webpack_exports__);
     fetchGroupInfo: function fetchGroupInfo() {
       var _this4 = this;
 
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      //define variables
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
-      this.curr_group = this.path[this.path.length - 1]; //get ID of group from path
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
 
-      fetch("/group/" + this.curr_group + "/info").then(function (res) {
+      this.curr_group = this.urlParams.get("gid"); //get group id
+
+      fetch("/group/info?gid=" + this.curr_group).then(function (res) {
         return res.json();
       }).then(function (res) {
+        console.log(res);
         _this4.group_data = res.data;
         _this4.group_name = _this4.group_data[0].g_name; //name of group
 
         _this4.group_owner = _this4.group_data[0].g_owner; // id of owner
 
-        _this4.userPriveleges(); //set user priveleges
-
+        _this4.fetchMembers();
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -3199,8 +3192,6 @@ __webpack_require__.r(__webpack_exports__);
     changeGroupName: function changeGroupName() {
       var _this5 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.curr_group = this.path[this.path.length - 1];
       fetch("/group/name/update", {
         method: "post",
         headers: new Headers({
@@ -3218,7 +3209,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this5.group_name = _this5.temp;
+          _this5.group_name = _this5.temp; //group name is the updated name
 
           _this5.disableEditTitle(); //alert box
 
@@ -4155,6 +4146,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /**
@@ -4271,7 +4301,8 @@ __webpack_require__.r(__webpack_exports__);
             return [];
           }
         }
-      }
+      } //search fiter
+
 
       return this.page_of_cases.filter(function (page_of_cases) {
         return page_of_cases.c_title.includes(_this.search);
@@ -4279,41 +4310,72 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    sortItems: function sortItems() {
-      if (this.curr_tab == 1) {
-        this.sorting_tab1 *= -1; //  this.enable_sorting_tab1 = true;
-      } else {
-        this.sorting_tab2 *= -1; //   this.enable_sorting_tab2 = true;
-      }
-
-      this.sortArr();
-    },
-    sortArr: function sortArr() {
+    /**
+     * @description - refreshes the paginator
+     */
+    updatePaginator: function updatePaginator() {
       var _this2 = this;
 
+      // Remove paginator from the DOM
+      this.reload_paginator = false;
+      this.$nextTick().then(function () {
+        // Add the paginator back in
+        _this2.reload_paginator = true;
+      });
+    },
+
+    /**
+     * @description Sorts the content of the current opened tab
+     */
+    sortArr: function sortArr() {
+      var _this3 = this;
+
       if (this.curr_tab == 1) {
+        //current tab content will be filtered content
         this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
-          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this2.sorting_tab1 : -_this2.sorting_tab1;
-        });
+          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this3.sorting_tab1 : -_this3.sorting_tab1;
+        }); //sort icon display is set to sort direction
+
         this.sort_order_tab1_icon = this.sorting_tab1;
       } else {
+        //curr tab is 2
+        //current tab content will be filtered content
         this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
-          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this2.sorting_tab2 : -_this2.sorting_tab2;
-        });
+          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this3.sorting_tab2 : -_this3.sorting_tab2;
+        }); //sort icon display is set to sort direction
+
         this.sort_order_tab2_icon = this.sorting_tab2;
       }
 
       this.updatePaginator();
     },
-    deSort: function deSort() {
+
+    /**
+     * @description sets sorting direction for current tab and call sorting method
+     */
+    sortItems: function sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1; //  this.enable_sorting_tab1 = true;
+      } else {
+        //curr tab is 2
+        this.sorting_tab2 *= -1; //   this.enable_sorting_tab2 = true;
+      }
+
+      this.sortArr(); //call sorting algorithm
+    },
+
+    /**
+     * @description resets all sort variables and icons
+     */
+    unSort: function unSort() {
       if (this.curr_tab == 1) {
         this.sorting_tab1 = -1;
         this.sort_order_tab1_icon = 0;
-        this.page_content_tab1 = this.cases_user_is_owner;
+        this.page_content_tab1 = this.cases_user_is_owner; //original content
       } else {
         this.sorting_tab2 = -1;
         this.sort_order_tab2_icon = 0;
-        this.page_content_tab2 = this.user_cases_by_group;
+        this.page_content_tab2 = this.user_cases_by_group; //original content
       }
 
       this.updatePaginator();
@@ -4348,20 +4410,6 @@ __webpack_require__.r(__webpack_exports__);
     onChangePage: function onChangePage(page_of_cases) {
       // update page of Cases
       this.page_of_cases = page_of_cases;
-    },
-
-    /**
-     * @description - refreshes the paginator
-     */
-    updatePaginator: function updatePaginator() {
-      var _this3 = this;
-
-      // Remove paginator from the DOM
-      this.reload_paginator = false;
-      this.$nextTick().then(function () {
-        // Add the paginator back in
-        _this3.reload_paginator = true;
-      });
     },
 
     /**
@@ -4426,17 +4474,19 @@ __webpack_require__.r(__webpack_exports__);
     fetchCases: function fetchCases() {
       var _this4 = this;
 
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
-      this.curr_user = Number(this.path[this.path.length - 2]); //get user id from path
+      this.curr_user = Number(this.urlParams.get('uid')); //get user id - numeric conversion for filter user
 
-      fetch("/user_cases/" + this.curr_user).then(function (res) {
+      fetch("/user-cases/show?uid=" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.user_cases = res.data;
+        _this4.user_cases = res.data; //filter cases where user is owner
+
         _this4.cases_user_is_owner = _this4.user_cases.filter(function (x) {
           return x.c_owner == _this4.curr_user;
-        });
+        }); //filter cases that the user has through group relation
+
         _this4.user_cases_by_group = _this4.user_cases.filter(function (x) {
           return x.c_owner !== _this4.curr_user;
         }); //content varies according to tab
@@ -4444,9 +4494,11 @@ __webpack_require__.r(__webpack_exports__);
         _this4.page_content_tab1 = _this4.cases_user_is_owner;
         _this4.page_content_tab2 = _this4.user_cases_by_group;
 
-        _this4.select();
+        _this4.select(); //unselect all
 
-        _this4.uncheck();
+
+        _this4.uncheck(); //uncheck
+
 
         _this4.updatePaginator(); //refresh with updated list of cases
 
@@ -4544,7 +4596,7 @@ __webpack_require__.r(__webpack_exports__);
             } //send request
 
 
-            fetch("/user_cases/remove", {
+            fetch("/user-cases/remove", {
               method: "delete",
               headers: new Headers({
                 "Content-Type": "application/json",
@@ -4595,6 +4647,44 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap-vue */ "./node_modules/bootstrap-vue/esm/index.js");
 /* harmony import */ var bootbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootbox */ "./node_modules/bootbox/bootbox.all.js");
 /* harmony import */ var bootbox__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootbox__WEBPACK_IMPORTED_MODULE_1__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5013,7 +5103,8 @@ __webpack_require__.r(__webpack_exports__);
             return [];
           }
         }
-      }
+      } //search filter
+
 
       return this.page_of_groups.filter(function (page_of_groups) {
         return page_of_groups.g_name.includes(_this.search);
@@ -5021,6 +5112,46 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    /**
+     * @description refreshes the paginator
+     */
+    updatePaginator: function updatePaginator() {
+      var _this2 = this;
+
+      // Remove paginator from the DOM
+      this.reload_paginator = false;
+      this.$nextTick().then(function () {
+        // Add the paginator back in
+        _this2.reload_paginator = true;
+      });
+    },
+
+    /**
+     * @description Sorts the content of the current opened tab
+     */
+    sortArr: function sortArr() {
+      var _this3 = this;
+
+      if (this.curr_tab == 1) {
+        //current tab content will be filtered content
+        this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
+          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab1 : -_this3.sorting_tab1;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab1_icon = this.sorting_tab1;
+      } else {
+        //curr tab is 2
+        //current tab content will be filtered content
+        this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
+          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab2 : -_this3.sorting_tab2;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab2_icon = this.sorting_tab2;
+      }
+
+      this.updatePaginator();
+    },
+
     /**
      * @description sets sorting direction for current tab and call sorting method
      */
@@ -5036,43 +5167,17 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description Sorts the content of the current opened tab
-     */
-    sortArr: function sortArr() {
-      var _this2 = this;
-
-      if (this.curr_tab == 1) {
-        //current tab content will be filtered content
-        this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
-          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this2.sorting_tab1 : -_this2.sorting_tab1;
-        }); //sort icon display is set to sort direction
-
-        this.sort_order_tab1_icon = this.sorting_tab1;
-      } else {
-        //curr tab is 2
-        //current tab content will be filtered content
-        this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
-          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this2.sorting_tab2 : -_this2.sorting_tab2;
-        }); //sort icon display is set to sort direction
-
-        this.sort_order_tab2_icon = this.sorting_tab2;
-      }
-
-      this.updatePaginator();
-    },
-
-    /**
      * @description resets all sort variables and icons
      */
     deSort: function deSort() {
       if (this.curr_tab == 1) {
         this.sorting_tab1 = -1;
         this.sort_order_tab1_icon = 0;
-        this.page_content_tab1 = this.groups_user_is_owner;
+        this.page_content_tab1 = this.groups_user_is_owner; //original content
       } else {
         this.sorting_tab2 = -1;
         this.sort_order_tab2_icon = 0;
-        this.page_content_tab2 = this.groups_user_is_member;
+        this.page_content_tab2 = this.groups_user_is_member; //original content
       }
 
       this.updatePaginator();
@@ -5106,20 +5211,6 @@ __webpack_require__.r(__webpack_exports__);
     onChangePage: function onChangePage(page_of_groups) {
       // update page of Groups
       this.page_of_groups = page_of_groups;
-    },
-
-    /**
-     * @description refreshes the paginator
-     */
-    updatePaginator: function updatePaginator() {
-      var _this3 = this;
-
-      // Remove paginator from the DOM
-      this.reload_paginator = false;
-      this.$nextTick().then(function () {
-        // Add the paginator back in
-        _this3.reload_paginator = true;
-      });
     },
 
     /**
@@ -5184,10 +5275,6 @@ __webpack_require__.r(__webpack_exports__);
     fetchUsers: function fetchUsers() {
       var _this4 = this;
 
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
-
-      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
-
       fetch("/users").then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -5208,11 +5295,12 @@ __webpack_require__.r(__webpack_exports__);
     fetchGroups: function fetchGroups() {
       var _this5 = this;
 
-      this.path = window.location.pathname.split("/"); //slice URL in array to get ID
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
-      this.curr_user = Number(this.path[this.path.length - 2]); //get ID from path
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+      // fetch("/user_groups/" + this.curr_user)
 
-      fetch("/user_groups/" + this.curr_user).then(function (res) {
+      fetch("/user-groups/show?uid=" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this5.user_groups = res.data;
@@ -5229,7 +5317,8 @@ __webpack_require__.r(__webpack_exports__);
         _this5.page_content_tab1 = _this5.groups_user_is_owner;
         _this5.page_content_tab2 = _this5.groups_user_is_member;
 
-        _this5.select();
+        _this5.select(); //deselect all
+
 
         _this5.uncheck(); //uncheck any selected items
 
@@ -5318,7 +5407,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
-        console.log(res); // this.fetchGroups();
+        console.log(res);
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
@@ -5358,7 +5447,7 @@ __webpack_require__.r(__webpack_exports__);
             } //send request
 
 
-            fetch("/user_groups/remove", {
+            fetch("/user-groups/remove", {
               method: "delete",
               headers: new Headers({
                 "Content-Type": "application/json",
@@ -73694,7 +73783,7 @@ var render = function() {
               "div",
               { key: member.uid, staticClass: "col-lg-4 mb-4" },
               [
-                _c("div", { staticClass: "card h-100 text-center " }, [
+                _c("div", { staticClass: "card h-100 text-center" }, [
                   _c(
                     "i",
                     {
@@ -73732,7 +73821,7 @@ var render = function() {
     _vm._v(" "),
     _c(
       "h1",
-      { staticClass: "mt-5 text-center ", attrs: { id: "cases_header" } },
+      { staticClass: "mt-5 text-center", attrs: { id: "cases_header" } },
       [
         _c(
           "span",
@@ -73918,7 +74007,7 @@ var render = function() {
               "a",
               {
                 staticClass: "dropdown-item",
-                attrs: { href: "/user/" + _vm.uid + "/cases" }
+                attrs: { href: "/user/cases?uid=" + _vm.uid }
               },
               [_vm._v("Cases")]
             ),
@@ -73927,7 +74016,7 @@ var render = function() {
               "a",
               {
                 staticClass: "dropdown-item",
-                attrs: { href: "/user/" + _vm.uid + "/groups" }
+                attrs: { href: "/user/groups?uid=" + _vm.uid }
               },
               [_vm._v("Groups")]
             ),
@@ -74913,11 +75002,16 @@ var render = function() {
                     _c(
                       "a",
                       {
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to unsort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
-                            return _vm.deSort()
+                            return _vm.unSort()
                           }
                         }
                       },
@@ -74935,7 +75029,12 @@ var render = function() {
                       "a",
                       {
                         staticStyle: { display: "block" },
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to sort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
@@ -74945,6 +75044,7 @@ var render = function() {
                       },
                       [
                         _vm._v("\n            Title\n            "),
+                        _vm._v(" "),
                         _vm.sort_order_tab1_icon == 0
                           ? _c("i", {
                               staticClass: "fa fa-fw fa-sort",
@@ -75108,11 +75208,16 @@ var render = function() {
                       "a",
                       {
                         staticStyle: { display: "block" },
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to unsort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
-                            return _vm.deSort()
+                            return _vm.unSort()
                           }
                         }
                       },
@@ -75130,7 +75235,12 @@ var render = function() {
                       "a",
                       {
                         staticStyle: { display: "block" },
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to sort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
@@ -75140,6 +75250,7 @@ var render = function() {
                       },
                       [
                         _vm._v("\n            Title\n            "),
+                        _vm._v(" "),
                         _vm.sort_order_tab2_icon == 0
                           ? _c("i", {
                               staticClass: "fa fa-fw fa-sort",
@@ -75231,9 +75342,7 @@ var render = function() {
         ],
         1
       )
-    ]),
-    _vm._v(" "),
-    _c("div", { attrs: { id: "container" } })
+    ])
   ])
 }
 var staticRenderFns = [
@@ -75697,7 +75806,12 @@ var render = function() {
                     _c(
                       "a",
                       {
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to unsort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
@@ -75719,7 +75833,12 @@ var render = function() {
                       "a",
                       {
                         staticStyle: { display: "block" },
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to sort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
@@ -75729,6 +75848,7 @@ var render = function() {
                       },
                       [
                         _vm._v("\n            Name\n            "),
+                        _vm._v(" "),
                         _vm.sort_order_tab1_icon == 0
                           ? _c("i", {
                               staticClass: "fa fa-fw fa-sort",
@@ -75837,9 +75957,9 @@ var render = function() {
                             staticClass: "p-2",
                             attrs: {
                               href:
-                                "/user/" +
+                                "/user/group?uid=" +
                                 _vm.curr_user +
-                                "/group/" +
+                                "&gid=" +
                                 data.item.gid
                             }
                           },
@@ -75901,7 +76021,12 @@ var render = function() {
                       "a",
                       {
                         staticStyle: { display: "block" },
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to unsort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
@@ -75923,7 +76048,12 @@ var render = function() {
                       "a",
                       {
                         staticStyle: { display: "block" },
-                        attrs: { href: "#" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to sort table"
+                        },
                         on: {
                           click: function($event) {
                             $event.preventDefault()
@@ -75933,6 +76063,7 @@ var render = function() {
                       },
                       [
                         _vm._v("\n            Name\n            "),
+                        _vm._v(" "),
                         _vm.sort_order_tab2_icon == 0
                           ? _c("i", {
                               staticClass: "fa fa-fw fa-sort",
@@ -75994,9 +76125,9 @@ var render = function() {
                             staticClass: "p-2",
                             attrs: {
                               href:
-                                "/user/" +
+                                "/user/group?uid=" +
                                 _vm.curr_user +
-                                "/group/" +
+                                "&gid=" +
                                 data.item.gid
                             }
                           },
@@ -76033,9 +76164,7 @@ var render = function() {
         ],
         1
       )
-    ]),
-    _vm._v(" "),
-    _c("div", { attrs: { id: "container" } })
+    ])
   ])
 }
 var staticRenderFns = [
