@@ -3013,13 +3013,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchUsersEditing: function fetchUsersEditing(cid) {
       var _this8 = this;
 
-      fetch("/user/" + this.uid).then(function (res) {
+      fetch("/user/edit/" + cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this8.users = res.data;
+        _this8.usersEditing = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
+    },
+    //TODO
+    updateUsersEditing: function updateUsersEditing(user_editing_id) {
+      this.updated_user_edit = {
+        c_group: this.case_to_show[0].c_group
+      };
+      fetch("/user/" + user_editing_id + "/edit/", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.updated_case)
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+      this.fetchUsersEditing(this.cid);
     },
     fetchGroup: function fetchGroup(gid) {
       var _this9 = this;
@@ -55238,7 +55260,7 @@ var render = function() {
                     _vm._v(
                       "\n          Users currently editing this case study:\n          "
                     ),
-                    _vm._l(_vm.users, function(user, uid) {
+                    _vm._l(_vm.usersEditing, function(user, uid) {
                       return _c("span", { key: uid, staticClass: "badge" }, [
                         _vm._v(
                           _vm._s(user.first_name) + " " + _vm._s(user.last_name)

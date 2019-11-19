@@ -133,7 +133,7 @@
             Users currently editing this case study:
             <span
               class="badge"
-              v-for="(user,uid) in users"
+              v-for="(user,uid) in usersEditing"
               :key="uid"
             >{{ user.first_name }} {{user.last_name}}</span>
           </p>
@@ -363,12 +363,35 @@ export default {
     },
     //TODO
     fetchUsersEditing(cid) {
-      fetch("/user/" + this.uid)
+      fetch("/user/edit/" + cid)
         .then(res => res.json())
         .then(res => {
-          this.users = res.data;
+          this.usersEditing = res.data;
         })
         .catch(err => console.log(err));
+    },
+    //TODO
+    updateUsersEditing(user_editing_id) {
+      this.updated_user_edit = {
+        c_group: this.case_to_show[0].c_group
+      };
+      fetch("/user/" + user_editing_id + "/edit/", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.updated_case)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+      this.fetchUsersEditing(this.cid);
     },
     fetchGroup(gid) {
       fetch("/case/group/" + this.gid)

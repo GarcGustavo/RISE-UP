@@ -52,6 +52,12 @@ Route::get('/case/{id}/body', 'CaseController@showCaseBody')->name('case/body');
 //List users
 Route::get('/users', 'UserController@index');
 
+//List users editing cid
+Route::get('/user/edit/{id}', 'UserController@showUsersEditing');
+
+//Update users editing cid
+Route::post('/user/{id}/edit', 'UserController@updateUsersEditing');
+
 //List groups
 Route::get('/groups', 'GroupController@index');
 
