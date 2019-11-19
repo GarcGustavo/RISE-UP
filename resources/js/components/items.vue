@@ -143,7 +143,7 @@
             <draggable
               v-model="items"
               animation="250"
-              :options="{disabled: !editing}"
+              :options="{disabled: (!editing || typing)}"
               @start="drag=true"
               @end="drag=false"
             >
@@ -174,6 +174,8 @@
                               v-if="editing"
                               no-resize
                               @keydown="editingCase"
+                              @mouseover="typing = true"
+                              @mouseleave="typing = false"
                             />
                           </div>
                           <div class="form-group">
@@ -184,6 +186,8 @@
                               v-model="item.i_content"
                               v-if="editing"
                               @keydown="editingCase"
+                              @mouseover="typing = true"
+                              @mouseleave="typing = false"
                             ></textarea>
                           </div>
                         </div>
@@ -217,6 +221,7 @@ export default {
     return {
       editing: false,
       showModal: false,
+      typing: false,
       action: "",
       actor: "",
       total_items: "",
@@ -378,8 +383,7 @@ export default {
         this.updated_user_edit = {
           current_edit_cid: this.cid
         };
-      }
-      else{
+      } else {
         this.updated_user_edit = {
           current_edit_cid: "0"
         };

@@ -2837,6 +2837,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -2850,6 +2854,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return _ref = {
       editing: false,
       showModal: false,
+      typing: false,
       action: "",
       actor: "",
       total_items: "",
@@ -55300,7 +55305,7 @@ var render = function() {
                   {
                     attrs: {
                       animation: "250",
-                      options: { disabled: !_vm.editing }
+                      options: { disabled: !_vm.editing || _vm.typing }
                     },
                     on: {
                       start: function($event) {
@@ -55398,6 +55403,16 @@ var render = function() {
                                                   },
                                                   on: {
                                                     keydown: _vm.editingCase,
+                                                    mouseover: function(
+                                                      $event
+                                                    ) {
+                                                      _vm.typing = true
+                                                    },
+                                                    mouseleave: function(
+                                                      $event
+                                                    ) {
+                                                      _vm.typing = false
+                                                    },
                                                     input: function($event) {
                                                       if (
                                                         $event.target.composing
@@ -55441,6 +55456,16 @@ var render = function() {
                                                   },
                                                   on: {
                                                     keydown: _vm.editingCase,
+                                                    mouseover: function(
+                                                      $event
+                                                    ) {
+                                                      _vm.typing = true
+                                                    },
+                                                    mouseleave: function(
+                                                      $event
+                                                    ) {
+                                                      _vm.typing = false
+                                                    },
                                                     input: function($event) {
                                                       if (
                                                         $event.target.composing
