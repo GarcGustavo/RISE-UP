@@ -2836,6 +2836,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -2901,6 +2902,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchCaseItems();
     this.fetchCase();
     this.fetchCaseParameters();
+    this.fetchUsersEditing(this.cid);
   },
   mounted: function mounted() {
     var _this = this;
@@ -3023,9 +3025,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //TODO
     updateUsersEditing: function updateUsersEditing(user_editing_id) {
-      this.updated_user_edit = {
-        c_group: this.case_to_show[0].c_group
-      };
+      if (this.editing) {
+        this.updated_user_edit = {
+          current_edit_cid: this.cid
+        };
+      } else {
+        this.updated_user_edit = {
+          current_edit_cid: "0"
+        };
+      }
+
       fetch("/user/" + user_editing_id + "/edit/", {
         method: "post",
         headers: new Headers({
@@ -3033,7 +3042,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_case)
+        body: JSON.stringify(this.updated_user_edit)
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -3212,10 +3221,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchCaseItems();
       this.fetchItems();
     },
+    //TODO
     languageToggle: function languageToggle() {},
     onEdit: function onEdit() {
       this.editing = true;
       this.fetchUserGroups();
+
+      for (var user in this.users) {
+        this.updateUsersEditing(this.users[user].uid);
+      }
     },
     onCancel: function onCancel() {
       this.gid = this.initial_gid;
@@ -3225,6 +3239,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchCase();
       this.fetchCaseParameters();
       this.editing = false;
+
+      for (var user in this.users) {
+        this.updateUsersEditing(this.users[user].uid);
+      }
     },
     onSubmit: function onSubmit(items) {
       this.updateItems(items);
@@ -55197,7 +55215,8 @@ var render = function() {
                           on: {
                             click: function($event) {
                               return _vm.onCancel()
-                            }
+                            },
+                            keydown: _vm.editingCase
                           }
                         },
                         [_vm._v("Cancel")]

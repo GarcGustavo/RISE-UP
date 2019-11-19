@@ -112,6 +112,7 @@
               class="btn btn-primary btn-sm mb-2"
               style="background: #c0c0c0; border-color: #c0c0c0; color: black; margin: 10px"
               v-on:click="onCancel()"
+              @keydown="editingCase"
               v-if="this.editing"
             >Cancel</button>
             <button
@@ -269,6 +270,7 @@ export default {
     this.fetchCaseItems();
     this.fetchCase();
     this.fetchCaseParameters();
+    this.fetchUsersEditing(this.cid);
   },
 
   mounted() {
@@ -372,9 +374,16 @@ export default {
     },
     //TODO
     updateUsersEditing(user_editing_id) {
-      this.updated_user_edit = {
-        c_group: this.case_to_show[0].c_group
-      };
+      if (this.editing) {
+        this.updated_user_edit = {
+          current_edit_cid: this.cid
+        };
+      }
+      else{
+        this.updated_user_edit = {
+          current_edit_cid: "0"
+        };
+      }
       fetch("/user/" + user_editing_id + "/edit/", {
         method: "post",
         headers: new Headers({
@@ -382,7 +391,7 @@ export default {
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_case)
+        body: JSON.stringify(this.updated_user_edit)
       })
         .then(res => res.text())
         .then(text => {
@@ -555,10 +564,14 @@ export default {
       this.fetchCaseItems();
       this.fetchItems();
     },
+    //TODO
     languageToggle() {},
     onEdit() {
       this.editing = true;
       this.fetchUserGroups();
+      for (let user in this.users) {
+        this.updateUsersEditing(this.users[user].uid);
+      }
     },
     onCancel() {
       this.gid = this.initial_gid;
@@ -568,6 +581,9 @@ export default {
       this.fetchCase();
       this.fetchCaseParameters();
       this.editing = false;
+      for (let user in this.users) {
+        this.updateUsersEditing(this.users[user].uid);
+      }
     },
     onSubmit(items) {
       this.updateItems(items);

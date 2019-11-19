@@ -79,8 +79,6 @@ class UserController extends Controller
     {
         $uid = $id;
         $current_edit_cid = $request -> input('current_edit_cid');
-
-        $user = User::where('User.current_edit_cid', $cid)->get();
         User::where(['uid' => $uid])->update(['current_edit_cid' => $current_edit_cid]);
         return response()->json(['message'=>'Updated user editing successfully']);
     }
