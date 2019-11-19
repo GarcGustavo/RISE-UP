@@ -2841,6 +2841,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -2874,6 +2875,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       all_items: [],
       case_parameters: [],
       parameter_options: [],
+      selected_options: [],
       ready: false,
       cid: "",
       initial_gid: "",
@@ -2910,83 +2912,74 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchUsersEditing(this.cid);
   },
   mounted: function mounted() {
-    var _this = this;
-
-    Echo.join("App.User.".concat(this.user.uid)).here(function (users) {
-      _this.usersEditing = users;
-    }).joining(function (user) {
-      _this.usersEditing.push(user);
-    }).leaving(function (user) {
-      _this.usersEditing = _this.usersEditing.filter(function (u) {
-        return u != user;
-      });
-    }).listenForWhisper("editing", function (e) {
-      _this.case_study.c_title = e.title;
-      _this.items.i_content = e.body;
+    Echo.join("App.User.".concat(this.user.uid)).here(function (users) {//this.usersEditing = users;
+    }).joining(function (user) {//this.usersEditing.push(users[0]);
+    }).leaving(function (user) {//this.usersEditing = this.usersEditing.filter(u => u != users[0]);
+    }).listenForWhisper("editing", function (e) {// this.case_study.c_title = e.title;
+      // this.items.i_content = e.body;
     }).listenForWhisper("saved", function (e) {
-      _this.case_study.c_status = e.status; // clear is status after 1s
-
-      setTimeout(function () {
-        _this.case_study.c_status = "";
+      //this.case_study.c_status = e.status;
+      // clear is status after 1s
+      setTimeout(function () {//this.case_study.c_status = "";
       }, 1000);
     });
   },
   methods: {
     editingCase: function editingCase() {
-      var _this2 = this;
+      var _this = this;
 
       var channel = Echo.join("App.User.".concat(this.user.uid)); // show changes after 1s
 
       setTimeout(function () {
         channel.whisper("editing", {
-          title: _this2.case_study.c_title,
-          body: _this2.items.i_content
+          title: _this.case_study.c_title,
+          body: _this.items.i_content
         });
       }, 1000);
     },
     fetchCaseItems: function fetchCaseItems() {
-      var _this3 = this;
+      var _this2 = this;
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.items = res.data;
+        _this2.items = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchItems: function fetchItems() {
-      var _this4 = this;
+      var _this3 = this;
 
       fetch("/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.all_items = res.data;
-        _this4.total_items = _this4.all_items.length + 1;
+        _this3.all_items = res.data;
+        _this3.total_items = _this3.all_items.length + 1;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchCase: function fetchCase() {
-      var _this5 = this;
+      var _this4 = this;
 
       this.path = window.location.pathname.split("/");
       this.cid = Number(this.path[this.path.length - 2]);
       fetch("/case/" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this5.case_to_show = res.data;
-        _this5.uid = Number(_this5.case_to_show[0].c_owner);
-        _this5.gid = Number(_this5.case_to_show[0].c_group);
-        _this5.initial_gid = _this5.gid;
+        _this4.case_to_show = res.data;
+        _this4.uid = Number(_this4.case_to_show[0].c_owner);
+        _this4.gid = Number(_this4.case_to_show[0].c_group);
+        _this4.initial_gid = _this4.gid;
 
-        _this5.fetchUser(_this5.uid);
+        _this4.fetchUser(_this4.uid);
 
-        _this5.fetchGroup(_this5.gid);
+        _this4.fetchGroup(_this4.gid);
 
         console.log(res.data);
       })["catch"](function (err) {
@@ -2994,23 +2987,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     fetchUser: function fetchUser(uid) {
-      var _this6 = this;
+      var _this5 = this;
 
       fetch("/user/" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this6.users = res.data;
+        _this5.users = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchUserGroups: function fetchUserGroups() {
-      var _this7 = this;
+      var _this6 = this;
 
       fetch("/groups/").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this7.all_groups = res.data;
+        _this6.all_groups = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(res.data);
@@ -3018,12 +3011,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //TODO
     fetchUsersEditing: function fetchUsersEditing(cid) {
-      var _this8 = this;
+      var _this7 = this;
 
       fetch("/user/edit/" + cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this8.usersEditing = res.data;
+        _this7.usersEditing = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -3058,23 +3051,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchUsersEditing(this.cid);
     },
     fetchGroup: function fetchGroup(gid) {
-      var _this9 = this;
+      var _this8 = this;
 
       fetch("/case/group/" + this.gid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this9.groups = res.data;
+        _this8.groups = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this10 = this;
+      var _this9 = this;
 
       fetch("/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this10.case_parameters = res.data;
+        _this9.case_parameters = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -3082,12 +3075,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchParameterOptions();
     },
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this11 = this;
+      var _this10 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this11.parameter_options = res.data;
+        _this10.parameter_options = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -3254,10 +3247,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.updateCase();
       this.editing = false;
     },
-    onSelect: function onSelect(selected_gid) {
+    onSelectGroup: function onSelectGroup(selected_gid) {
       this.gid = selected_gid;
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
+    },
+    //TODO
+    onSelectOption: function onSelectOption(selected_op, index) {
+      this.selected_options[index] = selected_op.o_content; //this.fetchGroup(this.gid);
     }
   }
 });
@@ -55027,7 +55024,7 @@ var render = function() {
                                 attrs: { href: "#" },
                                 on: {
                                   click: function($event) {
-                                    return _vm.onSelect(group.gid)
+                                    return _vm.onSelectGroup(group.gid)
                                   }
                                 }
                               },
@@ -55094,7 +55091,9 @@ var render = function() {
                           },
                           [
                             _vm._v(
-                              _vm._s(case_parameter.csp_name) + ": Selection"
+                              _vm._s(case_parameter.csp_name) +
+                                ": " +
+                                _vm._s(_vm.selected_options[index])
                             )
                           ]
                         ),
@@ -55113,7 +55112,12 @@ var render = function() {
                                 {
                                   key: sd,
                                   staticClass: "dropdown-item",
-                                  attrs: { href: "#" }
+                                  attrs: { href: "#" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.onSelectOption(option, index)
+                                    }
+                                  }
                                 },
                                 [
                                   _vm._v(

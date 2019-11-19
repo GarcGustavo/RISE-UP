@@ -50,7 +50,7 @@
                 href="#"
                 v-for="(group, index) in this.all_groups.filter(group => group.g_owner == case_to_show[0].c_owner)"
                 :key="index"
-                v-on:click="onSelect(group.gid)"
+                v-on:click="onSelectGroup(group.gid)"
               >{{index + 1}}: {{group.g_name}}</option>
             </div>
           </div>
@@ -74,13 +74,14 @@
                   style="background: #c0c0c0; border-color: #c0c0c0; color: black"
                   id="dropdownMenuButton"
                   data-toggle="dropdown"
-                >{{case_parameter.csp_name}}: Selection</button>
+                >{{case_parameter.csp_name}}: {{selected_options[index]}}</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a
                     class="dropdown-item"
                     href="#"
                     v-for="(option, sd) in filteredOptions(case_parameter.csp_id)"
                     :key="sd"
+                    v-on:click="onSelectOption(option, index)"
                   >{{sd + 1}}: {{option.o_content}}</a>
                 </div>
               </div>
@@ -241,6 +242,7 @@ export default {
       all_items: [],
       case_parameters: [],
       parameter_options: [],
+      selected_options: [],
       ready: false,
       cid: "",
       initial_gid: "",
@@ -281,24 +283,24 @@ export default {
   mounted() {
     Echo.join(`App.User.${this.user.uid}`)
       .here(users => {
-        this.usersEditing = users;
+        //this.usersEditing = users;
       })
       .joining(user => {
-        this.usersEditing.push(user);
+        //this.usersEditing.push(users[0]);
       })
       .leaving(user => {
-        this.usersEditing = this.usersEditing.filter(u => u != user);
+        //this.usersEditing = this.usersEditing.filter(u => u != users[0]);
       })
       .listenForWhisper("editing", e => {
-        this.case_study.c_title = e.title;
-        this.items.i_content = e.body;
+        // this.case_study.c_title = e.title;
+        // this.items.i_content = e.body;
       })
       .listenForWhisper("saved", e => {
-        this.case_study.c_status = e.status;
+        //this.case_study.c_status = e.status;
 
         // clear is status after 1s
         setTimeout(() => {
-          this.case_study.c_status = "";
+          //this.case_study.c_status = "";
         }, 1000);
       });
   },
@@ -594,10 +596,15 @@ export default {
       this.updateCase();
       this.editing = false;
     },
-    onSelect(selected_gid) {
+    onSelectGroup(selected_gid) {
       this.gid = selected_gid;
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
+    },
+    //TODO
+    onSelectOption(selected_op, index) {
+      this.selected_options[index] = selected_op.o_content;
+      //this.fetchGroup(this.gid);
     }
   }
 };
