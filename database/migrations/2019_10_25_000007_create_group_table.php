@@ -20,7 +20,7 @@ class CreateGroupTable extends Migration
             $table->date('g_creation_date');
             $table->unsignedBigInteger('g_owner');
             $table->foreign('g_owner')->references('uid')->on('User');
-        
+            $table->softDeletes();
         });
     }
 

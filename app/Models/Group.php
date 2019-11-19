@@ -20,9 +20,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class group extends Model
 {
+    use SoftDeletes;
+
+   protected $primaryKey = 'gid';
+
     public $table = 'Group';
 
-    //protected $dates = false;
+    protected $dates = ['deleted_at'];
 
     public $timestamps = false;
 
@@ -30,7 +34,8 @@ class group extends Model
         'g_name',
         'g_status',
         'g_creation_date',
-        'g_owner'
+        'g_owner',
+        
     ];
 
     /**
@@ -81,4 +86,5 @@ class group extends Model
     {
         return $this->belongsToMany(\App\Models\User::class, 'user_groups');
     }
+
 }

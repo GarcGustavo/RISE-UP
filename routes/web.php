@@ -31,7 +31,6 @@ Route::get('/user/{id}/groups', function () {
     return view('user_groups');
 });
 
-
 Route::get('/user/{id}/cases', function () {
     return view('user_cases');
 });
@@ -40,15 +39,15 @@ Route::get('/home', function () {
     return view('home');
 });
 
-Route::get('/case/{id}/body', function () {
-    return view('case_study_body');
-});
+// Route::get('/case/{id}/body', function () {
+//     return view('case_study_body');
+// });
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Auth::routes();
+Route::get('/case/{id}/body', 'CaseController@showCaseBody')->name('case/body');
 
 //List users
 Route::get('/users', 'UserController@index');
@@ -97,6 +96,9 @@ Route::get('/user_cases/{id}', 'CaseController@show_all_user_cases');
 
 //Add users to group
 Route::post('/group/members/add', 'User_GroupsController@store');
+
+//Update title/description/parameters in a case
+Route::post('/case/{id}/update', 'CaseController@updateCaseDetails');
 
 //Add items to a case
 Route::post('/item/add', 'ItemController@addCaseItem');

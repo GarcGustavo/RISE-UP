@@ -1,4 +1,4 @@
-k<template>
+<template>
   <div class="body mb-5 mt-5 border shadow" style="background: #c0c0c0;">
     <div class="container-fluid">
       <div class="row" style="margin: 50px;">
@@ -8,7 +8,10 @@ k<template>
               <div class="form-group">
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control text-capitalize"
+                  style="text-align: center;
+                  font-weight: 500;
+                  font-size: 2rem;"
                   v-model="case_study.c_title"
                   v-if="editing"
                   :maxlength="32"
@@ -22,13 +25,35 @@ k<template>
               v-for="(user,index) in users"
               :key="index + 10"
             >Created by: {{user.first_name}} {{user.last_name}}</h5>
-            <h5
-              class="text-center mt-3"
-              v-for="(group,index) in groups"
-              :key="index + 20"
-              style="margin-bottom: 50px;"
-            >Group: {{group.g_name}}</h5>
+            <div v-if="!editing">
+              <h5
+                class="text-center mt-3"
+                v-for="(group,index) in groups"
+                :key="index + 20"
+                style="margin-bottom: 50px;"
+              >Group: {{group.g_name}}</h5>
+            </div>
           </template>
+          <div class="dropdown" style="text-align: center;" v-if="editing">
+            <button
+              v-for="(group,index) in groups"
+              :key="index + 30"
+              class="btn btn-primary dropdown-toggle"
+              type="button"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black"
+              id="dropdownMenuButton"
+              data-toggle="dropdown"
+            >Group: {{group.g_name}}</button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="drop">
+              <option
+                class="dropdown-item"
+                href="#"
+                v-for="(group, index) in this.all_groups.filter(group => group.g_owner == case_to_show[0].c_owner)"
+                :key="index"
+                v-on:click="onSelect(group.gid)"
+              >{{index + 1}}: {{group.g_name}}</option>
+            </div>
+          </div>
         </div>
       </div>
       <div class="row" style="margin: 50px; background: white;">
@@ -98,12 +123,20 @@ k<template>
             <button
               class="btn btn-primary btn-sm mb-2"
               style="background: #c0c0c0; border-color: #c0c0c0; color: black"
-              v-on:click="onSubmit(items)"
+              v-on:click="onSubmit(items);"
               v-if="this.editing"
             >Submit Changes</button>
           </div>
         </div>
         <div class="col-md">
+          <p class="col-sm-11 border shadow" style="background: white;" v-if="editing">
+            Users currently editing this case study:
+            <span
+              class="badge"
+              v-for="(user,uid) in users"
+              :key="uid"
+            >{{ user.first_name }} {{user.last_name}}</span>
+          </p>
           <!-- Case Body -->
           <div class="row mt-2 card mb-5" id="items">
             <draggable
@@ -173,7 +206,6 @@ k<template>
 
 <script>
 import draggable from "vuedraggable";
-import "v-markdown-editor/dist/index.css";
 export default {
   //name: 'app',
   components: {
@@ -198,18 +230,21 @@ export default {
         c_group: ""
       },
       users: [],
+      usersEditing: [],
       items: [],
       all_items: [],
       case_parameters: [],
       parameter_options: [],
       ready: false,
       cid: "",
+      initial_gid: "",
       gid: "",
       case_to_show: [],
       users: [],
       user: { uid: "", first_name: "", last_name: "" },
       groups: [],
-      group: { g_name: "" },
+      all_groups: [],
+      group: { g_name: "", g_owner: "" },
       uid: "",
       item: {
         iid: "",
@@ -237,7 +272,7 @@ export default {
   },
 
   mounted() {
-    Echo.join(`note.${this.note.slug}`)
+    Echo.join(`App.User.${this.user.uid}`)
       .here(users => {
         this.usersEditing = users;
       })
@@ -248,27 +283,26 @@ export default {
         this.usersEditing = this.usersEditing.filter(u => u != user);
       })
       .listenForWhisper("editing", e => {
-        this.title = e.title;
-        this.body = e.body;
+        this.case_study.c_title = e.title;
+        this.items.i_content = e.body;
       })
       .listenForWhisper("saved", e => {
-        this.status = e.status;
+        this.case_study.c_status = e.status;
 
         // clear is status after 1s
         setTimeout(() => {
-          this.status = "";
+          this.case_study.c_status = "";
         }, 1000);
       });
   },
   methods: {
     editingCase() {
-      let channel = Echo.join(`note.${this.note.slug}`);
-
+      let channel = Echo.join(`App.User.${this.user.uid}`);
       // show changes after 1s
       setTimeout(() => {
         channel.whisper("editing", {
-          title: this.title,
-          body: this.body
+          title: this.case_study.c_title,
+          body: this.items.i_content
         });
       }, 1000);
     },
@@ -302,6 +336,7 @@ export default {
           this.case_to_show = res.data;
           this.uid = Number(this.case_to_show[0].c_owner);
           this.gid = Number(this.case_to_show[0].c_group);
+          this.initial_gid = this.gid;
           this.fetchUser(this.uid);
           this.fetchGroup(this.gid);
           console.log(res.data);
@@ -309,6 +344,25 @@ export default {
         .catch(err => console.log(err));
     },
     fetchUser(uid) {
+      fetch("/user/" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.users = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+    fetchUserGroups() {
+      fetch("/groups/")
+        .then(res => res.json())
+        .then(res => {
+          this.all_groups = res.data;
+          console.log(res.data);
+        })
+        .catch(err => console.log(res.data));
+      //return this.all_groups.filter(group => group.g_owner == uid);
+    },
+    //TODO
+    fetchUsersEditing(cid) {
       fetch("/user/" + this.uid)
         .then(res => res.json())
         .then(res => {
@@ -348,15 +402,37 @@ export default {
         option => option.o_parameter == parameter
       );
     },
-    updateCaseParameters() {
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 1]);
-      fetch("/case/" + this.cid + "/items")
-        .then(res => res.json())
-        .then(res => {
-          this.items = res.data;
+    //TODO
+    updateCase() {
+      this.cid = this.case_to_show[0].cid;
+      this.updated_case = {
+        cid: this.cid,
+        c_title: this.case_to_show[0].c_title,
+        c_description: this.case_to_show[0].c_description,
+        c_thumbnail: this.case_to_show[0].c_thumbnail,
+        c_status: this.case_to_show[0].c_status,
+        c_date: this.case_to_show[0].c_date,
+        c_owner: this.case_to_show[0].c_owner,
+        c_group: this.case_to_show[0].c_group
+      };
+      fetch("/case/" + this.cid + "/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.updated_case)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+      this.fetchCase();
+      this.fetchCaseParameters();
     },
     updateItem(item_to_update) {
       this.path = window.location.pathname.split("/");
@@ -459,18 +535,26 @@ export default {
     languageToggle() {},
     onEdit() {
       this.editing = true;
+      this.fetchUserGroups();
     },
     onCancel() {
-      //this.fetchItems();
-      //this.fetchCaseItems();
+      this.gid = this.initial_gid;
+      this.fetchGroup(this.gid);
+      this.fetchItems();
+      this.fetchCaseItems();
+      this.fetchCase();
+      this.fetchCaseParameters();
       this.editing = false;
     },
     onSubmit(items) {
       this.updateItems(items);
+      this.updateCase();
       this.editing = false;
     },
-    onCancel() {
-      this.editing = false;
+    onSelect(selected_gid) {
+      this.gid = selected_gid;
+      this.case_to_show[0].c_group = this.gid;
+      this.fetchGroup(this.gid);
     }
   }
 };
@@ -479,7 +563,7 @@ export default {
 <style lang="scss" scoped>
 /* Set max height for content containers */
 #items {
-  max-height: 875px;
+  max-height: 1000px;
   margin: 25px;
   margin-left: 0px;
   //overflow-x: auto;
