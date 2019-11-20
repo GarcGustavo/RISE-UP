@@ -76,7 +76,7 @@ Route::get('/group/cases', 'CaseController@showGroupCases');
 Route::post('/group/create', 'GroupController@store');
 
 //Update group name
-Route::post('/group/name/update', 'GroupController@update');
+Route::put('/group/name/update', 'GroupController@update');
 
 //Add users to group
 Route::post('/group/members/add', 'User_GroupsController@store');

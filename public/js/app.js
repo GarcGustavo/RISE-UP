@@ -3193,7 +3193,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this5 = this;
 
       fetch("/group/name/update", {
-        method: "post",
+        method: "put",
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
