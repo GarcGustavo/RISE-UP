@@ -276,11 +276,11 @@ export default {
     filterUsers() {
       if (this.action == "Add" || this.action == "Create") {
         return this.users_to_add.filter(user => {
-          return user.email.includes(this.search);
+          return user.email.toLowerCase().includes(this.search.toLowerCase());
         });
       } else {
         return this.users_to_remove.filter(user => {
-          return user.email.includes(this.search);
+          return user.email.toLowerCase().includes(this.search.toLowerCase());
         });
       }
     }

@@ -137,10 +137,6 @@ export default {
   },
   data() {
     return {
-      //   sorting: -1,
-      //  enable_sort: false,
-      //sort_temp:-1,
-      temp: [],
       pager: {},
       ul_styles: {},
       li_styles: {},

@@ -94,7 +94,8 @@
       <!--entries for tab1 -->
       <div v-if="curr_tab==1">
         <div class="btn-group">
-          <label id="entries_label">Entries:</label>
+            <span id="entries_label">
+          <label>Entries:</label></span>
           <!--entries button -->
           <span data-toggle="dropdown">
             <button
@@ -423,9 +424,11 @@ export default {
             return [];
           }
         }
-      }//search filter
+      } //search filter
       return this.page_of_groups.filter(page_of_groups => {
-        return page_of_groups.g_name.includes(this.search);
+        return page_of_groups.g_name
+          .toLowerCase()
+          .includes(this.search.toLowerCase());
       });
     }
   },
@@ -785,9 +788,10 @@ export default {
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss" scoped >
 /* align table to center */
 table {
+
   margin-left: auto;
   margin-right: auto;
   text-align: center;
@@ -903,7 +907,7 @@ a {
 
 /*entries and search bar elements position rules*/
 #entries_search .btn-group {
-  display: inline;
+  display: inline-block;
   padding-top: 33px;
 }
 /*entries positioning*/
@@ -912,10 +916,12 @@ a {
   margin-left: 60px;
   margin-top: -60px;
 }
+
 /*search bar positioning*/
 #entries_search .input-group {
-  margin-bottom: 15px;
   margin-top: 25px;
   margin-left: 650px;
 }
+
+
 </style>

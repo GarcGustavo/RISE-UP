@@ -2223,11 +2223,11 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.action == "Add" || this.action == "Create") {
         return this.users_to_add.filter(function (user) {
-          return user.email.includes(_this.search);
+          return user.email.toLowerCase().includes(_this.search.toLowerCase());
         });
       } else {
         return this.users_to_remove.filter(function (user) {
-          return user.email.includes(_this.search);
+          return user.email.toLowerCase().includes(_this.search.toLowerCase());
         });
       }
     }
@@ -3801,10 +3801,6 @@ var default_styles = {
   },
   data: function data() {
     return {
-      //   sorting: -1,
-      //  enable_sort: false,
-      //sort_temp:-1,
-      temp: [],
       pager: {},
       ul_styles: {},
       li_styles: {},
@@ -4305,7 +4301,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
       return this.page_of_cases.filter(function (page_of_cases) {
-        return page_of_cases.c_title.includes(_this.search);
+        return page_of_cases.c_title.toLowerCase().includes(_this.search.toLowerCase());
       });
     }
   },
@@ -4975,6 +4971,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /**
  * this component is used to display the groups of a user
@@ -5107,7 +5104,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
       return this.page_of_groups.filter(function (page_of_groups) {
-        return page_of_groups.g_name.includes(_this.search);
+        return page_of_groups.g_name.toLowerCase().includes(_this.search.toLowerCase());
       });
     }
   },
@@ -40134,7 +40131,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-bottom: 15px;\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -40153,7 +40150,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-a32253ca] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntr td a[data-v-a32253ca] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-a32253ca] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\n/*When overflow occurs limit display -\ntext overflow currently not used due to character limit*/\ntd a[data-v-a32253ca] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-a32253ca] {\n  transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-a32253ca] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-a32253ca] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-a32253ca] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-a32253ca]:hover,\nh1 a[data-v-a32253ca]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-a32253ca] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-a32253ca] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-a32253ca] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-a32253ca] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-a32253ca] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-a32253ca] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-a32253ca] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-a32253ca] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-a32253ca] {\n  display: inline;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-a32253ca] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-a32253ca] {\n  margin-bottom: 15px;\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-a32253ca] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntr td a[data-v-a32253ca] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-a32253ca] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\n/*When overflow occurs limit display -\ntext overflow currently not used due to character limit*/\ntd a[data-v-a32253ca] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-a32253ca] {\n  transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-a32253ca] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-a32253ca] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-a32253ca] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-a32253ca]:hover,\nh1 a[data-v-a32253ca]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-a32253ca] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-a32253ca] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-a32253ca] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-a32253ca] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-a32253ca] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-a32253ca] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-a32253ca] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-a32253ca] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-a32253ca] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-a32253ca] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-a32253ca] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -40191,7 +40188,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
 
 // exports
 
@@ -75531,9 +75528,7 @@ var render = function() {
       _vm.curr_tab == 1
         ? _c("div", [
             _c("div", { staticClass: "btn-group" }, [
-              _c("label", { attrs: { id: "entries_label" } }, [
-                _vm._v("Entries:")
-              ]),
+              _vm._m(2),
               _vm._v(" "),
               _c("span", { attrs: { "data-toggle": "dropdown" } }, [
                 _c(
@@ -76188,6 +76183,14 @@ var staticRenderFns = [
       _c("a", [_vm._v("Create")]),
       _vm._v(" "),
       _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { attrs: { id: "entries_label" } }, [
+      _c("label", [_vm._v("Entries:")])
     ])
   }
 ]

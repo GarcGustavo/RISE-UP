@@ -403,7 +403,7 @@ export default {
         }
       } //search fiter
       return this.page_of_cases.filter(page_of_cases => {
-        return page_of_cases.c_title.includes(this.search);
+        return page_of_cases.c_title.toLowerCase().includes(this.search.toLowerCase());
       });
     }
   },
@@ -852,7 +852,8 @@ a {
 }
 /*entries and search bar elements position rules*/
 #entries_search .btn-group {
-  display: inline;
+  display: inline-block;
+
   padding-top: 33px;
 }
 /*entries positioning*/
@@ -863,7 +864,6 @@ a {
 }
 /*search bar positioning*/
 #entries_search .input-group {
-  margin-bottom: 15px;
   margin-top: 25px;
   margin-left: 650px;
 }
