@@ -75953,7 +75953,7 @@ var render = function() {
                             staticClass: "p-2",
                             attrs: {
                               href:
-                                "/user/group?uid=" +
+                                "/group?uid=" +
                                 _vm.curr_user +
                                 "&gid=" +
                                 data.item.gid
@@ -76121,7 +76121,7 @@ var render = function() {
                             staticClass: "p-2",
                             attrs: {
                               href:
-                                "/user/group?uid=" +
+                                "/group?uid=" +
                                 _vm.curr_user +
                                 "&gid=" +
                                 data.item.gid

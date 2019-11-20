@@ -14,26 +14,7 @@
 Route::get('/', function () {
     return view('layout.layout');
 });
-Route::get('/about', function () {
-    return view('about');
-});
-Route::get('/help', function () {
-    return view('help');
-});
 
-Route::get('/user/group', function () {
-   return view('group');
-})->name('group');
-
-
-Route::get('/user/groups', function () {
-    return view('user-groups');
-});
-
-
-Route::get('/user/cases', function () {
-    return view('user-cases');
-});
 
 Route::get('/Home', function () {
     return view('home');
@@ -46,6 +27,25 @@ Route::get('/home', 'HomeController@index')->name('home');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+
+
+/********VIEWS*********/
+
+Route::get('/about', 'ViewsController@about');
+
+Route::get('/help', 'ViewsController@help');
+
+Route::get('/group', 'ViewsController@group');
+
+Route::get('/user/groups', 'ViewsController@userGroups');
+
+Route::get('/user/cases', 'ViewsController@userCases');
+
+
+
 
 /********USERS*********/
 
@@ -102,6 +102,3 @@ Route::post('/case/create', 'CaseController@store');
 Route::delete('user-cases/remove', 'CaseController@destroy');
 
 
-Route::get('/test', function(){
-return view('errors.404');
-})->name('error');

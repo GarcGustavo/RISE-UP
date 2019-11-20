@@ -128,6 +128,8 @@ class CaseController extends Controller
         return Case_StudyResource::collection($cases);
     }
 
+
+
     public function showAllUserCases(Request $request)
     {
         //renaming attributes

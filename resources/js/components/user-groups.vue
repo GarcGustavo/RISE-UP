@@ -227,7 +227,7 @@
             <div>
               <b-link
                 class="p-2"
-                :href="'/user/group?uid='+curr_user+'&gid=' + data.item.gid"
+                :href="'/group?uid='+curr_user+'&gid=' + data.item.gid"
               >{{data.item.g_name}}</b-link>
             </div>
           </template>
@@ -305,7 +305,7 @@
             <div>
               <b-link
                 class="p-2"
-                :href="'/user/group?uid='+curr_user+'&gid=' + data.item.gid"
+                :href="'/group?uid='+curr_user+'&gid=' + data.item.gid"
               >{{data.item.g_name}}</b-link>
             </div>
           </template>

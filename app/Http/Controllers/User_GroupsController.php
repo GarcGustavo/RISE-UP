@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\User_Groups;
-use App\Http\Resources\User_Groups as User_GroupsResource;
 use App\Http\Resources\User as UserResource;
 
 class User_GroupsController extends Controller
@@ -189,15 +188,9 @@ class User_GroupsController extends Controller
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
         //if validated remove records
-        $to_delete = $request->all();
-        $gids_to_delete = array_map(function ($item) {
-            return $item['gid'];
-        }, $to_delete);
-        $uids_to_delete = array_map(function ($item) {
-            return $item['uid'];
-        }, $to_delete);
+
         //process request
-        User_Groups::whereIn('gid', $gids_to_delete)->whereIn('uid', $uids_to_delete)->delete();
+        User_Groups::whereIn('gid', $gids)->whereIn('uid', $uids)->delete();
         return response()->json(['message'=>'User(s) has been removed from group']);
     }
 }
