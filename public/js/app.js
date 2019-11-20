@@ -3174,13 +3174,14 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/group/info?gid=" + this.curr_group).then(function (res) {
         return res.json();
       }).then(function (res) {
-        console.log(res);
-        _this4.group_data = res.data;
-        _this4.group_name = _this4.group_data[0].g_name; //name of group
+        if (!res.errors) {
+          _this4.group_data = res.data;
+          _this4.group_name = _this4.group_data[0].g_name; //name of group
 
-        _this4.group_owner = _this4.group_data[0].g_owner; // id of owner
+          _this4.group_owner = _this4.group_data[0].g_owner; // id of owner
 
-        _this4.fetchMembers();
+          _this4.fetchMembers();
+        }
       })["catch"](function (err) {
         return console.log(err);
       });

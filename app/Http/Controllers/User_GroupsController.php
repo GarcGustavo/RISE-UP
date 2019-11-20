@@ -119,7 +119,7 @@ class User_GroupsController extends Controller
         ->get();
 
         return UserResource::collection($members);
-        // return view('group')->with('gid',$gid);
+
     }
 
     /**

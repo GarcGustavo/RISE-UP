@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use App\Models\case_study;
 use App\Models\User_Groups;
 use App\Http\Resources\Case_Study as Case_StudyResource;
@@ -82,11 +83,9 @@ class CaseController extends Controller
         //process request
         if ($case_study->save()) {
             return response()->json(['message'=>'Case study has been created']);
-        }
-        else{
+        } else {
             return response()->json(['errors'=>'Error creating case study from controller']);
         }
-
     }
 
     /**
@@ -109,9 +108,13 @@ class CaseController extends Controller
         );
         //validation rules
         $validator = Validator::make($request->all(), [
-            'gid' => 'bail|exists:Group|required|integer'
+            'gid' => ['bail','exists:Group','required','integer',
+            //if exist verify group has not been removed
+            Rule::exists('Group')->where(function ($query) use ($request) {
+                return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
+            })]
         //custom error message if group does not exist
-        ],['gid.exists' => 'The group id does not exists.']);
+        ], ['gid.exists' => 'The group id does not exists.']);
         //apply renaming attributes
         $validator->setAttributeNames($attributes);
         //validate request
@@ -133,9 +136,13 @@ class CaseController extends Controller
         );
         //validation rules
         $validator = Validator::make($request->all(), [
-            'uid' => 'bail|exists:User|required|integer'
+            'uid' => ['bail','exists:User','required','integer',
+            //if exist verify user has not been banned
+            Rule::exists('User')->where(function ($query) use ($request) {
+                return $query->where('uid', $request->input('uid'))->whereNull('deleted_at');
+            })]
             //custom error message if user does not exist
-        ],['uid.exists' => 'The user id does not exists.']);
+        ], ['uid.exists' => 'The user id does not exists.']);
         //apply validation attributes
         $validator->setAttributeNames($attributes);
         //validate request
@@ -206,7 +213,7 @@ class CaseController extends Controller
         $validator = Validator::make($data, [
             'data.*.cid' => 'bail|exists:Case|required|integer'
             //custom error message if cid does not exist
-        ],['data.*.cid.exists' => 'The case study id does not exists.']);
+        ], ['data.*.cid.exists' => 'The case study id does not exists.']);
         //apply renaming attributes
         $validator->setAttributeNames($attributes);
         if ($validator->fails()) {

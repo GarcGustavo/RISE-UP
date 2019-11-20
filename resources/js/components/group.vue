@@ -357,11 +357,12 @@ export default {
       fetch("/group/info?gid=" + this.curr_group)
         .then(res => res.json())
         .then(res => {
-          console.log(res);
-          this.group_data = res.data;
-          this.group_name = this.group_data[0].g_name; //name of group
-          this.group_owner = this.group_data[0].g_owner; // id of owner
-          this.fetchMembers();
+          if (!res.errors) {
+            this.group_data = res.data;
+            this.group_name = this.group_data[0].g_name; //name of group
+            this.group_owner = this.group_data[0].g_owner; // id of owner
+            this.fetchMembers();
+          }
         })
         .catch(err => console.log(err));
     },

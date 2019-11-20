@@ -364,7 +364,6 @@ export default {
           gid: this.gid
         });
       }
-
       //emit data to parent
       if (this.action == "Add") {
         this.$emit("addUsers", this.users_to_add_remove);

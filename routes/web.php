@@ -1,5 +1,4 @@
 <?php
-use App\Http\Controllers\User_GroupsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,3 +102,6 @@ Route::post('/case/create', 'CaseController@store');
 Route::delete('user-cases/remove', 'CaseController@destroy');
 
 
+Route::get('/test', function(){
+return view('errors.404');
+})->name('error');
