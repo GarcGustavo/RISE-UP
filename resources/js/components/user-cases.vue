@@ -578,7 +578,7 @@ export default {
      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
      this.curr_user = Number(this.urlParams.get('uid')); //get user id - numeric conversion for filter user
 
-      fetch("/user-cases/show?uid=" + this.curr_user)
+      fetch("/case/user/show?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_cases = res.data;
@@ -689,7 +689,7 @@ export default {
               });
             }
             //send request
-            fetch("/user-cases/remove", {
+            fetch("/case/remove", {
               method: "delete",
               headers: new Headers({
                 "Content-Type": "application/json",

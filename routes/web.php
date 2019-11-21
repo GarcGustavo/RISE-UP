@@ -59,31 +59,28 @@ Route::get('/users', 'UserController@index');
 Route::get('/groups', 'GroupController@index');
 
 //List groups of a user
-Route::get('/user-groups/show', 'GroupController@showGroups');
+Route::get('/group/show', 'GroupController@showGroups');
 
 //List group info
 Route::get('/group/info', 'GroupController@info');
 
 //List members of a group
-Route::get('/group/members', 'User_GroupsController@showMembers');
-
-//List cases of a group
-Route::get('/group/cases', 'CaseController@showGroupCases');
+Route::get('/user-groups/show', 'User_GroupsController@showMembers');
 
 //Create a group
 Route::post('/group/create', 'GroupController@store');
 
 //Update group name
-Route::put('/group/name/update', 'GroupController@update');
+Route::put('/group/rename', 'GroupController@update');
 
 //Add users to group
-Route::post('/group/members/add', 'User_GroupsController@store');
+Route::post('/user-groups/add', 'User_GroupsController@store');
 
 //Delete group
-Route::delete('user-groups/remove', 'GroupController@destroy');
+Route::delete('group/remove', 'GroupController@destroy');
 
 //Remove users from group
-Route::delete('/group/members/remove', 'User_GroupsController@destroy');
+Route::delete('/user-groups/remove', 'User_GroupsController@destroy');
 
 
 /********CASES*********/
@@ -91,13 +88,16 @@ Route::delete('/group/members/remove', 'User_GroupsController@destroy');
 //List all case studies
 Route::get('/cases', 'CaseController@index');
 
+//List cases of a group
+Route::get('/case/group/show', 'CaseController@showGroupCases');
+
 //List all case studies of a user(author and group cases)
-Route::get('/user-cases/show', 'CaseController@showAllUserCases');
+Route::get('/case/user/show', 'CaseController@showAllUserCases');
 
 //Create a case study
 Route::post('/case/create', 'CaseController@store');
 
 //Delete case study
-Route::delete('user-cases/remove', 'CaseController@destroy');
+Route::delete('case/remove', 'CaseController@destroy');
 
 

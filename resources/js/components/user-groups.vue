@@ -618,12 +618,10 @@ export default {
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
 
       // fetch("/user_groups/" + this.curr_user)
-      fetch("/user-groups/show?uid=" + this.curr_user)
+      fetch("/group/show?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data;
-
-          console.log(res);
 
           //filter groups where user is owner
           this.groups_user_is_owner = this.user_groups.filter(
@@ -704,7 +702,7 @@ export default {
      * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
      */
     addUsers(users_to_add) {
-      fetch("/group/members/add", {
+      fetch("/user-groups/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -727,7 +725,6 @@ export default {
      */
     removeGroups() {
       var curr = this;
-      console.log(this.selected_groups);
       //confirmation dialogue box
       this.dialogue = bootbox.confirm({
         title: "Remove?",
@@ -754,7 +751,7 @@ export default {
               });
             }
             //send request
-            fetch("/user-groups/remove", {
+            fetch("/group/remove", {
               method: "delete",
               headers: new Headers({
                 "Content-Type": "application/json",

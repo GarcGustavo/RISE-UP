@@ -19,13 +19,17 @@ class GroupController extends Controller
     {
         $groups = Group::withTrashed()->get();
 
-        return GroupResource::collection($groups);
+        if ($groups) {
+            return GroupResource::collection($groups);
+        } else {
+            return response()->json(['errors'=>'Error fetching all registered groups - Origin: Group controller']);
+        }
     }
 
-/**
-     * Return data of a specified group.
-     * @return \App\Http\Resources\Group
-     */
+    /**
+         * Return data of a specified group.
+         * @return \App\Http\Resources\Group
+         */
     public function info(Request $request)
     {
         //renaming attributes
@@ -49,10 +53,13 @@ class GroupController extends Controller
 
         //process request
         $gid = $request->input('gid');
-
         $group = Group::where('gid', $gid)->get();
 
-        return GroupResource::collection($group);
+        if ($group) {
+            return GroupResource::collection($group);
+        } else {
+            return response()->json(['errors'=>'Error fetching group info - Origin: Group controller']);
+        }
     }
 
     /**
@@ -74,7 +81,7 @@ class GroupController extends Controller
         $validator = Validator::make($request->all(), [
             'gid' => 'bail|required|unique:Group',
             'g_name' => 'bail|required|max:32',
-            'g_status' => 'bail|required',
+            'g_status' => 'bail|required|in:active',
             'g_creation_date' => 'bail|required|date_format:Y-m-d',
             'g_owner' => 'bail|required',
         ]);
@@ -94,7 +101,7 @@ class GroupController extends Controller
         if ($group->save()) {
             return response()->json(['message'=>'Group has been created']);
         } else {
-            return response()->json(['errors'=>'Error creating group from controller']);
+            return response()->json(['errors'=>'Error creating group - Origin: Group controller']);
         }
     }
 
@@ -136,7 +143,11 @@ class GroupController extends Controller
         ->orderBy('gid', 'DESC')
         ->get();
 
-        return GroupResource::collection($groups);
+        if ($groups) {
+            return GroupResource::collection($groups);
+        } else {
+            return response()->json(['errors'=>'Error fetching groups - Origin: Group controller']);
+        }
     }
 
 
@@ -177,7 +188,7 @@ class GroupController extends Controller
         if ($group->save()) {
             return response()->json(['message'=>'Changed group name successfully']);
         } else {
-            return response()->json(['errors'=>'Error editing group name from controller']);
+            return response()->json(['errors'=>'Error editing group name - Origin: Group controller']);
         } //
     }
 
@@ -209,9 +220,15 @@ class GroupController extends Controller
         $gids_to_delete = array_map(function ($item) {
             return $item['gid'];
         }, $to_delete);
-        Group::whereIn('gid', $gids_to_delete)->update(['g_status'=>'disabled']);
-        Group::whereIn('gid', $gids_to_delete)->delete();
+
+        $disabled =  Group::whereIn('gid', $gids_to_delete)->update(['g_status'=>'disabled']);
+        $deleted = Group::whereIn('gid', $gids_to_delete)->delete();
+
         //return response
-        return response()->json(['message'=>'Group(s) has been removed']);
+        if ($disabled && $deleted) {
+            return response()->json(['message'=>'Group(s) has been removed']);
+        } else {
+            return response()->json(['errors'=>'Error deleting group - Origin: Group controller']);
+        }
     }
 }

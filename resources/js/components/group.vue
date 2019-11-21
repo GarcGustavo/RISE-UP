@@ -114,13 +114,13 @@
       ></case-create-dbox>
     </div>
     <!-- Members -->
-    <div class="card mb-5 shadow" id="scrollable">
+    <div class="card mb-5 shadow" id="members_scroll">
       <div class="row mt-1 pt-2 pl-4" id="members">
         <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
           <div class="card h-100 text-center">
             <i class="material-icons pt-2" style="font-size: 125px">person</i>
             <div class="card-body">
-              <h4 class="card-title">{{member.first_name}} {{member.last_name}}</h4>
+              <h4 class="card-title"><a href="#" class="stretched-link">{{member.first_name}} {{member.last_name}}</a></h4>
               <h6 class="card-subtitle text-muted"></h6>
             </div>
             <div class="card-footer">
@@ -319,7 +319,7 @@ export default {
      * @description gets all of the current group's users
      */
     fetchMembers() {
-      fetch("/group/members?gid=" + this.curr_group)
+      fetch("/user-groups/show?gid=" + this.curr_group)
         .then(res => res.json())
         .then(res => {
           this.users_to_remove = res.data; //populates action_table_dbox when removing a member from group
@@ -338,7 +338,7 @@ export default {
      * @description gets all of the cases of the current group
      */
     fetchCases() {
-      fetch("/group/cases?gid=" + this.curr_group)
+      fetch("/case/group/show?gid=" + this.curr_group)
         .then(res => res.json())
         .then(res => {
           this.group_cases = res.data;
@@ -371,7 +371,7 @@ export default {
      * @description outputs to the groupController a JSON request to rename group
      */
     changeGroupName() {
-      fetch("/group/name/update", {
+      fetch("/group/rename", {
         method: "put",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -417,7 +417,7 @@ export default {
      * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
      */
     addUsers(users_to_add) {
-      fetch("/group/members/add", {
+      fetch("/user-groups/add", {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -490,7 +490,7 @@ export default {
           if (!result) {
             //if yes
             //send request
-            fetch("/group/members/remove", {
+            fetch("/user-groups/remove", {
               method: "delete",
               headers: new Headers({
                 "Content-Type": "application/json",
@@ -591,11 +591,11 @@ export default {
 
 <style lang="scss" scoped>
 /* Set max height for content containers */
-#scrollable {
+#members_scroll {
   overflow-y: auto;
   overflow-x: hidden;
 }
-#scrollable,
+#members_scroll,
 #members {
   padding-top: 10px;
   padding-right: 10px;
@@ -604,7 +604,7 @@ export default {
 }
 #cases {
   min-height: 200px;
-  max-height: 610px;
+  max-height: 614px;
   overflow-y: auto;
 }
 /*********************/
@@ -627,11 +627,13 @@ h1 i {
 h1 i:hover,
 h1 a:hover {
   color: #428bca;
+  text-decoration: none;
 }
 
 /* icon initial color */
 a {
   color: black;
+
 }
 
 /*move remove icon to right */
@@ -641,7 +643,7 @@ a {
   padding-top: 5px;
 }
 
-/*remove label font size, and margin in relation to icon*/
+/*label font size, and margin in relation to icon*/
 #remove_icon a {
   font-size: 18px;
   margin-left: 15px;

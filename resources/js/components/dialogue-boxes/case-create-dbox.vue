@@ -227,7 +227,7 @@ export default {
         this.curr_group = this.group_selection; //default dropdown selection
         this.disable_dropdown = true;
       }
-      fetch("/user-groups/show?uid=" + this.curr_user)
+      fetch("/group/show?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data; //dropdown options

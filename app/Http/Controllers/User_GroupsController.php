@@ -62,8 +62,13 @@ class User_GroupsController extends Controller
             'gid' => $value['gid'],
             'uid' => $value['uid']]);
         }
-        User_Groups::insert($user_group);
-        return response()->json(['message'=>'User(s) has been added to the group']);
+        $inserted = User_Groups::insert($user_group); //insert array
+
+        if ($inserted) {
+            return response()->json(['message'=>'User(s) has been added to the group']);
+        } else {
+            return response()->json(['errors'=>'Error adding users to group - Origin: User Group controller']);
+        }
     }
 
 
@@ -80,8 +85,12 @@ class User_GroupsController extends Controller
         );
         //validation rules
         $validator = Validator::make($request->all(), [
-            'gid' => 'bail|exists:Group|required|integer'
-        ],['gid.exists' => 'The group id does not exists.']);
+            'gid' => ['bail','exists:Group','required','integer',
+            //if exist verify group has not been removed
+            Rule::exists('Group')->where(function ($query) use ($request) {
+                return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
+            })]
+        ], ['gid.exists' => 'The group id does not exists.']);
         //apply renaming attributes
         $validator->setAttributeNames($attributes);
         //validate request
@@ -97,8 +106,11 @@ class User_GroupsController extends Controller
         ->select('User.*')
         ->get();
 
-        return UserResource::collection($members);
-
+        if ($members) {
+            return UserResource::collection($members);
+        } else {
+            return response()->json(['errors'=>'Error fetching members - Origin: User Group controller']);
+        }
     }
 
 
@@ -137,7 +149,7 @@ class User_GroupsController extends Controller
                 ->whereIn('uid', $uids);
             })
             ]//custom error message if uid does not exist
-        ],['data.*.uid.exists' => 'The user id does not exists in this group.']);
+        ], ['data.*.uid.exists' => 'The user id does not exists in this group.']);
         //apply renaming attributes
         $validator->setAttributeNames($attributes);
         //valida request
@@ -147,7 +159,12 @@ class User_GroupsController extends Controller
         //if validated remove records
 
         //process request
-        User_Groups::whereIn('gid', $gids)->whereIn('uid', $uids)->delete();
-        return response()->json(['message'=>'User(s) has been removed from group']);
+        $deleted = User_Groups::whereIn('gid', $gids)->whereIn('uid', $uids)->delete();
+
+        if ($deleted) {
+            return response()->json(['message'=>'User(s) has been removed from group']);
+        } else {
+            return response()->json(['errors'=>'Error removing member from group - Origin: User Group controller']);
+        }
     }
 }

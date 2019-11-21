@@ -19,7 +19,12 @@ class CaseController extends Controller
     {
         $cases = case_study::withTrashed()->get();
 
-        return Case_StudyResource::collection($cases);
+        if ($cases) {
+            return Case_StudyResource::collection($cases);
+        } else {
+            return response()->json(['errors'=>'Error fetching all registered case studies - Origin: Case controller']);
+        }
+
     }
 
     /**
@@ -47,7 +52,7 @@ class CaseController extends Controller
             'c_title' => 'bail|required|max:32',
             'c_description'  => 'bail|required|max:140',
             'c-thumbnail' => 'nullable',
-            'c_status' => 'bail|required',
+            'c_status' => 'bail|required|in:active,disabled',
             'c_date' => 'bail|required|date_format:Y-m-d',
             'c_owner' => 'bail|required',
             'c_group' => 'nullable',
@@ -72,7 +77,7 @@ class CaseController extends Controller
         if ($case_study->save()) {
             return response()->json(['message'=>'Case study has been created']);
         } else {
-            return response()->json(['errors'=>'Error creating case study from controller']);
+            return response()->json(['errors'=>'Error creating case study - Origin: Case controller']);
         }
     }
 
@@ -108,13 +113,16 @@ class CaseController extends Controller
         $gid = $request->input('gid');
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
-        return Case_StudyResource::collection($cases);
+        if ($cases) {
+            return Case_StudyResource::collection($cases);
+        } else {
+            return response()->json(['errors'=>'Error fetching group case studies - Origin: Case controller']);
+        }
     }
 
 
     /**
         * Show a user's case studies .
-        *
         * @param  \Illuminate\Http\Request  $request
         * @return \App\Http\Resources\Case_Study
         */
@@ -150,16 +158,21 @@ class CaseController extends Controller
         ->select('Case.*')
         ->get();
 
-        $all_cases = $cases->concat($group_cases);
-        $unique_data = $all_cases->unique('cid')->sortByDesc('cid');
+        $all_cases = $cases->concat($group_cases)->sortByDesc('cid');
+        $unique_data = $all_cases->unique('cid'); //seeder duplicated data - Remove Later
 
-        return Case_StudyResource::collection($unique_data);
+        if ($unique_data) {
+            return Case_StudyResource::collection($unique_data);
+        } else {
+            return response()->json(['errors'=>'Error fetching user case studies - Origin: Case controller']);
+        }
+
+
     }
 
 
     /**
      * Remove the specified resource from storage.
-     *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -187,8 +200,16 @@ class CaseController extends Controller
         $cids_to_delete = array_map(function ($item) {
             return $item['cid'];
         }, $to_delete);
-        case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
-        case_study::whereIn('cid', $cids_to_delete)->delete();
-        return response()->json(['message'=>'Case(s) has been removed']);
+
+       $disabled = case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
+       $deleted = case_study::whereIn('cid', $cids_to_delete)->delete();
+
+        if($disabled && $deleted){
+            return response()->json(['message'=>'Case(s) has been removed']);
+        }
+        else{
+            return response()->json(['errors'=>'Error deleting case study - Origin: Case controller']);
+        }
+
     }
 }
