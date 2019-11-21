@@ -18,14 +18,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class case_parameters extends Model
 {
     public $table = 'Case_Parameters';
+    protected  $primaryKey = 'cid';
 
-    protected $dates = false;
+    //protected $dates = false;
 
     public $timestamps = false;
 
     public $fillable = [
-        'c_owner',
-        'c_group'
+        'cid',
+        'csp_id',
+        'opt_selected'
     ];
 
     /**
@@ -34,8 +36,9 @@ class case_parameters extends Model
      * @var array
      */
     protected $casts = [
-        'c_owner' => 'integer',
-        'c_group' => 'integer'
+        'cid' => 'integer',
+        'csp_id' => 'integer',
+        'opt_selected' => 'integer'
     ];
 
     /**
@@ -44,23 +47,31 @@ class case_parameters extends Model
      * @var array
      */
     public static $rules = [
-        'c_owner' => 'required',
-        'c_group' => 'required'
+        'csp_id' => 'required',
+        'opt_selected' => 'required'
     ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function cGroup()
+    public function cCase()
     {
-        return $this->belongsTo(\App\Models\CsParameter::class, 'c_group');
+        return $this->belongsTo(\App\Models\case_study::class, 'cid');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function cOwner()
+    public function cParameter()
     {
-        return $this->belongsTo(\App\Models\case_study::class, 'c_owner');
+        return $this->belongsTo(\App\Models\cs_parameter::class, 'csp_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     **/
+    public function cOption()
+    {
+        return $this->belongsTo(\App\Models\option::class, 'oid');
     }
 }

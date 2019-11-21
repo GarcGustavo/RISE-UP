@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\case_study;
 use App\Models\User_Groups;
+use App\Models\Case_Parameters;
 use App\Models\Group;
 use App\Http\Resources\Case_Study as Case_StudyResource;
 use App\Http\Resources\Group as GroupResource;
@@ -172,6 +173,20 @@ class CaseController extends Controller
             'c_group' => $c_group
             ]);
         return response()->json(['message'=>'Updated case successfully']);
+    }
+    public function updateCaseParameters(Request $request)
+    {
+        $cid = $request->input('cid');
+        $csp_id = $request->input('csp_id');
+        $opt_selected = $request->input('opt_selected');
+        Case_Parameters::where(['cid' => $cid])
+        ->where(['csp_id' => $csp_id])
+        ->update([
+            'cid' => $cid,
+            'csp_id' => $csp_id,
+            'opt_selected' => $opt_selected
+            ]);
+        return response()->json(['message'=>'Updated case parameters successfully']);
     }
     /**
      * Remove the specified resource from storage.

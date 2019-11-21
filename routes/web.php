@@ -88,6 +88,9 @@ Route::get('/parameter/options','CS_ParameterController@getParameterOptions');
 //List case parameters
 Route::get('/case/{id}/parameters','Case_ParametersController@getCaseParameters');
 
+//List case parameter selected options
+Route::get('/case/{id}/options','Case_ParametersController@getCaseSelectedOptions');
+
 //List members of a group
 Route::get('/group/{id}/members', 'User_GroupsController@show_members');
 
@@ -103,8 +106,11 @@ Route::get('/user_cases/{id}', 'CaseController@show_all_user_cases');
 //Add users to group
 Route::post('/group/members/add', 'User_GroupsController@store');
 
-//Update title/description/parameters in a case
+//Update title/description in a case
 Route::post('/case/{id}/update', 'CaseController@updateCaseDetails');
+
+//Update parameters in a case
+Route::post('/parameter/update', 'CaseController@updateCaseParameters');
 
 //Add items to a case
 Route::post('/item/add', 'ItemController@addCaseItem');

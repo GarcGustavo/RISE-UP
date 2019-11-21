@@ -2842,6 +2842,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -2875,7 +2888,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       all_items: [],
       case_parameters: [],
       parameter_options: [],
-      selected_options: [],
+      selected_options_content: [],
+      selected_options_id: [],
       ready: false,
       cid: "",
       initial_gid: "",
@@ -2908,7 +2922,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
-    this.fetchCaseParameters();
+    this.fetchCaseParameters(); //this.fetchSelectedOptions(this.cid);
+
     this.fetchUsersEditing(this.cid);
   },
   mounted: function mounted() {
@@ -3064,7 +3079,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchCaseParameters: function fetchCaseParameters() {
       var _this9 = this;
 
-      fetch("/parameters").then(function (res) {
+      fetch("/case/" + this.cid + "/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
         _this9.case_parameters = res.data;
@@ -3091,7 +3106,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return option.o_parameter == parameter;
       });
     },
-    //TODO
+    updateParameter: function updateParameter(updated_param) {
+      this.updated_parameter = {
+        cid: this.cid,
+        csp_id: updated_param.csp_id,
+        opt_selected: updated_param.opt_selected
+      };
+      fetch("/parameter/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.updated_parameter)
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+    updateParams: function updateParams() {
+      for (var param in this.case_parameters) {
+        this.updated_param = this.case_parameters[param];
+        this.updateParameter(this.updated_param);
+      } //this.fetchCaseParameters();
+
+    },
     updateCase: function updateCase() {
       this.cid = this.case_to_show[0].cid;
       this.updated_case = {
@@ -3120,7 +3163,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.error("Error: ", err);
       });
       this.fetchCase();
-      this.fetchCaseParameters();
     },
     updateItem: function updateItem(item_to_update) {
       this.path = window.location.pathname.split("/");
@@ -3228,6 +3270,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       for (var user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
       }
+
+      for (var option in this.case_parameters) {
+        this.selected_options_content[option] = this.case_parameters[option].o_content;
+        this.selected_options_id[option] = this.case_parameters[option].opt_selected;
+      }
     },
     onCancel: function onCancel() {
       this.gid = this.initial_gid;
@@ -3236,15 +3283,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchCaseItems();
       this.fetchCase();
       this.fetchCaseParameters();
+      this.fetchParameterOptions();
       this.editing = false;
 
       for (var user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
       }
+
+      for (var option in this.selected_options_content) {
+        this.case_parameters[option].o_content = this.selected_options_content[option];
+        this.case_parameters[option].opt_selected = this.selected_options_id[option];
+      }
     },
     onSubmit: function onSubmit(items) {
+      this.updateParams();
       this.updateItems(items);
-      this.updateCase();
+      this.updateCase(); //this.updateParameter();
+
       this.editing = false;
     },
     onSelectGroup: function onSelectGroup(selected_gid) {
@@ -3252,9 +3307,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
     },
-    //TODO
     onSelectOption: function onSelectOption(selected_op, index) {
-      this.selected_options[index] = selected_op.o_content; //this.fetchGroup(this.gid);
+      //this.selected_options_content[index] = selected_op.o_content;
+      this.case_parameters[index].o_content = selected_op.o_content;
+      this.case_parameters[index].opt_selected = selected_op.oid; //this.fetchGroup(this.gid);
     }
   }
 });
@@ -10364,7 +10420,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
 
 // exports
 
@@ -54908,7 +54964,7 @@ var render = function() {
           _c(
             "div",
             {
-              staticClass: "col-md-12 border shadow",
+              staticClass: "col-md-12 col-md-offset-6 border shadow",
               staticStyle: { background: "white" }
             },
             [
@@ -54917,43 +54973,46 @@ var render = function() {
                     _vm._l(_vm.case_to_show, function(case_study, index) {
                       return _c(
                         "h1",
-                        { key: index, staticClass: "text-center mt-3" },
+                        {
+                          key: index,
+                          staticClass: "text-center mt-3",
+                          staticStyle: { "text-align": "center" }
+                        },
                         [
-                          _c("div", { staticClass: "form-group" }, [
-                            _vm.editing
-                              ? _c("input", {
-                                  directives: [
-                                    {
-                                      name: "model",
-                                      rawName: "v-model",
-                                      value: case_study.c_title,
-                                      expression: "case_study.c_title"
-                                    }
-                                  ],
-                                  staticClass: "form-control text-capitalize",
-                                  staticStyle: {
-                                    "text-align": "center",
-                                    "font-weight": "500",
-                                    "font-size": "2rem"
-                                  },
-                                  attrs: { type: "text", maxlength: 32 },
-                                  domProps: { value: case_study.c_title },
-                                  on: {
-                                    keydown: _vm.editingCase,
-                                    input: function($event) {
-                                      if ($event.target.composing) {
-                                        return
-                                      }
-                                      _vm.$set(
-                                        case_study,
-                                        "c_title",
-                                        $event.target.value
-                                      )
-                                    }
+                          _vm.editing
+                            ? _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: case_study.c_title,
+                                    expression: "case_study.c_title"
                                   }
-                                })
-                              : _vm._e()
-                          ]),
+                                ],
+                                staticClass: "text-capitalize",
+                                staticStyle: {
+                                  "text-align": "center",
+                                  "font-weight": "500",
+                                  "font-size": "3rem",
+                                  "max-width": "500px"
+                                },
+                                attrs: { type: "text", maxlength: 32 },
+                                domProps: { value: case_study.c_title },
+                                on: {
+                                  keydown: _vm.editingCase,
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      case_study,
+                                      "c_title",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            : _vm._e(),
                           _vm._v(" "),
                           !_vm.editing
                             ? _c("h1", { staticClass: "text-capitalize" }, [
@@ -54988,7 +55047,7 @@ var render = function() {
                               {
                                 key: index + 20,
                                 staticClass: "text-center mt-3",
-                                staticStyle: { "margin-bottom": "50px" }
+                                staticStyle: { "margin-bottom": "30px" }
                               },
                               [_vm._v("Group: " + _vm._s(group.g_name))]
                             )
@@ -55016,7 +55075,9 @@ var render = function() {
                             staticStyle: {
                               background: "#c0c0c0",
                               "border-color": "#c0c0c0",
-                              color: "black"
+                              color: "black",
+                              "margin-bottom": "30px",
+                              "margin-top": "10px"
                             },
                             attrs: {
                               type: "button",
@@ -55031,7 +55092,7 @@ var render = function() {
                       _c(
                         "div",
                         {
-                          staticClass: "dropdown-menu",
+                          staticClass: "dropdown-menu scrollable-menu",
                           attrs: {
                             "aria-labelledby": "dropdownMenuButton",
                             id: "drop"
@@ -55083,86 +55144,153 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "col-md-12" }, [
-              _c("h4", { staticClass: "card-title border-0" }, [
-                _vm._v("Parameters")
-              ]),
-              _vm._v(" "),
               _c(
-                "div",
-                { staticClass: "row border", attrs: { id: "toc" } },
-                _vm._l(_vm.case_parameters, function(case_parameter, index) {
-                  return _c(
+                "h4",
+                {
+                  staticClass: "card-title border-0",
+                  staticStyle: { margin: "10px" }
+                },
+                [_vm._v("Parameters:")]
+              ),
+              _vm._v(" "),
+              !_vm.editing
+                ? _c(
                     "div",
-                    {
-                      key: index,
-                      staticClass: "col-sm-2 mx-auto-left",
-                      staticStyle: { margin: "50px" }
-                    },
-                    [
-                      _c("div", { staticClass: "dropdown" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary dropdown-toggle",
-                            staticStyle: {
-                              background: "#c0c0c0",
-                              "border-color": "#c0c0c0",
-                              color: "black"
+                    { staticClass: "row border shadow", attrs: { id: "toc" } },
+                    _vm._l(_vm.case_parameters, function(
+                      case_parameter,
+                      index
+                    ) {
+                      return _c(
+                        "div",
+                        {
+                          key: index,
+                          staticClass: "col-md-2 mx-auto-left mb-1",
+                          staticStyle: {
+                            margin: "50px",
+                            "margin-bottom": "20px",
+                            "margin-top": "20px"
+                          }
+                        },
+                        [
+                          _c(
+                            "h5",
+                            {
+                              staticClass: "btn btn-primary-disabled btn-block",
+                              staticStyle: {
+                                background: "#c0c0c0",
+                                "border-color": "#c0c0c0",
+                                color: "black",
+                                width: "250px"
+                              }
                             },
-                            attrs: {
-                              type: "button",
-                              id: "dropdownMenuButton",
-                              "data-toggle": "dropdown"
-                            }
-                          },
-                          [
-                            _vm._v(
-                              _vm._s(case_parameter.csp_name) +
-                                ": " +
-                                _vm._s(_vm.selected_options[index])
-                            )
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass: "dropdown-menu",
-                            attrs: { "aria-labelledby": "dropdownMenuButton" }
-                          },
-                          _vm._l(
-                            _vm.filteredOptions(case_parameter.csp_id),
-                            function(option, sd) {
-                              return _c(
-                                "a",
-                                {
-                                  key: sd,
-                                  staticClass: "dropdown-item",
-                                  attrs: { href: "#" },
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.onSelectOption(option, index)
-                                    }
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    _vm._s(sd + 1) +
-                                      ": " +
-                                      _vm._s(option.o_content)
-                                  )
-                                ]
+                            [
+                              _vm._v(
+                                _vm._s(case_parameter.csp_name) +
+                                  ": " +
+                                  _vm._s(case_parameter.o_content)
                               )
-                            }
-                          ),
-                          0
-                        )
-                      ])
-                    ]
+                            ]
+                          )
+                        ]
+                      )
+                    }),
+                    0
                   )
-                }),
-                0
-              )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.editing
+                ? _c(
+                    "div",
+                    { staticClass: "row border" },
+                    _vm._l(_vm.case_parameters, function(
+                      case_parameter,
+                      index
+                    ) {
+                      return _c(
+                        "div",
+                        {
+                          key: index,
+                          staticClass: "col-md-2 mx-auto-left mb-1",
+                          staticStyle: {
+                            margin: "50px",
+                            "margin-bottom": "30px",
+                            "margin-top": "20px"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "dropdown" }, [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-primary dropdown-toggle",
+                                staticStyle: {
+                                  background: "#c0c0c0",
+                                  "border-color": "#c0c0c0",
+                                  color: "black",
+                                  width: "250px"
+                                },
+                                attrs: {
+                                  type: "button",
+                                  id: "dropdownMenuButton",
+                                  "data-toggle": "dropdown"
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(case_parameter.csp_name) +
+                                    ": " +
+                                    _vm._s(case_parameter.o_content)
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "dropdown-menu scrollable-menu",
+                                attrs: {
+                                  "aria-labelledby": "dropdownMenuButton"
+                                }
+                              },
+                              _vm._l(
+                                _vm.filteredOptions(case_parameter.csp_id),
+                                function(option, sd) {
+                                  return _c(
+                                    "a",
+                                    {
+                                      key: sd,
+                                      staticClass: "dropdown-item",
+                                      staticStyle: { width: "250px" },
+                                      attrs: { href: "#" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.onSelectOption(
+                                            option,
+                                            index
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        _vm._s(sd + 1) +
+                                          ": " +
+                                          _vm._s(option.o_content)
+                                      )
+                                    ]
+                                  )
+                                }
+                              ),
+                              0
+                            )
+                          ])
+                        ]
+                      )
+                    }),
+                    0
+                  )
+                : _vm._e()
             ])
           ]
         ),
@@ -55194,7 +55322,7 @@ var render = function() {
                           "li",
                           { key: index, staticClass: "list-group-item" },
                           [
-                            _c("a", { attrs: { href: "#" } }, [
+                            _c("a", [
                               _vm._v(
                                 _vm._s(index + 1) + ": " + _vm._s(item.i_name)
                               )

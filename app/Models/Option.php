@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Option extends Model
 {
     public $table = 'Option';
+    
+    protected  $primaryKey = 'oid';
 
     //protected $dates = false;
 

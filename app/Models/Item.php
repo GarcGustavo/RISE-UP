@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class item extends Model
 {
     public $table = 'Item';
+    
+    protected  $primaryKey = 'iid';
 
     //use SoftDeletes;
 

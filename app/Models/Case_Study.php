@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class case_study extends Model
 {
     public $table = 'Case';
+    
+    protected  $primaryKey = 'cid';
 
     //protected $dates = false;
 

@@ -2,22 +2,21 @@
   <div class="body mb-5 mt-5 border shadow" style="background: #c0c0c0;">
     <div class="container-fluid">
       <div class="row" style="margin: 50px;">
-        <div class="col-md-12 border shadow" style="background: white;">
+        <div class="col-md-12 col-md-offset-6 border shadow" style="background: white;">
           <template v-if="case_to_show">
-            <h1 class="text-center mt-3" v-for="(case_study,index) in case_to_show" :key="index">
-              <div class="form-group">
+            <h1 class="text-center mt-3" style="text-align: center;" v-for="(case_study,index) in case_to_show" :key="index">
                 <input
                   type="text"
-                  class="form-control text-capitalize"
+                  class="text-capitalize"
                   style="text-align: center;
                   font-weight: 500;
-                  font-size: 2rem;"
+                  font-size: 3rem;
+                  max-width: 500px;"
                   v-model="case_study.c_title"
                   v-if="editing"
                   :maxlength="32"
                   @keydown="editingCase"
                 />
-              </div>
               <h1 class="text-capitalize" v-if="!editing">{{case_study.c_title}}</h1>
             </h1>
             <h5
@@ -30,7 +29,7 @@
                 class="text-center mt-3"
                 v-for="(group,index) in groups"
                 :key="index + 20"
-                style="margin-bottom: 50px;"
+                style="margin-bottom: 30px;"
               >Group: {{group.g_name}}</h5>
             </div>
           </template>
@@ -40,11 +39,11 @@
               :key="index + 30"
               class="btn btn-primary dropdown-toggle"
               type="button"
-              style="background: #c0c0c0; border-color: #c0c0c0; color: black"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black; margin-bottom: 30px; margin-top: 10px"
               id="dropdownMenuButton"
               data-toggle="dropdown"
             >Group: {{group.g_name}}</button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="drop">
+            <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" id="drop">
               <option
                 class="dropdown-item"
                 href="#"
@@ -59,29 +58,43 @@
       <div class="row" style="margin: 50px; background: white;">
         <!-- Case Parameters -->
         <div class="col-md-12">
-          <h4 class="card-title border-0">Parameters</h4>
-          <div class="row border" id="toc">
+          <h4 class="card-title border-0" style="margin: 10px;">Parameters:</h4>
+          <div class="row border shadow" id="toc" v-if="!editing">
             <div
-              class="col-sm-2 mx-auto-left"
+              class="col-md-2 mx-auto-left mb-1"
               v-for="(case_parameter, index) in case_parameters"
               :key="index"
-              style="margin: 50px;"
+              style="margin: 50px; margin-bottom: 20px; margin-top: 20px;"
+            >
+              <h5
+                class="btn btn-primary-disabled btn-block"
+                style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
+              >{{case_parameter.csp_name}}: {{case_parameter.o_content}}</h5>
+            </div>
+          </div>
+          <div class="row border" v-if="editing">
+            <div
+              class="col-md-2 mx-auto-left mb-1"
+              v-for="(case_parameter, index) in case_parameters"
+              :key="index"
+              style="margin: 50px; margin-bottom: 30px; margin-top: 20px;"
             >
               <div class="dropdown">
                 <button
                   class="btn btn-primary dropdown-toggle"
                   type="button"
-                  style="background: #c0c0c0; border-color: #c0c0c0; color: black"
+                  style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
                   id="dropdownMenuButton"
                   data-toggle="dropdown"
-                >{{case_parameter.csp_name}}: {{selected_options[index]}}</button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                >{{case_parameter.csp_name}}: {{case_parameter.o_content}}</button>
+                <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
                   <a
                     class="dropdown-item"
                     href="#"
                     v-for="(option, sd) in filteredOptions(case_parameter.csp_id)"
                     :key="sd"
                     v-on:click="onSelectOption(option, index)"
+                    style="width:250px"
                   >{{sd + 1}}: {{option.o_content}}</a>
                 </div>
               </div>
@@ -97,7 +110,7 @@
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
-                  <a href="#">{{index + 1}}: {{item.i_name}}</a>
+                  <a>{{index + 1}}: {{item.i_name}}</a>
                 </li>
               </ul>
             </div>
@@ -242,7 +255,8 @@ export default {
       all_items: [],
       case_parameters: [],
       parameter_options: [],
-      selected_options: [],
+      selected_options_content: [],
+      selected_options_id: [],
       ready: false,
       cid: "",
       initial_gid: "",
@@ -277,6 +291,7 @@ export default {
     this.fetchCaseItems();
     this.fetchCase();
     this.fetchCaseParameters();
+    //this.fetchSelectedOptions(this.cid);
     this.fetchUsersEditing(this.cid);
   },
 
@@ -417,7 +432,7 @@ export default {
         .catch(err => console.log(err));
     },
     fetchCaseParameters() {
-      fetch("/parameters")
+      fetch("/case/" + this.cid + "/parameters")
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
@@ -440,7 +455,36 @@ export default {
         option => option.o_parameter == parameter
       );
     },
-    //TODO
+    updateParameter(updated_param) {
+      this.updated_parameter = {
+        cid: this.cid,
+        csp_id: updated_param.csp_id,
+        opt_selected: updated_param.opt_selected
+      };
+      fetch("/parameter/update", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(this.updated_parameter)
+      })
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+    updateParams() {
+      for (let param in this.case_parameters) {
+        this.updated_param = this.case_parameters[param];
+        this.updateParameter(this.updated_param);
+      }
+      //this.fetchCaseParameters();
+    },
     updateCase() {
       this.cid = this.case_to_show[0].cid;
       this.updated_case = {
@@ -470,7 +514,6 @@ export default {
           console.error("Error: ", err);
         });
       this.fetchCase();
-      this.fetchCaseParameters();
     },
     updateItem(item_to_update) {
       this.path = window.location.pathname.split("/");
@@ -575,8 +618,13 @@ export default {
     onEdit() {
       this.editing = true;
       this.fetchUserGroups();
+
       for (let user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
+      }
+      for (let option in this.case_parameters) {
+        this.selected_options_content[option] = this.case_parameters[option].o_content;
+        this.selected_options_id[option] = this.case_parameters[option].opt_selected;
       }
     },
     onCancel() {
@@ -586,14 +634,22 @@ export default {
       this.fetchCaseItems();
       this.fetchCase();
       this.fetchCaseParameters();
+      this.fetchParameterOptions();
       this.editing = false;
       for (let user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
       }
+      for (let option in this.selected_options_content) {
+        this.case_parameters[option].o_content = this.selected_options_content[option];
+        this.case_parameters[option].opt_selected = this.selected_options_id[option];
+      }
     },
     onSubmit(items) {
+      this.updateParams();
       this.updateItems(items);
       this.updateCase();
+      
+      //this.updateParameter();
       this.editing = false;
     },
     onSelectGroup(selected_gid) {
@@ -601,9 +657,10 @@ export default {
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
     },
-    //TODO
     onSelectOption(selected_op, index) {
-      this.selected_options[index] = selected_op.o_content;
+      //this.selected_options_content[index] = selected_op.o_content;
+      this.case_parameters[index].o_content = selected_op.o_content;
+      this.case_parameters[index].opt_selected = selected_op.oid;
       //this.fetchGroup(this.gid);
     }
   }
@@ -611,6 +668,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+}
 /* Set max height for content containers */
 #items {
   max-height: 1000px;
