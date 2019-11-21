@@ -103,8 +103,17 @@
 export default {
   data() {
     return {
-      uid: 10
+      uid: 10,
+      user_name:"",
+      isAdmin: false
     };
+  },
+  methods: {
+    getUser() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+      //fetch user data and set admin role
+    }
   }
 };
 </script>
@@ -125,8 +134,8 @@ export default {
 /*style for navbar*/
 .navbar-custom {
   background-color: #333333;
- //background-color: white;
-border: 0;
+  //background-color: white;
+  border: 0;
 }
 
 /* change the brand and text color */
@@ -140,14 +149,13 @@ border: 0;
 .navbar-custom .navbar-nav .nav-link {
   color: rgba(255, 255, 255, 0.5);
 
- //color:black;
+  //color:black;
 }
 
 /* change the color of active or hovered links */
 .navbar-custom .nav-item.active .nav-link,
 .navbar-custom .nav-item:hover .nav-link {
   color: #ffffff;
-
 }
 
 /* for dropdown only - change the color of dropdown */

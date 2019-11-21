@@ -12,9 +12,8 @@ use App\Http\Resources\Group as GroupResource;
 class GroupController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Return a listing of all system's groups.
+     * @return \App\Http\Resources\Group
      */
     public function index()
     {
@@ -23,7 +22,10 @@ class GroupController extends Controller
         return GroupResource::collection($groups);
     }
 
-
+/**
+     * Return data of a specified group.
+     * @return \App\Http\Resources\Group
+     */
     public function info(Request $request)
     {
         //renaming attributes
@@ -53,10 +55,8 @@ class GroupController extends Controller
         return GroupResource::collection($group);
     }
 
-
     /**
-     * Store a newly created resource in storage.
-     *
+     * Store a newly created group in storage.
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -100,10 +100,9 @@ class GroupController extends Controller
 
 
     /**
-     * Display the specified resource.
-     *
+     * Display a user's list of groups.
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return App\Http\Resources\Group
      */
     public function showGroups(Request $request)
     {
@@ -142,8 +141,7 @@ class GroupController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
-     *
+     * Update the specified group's name in storage.
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */

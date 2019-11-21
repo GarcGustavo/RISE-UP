@@ -618,12 +618,16 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
+
           console.log(res);
 
           if (!res.errors) {
+
             this.fetchCases(); //update case study list
+
             //hide action table dbox
             this.show_dialogue = false;
+
             //remove component's backdrop
             $("body").removeClass("modal-open");
             $(".modal-backdrop").remove();
@@ -696,8 +700,11 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
+
                 console.log(res);
+
                 curr.fetchCases(); //update group list
+
                 curr.cases_to_remove = []; //reset variable
               })
               .catch(err => {

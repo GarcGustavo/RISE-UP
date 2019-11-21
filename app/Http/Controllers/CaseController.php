@@ -13,7 +13,6 @@ class CaseController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -24,18 +23,7 @@ class CaseController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
+     * Store a newly created case study in storage.
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -88,17 +76,12 @@ class CaseController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
+    /**
+        * Show group's case studies .
+        * @param  \Illuminate\Http\Request  $request
+        * @return \App\Http\Resources\Case_Study
+        */
     public function showGroupCases(Request $request)
     {
 
@@ -129,7 +112,12 @@ class CaseController extends Controller
     }
 
 
-
+    /**
+        * Show a user's case studies .
+        *
+        * @param  \Illuminate\Http\Request  $request
+        * @return \App\Http\Resources\Case_Study
+        */
     public function showAllUserCases(Request $request)
     {
         //renaming attributes
@@ -168,33 +156,6 @@ class CaseController extends Controller
         return Case_StudyResource::collection($unique_data);
     }
 
-
-
-
-
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.

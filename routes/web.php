@@ -46,7 +46,6 @@ Route::get('/user/cases', 'ViewsController@userCases');
 
 
 
-
 /********USERS*********/
 
 //List users

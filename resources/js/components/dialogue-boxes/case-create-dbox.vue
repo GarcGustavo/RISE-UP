@@ -25,7 +25,7 @@
                   </div>
                 </div>
               </div>
-              <!-- title --> 
+              <!-- title -->
               <label for="title">
                 Title
                 <span class="required">*</span>
@@ -140,7 +140,6 @@ export default {
       close_dialog: "", //to close action table
       title: "", //input for title of case study
       curr_user: "", //current user id
-      curr_group: "", //curr group id
       description: "", //inpuy for description of case study
 
       all_cases: [], //all cases of the system. Used to determine ID of new case study
@@ -164,7 +163,8 @@ export default {
       close: false, //NOT USED
       hasError: false, //does description's character count exceed limit - NOT USED IN HTML
       valid_input: false, //is input valid
-      disable_dropdown: false //disable dropdown options for group
+      disable_dropdown: false, //disable dropdown options for group
+      curr_group: null //curr group id
     };
   },
   /**
@@ -236,7 +236,7 @@ export default {
     },
 
     /**
-     * @description calls the createCaseStudy method from parent window(user_cases)
+     * @description calls the createCaseStudy method from parent window(user_cases or group)
      *  and sends the data for the new case study
      */
     sendCaseStudyData() {
@@ -247,7 +247,7 @@ export default {
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
-      this.case_study.c_thumbnail = "";
+      this.case_study.c_thumbnail = null;
       this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
       this.case_study.c_owner = this.curr_user;

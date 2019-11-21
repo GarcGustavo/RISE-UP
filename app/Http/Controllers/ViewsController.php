@@ -45,6 +45,7 @@ class ViewsController extends Controller
         if ($validator->fails()) {
             return abort(404);
         }
+
         return view('group');
     }
 

@@ -2558,8 +2558,6 @@ __webpack_require__.r(__webpack_exports__);
       //input for title of case study
       curr_user: "",
       //current user id
-      curr_group: "",
-      //curr group id
       description: "",
       //inpuy for description of case study
       all_cases: [],
@@ -2587,7 +2585,9 @@ __webpack_require__.r(__webpack_exports__);
       //does description's character count exceed limit - NOT USED IN HTML
       valid_input: false,
       //is input valid
-      disable_dropdown: false //disable dropdown options for group
+      disable_dropdown: false,
+      //disable dropdown options for group
+      curr_group: null //curr group id
 
     };
   },
@@ -2673,7 +2673,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description calls the createCaseStudy method from parent window(user_cases)
+     * @description calls the createCaseStudy method from parent window(user_cases or group)
      *  and sends the data for the new case study
      */
     sendCaseStudyData: function sendCaseStudyData() {
@@ -2685,7 +2685,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.case_study.c_title = this.title;
       this.case_study.c_description = this.description;
-      this.case_study.c_thumbnail = "";
+      this.case_study.c_thumbnail = null;
       this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
       this.case_study.c_owner = this.curr_user;
@@ -2975,6 +2975,7 @@ __webpack_require__.r(__webpack_exports__);
       curr_group: "",
       //current user id
       temp: "",
+      //user name input
       group_members: [],
       //members of group
       users_add_remove: [],
@@ -3387,7 +3388,6 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         console.log(res);
-        console.log(case_study);
 
         if (!res.errors) {
           _this7.fetchCases(); //update case study list
@@ -3542,8 +3542,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      uid: 10
+      uid: 10,
+      user_name: "",
+      isAdmin: false
     };
+  },
+  methods: {
+    getUser: function getUser() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+      //fetch user data and set admin role
+    }
   }
 });
 
@@ -4973,6 +4983,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /**
  * this component is used to display the groups of a user
@@ -5302,7 +5313,7 @@ __webpack_require__.r(__webpack_exports__);
         return res.json();
       }).then(function (res) {
         _this5.user_groups = res.data;
-        console.log(_this5.user_groups); //filter groups where user is owner
+        console.log(res); //filter groups where user is owner
 
         _this5.groups_user_is_owner = _this5.user_groups.filter(function (x) {
           return x.g_owner == _this5.curr_user;
@@ -5457,12 +5468,9 @@ __webpack_require__.r(__webpack_exports__);
               return res.json();
             }).then(function (res) {
               console.log(res);
+              curr.fetchGroups(); //update group list
 
-              if (!res.errors) {
-                curr.fetchGroups(); //update group list
-
-                curr.groups_to_remove = []; //reset variable
-              }
+              curr.groups_to_remove = []; //reset variable
             })["catch"](function (err) {
               console.error("Error: ", err);
             });

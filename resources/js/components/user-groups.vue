@@ -94,8 +94,9 @@
       <!--entries for tab1 -->
       <div v-if="curr_tab==1">
         <div class="btn-group">
-            <span id="entries_label">
-          <label>Entries:</label></span>
+          <span id="entries_label">
+            <label>Entries:</label>
+          </span>
           <!--entries button -->
           <span data-toggle="dropdown">
             <button
@@ -621,7 +622,9 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.user_groups = res.data;
-          console.log(this.user_groups);
+
+          console.log(res);
+
           //filter groups where user is owner
           this.groups_user_is_owner = this.user_groups.filter(
             x => x.g_owner == this.curr_user
@@ -762,11 +765,12 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
+
                 console.log(res);
-                if (!res.errors) {
-                  curr.fetchGroups(); //update group list
-                  curr.groups_to_remove = []; //reset variable
-                }
+
+                curr.fetchGroups(); //update group list
+
+                curr.groups_to_remove = []; //reset variable
               })
               .catch(err => {
                 console.error("Error: ", err);
@@ -791,7 +795,6 @@ export default {
 <style lang="scss" scoped >
 /* align table to center */
 table {
-
   margin-left: auto;
   margin-right: auto;
   text-align: center;
@@ -922,6 +925,4 @@ a {
   margin-top: 25px;
   margin-left: 650px;
 }
-
-
 </style>

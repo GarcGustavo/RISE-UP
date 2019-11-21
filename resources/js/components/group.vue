@@ -190,7 +190,7 @@ export default {
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
       curr_group: "", //current user id
-      temp: "",
+      temp: "", //user name input
 
       group_members: [], //members of group
       users_add_remove: [], //users to add or remove from group
@@ -428,7 +428,9 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
+
           console.log(res);
+
           if (!res.errors) {
             //hide action table dbox
             this.show_dialogue = false;
@@ -499,7 +501,9 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
+
                 console.log(res);
+
                 //hide action table dbox
                 curr.show_dialogue = false;
                 //remove component's backdrop
@@ -542,12 +546,16 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
+
           console.log(res);
-          console.log(case_study);
+
           if (!res.errors) {
+
             this.fetchCases(); //update case study list
+
             //hide action table dbox
             this.show_dialogue = false;
+
             //remove component's backdrop
             $("body").removeClass("modal-open");
             $(".modal-backdrop").remove();
