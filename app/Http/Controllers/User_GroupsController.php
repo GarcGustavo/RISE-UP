@@ -11,7 +11,6 @@ use App\Http\Resources\User as UserResource;
 class User_GroupsController extends Controller
 {
 
-
     /**
      * Store a newly created group-user member relationship in storage.
      * @param  \Illuminate\Http\Request  $request
@@ -40,8 +39,16 @@ class User_GroupsController extends Controller
 
         //validate each gid/uid
         $validator = Validator::make($data_arr, [
-            'data.*.gid' => 'bail|required|integer',
-            'data.*.uid' => ['bail','required', 'integer',
+            'data.*.gid' => ['bail','exists:Group','required','integer',
+            //if exists verify group has not been removed
+            Rule::exists('Group')->where(function ($query) use ($gids) {
+                return $query->whereIn('gid', $gids)->whereNull('deleted_at');
+            })],
+            'data.*.uid' => ['bail','exists:User','required', 'integer',
+            //if exists verify has user been banned
+            Rule::exists('User')->where(function ($query) use ($uids) {
+                return $query->whereIn('uid', $uids)->whereNull('deleted_at');
+            }),
             //verifies if record already exist
             Rule::unique('User_Groups')->where(function ($query) use ($gids,$uids) {
                 return $query->whereIn('gid', $gids)
@@ -49,6 +56,7 @@ class User_GroupsController extends Controller
             })
             ]//custom message
         ], ['data.*.uid.unique' => 'The user id already exists in this group.']);
+
         $validator->setAttributeNames($attributes); //apply renaming attributes
         //validate request
         if ($validator->fails()) {

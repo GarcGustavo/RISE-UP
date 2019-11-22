@@ -10,7 +10,7 @@
               <!-- Grid column -->
               <div class="col-7 mt-md-0 mt-3 justify-content-md-start" id="Acknowledgment">
                 <!-- Content -->
-                <img src="../../..//nsf_logo/nsf_logo.jpg">
+                <img src="../../../public/images/nsf_logo.jpg">
                 <h5 class="text-uppercase text-white">Acknowledgment</h5>
                 <p class="text-white font-weight-light">
                   This material is based upon work supported by the National Science Foundation under grants

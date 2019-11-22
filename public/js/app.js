@@ -73562,7 +73562,7 @@ var staticRenderFns = [
                     [
                       _c("img", {
                         attrs: {
-                          src: __webpack_require__(/*! ../../..//nsf_logo/nsf_logo.jpg */ "./nsf_logo/nsf_logo.jpg")
+                          src: __webpack_require__(/*! ../../../public/images/nsf_logo.jpg */ "./public/images/nsf_logo.jpg")
                         }
                       }),
                       _vm._v(" "),
@@ -88449,10 +88449,10 @@ module.exports = function(module) {
 
 /***/ }),
 
-/***/ "./nsf_logo/nsf_logo.jpg":
-/*!*******************************!*\
-  !*** ./nsf_logo/nsf_logo.jpg ***!
-  \*******************************/
+/***/ "./public/images/nsf_logo.jpg":
+/*!************************************!*\
+  !*** ./public/images/nsf_logo.jpg ***!
+  \************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 

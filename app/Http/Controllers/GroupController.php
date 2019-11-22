@@ -184,7 +184,9 @@ class GroupController extends Controller
         }
         //process request
         $group = Group::where('gid', $request->input('gid'))->first();
+
         $group->g_name=$request->input('g_name');
+
         if ($group->save()) {
             return response()->json(['message'=>'Changed group name successfully']);
         } else {
