@@ -26,6 +26,8 @@ class case_study extends Model
 {
     use SoftDeletes;
 
+    protected $primaryKey = 'cid';
+
     public $table = 'Case';
 
     protected $dates = ['deleted_at'];
