@@ -222,7 +222,10 @@
           <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" href="#">{{data.item.c_title}}</b-link>
+              <b-link
+                class="p-2"
+                href="#"
+              >{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -296,7 +299,10 @@
           <!-- title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" href="#">{{data.item.c_title}}</b-link>
+              <b-link
+                class="p-2"
+                href="#"
+              >{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -403,7 +409,9 @@ export default {
         }
       } //search fiter
       return this.page_of_cases.filter(page_of_cases => {
-        return page_of_cases.c_title.toLowerCase().includes(this.search.toLowerCase());
+        return page_of_cases.c_title
+          .toLowerCase()
+          .includes(this.search.toLowerCase());
       });
     }
   },
@@ -574,15 +582,14 @@ export default {
      * @description gets all the cases of the current user
      */
     fetchCases() {
-
-     this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-     this.curr_user = Number(this.urlParams.get('uid')); //get user id - numeric conversion for filter user
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id - numeric conversion for filter user
 
       fetch("/case/user/show?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.user_cases = res.data;
-            //filter cases where user is owner
+          //filter cases where user is owner
           this.cases_user_is_owner = this.user_cases.filter(
             x => x.c_owner == this.curr_user
           );
@@ -618,11 +625,9 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-
           console.log(res);
 
           if (!res.errors) {
-
             this.fetchCases(); //update case study list
 
             //hide action table dbox
@@ -700,7 +705,6 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
-
                 console.log(res);
 
                 curr.fetchCases(); //update group list

@@ -4192,6 +4192,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /**
@@ -4483,7 +4489,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
-      this.curr_user = Number(this.urlParams.get('uid')); //get user id - numeric conversion for filter user
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id - numeric conversion for filter user
 
       fetch("/case/user/show?uid=" + this.curr_user).then(function (res) {
         return res.json();
