@@ -16,18 +16,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class cs_parameter extends Model
 {
-<<<<<<< HEAD
-    use SoftDeletes;
-
-    public $table = 'Cs_Parameter';
-
-    protected $dates = ['deleted_at'];
-=======
+    use SoftDeletes;    
     public $table = 'CS_Parameter';
     protected  $primaryKey = 'csp_id';
+    protected $dates = ['deleted_at'];
 
     //protected $dates = false;
->>>>>>> Gustavo
 
     public $timestamps = false;
 

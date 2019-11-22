@@ -17,11 +17,7 @@ class Migrations extends Model
 {
     public $table = 'migrations';
 
-<<<<<<< HEAD
     protected $dates = ['deleted_at'];
-=======
-    protected $dates = false;
->>>>>>> Gustavo
 
     public $timestamps = false;
 

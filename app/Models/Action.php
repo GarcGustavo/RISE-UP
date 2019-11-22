@@ -21,11 +21,7 @@ class action extends Model
 
     public $table = 'Action';
 
-<<<<<<< HEAD
-    protected $dates = ['deleted_at'];
-=======
     protected $dates = false;
->>>>>>> Gustavo
 
     public $timestamps = false;
 

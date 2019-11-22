@@ -17,18 +17,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class case_parameters extends Model
 {
-<<<<<<< HEAD
-    use SoftDeletes;
-
-    public $table = 'Case_Parameters';
-
-    protected $dates = ['deleted_at'];
-=======
+    use SoftDeletes;    
     public $table = 'Case_Parameters';
     protected  $primaryKey = 'cid';
 
+    protected $dates = ['deleted_at'];
+
     //protected $dates = false;
->>>>>>> Gustavo
 
     public $timestamps = false;
 
@@ -80,10 +75,6 @@ class case_parameters extends Model
      **/
     public function cOption()
     {
-<<<<<<< HEAD
-        return $this->belongsTo(\App\Models\case_study::class, 'c_owner');
-=======
         return $this->belongsTo(\App\Models\option::class, 'oid');
->>>>>>> Gustavo
     }
 }

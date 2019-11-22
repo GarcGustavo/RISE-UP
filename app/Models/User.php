@@ -26,17 +26,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class user extends Model
 {
-<<<<<<< HEAD
     use SoftDeletes;
 
     public $table = 'User';
 
     protected $dates = ['deleted_at'];
-=======
-    public $table = 'User';
-
-    //protected $dates = false;
->>>>>>> Gustavo
 
     public $timestamps = false;
 

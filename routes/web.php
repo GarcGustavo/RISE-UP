@@ -27,7 +27,7 @@ Route::get('/Home', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/case/{id}/body', 'CaseController@showCaseBody')->name('case/body');
 

@@ -15,19 +15,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class item_type extends Model
 {
-<<<<<<< HEAD
-    use SoftDeletes;
-
-    public $table = 'Item_Type';
-
-    protected $dates = ['deleted_at'];
-
-=======
     public $table = 'Item_Type';
 
     //protected $dates = false;
 
->>>>>>> Gustavo
     public $timestamps = false;
 
     public $fillable = [

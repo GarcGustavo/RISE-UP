@@ -22,17 +22,10 @@ class item extends Model
     
     protected  $primaryKey = 'iid';
 
-<<<<<<< HEAD
-    public $table = 'Item';
+    //public $table = 'Item';
 
     protected $dates = ['deleted_at'];
 
-=======
-    //use SoftDeletes;
-
-    //protected $dates = false;
-
->>>>>>> Gustavo
     public $timestamps = false;
 
     public $fillable = [
