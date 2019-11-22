@@ -16,12 +16,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class role extends Model
 {
+<<<<<<< HEAD
     use SoftDeletes;
 
     public $table = 'Role';
 
     protected $dates = ['deleted_at'];
 
+=======
+    //protected $dates = false;
+    public $table = "Role";
+>>>>>>> Gustavo
     public $timestamps = false;
 
     public $fillable = [

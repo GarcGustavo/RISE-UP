@@ -15,11 +15,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Migrations extends Model
 {
-    use SoftDeletes;
-
     public $table = 'migrations';
 
+<<<<<<< HEAD
     protected $dates = ['deleted_at'];
+=======
+    protected $dates = false;
+>>>>>>> Gustavo
 
     public $timestamps = false;
 

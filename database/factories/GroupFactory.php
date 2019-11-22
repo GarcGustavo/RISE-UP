@@ -8,8 +8,12 @@ $factory->define(group::class, function (Faker $faker) {
         'g_name' => $faker->word,
         'g_status' => $faker->word,
         'g_creation_date' => $faker->date,
+<<<<<<< HEAD
         'g_owner' => $faker->numberBetween($min=1, $max=25)
      //  'g_owner' => $faker->numberBetween($min=1, $max=3)
+=======
+        'g_owner' => $faker->numberBetween($min=1, $max=50)
+>>>>>>> Gustavo
     ];
 
 

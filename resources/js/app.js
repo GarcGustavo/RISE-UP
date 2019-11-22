@@ -3,10 +3,13 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+//import JwPagination from 'jw-vue-pagination';
 
 
 require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+
 
 window.Vue = require('vue');
 
@@ -35,6 +38,9 @@ Vue.component('iren-group', require('./components/group.vue').default);
 Vue.component('iren-user-groups', require('./components/user-groups.vue').default);
 Vue.component('iren-user-cases', require('./components/user-cases.vue').default);
 Vue.component('iren-404', require('./components/errors/404-error.vue').default);
+Vue.component('case_study', require('./components/case_study.vue').default);
+Vue.component('home', require('./components/home.vue').default);
+Vue.component('items', require('./components/items.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

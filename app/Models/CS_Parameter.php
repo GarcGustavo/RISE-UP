@@ -16,11 +16,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class cs_parameter extends Model
 {
+<<<<<<< HEAD
     use SoftDeletes;
 
     public $table = 'Cs_Parameter';
 
     protected $dates = ['deleted_at'];
+=======
+    public $table = 'CS_Parameter';
+    protected  $primaryKey = 'csp_id';
+
+    //protected $dates = false;
+>>>>>>> Gustavo
 
     public $timestamps = false;
 
@@ -52,7 +59,11 @@ class cs_parameter extends Model
      **/
     public function cases()
     {
+<<<<<<< HEAD
         return $this->belongsToMany(\App\Models\case_study::class, 'case_parameters');
+=======
+        return $this->belongsToMany(\App\Models\Case_study::class, 'case_parameters');
+>>>>>>> Gustavo
     }
 
     /**

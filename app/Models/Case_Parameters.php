@@ -11,23 +11,31 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @version October 25, 2019, 6:19 am UTC
  *
  * @property \App\Models\CsParameter cGroup
- * @property \App\Models\Case cOwner
+ * @property \App\Models\Case_Study cOwner
  * @property integer c_owner
  * @property integer c_group
  */
 class case_parameters extends Model
 {
+<<<<<<< HEAD
     use SoftDeletes;
 
     public $table = 'Case_Parameters';
 
     protected $dates = ['deleted_at'];
+=======
+    public $table = 'Case_Parameters';
+    protected  $primaryKey = 'cid';
+
+    //protected $dates = false;
+>>>>>>> Gustavo
 
     public $timestamps = false;
 
     public $fillable = [
-        'c_owner',
-        'c_group'
+        'cid',
+        'csp_id',
+        'opt_selected'
     ];
 
     /**
@@ -36,8 +44,9 @@ class case_parameters extends Model
      * @var array
      */
     protected $casts = [
-        'c_owner' => 'integer',
-        'c_group' => 'integer'
+        'cid' => 'integer',
+        'csp_id' => 'integer',
+        'opt_selected' => 'integer'
     ];
 
     /**
@@ -46,23 +55,35 @@ class case_parameters extends Model
      * @var array
      */
     public static $rules = [
-        'c_owner' => 'required',
-        'c_group' => 'required'
+        'csp_id' => 'required',
+        'opt_selected' => 'required'
     ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function cGroup()
+    public function cCase()
     {
-        return $this->belongsTo(\App\Models\CsParameter::class, 'c_group');
+        return $this->belongsTo(\App\Models\case_study::class, 'cid');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function cOwner()
+    public function cParameter()
     {
+        return $this->belongsTo(\App\Models\cs_parameter::class, 'csp_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     **/
+    public function cOption()
+    {
+<<<<<<< HEAD
         return $this->belongsTo(\App\Models\case_study::class, 'c_owner');
+=======
+        return $this->belongsTo(\App\Models\option::class, 'oid');
+>>>>>>> Gustavo
     }
 }

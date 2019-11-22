@@ -57,6 +57,33 @@ class UserController extends Controller
     }
 
     /**
+     * Return users currently editing specified cid
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showUsersEditing($id)
+    {
+        $cid = $id;
+        $user = User::where('User.current_edit_cid', $cid)->get();
+        return UserResource::collection($user);
+    }
+
+    /**
+     * Return users currently editing specified cid
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateUsersEditing(Request $request, $id)
+    {
+        $uid = $id;
+        $current_edit_cid = $request -> input('current_edit_cid');
+        User::where(['uid' => $uid])->update(['current_edit_cid' => $current_edit_cid]);
+        return response()->json(['message'=>'Updated user editing successfully']);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -67,6 +94,13 @@ class UserController extends Controller
         $user = User::findOrFail($request->input('uid'));
 
         return new UserResource($user);
+    // merge conflict version, commenting in case of bug
+    // public function show($id)
+    // {
+    //     $uid = $id;
+
+    //     $user = User::where('User.uid', $uid)->get();
+    //     return UserResource::collection($user);
     }
 
     /**

@@ -87,4 +87,8 @@ class group extends Model
         return $this->belongsToMany(\App\Models\User::class, 'user_groups');
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> Gustavo

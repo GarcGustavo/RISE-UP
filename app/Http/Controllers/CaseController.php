@@ -7,7 +7,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\case_study;
 use App\Models\User_Groups;
+use App\Models\Case_Parameters;
+use App\Models\Group;
 use App\Http\Resources\Case_Study as Case_StudyResource;
+use App\Http\Resources\Group as GroupResource;
+
 
 class CaseController extends Controller
 {
@@ -26,7 +30,48 @@ class CaseController extends Controller
         }
 
     }
+    public function showCaseBody($id)
+    {
+        $cid = $id;
+        return view('case_study_body')->with('cid', $cid);
+    }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $cid = $id;
+
+        $case = Case_Study::where('Case.cid', $cid)->get();
+        return Case_StudyResource::collection($case);
+    }
+
+    public function show_group_cases($id)
+    {
+        $gid = $id;
+
+        $cases = Case_Study::where('Case.c_group', $gid)->get();
+        return Case_StudyResource::collection($cases);
+    }
+
+    public function show_case_group($id)
+    {
+        $gid = $id;
+
+        $cases = Case_Study::where('Case.c_group', $gid)->get();
+        $case_group = Group::
+        where('Group.gid', $gid)
+        ->join('Case', 'Case.c_group', '=', 'Group.gid')
+        ->select('Group.*')
+        ->get();
+        $unique_data = $case_group->unique('gid');
+
+        return GroupResource::collection($unique_data);
+    }
     /**
      * Store a newly created case study in storage.
      * @param  \Illuminate\Http\Request  $request
