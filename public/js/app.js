@@ -3320,9 +3320,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       fetch("/case/group/show?gid=" + this.curr_group).then(function (res) {
-        return res.text();
-      }).then(function (text) {
-        console.log(text);
+        return res.json();
+      }).then(function (res) {
         _this3.group_cases = res.data;
       })["catch"](function (err) {
         return console.log(err);
