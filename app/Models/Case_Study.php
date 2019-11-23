@@ -28,9 +28,9 @@ class case_study extends Model
     
     protected  $primaryKey = 'cid';
 
-    //protected $dates = false;
-
     public $timestamps = false;
+
+    protected $dates = ['deleted_at'];
 
     public $fillable = [
         'c_title',

@@ -91,16 +91,13 @@ class UserController extends Controller
      */
     public function show(Request $request)
     {
-        $user = User::findOrFail($request->input('uid'));
+        $uid = $request->input('uid');
 
-        return new UserResource($user);
-    // merge conflict version, commenting in case of bug
-    // public function show($id)
-    // {
-    //     $uid = $id;
+        $user = User::findOrFail($uid)
+        ->where('User.uid', $uid)
+        ->get();
 
-    //     $user = User::where('User.uid', $uid)->get();
-    //     return UserResource::collection($user);
+        return UserResource::collection($user);
     }
 
     /**

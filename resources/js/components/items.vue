@@ -331,8 +331,8 @@ export default {
       }, 1000);
     },
     fetchCaseItems() {
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 2]);
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+      this.cid = Number(this.path.get("cid")); //get cid
       fetch("/case/" + this.cid + "/items")
         .then(res => res.json())
         .then(res => {
@@ -352,9 +352,9 @@ export default {
         .catch(err => console.log(err));
     },
     fetchCase() {
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 2]);
-      fetch("/case/" + this.cid)
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+      this.cid = Number(this.path.get("cid")); //get cid
+      fetch("/case?cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.case_to_show = res.data;
@@ -368,7 +368,7 @@ export default {
         .catch(err => console.log(err));
     },
     fetchUser(uid) {
-      fetch("/user/" + this.uid)
+      fetch("/user?uid=" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
@@ -516,8 +516,8 @@ export default {
       this.fetchCase();
     },
     updateItem(item_to_update) {
-      this.path = window.location.pathname.split("/");
-      this.cid = this.path[this.path.length - 2];
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+      this.cid = Number(this.path.get("cid")); //get cid
       this.updated_item = {
         iid: Number(item_to_update.iid),
         i_content: item_to_update.i_content,
@@ -552,8 +552,8 @@ export default {
       this.fetchCaseItems();
     },
     addItem(new_item) {
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 2]);
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+      this.cid = Number(this.path.get("cid")); //get cid
       this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
       this.new_item.i_content = "Add content here!";
       this.new_item.i_case = this.cid;

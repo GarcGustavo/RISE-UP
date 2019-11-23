@@ -102,5 +102,31 @@ class ViewsController extends Controller
 
         return view('user-cases');
     }
+    
+    public function showCaseBody(Request $request)
+    {
+        //renaming attributes
+        $attributes = array(
+            'cid' => 'case id',
+            );
+            //validation rules
+            $validator = Validator::make($request->all(), [
+            'cid' => ['bail','exists:Case','required','integer',
+            //if exist verify user has not been banned
+            Rule::exists('Case')->where(function ($query) use ($request) {
+                return $query->where('cid', $request->input('cid'))->whereNull('deleted_at');
+            })]
+            //custom error message if uid does not exist
+        ]);
+            //apply validation request
+            $validator->setAttributeNames($attributes);
+            //validate request
+            if ($validator->fails()) {
+                return abort(404);
+            }
+
+        $cid = $request->input('cid');
+        return view('case_study_body')->with('cid', $cid);
+    }
 }
 

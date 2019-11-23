@@ -30,23 +30,21 @@ class CaseController extends Controller
         }
 
     }
-    public function showCaseBody($id)
-    {
-        $cid = $id;
-        return view('case_study_body')->with('cid', $cid);
-    }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  Request $request
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        $cid = $id;
+        $cid = $request->input('cid');
 
-        $case = Case_Study::where('Case.cid', $cid)->get();
+        $case = Case_Study::findOrFail($cid)
+        ->where('Case.cid', $cid)
+        ->get();
+
         return Case_StudyResource::collection($case);
     }
 
@@ -215,6 +213,50 @@ class CaseController extends Controller
 
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCaseDetails(Request $request, $id)
+    {
+        $cid = $request->input('cid');
+        $c_title = $request->input('c_title');
+        $c_description = $request->input('c_description');
+        $c_thumbnail = $request->input('c_thumbnail');
+        $c_status = $request->input('c_status');
+        $c_date = $request->input('c_date');
+        $c_owner = $request->input('c_owner');
+        $c_group = $request->input('c_group');
+        Case_Study::where(['cid' => $cid])
+        ->update([
+            'c_title' => $c_title,
+            'c_description' => $c_description,
+            'c_thumbnail' => $c_thumbnail,
+            'c_status' => $c_status,
+            'c_date' => $c_date,
+            'c_owner' => $c_owner,
+            'c_group' => $c_group
+            ]);
+        return response()->json(['message'=>'Updated case successfully']);
+    }
+    
+    public function updateCaseParameters(Request $request)
+    {
+        $cid = $request->input('cid');
+        $csp_id = $request->input('csp_id');
+        $opt_selected = $request->input('opt_selected');
+        Case_Parameters::where(['cid' => $cid])
+        ->where(['csp_id' => $csp_id])
+        ->update([
+            'cid' => $cid,
+            'csp_id' => $csp_id,
+            'opt_selected' => $opt_selected
+            ]);
+        return response()->json(['message'=>'Updated case parameters successfully']);
+    }
 
     /**
      * Remove the specified resource from storage.

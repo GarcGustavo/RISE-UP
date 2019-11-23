@@ -4482,8 +4482,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchCaseItems: function fetchCaseItems() {
       var _this2 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 2]);
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+
+      this.cid = Number(this.path.get("cid")); //get cid
+
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
@@ -4509,9 +4511,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchCase: function fetchCase() {
       var _this4 = this;
 
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 2]);
-      fetch("/case/" + this.cid).then(function (res) {
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+
+      this.cid = Number(this.path.get("cid")); //get cid
+
+      fetch("/case?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this4.case_to_show = res.data;
@@ -4531,7 +4535,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchUser: function fetchUser(uid) {
       var _this5 = this;
 
-      fetch("/user/" + this.uid).then(function (res) {
+      fetch("/user?uid=" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this5.users = res.data;
@@ -4692,8 +4696,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchCase();
     },
     updateItem: function updateItem(item_to_update) {
-      this.path = window.location.pathname.split("/");
-      this.cid = this.path[this.path.length - 2];
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+
+      this.cid = Number(this.path.get("cid")); //get cid
+
       this.updated_item = {
         iid: Number(item_to_update.iid),
         i_content: item_to_update.i_content,
@@ -4728,8 +4734,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchCaseItems();
     },
     addItem: function addItem(new_item) {
-      this.path = window.location.pathname.split("/");
-      this.cid = Number(this.path[this.path.length - 2]);
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+
+      this.cid = Number(this.path.get("cid")); //get cid
+
       this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
       this.new_item.i_content = "Add content here!";
       this.new_item.i_case = this.cid;

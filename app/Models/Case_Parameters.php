@@ -17,11 +17,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class case_parameters extends Model
 {
-    use SoftDeletes;    
+    //use SoftDeletes;    
     public $table = 'Case_Parameters';
     protected  $primaryKey = 'cid';
 
-    protected $dates = ['deleted_at'];
+    //protected $dates = ['deleted_at'];
 
     //protected $dates = false;
 
