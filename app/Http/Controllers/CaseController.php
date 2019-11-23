@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\Case_Study;
+use App\Models\case_study;
 use App\Models\User_Groups;
 use App\Models\Case_Parameters;
 use App\Models\Group;
