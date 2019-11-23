@@ -224,7 +224,7 @@
             <div>
               <b-link
                 class="p-2"
-                href="#"
+                :href="'/case/body?cid='+data.item.cid"
               >{{data.item.c_title}}</b-link>
             </div>
           </template>
@@ -301,7 +301,7 @@
             <div>
               <b-link
                 class="p-2"
-                href="#"
+                :href="'/case/body?cid='+data.item.cid"
               >{{data.item.c_title}}</b-link>
             </div>
           </template>

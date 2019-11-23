@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class cs_parameter extends Model
 {
-    //use SoftDeletes;    
+    //use SoftDeletes;
     public $table = 'CS_Parameter';
     protected  $primaryKey = 'csp_id';
 
@@ -54,11 +54,7 @@ class cs_parameter extends Model
      **/
     public function cases()
     {
-<<<<<<< HEAD
         return $this->belongsToMany(\App\Models\case_study::class, 'case_parameters');
-=======
-        return $this->belongsToMany(\App\Models\Case_study::class, 'case_parameters');
->>>>>>> Gustavo
     }
 
     /**
