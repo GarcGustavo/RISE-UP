@@ -4382,6 +4382,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -4452,6 +4494,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchCaseParameters(); //this.fetchSelectedOptions(this.cid);
 
     this.fetchUsersEditing(this.cid);
+    this.fetchUserGroups();
   },
   mounted: function mounted() {
     Echo.join("App.User.".concat(this.user.uid)).here(function (users) {//this.usersEditing = users;
@@ -4795,6 +4838,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.fetchCaseItems();
       this.fetchItems();
+    },
+    deleteCaseStudy: function deleteCaseStudy() {
+      if (confirm("Do you want to delete this case study permanently?")) {
+        //send request
+        fetch("/case/remove", {
+          method: "delete",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            "Access-Control-Origin": "*",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+          }),
+          body: JSON.stringify(this.case_to_show)
+        }).then(function (res) {
+          return res.text();
+        }).then(function (text) {
+          console.log(text);
+        })["catch"](function (err) {
+          console.error("Error: ", err);
+        });
+      }
     },
     //TODO
     languageToggle: function languageToggle() {},
@@ -89643,6 +89706,82 @@ var render = function() {
             staticStyle: { margin: "50px", background: "white" }
           },
           [
+            _c("div", { staticClass: "col-md-9" }, [
+              _c(
+                "h4",
+                {
+                  staticClass: "card-title border-0",
+                  staticStyle: { margin: "10px" }
+                },
+                [_vm._v("Description:")]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "card-body" },
+                _vm._l(_vm.case_to_show, function(case_study, index) {
+                  return _c("h5", { key: index }, [
+                    _vm.editing
+                      ? _c("textarea", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: case_study.c_description,
+                              expression: "case_study.c_description"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: {
+                            rows: "3",
+                            "min-height": "50px",
+                            maxlength: 320
+                          },
+                          domProps: { value: case_study.c_description },
+                          on: {
+                            keydown: _vm.editingCase,
+                            mouseover: function($event) {
+                              _vm.typing = true
+                            },
+                            mouseleave: function($event) {
+                              _vm.typing = false
+                            },
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                case_study,
+                                "c_description",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    !_vm.editing
+                      ? _c("div", { staticClass: "form-group text-break" }, [
+                          _vm._v(_vm._s(case_study.c_description))
+                        ])
+                      : _vm._e()
+                  ])
+                }),
+                0
+              )
+            ]),
+            _vm._v(" "),
+            _vm._m(0)
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "row",
+            staticStyle: { margin: "50px", background: "white" }
+          },
+          [
             _c("div", { staticClass: "col-md-12" }, [
               _c(
                 "h4",
@@ -89926,7 +90065,36 @@ var render = function() {
                       )
                     : _vm._e()
                 ]
-              )
+              ),
+              _vm._v(" "),
+              _vm.editing
+                ? _c(
+                    "div",
+                    {
+                      staticClass: "col-sm-12 card mt-5",
+                      staticStyle: { background: "white" }
+                    },
+                    [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary btn-xl mt-2 mb-2",
+                          staticStyle: {
+                            background: "#c0c0c0",
+                            "border-color": "#c0c0c0",
+                            color: "black"
+                          },
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteCaseStudy()
+                            }
+                          }
+                        },
+                        [_vm._v("Delete Case Study")]
+                      )
+                    ]
+                  )
+                : _vm._e()
             ]
           ),
           _vm._v(" "),
@@ -90176,7 +90344,18 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-2.5 border shadow" }, [
+      _c("img", {
+        attrs: { src: __webpack_require__(/*! ../../../public/images/nsf_logo.jpg */ "./public/images/nsf_logo.jpg") }
+      })
+    ])
+  }
+]
 render._withStripped = true
 
 

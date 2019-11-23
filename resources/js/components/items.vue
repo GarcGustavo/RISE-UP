@@ -4,19 +4,24 @@
       <div class="row" style="margin: 50px;">
         <div class="col-md-12 col-md-offset-6 border shadow" style="background: white;">
           <template v-if="case_to_show">
-            <h1 class="text-center mt-3" style="text-align: center;" v-for="(case_study,index) in case_to_show" :key="index">
-                <input
-                  type="text"
-                  class="text-capitalize"
-                  style="text-align: center;
+            <h1
+              class="text-center mt-3"
+              style="text-align: center;"
+              v-for="(case_study,index) in case_to_show"
+              :key="index"
+            >
+              <input
+                type="text"
+                class="text-capitalize"
+                style="text-align: center;
                   font-weight: 500;
                   font-size: 3rem;
                   max-width: 500px;"
-                  v-model="case_study.c_title"
-                  v-if="editing"
-                  :maxlength="32"
-                  @keydown="editingCase"
-                />
+                v-model="case_study.c_title"
+                v-if="editing"
+                :maxlength="32"
+                @keydown="editingCase"
+              />
               <h1 class="text-capitalize" v-if="!editing">{{case_study.c_title}}</h1>
             </h1>
             <h5
@@ -43,7 +48,11 @@
               id="dropdownMenuButton"
               data-toggle="dropdown"
             >Group: {{group.g_name}}</button>
-            <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" id="drop">
+            <div
+              class="dropdown-menu scrollable-menu"
+              aria-labelledby="dropdownMenuButton"
+              id="drop"
+            >
               <option
                 class="dropdown-item"
                 href="#"
@@ -53,6 +62,32 @@
               >{{index + 1}}: {{group.g_name}}</option>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="row" style="margin: 50px; background: white;">
+        <!-- Case Description and Thumbnail -->
+        <div class="col-md-9">
+          <h4 class="card-title border-0" style="margin: 10px;">Description:</h4>
+          <div class="card-body">
+            <h5 v-for="(case_study,index) in case_to_show" :key="index">
+              <textarea
+                class="form-control"
+                rows="3"
+                min-height="50px"
+                v-model="case_study.c_description"
+                v-if="editing"
+                :maxlength="320"
+                @keydown="editingCase"
+                @mouseover="typing = true"
+                @mouseleave="typing = false"
+              />
+              <div class="form-group text-break" v-if="!editing">{{case_study.c_description}}</div>
+            </h5>
+          </div>
+        </div>
+        <div class="col-md-2.5 border shadow">
+          <!-- Thumbnail Placeholder -->
+          <img src="../../../public/images/nsf_logo.jpg" />
         </div>
       </div>
       <div class="row" style="margin: 50px; background: white;">
@@ -141,6 +176,13 @@
               v-on:click="onSubmit(items);"
               v-if="this.editing"
             >Submit Changes</button>
+          </div>
+          <div class="col-sm-12 card mt-5" style="background: white;" v-if="editing">
+            <button
+              class="btn btn-primary btn-xl mt-2 mb-2"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black"
+              v-on:click="deleteCaseStudy()"
+            >Delete Case Study</button>
           </div>
         </div>
         <div class="col-md">
@@ -293,6 +335,7 @@ export default {
     this.fetchCaseParameters();
     //this.fetchSelectedOptions(this.cid);
     this.fetchUsersEditing(this.cid);
+    this.fetchUserGroups();
   },
 
   mounted() {
@@ -613,6 +656,27 @@ export default {
       this.fetchCaseItems();
       this.fetchItems();
     },
+    deleteCaseStudy() {
+      if (confirm("Do you want to delete this case study permanently?")) {
+            //send request
+            fetch("/case/remove", {
+              method: "delete",
+              headers: new Headers({
+                "Content-Type": "application/json",
+                "Access-Control-Origin": "*",
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+              }),
+              body: JSON.stringify(this.case_to_show)
+            })
+          .then(res => res.text())
+          .then(text => {
+            console.log(text);
+          })
+          .catch(err => {
+            console.error("Error: ", err);
+          });
+      }
+    },
     //TODO
     languageToggle() {},
     onEdit() {
@@ -623,8 +687,12 @@ export default {
         this.updateUsersEditing(this.users[user].uid);
       }
       for (let option in this.case_parameters) {
-        this.selected_options_content[option] = this.case_parameters[option].o_content;
-        this.selected_options_id[option] = this.case_parameters[option].opt_selected;
+        this.selected_options_content[option] = this.case_parameters[
+          option
+        ].o_content;
+        this.selected_options_id[option] = this.case_parameters[
+          option
+        ].opt_selected;
       }
     },
     onCancel() {
@@ -640,15 +708,19 @@ export default {
         this.updateUsersEditing(this.users[user].uid);
       }
       for (let option in this.selected_options_content) {
-        this.case_parameters[option].o_content = this.selected_options_content[option];
-        this.case_parameters[option].opt_selected = this.selected_options_id[option];
+        this.case_parameters[option].o_content = this.selected_options_content[
+          option
+        ];
+        this.case_parameters[option].opt_selected = this.selected_options_id[
+          option
+        ];
       }
     },
     onSubmit(items) {
       this.updateParams();
       this.updateItems(items);
       this.updateCase();
-      
+
       //this.updateParameter();
       this.editing = false;
     },
@@ -669,9 +741,9 @@ export default {
 
 <style lang="scss" scoped>
 .scrollable-menu {
-    height: auto;
-    max-height: 200px;
-    overflow-x: hidden;
+  height: auto;
+  max-height: 200px;
+  overflow-x: hidden;
 }
 /* Set max height for content containers */
 #items {
