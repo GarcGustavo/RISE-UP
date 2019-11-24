@@ -22,28 +22,6 @@ Route::get('/Home', function () {
 
 Auth::routes();
 
-<<<<<<< HEAD
-Route::get('/user/{id}/groups', function () {
-    return view('user_groups');
-});
-
-Route::get('/user/{id}/cases', function () {
-    return view('user_cases');
-});
-
-Route::get('/home', function () {
-    return view('home');
-});
-
-// Route::get('/login', function () {
-//     return view('login');
-// });
-
-//Auth::routes();
-//Route::get('/home', 'HomeController@index')->name('home');
-//Auth::routes();
-//Route::get('/home', 'HomeController@index')->name('home');
-=======
 
 
 /********VIEWS*********/
@@ -65,7 +43,6 @@ Route::get('/case/body', 'ViewsController@showCaseBody');
 
 //List specific user
 Route::get('/user', 'UserController@show');
->>>>>>> 34140abe639af7d6b49c39f387b701dd525ddd1d
 
 //List users
 Route::get('/users', 'UserController@index');
@@ -107,16 +84,12 @@ Route::delete('/user-groups/remove', 'User_GroupsController@destroy');
 
 
 
-<<<<<<< HEAD
-//List cases
-=======
 /********CASES*********/
 
 //List specific case
 Route::get('/case', 'CaseController@show');
 
 //List all case studies
->>>>>>> 34140abe639af7d6b49c39f387b701dd525ddd1d
 Route::get('/cases', 'CaseController@index');
 
 //List cases of a group
@@ -136,31 +109,6 @@ Route::delete('case/remove', 'CaseController@destroy');
 
 
 
-<<<<<<< HEAD
-//Delete case study
-Route::delete('user_cases/remove', 'CaseController@destroy');
-
-//List of login choices
-Route::get('/login', 'LoginController@list_of_choices');
-
-//Redirect to UPRM IDP
-Route::get('/login_shibboleth', 'LoginController@shibboleth');
-
-//Create profile
-Route::put('/profile_creation/{', 'UserController@store');
-
-//Find user if has been create before
-Route::get('user_match/{email}', 'UserController@find');
-
-//Find user if has been create before
-Route::get('home/{id}', 'HomeController@set');
-
-//Find user if has been create before
-Route::get('request_collab/{id}', 'UserController@request_collab');
-
-//Find user if has been create before
-Route::get('request_collab/{id}', 'UserController@request_collab');
-=======
 /********CASE ITEMS*********/
 
 //List items
@@ -198,4 +146,3 @@ Route::post('/case/{id}/update', 'CaseController@updateCaseDetails');
 
 //Update parameters in a case
 Route::post('/parameter/update', 'CaseController@updateCaseParameters');
->>>>>>> 34140abe639af7d6b49c39f387b701dd525ddd1d
