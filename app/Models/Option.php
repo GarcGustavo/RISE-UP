@@ -16,11 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Option extends Model
 {
-    use SoftDeletes;
-
     public $table = 'Option';
+    
+    protected  $primaryKey = 'oid';
 
-    protected $dates = ['deleted_at'];
+    //protected $dates = false;
 
     public $timestamps = false;
 

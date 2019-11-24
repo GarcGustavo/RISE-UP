@@ -56,16 +56,47 @@ class UserController extends Controller
     }
 
     /**
+     * Return users currently editing specified cid
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showUsersEditing($id)
+    {
+        $cid = $id;
+        $user = User::where('User.current_edit_cid', $cid)->get();
+        return UserResource::collection($user);
+    }
+
+    /**
+     * Return users currently editing specified cid
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateUsersEditing(Request $request, $id)
+    {
+        $uid = $id;
+        $current_edit_cid = $request -> input('current_edit_cid');
+        User::where(['uid' => $uid])->update(['current_edit_cid' => $current_edit_cid]);
+        return response()->json(['message'=>'Updated user editing successfully']);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        $user = User::findOrFail($id);
+        $uid = $request->input('uid');
 
-        return new UserResource($user);
+        $user = User::findOrFail($uid)
+        ->where('User.uid', $uid)
+        ->get();
+
+        return UserResource::collection($user);
     }
 
     /**

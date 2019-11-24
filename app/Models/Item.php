@@ -18,9 +18,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class item extends Model
 {
-    use SoftDeletes;
-
     public $table = 'Item';
+    
+    protected  $primaryKey = 'iid';
+
+    //public $table = 'Item';
 
     protected $dates = ['deleted_at'];
 
@@ -29,7 +31,9 @@ class item extends Model
     public $fillable = [
         'i_content',
         'i_case',
-        'i_type'
+        'i_type',
+        'order',
+        'i_name'
     ];
 
     /**
@@ -41,7 +45,9 @@ class item extends Model
         'iid' => 'integer',
         'i_content' => 'string',
         'i_case' => 'integer',
-        'i_type' => 'integer'
+        'i_type' => 'integer',
+        'order' => 'integer',
+        'i_name' => 'string'
     ];
 
     /**
@@ -52,7 +58,9 @@ class item extends Model
     public static $rules = [
         'i_content' => 'required',
         'i_case' => 'required',
-        'i_type' => 'required'
+        'i_type' => 'required',
+        'order' => 'required',
+        'i_name' => 'required'
     ];
 
     /**

@@ -31,6 +31,7 @@ class user extends Model
     public $table = 'User';
 
     protected $dates = ['deleted_at'];
+    protected $primaryKey = 'uid';
 
     public $timestamps = false;
 

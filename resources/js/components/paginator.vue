@@ -69,7 +69,6 @@
 
 <script>
 import paginate from "jw-paginate";
-
 const default_labels = {
   //labels for options
   first: "First",
@@ -79,7 +78,6 @@ const default_labels = {
   skip_prev: "<<",
   skip_next: ">>"
 };
-
 const default_styles = {
   //paginator default style
   ul: {
@@ -100,7 +98,6 @@ const default_styles = {
     float: "left"
   }
 };
-
 export default {
   props: {
     items: {
@@ -150,33 +147,30 @@ export default {
     if (!this.$listeners.changePage) {
       throw 'Missing required event listener: "changePage"';
     }
-
     // set default styles unless disabled
     if (!this.disable_default_styles) {
       this.ul_styles = default_styles.ul;
       this.li_styles = default_styles.li;
       this.a_styles = default_styles.a;
     }
-
     // merge custom styles with default styles
     if (this.styles) {
       this.ul_styles = { ...this.ul_styles, ...this.styles.ul };
       this.li_styles = { ...this.li_styles, ...this.styles.li };
       this.a_styles = { ...this.a_styles, ...this.styles.a };
     }
-
     // set page if items array isn't empty
     if (this.items && this.items.length) {
       this.setPage(this.initial_page);
     }
   },
+
   methods: {
     setPage(page) {
       const { items, page_size, max_pages } = this;
 
       // get new pager object for specified page
       const pager = paginate(items.length, page, page_size, max_pages);
-
       // get new page of items from items array
       const page_of_items = items.slice(pager.startIndex, pager.endIndex + 1);
 
@@ -185,7 +179,23 @@ export default {
 
       // emit change page event to parent component
       this.$emit("changePage", page_of_items);
-    }
+    },
   }
 };
 </script>
+
+<style>
+/*
+To use custom styles disable the default styles by adding the property :disableDefaultStyles="true" to the <jw-pagination> component,
+ then adding custom css styles with the following css selectors:
+
+.pagination - Pagination component container (ul element)
+.pagination li - All list items in the pagination component
+.pagination li a - All pagination links including first, last, previous and next
+.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements
+.pagination li.first - The 'First' pagination element
+.pagination li.last - The 'Last' pagination element
+.pagination li.previous - The 'Previous' pagination element
+.pagination li.next - The 'Next' pagination element
+*/
+</style>

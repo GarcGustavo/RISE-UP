@@ -15,8 +15,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Migrations extends Model
 {
-    use SoftDeletes;
-
     public $table = 'migrations';
 
     protected $dates = ['deleted_at'];

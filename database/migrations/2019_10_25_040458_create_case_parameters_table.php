@@ -14,10 +14,12 @@ class CreateCaseParametersTable extends Migration
     public function up()
     {
         Schema::create('Case_Parameters', function (Blueprint $table) {
-            $table->unsignedBigInteger('c_owner');
-            $table->unsignedBigInteger('c_group');
-            $table->foreign('c_owner')->references('cid')->on('Case');
-            $table->foreign('c_group')->references('csp_id')->on('CS_Parameter');
+            $table->unsignedBigInteger('cid');
+            $table->unsignedBigInteger('csp_id');
+            $table->unsignedBigInteger('opt_selected');
+            $table->foreign('cid')->references('cid')->on('Case');
+            $table->foreign('csp_id')->references('csp_id')->on('CS_Parameter');
+            $table->foreign('opt_selected')->references('oid')->on('Option');
         });
     }
 
