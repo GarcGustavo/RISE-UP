@@ -4424,6 +4424,38 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -4441,6 +4473,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       action: "",
       actor: "",
       total_items: "",
+      images: [],
+      preview: false,
       case_study: {
         cid: "",
         c_title: "",
@@ -4742,23 +4776,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
       this.cid = Number(this.path.get("cid")); //get cid
+      // this.updated_item = {
+      //   iid: Number(item_to_update.iid),
+      //   i_content: item_to_update.i_content,
+      //   i_case: item_to_update.i_case,
+      //   i_type: item_to_update.i_type,
+      //   order: Number(item_to_update.order),
+      //   i_name: item_to_update.i_name
+      // };
 
-      this.updated_item = {
-        iid: Number(item_to_update.iid),
-        i_content: item_to_update.i_content,
-        i_case: item_to_update.i_case,
-        i_type: item_to_update.i_type,
-        order: Number(item_to_update.order),
-        i_name: item_to_update.i_name
-      };
+      var formData = new FormData();
+      formData.append("image", this.files[0]);
+      formData.append("i_case", item_to_update.i_case);
+      formData.append("i_type", item_to_update.i_type);
+      formData.append("order", Number(item_to_update.order));
+      formData.append("i_name", item_to_update.i_name);
+      formData.append("i_content", item_to_update.i_content); //console.log(formData.get('i_content'));
+
       fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
         headers: new Headers({
-          "Content-Type": "application/json",
+          //"Content-Type": "multipart/form-data",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_item)
+        //body: JSON.stringify(this.updated_item)
+        body: formData
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -4776,17 +4819,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchItems();
       this.fetchCaseItems();
     },
-    addItem: function addItem(new_item) {
+    addItem: function addItem(new_item, item_type) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
       this.cid = Number(this.path.get("cid")); //get cid
 
+      var item_name = "New Text";
+      var item_content = "Add content here!";
+
+      if (item_type == 2) {
+        item_name = "New Image";
+        item_content = "new_item.jpg";
+      }
+
       this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
-      this.new_item.i_content = "Add content here!";
+      this.new_item.i_content = item_content;
       this.new_item.i_case = this.cid;
-      this.new_item.i_type = "1";
+      this.new_item.i_type = item_type;
       this.new_item.order = "1";
-      this.new_item.i_name = "New Item";
+      this.new_item.i_name = item_name;
       console.log(new_item);
       fetch("/item/add", {
         method: "post",
@@ -4876,13 +4927,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     onCancel: function onCancel() {
       this.gid = this.initial_gid;
+      this.editing = false;
+      this.preview = false;
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
       this.fetchCase();
       this.fetchCaseParameters();
       this.fetchParameterOptions();
-      this.editing = false;
 
       for (var user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
@@ -4894,11 +4946,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     onSubmit: function onSubmit(items) {
+      this.editing = false;
+      this.preview = false;
       this.updateParams();
       this.updateItems(items);
       this.updateCase(); //this.updateParameter();
-
-      this.editing = false;
     },
     onSelectGroup: function onSelectGroup(selected_gid) {
       this.gid = selected_gid;
@@ -4906,9 +4958,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchGroup(this.gid);
     },
     onSelectOption: function onSelectOption(selected_op, index) {
-      //this.selected_options_content[index] = selected_op.o_content;
       this.case_parameters[index].o_content = selected_op.o_content;
-      this.case_parameters[index].opt_selected = selected_op.oid; //this.fetchGroup(this.gid);
+      this.case_parameters[index].opt_selected = selected_op.oid;
+    },
+    uploadImage: function uploadImage(e, item, index) {
+      var _this11 = this;
+
+      //This reads an image from a data url stored in the item
+      //var image = new Image();
+      var reader = new FileReader();
+      this.files = e.target.files || e.dataTransfer.files;
+      reader.readAsDataURL(this.files[0]);
+
+      reader.onload = function (e) {
+        _this11.images[index] = e.target.result;
+        _this11.preview = true;
+      };
     }
   }
 });
@@ -43408,7 +43473,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\nimg[data-v-475f3ef6] {\n  width: 30%;\n  margin: auto;\n  display: block;\n  margin-bottom: 10px;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
 
 // exports
 
@@ -90037,11 +90102,31 @@ var render = function() {
                           },
                           on: {
                             click: function($event) {
-                              return _vm.addItem(_vm.new_item)
+                              return _vm.addItem(_vm.new_item, 1)
                             }
                           }
                         },
-                        [_vm._v("Add Item")]
+                        [_vm._v("Add Text Item")]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  this.editing
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary btn-sm mb-2",
+                          staticStyle: {
+                            background: "#c0c0c0",
+                            "border-color": "#c0c0c0",
+                            color: "black"
+                          },
+                          on: {
+                            click: function($event) {
+                              return _vm.addItem(_vm.new_item, 2)
+                            }
+                          }
+                        },
+                        [_vm._v("Add Image Item")]
                       )
                     : _vm._e(),
                   _vm._v(" "),
@@ -90261,7 +90346,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "form-group" },
                                           [
-                                            _vm.editing
+                                            _vm.editing && item.i_type == 1
                                               ? _c("textarea", {
                                                   directives: [
                                                     {
@@ -90308,12 +90393,59 @@ var render = function() {
                                                 })
                                               : _vm._e()
                                           ]
-                                        )
+                                        ),
+                                        _vm._v(" "),
+                                        _c("div", [
+                                          _vm.editing && item.i_type == 2
+                                            ? _c("input", {
+                                                attrs: {
+                                                  enctype:
+                                                    "multipart/form-data",
+                                                  type: "file",
+                                                  accept: "image/*",
+                                                  id: "file-input"
+                                                },
+                                                on: {
+                                                  change: function($event) {
+                                                    return _vm.uploadImage(
+                                                      $event,
+                                                      item,
+                                                      index
+                                                    )
+                                                  }
+                                                }
+                                              })
+                                            : _vm._e(),
+                                          _vm._v(" "),
+                                          _c("div", { key: _vm.preview }, [
+                                            _vm.editing &&
+                                            item.i_type == 2 &&
+                                            !_vm.preview
+                                              ? _c("img", {
+                                                  attrs: {
+                                                    src:
+                                                      "../images/" +
+                                                      item.i_content
+                                                  }
+                                                })
+                                              : _vm._e(),
+                                            _vm._v(" "),
+                                            _vm.editing &&
+                                            item.i_type == 2 &&
+                                            _vm.preview
+                                              ? _c("img", {
+                                                  attrs: {
+                                                    src: _vm.images[index]
+                                                  }
+                                                })
+                                              : _vm._e()
+                                          ])
+                                        ])
                                       ])
                                     ]
                                   ),
                                   _vm._v(" "),
-                                  !_vm.editing
+                                  !_vm.editing && item.i_type == 1
                                     ? _c(
                                         "div",
                                         {
@@ -90323,6 +90455,23 @@ var render = function() {
                                           }
                                         },
                                         [_vm._v(_vm._s(item.i_content))]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  !_vm.editing && item.i_type == 2
+                                    ? _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "form-group text-break text-center"
+                                        },
+                                        [
+                                          _c("img", {
+                                            attrs: {
+                                              src: "../images/" + item.i_content
+                                            }
+                                          })
+                                        ]
                                       )
                                     : _vm._e()
                                 ])
