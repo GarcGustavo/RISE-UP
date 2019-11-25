@@ -39,25 +39,110 @@ class CaseController extends Controller
      */
     public function show(Request $request)
     {
+
+
+/*
+        //renaming attributes
+        $attributes = array(
+            'cid' => 'case study id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'cid' => ['bail','exists:Case','required','integer',
+            //if exist verify case study has not been removed
+            Rule::exists('Case')->where(function ($query) use ($request) {
+                return $query->where('cid', $request->input('cid'))->whereNull('deleted_at');
+            })]
+        ], ['cid.exists' => 'The case study id does not exists.']);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+*/
+
         $cid = $request->input('cid');
 
         $case = Case_Study::findOrFail($cid)
         ->where('Case.cid', $cid)
         ->get();
 
+
+        /*
+        if ($case) {
+           return Case_StudyResource::collection($case);
+        } else {
+            return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
+        }
+*/
         return Case_StudyResource::collection($case);
     }
 
     public function show_group_cases($id)
     {
+/*
+        //renaming attributes
+        $attributes = array(
+            'gid' => 'group id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'gid' => ['bail','exists:Group','required','integer',
+            //if exist verify group has not been removed
+            Rule::exists('Group')->where(function ($query) use ($request) {
+                return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
+            })]
+        ], ['gid.exists' => 'The group id does not exists.']);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+*/
+        //process request
         $gid = $id;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
+
+      /*
+        if ($cases) {
+           return Case_StudyResource::collection($cases);
+        } else {
+            return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
+        }
+*/
+
         return Case_StudyResource::collection($cases);
     }
 
     public function show_case_group($id)
     {
+
+        /*
+        //renaming attributes
+        $attributes = array(
+            'gid' => 'group id',
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'gid' => ['bail','exists:Group','required','integer',
+            //if exist verify group has not been removed
+            Rule::exists('Group')->where(function ($query) use ($request) {
+                return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
+            })]
+        ], ['gid.exists' => 'The group id does not exists.']);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+*/
+        //process request
+
+
         $gid = $id;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
@@ -68,6 +153,14 @@ class CaseController extends Controller
         ->get();
         $unique_data = $case_group->unique('gid');
 
+
+      /*
+        if ($unique_data) {
+           return GroupResource::collection($unique_data);
+        } else {
+            return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
+        }
+*/
         return GroupResource::collection($unique_data);
     }
     /**
@@ -242,7 +335,7 @@ class CaseController extends Controller
             ]);
         return response()->json(['message'=>'Updated case successfully']);
     }
-    
+
     public function updateCaseParameters(Request $request)
     {
         $cid = $request->input('cid');
