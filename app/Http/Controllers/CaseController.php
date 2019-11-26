@@ -190,7 +190,7 @@ class CaseController extends Controller
             'c-thumbnail' => 'nullable',
             'c_status' => 'bail|required|in:active,disabled',
             'c_date' => 'bail|required|date_format:Y-m-d',
-            'c_owner' => 'bail|required',
+            'c_owner' => 'bail|required|integer',
             'c_group' => 'nullable',
         ]);
         //apply renaming validation

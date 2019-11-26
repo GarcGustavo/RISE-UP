@@ -606,6 +606,7 @@ export default {
           this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
           this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner
+
         })
         .catch(err => console.log(err));
     },
