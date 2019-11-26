@@ -34,6 +34,7 @@ class user extends Model
 
     protected $dates = ['deleted_at'];
 
+
     public $timestamps = false;
 
     public $fillable = [
@@ -41,7 +42,9 @@ class user extends Model
         'last_name',
         'email',
         'contact_email',
+        'u_expiration_date',
         'u_creation_date',
+        'u_role_upgrade_request',
         'u_ban_status',
         'current_edit_cid',
         'u_role'
@@ -58,7 +61,9 @@ class user extends Model
         'last_name' => 'string',
         'email' => 'string',
         'contact_email' => 'string',
+        'u_expiration_date' => 'date',
         'u_creation_date' => 'date',
+        'u_role_upgrade_request' => 'boolean',
         'u_ban_status' => 'boolean',
         'current_edit_cid' => 'string',
         'u_role' => 'integer'
@@ -74,7 +79,9 @@ class user extends Model
         'last_name' => 'required',
         'email' => 'required',
         'contact_email' => 'required',
+        'u_expiration_date' => 'required',
         'u_creation_date' => 'required',
+        'u_role_upgrade_request' => 'required',
         'u_ban_status' => 'required',
         'current_edit_cid' => 'required',
         'u_role' => 'required'

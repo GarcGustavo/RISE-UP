@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent as Model;
@@ -26,6 +25,8 @@ class case_study extends Model
 {
     use SoftDeletes;
 
+    protected $primaryKey = 'cid';
+
     public $table = 'Case';
 
     protected $dates = ['deleted_at'];
@@ -41,7 +42,6 @@ class case_study extends Model
         'c_owner',
         'c_group'
     ];
-
     /**
      * The attributes that should be casted to native types.
      *
@@ -53,11 +53,10 @@ class case_study extends Model
         'c_description' => 'string',
         'c_thumbnail' => 'string',
         'c_status' => 'string',
-        'c_date' => 'date',
+        'c_date' => 'date:Y-m-d',
         'c_owner' => 'integer',
         'c_group' => 'integer'
     ];
-
     /**
      * Validation rules
      *
@@ -66,13 +65,12 @@ class case_study extends Model
     public static $rules = [
         'c_title' => 'required',
         'c_description' => 'required',
-        'c_thumbnail' => 'required',
+        'c_thumbnail' => 'nullable',
         'c_status' => 'required',
         'c_date' => 'required',
         'c_owner' => 'required',
-        'c_group' => 'required'
+        'c_group' => 'nullable'
     ];
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
@@ -80,7 +78,6 @@ class case_study extends Model
     {
         return $this->belongsTo(\App\Models\Group::class, 'c_group');
     }
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
@@ -88,7 +85,6 @@ class case_study extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'c_owner');
     }
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/
@@ -96,7 +92,6 @@ class case_study extends Model
     {
         return $this->belongsToMany(\App\Models\CsParameter::class, 'case_parameters');
     }
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      **/

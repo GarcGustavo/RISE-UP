@@ -1,7 +1,7 @@
 <template>
   <!-- Navigation -->
-  <nav class="navbar fixed-top navbar-expand-lg navbar-custom">
-    <a class="navbar-brand" href="/">Interdisciplinary Research Network</a>
+  <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
+    <a class="navbar-brand" href="#">Interdisciplinary Research Network</a>
     <button
       class="navbar-toggler"
       type="button"
@@ -33,23 +33,55 @@
     <!-- Nav options -->
     <ul class="navbar-nav mr-3">
       <li class="nav-item">
-        <a class="nav-link" href>Collaborate</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Create case study"
+          href
+        >Collaborate</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/help">Help</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Help"
+          href="/help"
+        >Help</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/about">About</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="About"
+          href="/about"
+        >About</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href>Language</a>
+        <a
+          class="nav-link"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Change languages"
+          href
+        >Language</a>
       </li>
 
       <!-- User menu -->
       <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-          <i class="material-icons" style="font-size: 25px">person</i>
-        </a>
+        <span data-toggle="dropdown">
+          <a
+            href="#"
+            class="nav-link dropdown-toggle"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Profile"
+          >
+            <i class="material-icons" style="font-size: 25px">person</i>
+          </a>
+        </span>
         <div class="dropdown-menu dropdown-menu-right">
           <div class="profile-usertitle">
             <div class="profile-usertitle-name">Melvin J Malave</div>
@@ -57,8 +89,8 @@
           </div>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Profile</a>
-          <a href="#" class="dropdown-item">Cases</a>
-          <a :href="'/user/'+uid+'/groups'" class="dropdown-item">Groups</a>
+          <a :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
+          <a :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Logout</a>
         </div>
@@ -71,35 +103,38 @@
 export default {
   data() {
     return {
-      uid: 10
+      uid: 10,
+      user_name:"",
+      isAdmin: false
     };
+  },
+  methods: {
+    getUser() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+      //fetch user data and set admin role
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+/*style for user title*/
 .profile-usertitle {
   text-align: center;
   margin-top: 20px;
 }
-
+/*style for user's name*/
 .profile-usertitle-name {
   color: #5a7391;
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 7px;
 }
-
-.profile-usertitle-job {
-  text-transform: uppercase;
-  color: #5b9bd1;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
+/*style for navbar*/
 .navbar-custom {
   background-color: #333333;
+  //background-color: white;
   border: 0;
 }
 
@@ -113,6 +148,8 @@ export default {
 /* change the link color */
 .navbar-custom .navbar-nav .nav-link {
   color: rgba(255, 255, 255, 0.5);
+
+  //color:black;
 }
 
 /* change the color of active or hovered links */
@@ -121,27 +158,30 @@ export default {
   color: #ffffff;
 }
 
-/* for dropdown only - change the color of droodown */
+/* for dropdown only - change the color of dropdown */
 .navbar-custom .dropdown-menu {
   background-color: #ffffff;
 }
+/*dropdown item text color*/
 .navbar-custom .dropdown-item {
   color: black;
 }
+/*dropdown item text hover and focus styles*/
 .navbar-custom .dropdown-item:hover,
 .navbar-custom .dropdown-item:focus {
   color: #333333;
   background-color: lightgray;
 }
-
+/*item's padding*/
 .navbar-custom .dropdown-item {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+/*item's width*/
 .navbar-custom .dropdown-menu {
   width: 35px;
 }
-
+/*search bar width*/
 .search input[type="text"] {
   width: 315px !important;
 }

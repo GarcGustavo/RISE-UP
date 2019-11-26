@@ -11,6 +11,7 @@ class User_GroupsTableSeeder extends Seeder
      */
     public function run()
     {
+        //factory(App\Models\user_groups::class, 30)->create();
         factory(App\Models\user_groups::class, 50)->create();
     }
 }

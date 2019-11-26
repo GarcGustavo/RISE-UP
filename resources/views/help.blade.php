@@ -2,6 +2,6 @@
 
 @section('content')
 
-<iren_help></iren_help>
+<iren-help></iren-help>
 
 @endsection

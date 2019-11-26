@@ -17,11 +17,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class user_groups extends Model
 {
-    //use SoftDeletes;
 
     public $table = 'User_Groups';
 
-    //protected $dates = ['deleted_at'];
+    protected $primaryKey = 'gid';
 
     public $timestamps = false;
 

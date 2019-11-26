@@ -6,8 +6,9 @@
 //import JwPagination from 'jw-vue-pagination';
 
 
-
 require('./bootstrap');
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 
 
 window.Vue = require('vue');
@@ -26,15 +27,20 @@ window.Vue = require('vue');
 
 //web pages components
 Vue.component('paginator', require('./components/paginator.vue').default);
-Vue.component('mg_action_table', require('./components/mg_action_table.vue').default);
-Vue.component('mg_action_confirm', require('./components/mg_action_confirm.vue').default);
+Vue.component('action-table-dbox', require('./components/dialogue-boxes/action-table-dbox.vue').default);
+Vue.component('case-create-dbox', require('./components/dialogue-boxes/case-create-dbox.vue').default);
 //web pages
-Vue.component('iren_header', require('./components/header.vue').default);
-Vue.component('iren_footer', require('./components/footer.vue').default);
-Vue.component('iren_help', require('./components/help.vue').default);
-Vue.component('iren_about', require('./components/about.vue').default);
-Vue.component('iren_group', require('./components/group.vue').default);
-Vue.component('iren_user_groups', require('./components/user_groups.vue').default);
+Vue.component('iren-header', require('./components/header.vue').default);
+Vue.component('iren-footer', require('./components/footer.vue').default);
+Vue.component('iren-help', require('./components/help.vue').default);
+Vue.component('iren-about', require('./components/about.vue').default);
+Vue.component('iren-group', require('./components/group.vue').default);
+Vue.component('iren-user-groups', require('./components/user-groups.vue').default);
+Vue.component('iren-user-cases', require('./components/user-cases.vue').default);
+Vue.component('iren-404', require('./components/errors/404-error.vue').default);
+Vue.component('case_study', require('./components/case_study.vue').default);
+Vue.component('home', require('./components/home.vue').default);
+Vue.component('items', require('./components/items.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Option;
+use App\Models\CS_Parameter;
+use App\Http\Resources\CS_Parameter as CS_ParameterResource;
+use App\Http\Resources\Option as OptionResource;
 
 class CS_ParameterController extends Controller
 {
@@ -11,11 +15,17 @@ class CS_ParameterController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getParameters()
     {
-        //
+        $parameters = CS_Parameter::all();
+        return CS_ParameterResource::collection($parameters);
     }
 
+    public function getParameterOptions()
+    {
+        $options = Option::all();
+        return OptionResource::collection($options);
+    }
     /**
      * Show the form for creating a new resource.
      *
