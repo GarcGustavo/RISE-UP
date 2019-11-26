@@ -53,6 +53,7 @@ Route::get('/user/edit/{id}', 'UserController@showUsersEditing');
 //Update users editing cid
 Route::post('/user/{id}/edit', 'UserController@updateUsersEditing');
 
+
 /********GROUPS*********/
 
 //List all groups
