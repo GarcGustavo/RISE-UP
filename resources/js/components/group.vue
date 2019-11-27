@@ -172,7 +172,7 @@
 </template>
 
 <script>
-import bootbox from "bootbox";
+
 /**
  * this component displays a group page
  */

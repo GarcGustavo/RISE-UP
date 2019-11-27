@@ -157,8 +157,6 @@
 </template>
 
 <script>
-import BootstrapVue, { BTable, BLink } from "bootstrap-vue";
-import bootbox from "bootbox";
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
     user to a new group
@@ -206,10 +204,6 @@ export default {
    * @description declaration of global variables
    * @returns array of all variables
    */
-  components: {
-    "b-table": BTable,
-    "b-link": BLink
-  },
 
   data() {
     return {

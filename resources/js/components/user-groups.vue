@@ -332,18 +332,12 @@
 /**
  * this component is used to display the groups of a user
  */
-import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
-import bootbox from "bootbox";
 export default {
   /**
    * @description declaration of global variables
    * @returns array of all variables
    */
-  components: {
-    "b-table": BTable,
-    "b-link": BLink,
-    "b-tooltip": BTooltip
-  },
+
   data() {
     return {
       curr_user: "", //current user id

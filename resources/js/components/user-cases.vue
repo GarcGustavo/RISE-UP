@@ -324,8 +324,6 @@
 </template>
 
 <script>
-import BootstrapVue, { BTable, BLink } from "bootstrap-vue";
-import bootbox from "bootbox";
 /**
  * this component is used to display the cases of a user
  */
@@ -335,10 +333,6 @@ export default {
    * @returns array of all variables
    */
 
-  components: {
-    "b-table": BTable,
-    "b-link": BLink
-  },
   data() {
     return {
       curr_user: "", //current user id

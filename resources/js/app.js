@@ -8,10 +8,14 @@
 
 require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-
+import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
 
 
 window.Vue = require('vue');
+
+window.bootbox = require('bootbox');
+
+Vue.use(BootstrapVue);
 
 
 /**
