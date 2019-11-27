@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\User_GroupsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,7 +52,6 @@ Route::get('/user/edit/{id}', 'UserController@showUsersEditing');
 
 //Update users editing cid
 Route::post('/user/{id}/edit', 'UserController@updateUsersEditing');
-
 
 /********GROUPS*********/
 
@@ -230,3 +229,25 @@ Route::get('/admin/user/{id}/edit', 'AdminUserController@edit');
 //User Requirement 2.77. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
 Route::put('/admin/user/{id}', 'AdminUserController@update');
 //
+
+//Admin Edits a Group  () 
+Route::get('/admin/group/{id}/edit', 'AdminGroupController@edit');
+Route::put('/admin/group/{id}', 'AdminGroupController@update');
+
+/*
+ * Not required.
+//Create an admin
+Route::get('/admin/create', 'AdminController@create');
+
+//Post an admin
+Route::post('/admin', 'AdminController@store');
+
+//Show an admin
+Route::get('/admin/{id}', 'AdminController@show');
+
+//Edit an admin
+Route::get('/admin/{id}/edit', 'AdminController@edit');
+
+//Delete an admin
+Route::delete('/admin/{id}', 'AdminController@destroy');
+*/

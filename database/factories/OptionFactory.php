@@ -9,6 +9,6 @@ $factory->define(Option::class, function (Faker $faker) {
 
     return [
         'o_content' => $faker->word,
-        'o_parameter' => $faker->randomDigitNotNull
+        'o_parameter' => $faker->numberBetween($min=1, $max=4)
     ];
 });

@@ -1,6 +1,7 @@
 <template>
   <transition>
     <div>
+
       <!-- Dialogue Component to create case study -->
       <div class="modal" id="case_create_dbox" tabindex="-1" role="dialog" ref="case_modal">
         <div class="modal-dialog modal-lg" role="document">
@@ -10,7 +11,7 @@
             </div>
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
-                <!--errors -->
+              <!--errors -->
               <div v-if="errors.length">
                 <div>
                   <label>Please correct the following error(s):</label>
@@ -25,62 +26,72 @@
                   </div>
                 </div>
               </div>
-              <!-- title -->
-              <label for="title">
-                Title
-                <span class="required">*</span>
-              </label>
-              <div class="input-group">
-                <input
-                  id="title"
-                  aria-describedby="required-description"
-                  class="form-control input-sm"
-                  style="
-                    height:35px;"
-                  required="required"
-                  type="text"
-                  maxlength="50"
-                  v-model="title"
-                  placeholder="Title..."
-                >
-              </div>
 
-              <!-- group selection for table -->
-              <div class="form-group">
-                <label for="group_select">Assign to a group</label>
-                <select
-                  class="form-control"
-                  id="group_select"
-                  style="height:38px"
-                  v-model="curr_group"
-                  :disabled="disable_dropdown"
-                >
-                  <option></option>
-                  <option
-                    v-for="group in user_groups"
-                    v-bind:key="group.gid"
-                    :value="group.gid"
-                  >{{group.g_name}}</option>
-                </select>
-              </div>
-              <!-- case description -->
-              <div class="form-group">
-                <label for="description">
-                  Description
-                  <span class="required">*</span>
-                </label>
-                <textarea
-                  class="form-control"
-                  id="description"
-                  maxlength="140"
-                  required="required"
-                  v-model="description"
-                  v-on:keyup="countdown"
-                ></textarea>
-              </div>
-              <!-- error not used due to character limit -->
-              <p class="text-right h6" v-bind:class="{'text-danger': hasError }">{{remainingCount}}</p>
+              <!-- title -->
+              <form>
+                <div class="form-group">
+                  <label for="title">
+                    Title
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-group">
+                    <input
+                      id="title"
+                      aria-describedby="required-description"
+                      class="form-control input-sm"
+                      style="
+                    height:35px;"
+                      required="required"
+                      type="text"
+                      maxlength="50"
+                      v-model="title"
+                      placeholder="Title..."
+                    >
+                  </div>
+                </div>
+
+                <!-- group selection for table -->
+                <div class="form-group">
+                  <label for="group_select">Assign to a group</label>
+                  <select
+                    class="form-control"
+                    id="group_select"
+                    style="height:38px"
+                    v-model="curr_group"
+                    :disabled="disable_dropdown"
+                  >
+                    <option></option>
+                    <option
+                      v-for="group in user_groups"
+                      v-bind:key="group.gid"
+                      :value="group.gid"
+                    >{{group.g_name}}</option>
+                  </select>
+                </div>
+
+                <!-- case description -->
+                <div class="form-group">
+                  <label for="description">
+                    Description
+                    <span class="required">*</span>
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    maxlength="140"
+                    required="required"
+                    v-model="description"
+                    v-on:keyup="countdown"
+                  ></textarea>
+                </div>
+                <!-- error not used due to character limit -->
+                <p
+                  class="text-right h6"
+                  v-bind:class="{'text-danger': hasError }"
+                >{{remainingCount}}</p>
+              </form>
             </div>
+
             <!-- footer -->
             <div class="modal-footer">
               <p
@@ -90,6 +101,7 @@
               >
                 <span class="required">*</span>Required field
               </p>
+
               <!--action button -->
               <button type="button" class="btn btn-primary" @click="sendCaseStudyData()">{{action}}</button>
               <!-- close button -->
@@ -220,9 +232,8 @@ export default {
      */
     fetchGroups() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-       this.curr_user = this.urlParams.get("uid"); //get user id
+      this.curr_user = this.urlParams.get("uid"); //get user id
       if (this.group_selection) {
-
         //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
         this.curr_group = this.group_selection; //default dropdown selection
         this.disable_dropdown = true;

@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class Item_TypeTableSeeder extends Seeder
+class OptionTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +11,6 @@ class Item_TypeTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\item_type::class, 10)->create();
+        factory(App\Models\Option::class, 5)->create();
     }
 }

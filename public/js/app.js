@@ -2258,6 +2258,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /**
@@ -2530,7 +2537,8 @@ __webpack_require__.r(__webpack_exports__);
      *  and sends the data for the new case study
      */
     sendGroupData: function sendGroupData() {
-      this.date = new Date().toJSON().slice(0, 10); //append data to new group
+      this.date = new Date().toJSON().slice(0, 10); //get current date
+      //append data to new group
 
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
       this.group_to_create.g_name = this.group_name_input;
@@ -2582,6 +2590,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -43276,7 +43296,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\r\n/*\r\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\r\n then adding custom css styles with the following css selectors:\r\n\r\n.pagination - Pagination component container (ul element)\r\n.pagination li - All list items in the pagination component\r\n.pagination li a - All pagination links including first, last, previous and next\r\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\r\n.pagination li.first - The 'First' pagination element\r\n.pagination li.last - The 'Last' pagination element\r\n.pagination li.previous - The 'Previous' pagination element\r\n.pagination li.next - The 'Next' pagination element\r\n*/\r\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
 
 // exports
 
@@ -88307,138 +88327,147 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
-                  _c("label", { attrs: { for: "title" } }, [
-                    _vm._v("\n              Title\n              "),
-                    _c("span", { staticClass: "required" }, [_vm._v("*")])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "input-group" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.title,
-                          expression: "title"
-                        }
-                      ],
-                      staticClass: "form-control input-sm",
-                      staticStyle: { height: "35px" },
-                      attrs: {
-                        id: "title",
-                        "aria-describedby": "required-description",
-                        required: "required",
-                        type: "text",
-                        maxlength: "50",
-                        placeholder: "Title..."
-                      },
-                      domProps: { value: _vm.title },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
+                  _c("form", [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "title" } }, [
+                        _vm._v("\n                  Title\n                  "),
+                        _c("span", { staticClass: "required" }, [_vm._v("*")])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "input-group" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.title,
+                              expression: "title"
+                            }
+                          ],
+                          staticClass: "form-control input-sm",
+                          staticStyle: { height: "35px" },
+                          attrs: {
+                            id: "title",
+                            "aria-describedby": "required-description",
+                            required: "required",
+                            type: "text",
+                            maxlength: "50",
+                            placeholder: "Title..."
+                          },
+                          domProps: { value: _vm.title },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.title = $event.target.value
+                            }
                           }
-                          _vm.title = $event.target.value
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { attrs: { for: "group_select" } }, [
-                      _vm._v("Assign to a group")
+                        })
+                      ])
                     ]),
                     _vm._v(" "),
-                    _c(
-                      "select",
-                      {
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "group_select" } }, [
+                        _vm._v("Assign to a group")
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.curr_group,
+                              expression: "curr_group"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          staticStyle: { height: "38px" },
+                          attrs: {
+                            id: "group_select",
+                            disabled: _vm.disable_dropdown
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.curr_group = $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            }
+                          }
+                        },
+                        [
+                          _c("option"),
+                          _vm._v(" "),
+                          _vm._l(_vm.user_groups, function(group) {
+                            return _c(
+                              "option",
+                              {
+                                key: group.gid,
+                                domProps: { value: group.gid }
+                              },
+                              [_vm._v(_vm._s(group.g_name))]
+                            )
+                          })
+                        ],
+                        2
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "description" } }, [
+                        _vm._v(
+                          "\n                  Description\n                  "
+                        ),
+                        _c("span", { staticClass: "required" }, [_vm._v("*")])
+                      ]),
+                      _vm._v(" "),
+                      _c("textarea", {
                         directives: [
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.curr_group,
-                            expression: "curr_group"
+                            value: _vm.description,
+                            expression: "description"
                           }
                         ],
                         staticClass: "form-control",
-                        staticStyle: { height: "38px" },
                         attrs: {
-                          id: "group_select",
-                          disabled: _vm.disable_dropdown
+                          id: "description",
+                          maxlength: "140",
+                          required: "required"
                         },
+                        domProps: { value: _vm.description },
                         on: {
-                          change: function($event) {
-                            var $$selectedVal = Array.prototype.filter
-                              .call($event.target.options, function(o) {
-                                return o.selected
-                              })
-                              .map(function(o) {
-                                var val = "_value" in o ? o._value : o.value
-                                return val
-                              })
-                            _vm.curr_group = $event.target.multiple
-                              ? $$selectedVal
-                              : $$selectedVal[0]
+                          keyup: _vm.countdown,
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.description = $event.target.value
                           }
                         }
-                      },
-                      [
-                        _c("option"),
-                        _vm._v(" "),
-                        _vm._l(_vm.user_groups, function(group) {
-                          return _c(
-                            "option",
-                            { key: group.gid, domProps: { value: group.gid } },
-                            [_vm._v(_vm._s(group.g_name))]
-                          )
-                        })
-                      ],
-                      2
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { attrs: { for: "description" } }, [
-                      _vm._v("\n                Description\n                "),
-                      _c("span", { staticClass: "required" }, [_vm._v("*")])
+                      })
                     ]),
                     _vm._v(" "),
-                    _c("textarea", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.description,
-                          expression: "description"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: {
-                        id: "description",
-                        maxlength: "140",
-                        required: "required"
+                    _c(
+                      "p",
+                      {
+                        staticClass: "text-right h6",
+                        class: { "text-danger": _vm.hasError }
                       },
-                      domProps: { value: _vm.description },
-                      on: {
-                        keyup: _vm.countdown,
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.description = $event.target.value
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "p",
-                    {
-                      staticClass: "text-right h6",
-                      class: { "text-danger": _vm.hasError }
-                    },
-                    [_vm._v(_vm._s(_vm.remainingCount))]
-                  )
+                      [_vm._v(_vm._s(_vm.remainingCount))]
+                    )
+                  ])
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-footer" }, [
@@ -89379,7 +89408,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\r\n    ")]),
+      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\n    ")]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -89420,7 +89449,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -89437,7 +89466,7 @@ var staticRenderFns = [
               [
                 _c("h5", { staticClass: "mb-0" }, [
                   _c("a", [
-                    _vm._v("Collapsible Group Item #2\r\n                    ")
+                    _vm._v("Collapsible Group Item #2\n                    ")
                   ])
                 ])
               ]
@@ -89455,7 +89484,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -89488,7 +89517,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
