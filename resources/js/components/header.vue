@@ -85,7 +85,7 @@
         <div class="dropdown-menu dropdown-menu-right">
           <div class="profile-usertitle">
             <div class="profile-usertitle-name">Melvin J Malave</div>
-            <div class="profile-usertitle-role">Admin</div>
+            <div class="profile-usertitle-role"><a href="/admin/users-requests">Admin</a></div>
           </div>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">Profile</a>

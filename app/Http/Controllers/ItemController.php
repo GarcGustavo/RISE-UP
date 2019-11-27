@@ -56,7 +56,6 @@ class ItemController extends Controller
 
         return response('Updated Successfully.', 200);
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -121,10 +120,17 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $content= $request -> input('i_content');
-        $type = $request -> input('i_type');
-        $order = $request -> input('order');
-        $name = $request -> input('i_name');
+        
+        if(($request->i_type == 2) && ($request->hasFile('image'))){
+            $content = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $request->file('image')->move(public_path('images'), $content);
+        }
+        else{
+            $content= $request->i_content;
+        }
+        $type = $request->i_type;
+        $order = $request->order;
+        $name = $request->i_name;
         Item::where(['iid' => $id])->update(['i_content' => $content,'i_type' => $type,'order' => $order,'i_name' => $name]);
         return response()->json(['message'=>'Updated item successfully']);
     }

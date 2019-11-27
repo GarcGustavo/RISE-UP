@@ -167,9 +167,15 @@
             <button
               class="btn btn-primary btn-sm mb-2"
               style="background: #c0c0c0; border-color: #c0c0c0; color: black"
-              v-on:click="addItem(new_item)"
+              v-on:click="addItem(new_item, 1)"
               v-if="this.editing"
-            >Add Item</button>
+            >Add Text Item</button>
+            <button
+              class="btn btn-primary btn-sm mb-2"
+              style="background: #c0c0c0; border-color: #c0c0c0; color: black"
+              v-on:click="addItem(new_item, 2)"
+              v-if="this.editing"
+            >Add Image Item</button>
             <button
               class="btn btn-primary btn-sm mb-2"
               style="background: #c0c0c0; border-color: #c0c0c0; color: black"
@@ -240,19 +246,45 @@
                               rows="3"
                               min-height="50px"
                               v-model="item.i_content"
-                              v-if="editing"
+                              v-if="editing && (item.i_type == 1)"
                               @keydown="editingCase"
                               @mouseover="typing = true"
                               @mouseleave="typing = false"
                             ></textarea>
                           </div>
+                          <div>
+                            <input
+                              enctype="multipart/form-data"
+                              type="file"
+                              accept="image/*"
+                              v-if="editing && (item.i_type == 2)"
+                              @change="uploadImage($event, item, index)"
+                              id="file-input"
+                            />
+                            <div :key="preview">
+                              <img
+                                v-if="editing && (item.i_type == 2) && !preview"
+                                :src="'../images/' + item.i_content"
+                              />
+                              <img
+                                v-if="editing && (item.i_type == 2) && preview"
+                                :src="images[index]"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div
                         class="form-group text-break"
-                        v-if="!editing"
+                        v-if="!editing && (item.i_type == 1)"
                         style="white-space: pre-line;"
                       >{{item.i_content}}</div>
+                      <div
+                        class="form-group text-break text-center"
+                        v-if="!editing && (item.i_type == 2)"
+                      >
+                        <img :src="'../images/' + item.i_content" />
+                      </div>
                     </div>
                   </div>
                 </ul>
@@ -281,6 +313,8 @@ export default {
       action: "",
       actor: "",
       total_items: "",
+      images: [],
+      preview: false,
       case_study: {
         cid: "",
         c_title: "",
@@ -561,22 +595,31 @@ export default {
     updateItem(item_to_update) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      this.updated_item = {
-        iid: Number(item_to_update.iid),
-        i_content: item_to_update.i_content,
-        i_case: item_to_update.i_case,
-        i_type: item_to_update.i_type,
-        order: Number(item_to_update.order),
-        i_name: item_to_update.i_name
-      };
+      // this.updated_item = {
+      //   iid: Number(item_to_update.iid),
+      //   i_content: item_to_update.i_content,
+      //   i_case: item_to_update.i_case,
+      //   i_type: item_to_update.i_type,
+      //   order: Number(item_to_update.order),
+      //   i_name: item_to_update.i_name
+      // };
+      var formData = new FormData();
+      formData.append("image", this.files[0]);
+      formData.append("i_case", item_to_update.i_case);
+      formData.append("i_type", item_to_update.i_type);
+      formData.append("order", Number(item_to_update.order));
+      formData.append("i_name", item_to_update.i_name);
+      formData.append("i_content", item_to_update.i_content);
+      //console.log(formData.get('i_content'));
       fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
         headers: new Headers({
-          "Content-Type": "application/json",
+          //"Content-Type": "multipart/form-data",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_item)
+        //body: JSON.stringify(this.updated_item)
+        body: formData
       })
         .then(res => res.text())
         .then(text => {
@@ -594,15 +637,21 @@ export default {
       this.fetchItems();
       this.fetchCaseItems();
     },
-    addItem(new_item) {
+    addItem(new_item, item_type) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
+      var item_name = "New Text";
+      var item_content = "Add content here!";
+      if (item_type == 2) {
+        item_name = "New Image";
+        item_content = "new_item.jpg";
+      }
       this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
-      this.new_item.i_content = "Add content here!";
+      this.new_item.i_content = item_content;
       this.new_item.i_case = this.cid;
-      this.new_item.i_type = "1";
+      this.new_item.i_type = item_type;
       this.new_item.order = "1";
-      this.new_item.i_name = "New Item";
+      this.new_item.i_name = item_name;
       console.log(new_item);
       fetch("/item/add", {
         method: "post",
@@ -658,16 +707,16 @@ export default {
     },
     deleteCaseStudy() {
       if (confirm("Do you want to delete this case study permanently?")) {
-            //send request
-            fetch("/case/remove", {
-              method: "delete",
-              headers: new Headers({
-                "Content-Type": "application/json",
-                "Access-Control-Origin": "*",
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-              }),
-              body: JSON.stringify(this.case_to_show)
-            })
+        //send request
+        fetch("/case/remove", {
+          method: "delete",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            "Access-Control-Origin": "*",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+          }),
+          body: JSON.stringify(this.case_to_show)
+        })
           .then(res => res.text())
           .then(text => {
             console.log(text);
@@ -697,13 +746,16 @@ export default {
     },
     onCancel() {
       this.gid = this.initial_gid;
+      this.editing = false;
+      this.preview = false;
+
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
       this.fetchCase();
       this.fetchCaseParameters();
       this.fetchParameterOptions();
-      this.editing = false;
+
       for (let user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
       }
@@ -717,12 +769,13 @@ export default {
       }
     },
     onSubmit(items) {
+      this.editing = false;
+      this.preview = false;
       this.updateParams();
       this.updateItems(items);
       this.updateCase();
 
       //this.updateParameter();
-      this.editing = false;
     },
     onSelectGroup(selected_gid) {
       this.gid = selected_gid;
@@ -730,10 +783,20 @@ export default {
       this.fetchGroup(this.gid);
     },
     onSelectOption(selected_op, index) {
-      //this.selected_options_content[index] = selected_op.o_content;
       this.case_parameters[index].o_content = selected_op.o_content;
       this.case_parameters[index].opt_selected = selected_op.oid;
-      //this.fetchGroup(this.gid);
+    },
+    uploadImage(e, item, index) {
+      //This reads an image from a data url stored in the item
+      //var image = new Image();
+      var reader = new FileReader();
+      this.files = e.target.files || e.dataTransfer.files;
+
+      reader.readAsDataURL(this.files[0]);
+      reader.onload = e => {
+        this.images[index] = e.target.result;
+        this.preview = true;
+      };
     }
   }
 };
@@ -757,7 +820,13 @@ export default {
   max-height: 475px;
   overflow-y: auto;
 }
-
+//image display
+img {
+  width: 30%;
+  margin: auto;
+  display: block;
+  margin-bottom: 10px;
+}
 /* remove case cards borders */
 li {
   border: none;

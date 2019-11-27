@@ -22,7 +22,9 @@ $factory->define(user::class, function (Faker $faker) {
         'last_name' => $faker->lastName,
         'email' => $faker->unique()->safeEmail,
         'contact_email' => $faker->unique()->safeEmail,
+        'u_expiration_date' => $faker->date,
         'u_creation_date' => $faker->date,
+        'u_role_upgrade_request' => $faker->numberBetween($min=0, $max=1),
         'u_ban_status' => $faker->numberBetween($min=0,$max=1),
         'current_edit_cid' =>'',
         'u_role' => $faker->numberBetween($min=1,$max=4)

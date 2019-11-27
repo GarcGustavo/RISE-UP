@@ -7,6 +7,7 @@
             <div class="modal-header">
               <h5 class="modal-title">{{action}} {{acted_on}}</h5>
             </div>
+
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
               <!--Body description -->
@@ -22,6 +23,7 @@
                   <strong>atleast</strong> one user to remove.
                 </p>
               </div>
+
               <!-- errors -->
               <div v-if="errors.length">
                 <div>
@@ -37,6 +39,7 @@
                   </div>
                 </div>
               </div>
+
               <!-- group name input -->
               <div class="input-group" v-if="gname_box_show==true">
                 <label>
@@ -54,6 +57,7 @@
                   >
                 </div>
               </div>
+
               <!-- Search box for table -->
               <div class="input-group">
                 <label>Search</label>
@@ -68,6 +72,7 @@
                   >
                 </div>
               </div>
+
               <!-- table -->
               <div class="table-wrapper">
                 <b-table head-variant="light" :fields="fields" :items="filterUsers">
@@ -98,6 +103,7 @@
                 </b-table>
               </div>
             </div>
+
             <div class="modal-footer">
               <!-- footer  -->
               <div v-if="action=='Create'">
@@ -118,6 +124,7 @@
                   <span class="required">*</span>Required field
                 </p>
               </div>
+
               <!-- remove user -->
               <div v-if="action=='Remove'">
                 <button type="button" class="btn btn-primary" @click="isUserSelected()">{{action}}</button>
@@ -203,6 +210,7 @@ export default {
     "b-table": BTable,
     "b-link": BLink
   },
+
   data() {
     return {
       group_name_input: "", //input for group name
@@ -339,6 +347,7 @@ export default {
      * @description gets all of the system's groups
      */
     totalGroups() {
+
         //define id variables
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.uid = this.urlParams.get("uid"); //get user id
@@ -379,6 +388,7 @@ export default {
     isUserSelected() {
       if (this.selected_users.length == 0) {
         this.is_selected = false;
+
         //alert box
         this.dialogue = bootbox.alert({
           title: "Remove",
@@ -386,6 +396,7 @@ export default {
           backdrop: true,
           className: "text-center"
         });
+
         //alert box CSS styling
         this.dialogue.find(".modal-content").css({
           height: "250px",
@@ -406,7 +417,8 @@ export default {
      *  and sends the data for the new case study
      */
     sendGroupData() {
-      this.date = new Date().toJSON().slice(0, 10);
+      this.date = new Date().toJSON().slice(0, 10); //get current date
+
       //append data to new group
       this.group_to_create.gid = this.groups[this.groups.length - 1].gid + 1;
       this.group_to_create.g_name = this.group_name_input;

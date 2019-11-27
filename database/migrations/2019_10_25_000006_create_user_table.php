@@ -20,7 +20,9 @@ class CreateUserTable extends Migration
             $table->string('email', 255);
             $table->string('contact_email', 255);
             $table->date('u_creation_date');
+            $table->date('u_expiration_date');
             $table->boolean('u_ban_status');
+            $table->boolean('u_role_upgrade_request');
             $table->string('current_edit_cid', 255);
             $table->unsignedBigInteger('u_role');
             $table->foreign('u_role')->references('rid')->on('Role');
@@ -28,6 +30,7 @@ class CreateUserTable extends Migration
         });
     }
 
+    
     /**
      * Reverse the migrations.
      *
