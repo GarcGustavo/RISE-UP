@@ -73,58 +73,67 @@
 
 
 
+
 <!--  Admin sidebar -- Toggle menu JQuery code -->
 
-<script>
-    $("#menu-toggle").click(function(e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("toggled");
-    });
-</script>
+    <script>
+        $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+        });
+    </script>
 
-<!-- End of Admin sidebar -- Toggle menu JQuery code -->
+<!-- End of Admin sidebar -- Toggle menu JQuery code -->  
 
 <!-- Admin side bar css -->
 
-<style>
-#sidebar-wrapper {
-    min-height: 100vh;
-    margin-left: -15rem;
-    -webkit-transition: margin .25s ease-out;
-    -moz-transition: margin .25s ease-out;
-    -o-transition: margin .25s ease-out;
-    transition: margin .25s ease-out;
-}
-#sidebar-wrapper .sidebar-heading {
-    padding: 1.675rem 1.25rem;
-    font-size: 1.2rem;
-    font-weight:bold;
-}
-#sidebar-wrapper .list-group {
-    width: 15rem;
-}
-#page-content-wrapper {
-    min-width: 100vw;
-}
-#wrapper.toggled #sidebar-wrapper {
-    margin-left: 0;
-    display:none;
-}
-@media (min-width: 768px) {
-#sidebar-wrapper {
-    margin-left: 0;
-}
-#page-content-wrapper {
-    min-width: 0;
-    width: 100%;
-}
-#wrapper.toggled #sidebar-wrapper {
-    margin-left: -15rem;
-    display:none;
-}
-}
-</style>
+    <style>
+    #sidebar-wrapper {
+        min-height: 100vh;
+        margin-left: -15rem;
+        -webkit-transition: margin .25s ease-out;
+        -moz-transition: margin .25s ease-out;
+        -o-transition: margin .25s ease-out;
+        transition: margin .25s ease-out;
+    }
 
+    #sidebar-wrapper .sidebar-heading {
+        padding: 1.675rem 1.25rem;
+        font-size: 1.2rem;
+        font-weight:bold;
+    }
+
+    #sidebar-wrapper .list-group {
+        width: 15rem;
+    }
+
+    #page-content-wrapper {
+        min-width: 100vw;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: 0;
+        display:none;
+    }
+
+    @media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+    }
+
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+        display:none;
+    }
+    }
+    </style>
+
+    <!-- End of : Admin side bar css -->
 
 
 </html>
