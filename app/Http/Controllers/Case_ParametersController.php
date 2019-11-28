@@ -118,9 +118,38 @@ class Case_ParametersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        //renaming attributes
+        $attributes = array(
+            'cid' => 'case study id',
+            'csp_id' => 'case study parameter',
+            'opt_selected'  => 'case study option selected'
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+
+            'cid' => 'bail|required|unique:Case',
+            'csp_id' => 'bail|required|max:32',
+            'opt_selected'  => 'bail|required|max:140'
+        ]);
+        //apply renaming validation
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        //create case study
+        $case_parameter = $request->isMethod('put') ? Case_Parameters::findOrFail($request->cid) : new Case_Parameters;
+        $case_parameter->cid = $request->input('cid');
+        $case_parameter->csp_id = $request->input('csp_id');
+        $case_parameter->opt_selected = $request->input('opt_selected');
+        //process request
+        if ($case_parameter->save()) {
+            return response()->json(['message'=>'Case parameter has been created']);
+        } else {
+            return response()->json(['errors'=>'Error creating case parameter - Origin: Case_parameter controller']);
+        }
     }
 
     /**
