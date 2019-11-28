@@ -120,7 +120,9 @@
           <div class="card h-100 text-center">
             <i class="material-icons pt-2" style="font-size: 125px">person</i>
             <div class="card-body">
-              <h4 class="card-title"><a href="#" class="stretched-link">{{member.first_name}} {{member.last_name}}</a></h4>
+              <h4 class="card-title">
+                <a href="#" class="stretched-link">{{member.first_name}} {{member.last_name}}</a>
+              </h4>
               <h6 class="card-subtitle text-muted"></h6>
             </div>
             <div class="card-footer">
@@ -172,7 +174,6 @@
 </template>
 
 <script>
-
 /**
  * this component displays a group page
  */
@@ -310,6 +311,7 @@ export default {
             this.users_to_add = this.users_to_add.filter(
               x => x.uid !== this.group_members[k].uid
             );
+            this.users_to_add = this.users_to_add.filter(x => x.u_role == 3);
           }
         })
         .catch(err => console.log(err));
@@ -428,7 +430,6 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-
           console.log(res);
 
           if (!res.errors) {
@@ -501,7 +502,6 @@ export default {
             })
               .then(res => res.json())
               .then(res => {
-
                 console.log(res);
 
                 //hide action table dbox
@@ -546,11 +546,9 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-
           console.log(res);
 
           if (!res.errors) {
-
             this.fetchCases(); //update case study list
 
             //hide action table dbox
@@ -633,7 +631,6 @@ h1 a:hover {
 /* icon initial color */
 a {
   color: black;
-
 }
 
 /*move remove icon to right */

@@ -4,8 +4,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 class CreateRoleTable extends Migration
 {
- 
- 
+
+
     /**
      * Run the migrations.
      * @table role
@@ -15,12 +15,13 @@ class CreateRoleTable extends Migration
     public function up()
     {
         Schema::create('Role', function (Blueprint $table) {
-            
+
             $table->bigIncrements('rid');
-            $table->date('r_creation_date');
+
             $table->string('r_name', 225);
-           
+
         });
+
     }
 
     /**

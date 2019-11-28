@@ -84,10 +84,16 @@
         </span>
         <div class="dropdown-menu dropdown-menu-right">
           <div class="profile-usertitle">
-            <div class="profile-usertitle-name">Melvin J Malave</div>
-            <div class="profile-usertitle-role"><a href="/admin/users-requests">Admin</a></div>
+            <!--<div class="profile-usertitle-name">{{user.first_name}} {{user.last_name}}</div> -->
+            <div class="profile-usertitle-name">Melvin J Malave </div>
+            <div class="profile-usertitle-role">
+              <a v-if="isAdmin">Admin</a>
+              <a v-if="isViewer">Viewer</a>
+              <a v-if="isCollaborator">Collaborator</a>
+            </div>
           </div>
           <div class="dropdown-divider"></div>
+          <a v-if="isAdmin" href="/admin/users-requests" class="dropdown-item">Dashboard</a>
           <a href="#" class="dropdown-item">Profile</a>
           <a :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
           <a :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
@@ -103,16 +109,32 @@
 export default {
   data() {
     return {
+      user: "",
+
       uid: 10,
-      user_name:"",
-      isAdmin: false
+      isAdmin: true, //change to false when integration is complete
+      isViewer: false,
+      isCollaborator: false
     };
   },
   methods: {
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
-      //fetch user data and set admin role
+
+      fetch("/user?uid=" + this.curr_user)
+        .then(res => res.json())
+        .then(res => {
+          this.user = res;
+          if (this.user.u_role == 4) {
+            this.isAdmin = true;
+          } else if (this.user.u_role == 3) {
+            this.isCollaborator = true;
+          } else {
+            this.isViewer = true;
+          }
+          this.uid = this.user.uid;
+        });
     }
   }
 };
@@ -127,7 +149,7 @@ export default {
 /*style for user's name*/
 .profile-usertitle-name {
   color: #5a7391;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   margin-bottom: 7px;
 }
@@ -179,7 +201,9 @@ export default {
 }
 /*item's width*/
 .navbar-custom .dropdown-menu {
-  width: 35px;
+  width: 250px;
+
+  max-width:250px;
 }
 /*search bar width*/
 .search input[type="text"] {

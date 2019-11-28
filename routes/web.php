@@ -44,7 +44,7 @@ Route::get('/case/body', 'ViewsController@showCaseBody');
 //List specific user
 Route::get('/user', 'UserController@show');
 
-//List users
+//List all system users
 Route::get('/users', 'UserController@index');
 
 //List users editing cid
@@ -56,7 +56,7 @@ Route::post('/user/{id}/edit', 'UserController@updateUsersEditing');
 
 /********GROUPS*********/
 
-//List all groups
+//List all system groups
 Route::get('/groups', 'GroupController@index');
 
 //List groups of a user
@@ -90,7 +90,7 @@ Route::delete('/user-groups/remove', 'User_GroupsController@destroy');
 //List specific case
 Route::get('/case', 'CaseController@show');
 
-//List all case studies
+//List all system case studies
 Route::get('/cases', 'CaseController@index');
 
 //List cases of a group

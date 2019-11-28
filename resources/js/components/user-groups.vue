@@ -600,7 +600,7 @@ export default {
           this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
           this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner
-
+          this.users = this.users.filter(x => x.u_role == 3);
         })
         .catch(err => console.log(err));
     },

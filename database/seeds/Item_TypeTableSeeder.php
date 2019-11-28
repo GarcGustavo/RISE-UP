@@ -11,6 +11,10 @@ class Item_TypeTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\item_type::class, 10)->create();
+        $item_types = [['itt_id'=>1, 'itt_name'=>'text'],
+        ['itt_id'=>2, 'itt_name'=>'images']
+    ];
+
+        App\Models\item_type::insert($item_types);
     }
 }

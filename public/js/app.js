@@ -3116,6 +3116,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /**
  * this component displays a group page
@@ -3275,6 +3277,9 @@ __webpack_require__.r(__webpack_exports__);
           //filter out group members from user list when adding new users to group
           _this.users_to_add = _this.users_to_add.filter(function (x) {
             return x.uid !== _this.group_members[k].uid;
+          });
+          _this.users_to_add = _this.users_to_add.filter(function (x) {
+            return x.u_role == 3;
           });
         };
 
@@ -3706,20 +3711,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      user: "",
       uid: 10,
-      user_name: "",
-      isAdmin: false
+      isAdmin: true,
+      //change to false when integration is complete
+      isViewer: false,
+      isCollaborator: false
     };
   },
   methods: {
     getUser: function getUser() {
+      var _this = this;
+
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
-      //fetch user data and set admin role
+
+      fetch("/user?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.user = res;
+
+        if (_this.user.u_role == 4) {
+          _this.isAdmin = true;
+        } else if (_this.user.u_role == 3) {
+          _this.isCollaborator = true;
+        } else {
+          _this.isViewer = true;
+        }
+
+        _this.uid = _this.user.uid;
+      });
     }
   }
 });
@@ -6321,6 +6352,10 @@ __webpack_require__.r(__webpack_exports__);
         _this4.users = _this4.users.filter(function (x) {
           return x.uid !== _this4.curr_user;
         }); //filter owner
+
+        _this4.users = _this4.users.filter(function (x) {
+          return x.u_role == 3;
+        });
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -43151,7 +43186,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/*style for user title*/\n.profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n\n/*style for user's name*/\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 16px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n\n/*style for navbar*/\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n  border: 0;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of dropdown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n\n/*dropdown item text color*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n\n/*dropdown item text hover and focus styles*/\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n\n/*item's padding*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n\n/*item's width*/\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 35px;\n}\n\n/*search bar width*/\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
+exports.push([module.i, "/*style for user title*/\n.profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n\n/*style for user's name*/\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 18px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n\n/*style for navbar*/\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n  border: 0;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of dropdown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n\n/*dropdown item text color*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n\n/*dropdown item text hover and focus styles*/\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n\n/*item's padding*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n\n/*item's width*/\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 250px;\n  max-width: 250px;\n}\n\n/*search bar width*/\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
 
 // exports
 
@@ -89113,9 +89148,34 @@ var render = function() {
           _vm._m(6),
           _vm._v(" "),
           _c("div", { staticClass: "dropdown-menu dropdown-menu-right" }, [
-            _vm._m(7),
+            _c("div", { staticClass: "profile-usertitle" }, [
+              _c("div", { staticClass: "profile-usertitle-name" }, [
+                _vm._v("Melvin J Malave ")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "profile-usertitle-role" }, [
+                _vm.isAdmin ? _c("a", [_vm._v("Admin")]) : _vm._e(),
+                _vm._v(" "),
+                _vm.isViewer ? _c("a", [_vm._v("Viewer")]) : _vm._e(),
+                _vm._v(" "),
+                _vm.isCollaborator
+                  ? _c("a", [_vm._v("Collaborator")])
+                  : _vm._e()
+              ])
+            ]),
             _vm._v(" "),
             _c("div", { staticClass: "dropdown-divider" }),
+            _vm._v(" "),
+            _vm.isAdmin
+              ? _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "/admin/users-requests" }
+                  },
+                  [_vm._v("Dashboard")]
+                )
+              : _vm._e(),
             _vm._v(" "),
             _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
               _vm._v("Profile")
@@ -89312,20 +89372,6 @@ var staticRenderFns = [
           )
         ]
       )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "profile-usertitle" }, [
-      _c("div", { staticClass: "profile-usertitle-name" }, [
-        _vm._v("Melvin J Malave")
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "profile-usertitle-role" }, [
-        _c("a", { attrs: { href: "/admin/users-requests" } }, [_vm._v("Admin")])
-      ])
     ])
   }
 ]

@@ -19,6 +19,7 @@ class case_parameters extends Model
 {
     //use SoftDeletes;
     public $table = 'Case_Parameters';
+
     protected  $primaryKey = 'cid';
 
     //protected $dates = ['deleted_at'];
@@ -28,7 +29,6 @@ class case_parameters extends Model
     public $timestamps = false;
 
     public $fillable = [
-        'cid',
         'csp_id',
         'opt_selected'
     ];

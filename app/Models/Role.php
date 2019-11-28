@@ -16,16 +16,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class role extends Model
 {
-    use SoftDeletes;
+   // use SoftDeletes;
 
     public $table = 'Role';
 
-    protected $dates = ['deleted_at'];
+  //  protected $dates = ['deleted_at'];
 
     public $timestamps = false;
 
     public $fillable = [
-        'r_creation_date',
         'r_name'
     ];
 
@@ -36,7 +35,6 @@ class role extends Model
      */
     protected $casts = [
         'rid' => 'integer',
-        'r_creation_date' => 'date',
         'r_name' => 'string'
     ];
 

@@ -31,11 +31,7 @@ class group extends Model
     public $timestamps = false;
 
     public $fillable = [
-        'g_name',
-        'g_status',
-        'g_creation_date',
-        'g_owner',
-        
+        'g_name'
     ];
 
     /**
@@ -47,7 +43,7 @@ class group extends Model
         'gid' => 'integer',
         'g_name' => 'string',
         'g_status' => 'string',
-        'g_creation_date' => 'date',
+        'g_creation_date' => 'date:Y-m-d',
         'g_owner' => 'integer'
     ];
 

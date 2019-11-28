@@ -26,7 +26,6 @@ class action extends Model
     public $timestamps = false;
 
     public $fillable = [
-        'a_date',
         'a_type',
         'a_user'
     ];
@@ -38,7 +37,7 @@ class action extends Model
      */
     protected $casts = [
         'aid' => 'integer',
-        'a_date' => 'date',
+        'a_date' => 'date:Y-m-d',
         'a_type' => 'integer',
         'a_user' => 'integer'
     ];

@@ -4,6 +4,7 @@
 use App\Models\user;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,16 +18,23 @@ use Illuminate\Support\Str;
 */
 
 $factory->define(user::class, function (Faker $faker) {
+
+    $first_name = $faker->firstName;
+    $last_name = $faker->lastName;
+    $email = "$first_name.$last_name@upr.edu";
+    $contact_email = "$first_name.$last_name@gmail.com";
+
+
     return [
-        'first_name' => $faker->firstName,
-        'last_name' => $faker->lastName,
-        'email' => $faker->unique()->safeEmail,
-        'contact_email' => $faker->unique()->safeEmail,
-        'u_expiration_date' => $faker->date,
-        'u_creation_date' => $faker->date,
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'email' => $email,
+        'contact_email' => $contact_email,
+        'u_expiration_date' => "2019-12-30",
+        'u_creation_date' => Carbon::now()->format('Y-m-d'),
         'u_role_upgrade_request' => $faker->numberBetween($min=0, $max=1),
         'u_ban_status' => $faker->numberBetween($min=0,$max=1),
-        'current_edit_cid' =>'',
+        'current_edit_cid' =>null,
         'u_role' => $faker->numberBetween($min=1,$max=4)
 
 

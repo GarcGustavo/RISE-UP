@@ -37,9 +37,6 @@ class case_study extends Model
         'c_title',
         'c_description',
         'c_thumbnail',
-        'c_status',
-        'c_date',
-        'c_owner',
         'c_group'
     ];
     /**
