@@ -14,8 +14,8 @@ class AdminController extends Controller
     //public function groupEdit
     public function groupEdit($id){
 
-        $users = DB::table('user')
-            ->select('user.*')
+        $users = DB::table('User')
+            ->select('User.*')
             ->where('uid', '=', $id)
             ->get();
         return view('admin.userEdit', ['user' => $users[0]]);

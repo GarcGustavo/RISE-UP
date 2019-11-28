@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\option;
+use App\Models\Option;
 use Illuminate\Http\Request;
 
 class AdminFilterOptionController extends Controller

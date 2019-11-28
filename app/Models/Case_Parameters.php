@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class case_parameters extends Model
 {
-    //use SoftDeletes;    
+    //use SoftDeletes;
     public $table = 'Case_Parameters';
     protected  $primaryKey = 'cid';
 
@@ -75,6 +75,6 @@ class case_parameters extends Model
      **/
     public function cOption()
     {
-        return $this->belongsTo(\App\Models\option::class, 'oid');
+        return $this->belongsTo(\App\Models\Option::class, 'oid');
     }
 }

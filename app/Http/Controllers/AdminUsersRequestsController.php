@@ -17,9 +17,9 @@ class AdminUsersRequestsController extends Controller
         //The method orders the user by creation date and in descending order
         //before sending them to the view.
         //Section 1.62 on Software Requirement Specifications Documents
-        $users = DB::table('user')
-            ->join('role', 'user.u_role', '=', 'role.rid')
-            ->select('user.*', 'r_name')
+        $users = DB::table('User')
+            ->join('Role', 'User.u_role', '=', 'Role.rid')
+            ->select('User.*', 'r_name')
             ->orderBy('u_creation_date', 'desc')
             ->get();
 
@@ -29,9 +29,9 @@ class AdminUsersRequestsController extends Controller
         // a user attribute of role = 1 (Viewer role)
         // a user attribute of role upgrade request = 1
         //Section 1.64 on Software Requirement Specifications Documents
-        $requests = DB::table('user')
-            ->join('role', 'user.u_role', '=', 'role.rid')
-            ->select('user.*', 'r_name')
+        $requests = DB::table('User')
+            ->join('Role', 'User.u_role', '=', 'Role.rid')
+            ->select('User.*', 'r_name')
             ->where('u_role_upgrade_request', 1)
             ->where('u_role', 1)
             ->where('u_ban_status', 0)

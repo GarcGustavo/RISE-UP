@@ -9,15 +9,6 @@
 
     <hr>
 
-    <!-- Page subheader to home
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="index.html">Home</a>
-        </li>
-        <li class="breadcrumb-item active">FAQ</li>
-    </ol>
--->
-
     <!-- code can be added to <a> tags to make cards collapsable -->
     <div id="accordion" role="tablist" aria-multiselectable="true">
         <div class="card mb-5 shadow-sm">

@@ -11,21 +11,21 @@ class AdminGroupsController extends Controller
     //public function index
     //Presents group name, group owner, the latest action, and creation date for each group.
     public function index(){
-        $latestDate = DB::table('action')
-            ->join('user_groups', 'user_groups.uid', '=', 'action.a_user')
+        $latestDate = DB::table('Action')
+            ->join('User_Groups', 'User_Groups.uid', '=', 'Action.a_user')
             ->select('gid', DB::raw('MAX(a_date) as latest_action_date'))
-            ->groupBy('user_groups.gid')
+            ->groupBy('User_Groups.gid')
             ->orderBy('latest_action_date', 'desc');
 
-        $latestActions = DB::table('user_groups')
-            ->joinSub($latestDate, 'latestDate','latestDate.gid', '=', 'user_groups.gid')
-            ->join('action',  function ($join) {
-                $join->on('action.a_user', '=', 'user_groups.uid')
-                    ->on('action.a_date', '=', 'latestDate.latest_action_date');
+        $latestActions = DB::table('User_Groups')
+            ->joinSub($latestDate, 'latestDate','latestDate.gid', '=', 'User_Groups.gid')
+            ->join('Action',  function ($join) {
+                $join->on('Action.a_user', '=', 'User_Groups.uid')
+                    ->on('Action.a_date', '=', 'latestDate.latest_action_date');
             })
-            ->join('action_type', 'action_type.act_id', '=', 'action.a_type')
-            ->join('group', 'group.gid', '=', 'user_groups.gid')
-            ->join('user', 'user.uid', '=', 'group.g_owner')
+            ->join('Action_Type', 'Action_Type.act_id', '=', 'Action.a_type')
+            ->join('Group', 'Group.gid', '=', 'User_Groups.gid')
+            ->join('User', 'User.uid', '=', 'Group.g_owner')
             ->orderBy('latest_action_date', 'desc')
             //->orderBy('g_creation_date', 'desc')
             ->get();

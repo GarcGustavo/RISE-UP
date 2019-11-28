@@ -5,15 +5,6 @@
 
     <hr>
 
-    <!-- Page subheader to home
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="index.html">Home</a>
-        </li>
-        <li class="breadcrumb-item active">FAQ</li>
-    </ol>
-    -->
-
     <!-- Intro Content -->
     <div class="row">
       <div class="col-lg-12 mt-3 text-center">
