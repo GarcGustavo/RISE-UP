@@ -129,7 +129,7 @@ class Case_ParametersController extends Controller
         //validation rules
         $validator = Validator::make($request->all(), [
 
-            'cid' => 'bail|required|unique:Case',
+            'cid' => 'bail|required',
             'csp_id' => 'bail|required|max:32',
             'opt_selected'  => 'bail|required|max:140'
         ]);
