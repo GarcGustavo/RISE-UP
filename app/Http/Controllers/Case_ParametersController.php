@@ -113,6 +113,62 @@ class Case_ParametersController extends Controller
         //
     }
 
+    public function updateCaseParameters(Request $request)
+    {
+        $cid = $request->input('cid');
+        $csp_id = $request->input('csp_id');
+        $opt_selected = $request->input('opt_selected');
+        Case_Parameters::where(['cid' => $cid])
+        ->where(['csp_id' => $csp_id])
+        ->update([
+            'cid' => $cid,
+            'csp_id' => $csp_id,
+            'opt_selected' => $opt_selected
+            ]);
+        return response()->json(['message'=>'Updated case parameters successfully']);
+    }
+    
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function createDefaultParameters(Request $request)
+    {        
+        //renaming attributes
+        $attributes = array(
+            'cid' => 'case study id'
+        );
+        //validation rules
+        $validator = Validator::make($request->all(), [
+            'cid' => 'bail|required'
+        ]);
+        //apply renaming validation
+        $validator->setAttributeNames($attributes);
+        //validate request
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->errors()->all()]);
+        }
+        
+        $all_parameters = CS_Parameter::all();
+        $case_parameters = [];
+
+        foreach ($all_parameters as $key=>$value) {
+            array_push($case_parameters, [
+            'cid' => $request->input('cid'),
+            'csp_id' => $value['csp_id'],
+            'opt_selected' => null,]);
+        }
+        
+        $inserted = Case_Parameters::insert($case_parameters);
+
+        if ($inserted) {
+            return response()->json(['message'=>'Parameter(s) has been added to the case']);
+        } else {
+            return response()->json(['errors'=>'Error adding parameter to case - Origin: Case_Parameterscontroller']);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -336,20 +336,20 @@ class CaseController extends Controller
         return response()->json(['message'=>'Updated case successfully']);
     }
 
-    public function updateCaseParameters(Request $request)
-    {
-        $cid = $request->input('cid');
-        $csp_id = $request->input('csp_id');
-        $opt_selected = $request->input('opt_selected');
-        Case_Parameters::where(['cid' => $cid])
-        ->where(['csp_id' => $csp_id])
-        ->update([
-            'cid' => $cid,
-            'csp_id' => $csp_id,
-            'opt_selected' => $opt_selected
-            ]);
-        return response()->json(['message'=>'Updated case parameters successfully']);
-    }
+    // public function updateCaseParameters(Request $request)
+    // {
+    //     $cid = $request->input('cid');
+    //     $csp_id = $request->input('csp_id');
+    //     $opt_selected = $request->input('opt_selected');
+    //     Case_Parameters::where(['cid' => $cid])
+    //     ->where(['csp_id' => $csp_id])
+    //     ->update([
+    //         'cid' => $cid,
+    //         'csp_id' => $csp_id,
+    //         'opt_selected' => $opt_selected
+    //         ]);
+    //     return response()->json(['message'=>'Updated case parameters successfully']);
+    // }
 
     /**
      * Remove the specified resource from storage.
