@@ -12,12 +12,12 @@ use App\Models\Group;
 use App\Http\Resources\Case_Study as Case_StudyResource;
 use App\Http\Resources\Group as GroupResource;
 
-
 class CaseController extends Controller
 {
     /**
      * Display a listing of the resource.
      * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\case_study
      */
     public function index()
     {
@@ -28,14 +28,13 @@ class CaseController extends Controller
         } else {
             return response()->json(['errors'=>'Error fetching all registered case studies - Origin: Case controller']);
         }
-
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified case study.
      *
      * @param  Request $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\case_study
      */
     public function show(Request $request)
     {
@@ -75,48 +74,59 @@ class CaseController extends Controller
         } else {
             return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
         }
-*/
+        */
         return Case_StudyResource::collection($case);
     }
 
+    /**
+        * Display the case studies of the specified group.
+        *
+        * @param  Request $request
+        * @return \App\Http\Resources\case_study
+        */
     public function show_group_cases($id)
     {
-/*
-        //renaming attributes
-        $attributes = array(
-            'gid' => 'group id',
-        );
-        //validation rules
-        $validator = Validator::make($request->all(), [
-            'gid' => ['bail','exists:Group','required','integer',
-            //if exist verify group has not been removed
-            Rule::exists('Group')->where(function ($query) use ($request) {
-                return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
-            })]
-        ], ['gid.exists' => 'The group id does not exists.']);
-        //apply renaming attributes
-        $validator->setAttributeNames($attributes);
-        //validate request
-        if ($validator->fails()) {
-            return response()->json(['errors'=> $validator->errors()->all()]);
-        }
-*/
+        /*
+                //renaming attributes
+                $attributes = array(
+                    'gid' => 'group id',
+                );
+                //validation rules
+                $validator = Validator::make($request->all(), [
+                    'gid' => ['bail','exists:Group','required','integer',
+                    //if exist verify group has not been removed
+                    Rule::exists('Group')->where(function ($query) use ($request) {
+                        return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
+                    })]
+                ], ['gid.exists' => 'The group id does not exists.']);
+                //apply renaming attributes
+                $validator->setAttributeNames($attributes);
+                //validate request
+                if ($validator->fails()) {
+                    return response()->json(['errors'=> $validator->errors()->all()]);
+                }
+        */
         //process request
         $gid = $id;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
 
-      /*
-        if ($cases) {
-           return Case_StudyResource::collection($cases);
-        } else {
-            return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
-        }
-*/
+        /*
+          if ($cases) {
+             return Case_StudyResource::collection($cases);
+          } else {
+              return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
+          }
+        */
 
         return Case_StudyResource::collection($cases);
     }
 
+     /**
+        * Show a case study's group .
+        * @param  \Illuminate\Http\Request  $request
+        * @return \App\Http\Resources\Group
+        */
     public function show_case_group($id)
     {
 
@@ -139,7 +149,7 @@ class CaseController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
-*/
+        */
         //process request
 
 
@@ -154,15 +164,16 @@ class CaseController extends Controller
         $unique_data = $case_group->unique('gid');
 
 
-      /*
-        if ($unique_data) {
-           return GroupResource::collection($unique_data);
-        } else {
-            return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
-        }
-*/
+        /*
+          if ($unique_data) {
+             return GroupResource::collection($unique_data);
+          } else {
+              return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
+          }
+        */
         return GroupResource::collection($unique_data);
     }
+
     /**
      * Store a newly created case study in storage.
      * @param  \Illuminate\Http\Request  $request
@@ -302,8 +313,6 @@ class CaseController extends Controller
         } else {
             return response()->json(['errors'=>'Error fetching user case studies - Origin: Case controller']);
         }
-
-
     }
 
     /**
@@ -336,20 +345,20 @@ class CaseController extends Controller
         return response()->json(['message'=>'Updated case successfully']);
     }
 
-    public function updateCaseParameters(Request $request)
-    {
-        $cid = $request->input('cid');
-        $csp_id = $request->input('csp_id');
-        $opt_selected = $request->input('opt_selected');
-        Case_Parameters::where(['cid' => $cid])
-        ->where(['csp_id' => $csp_id])
-        ->update([
-            'cid' => $cid,
-            'csp_id' => $csp_id,
-            'opt_selected' => $opt_selected
-            ]);
-        return response()->json(['message'=>'Updated case parameters successfully']);
-    }
+    // public function updateCaseParameters(Request $request)
+    // {
+    //     $cid = $request->input('cid');
+    //     $csp_id = $request->input('csp_id');
+    //     $opt_selected = $request->input('opt_selected');
+    //     Case_Parameters::where(['cid' => $cid])
+    //     ->where(['csp_id' => $csp_id])
+    //     ->update([
+    //         'cid' => $cid,
+    //         'csp_id' => $csp_id,
+    //         'opt_selected' => $opt_selected
+    //         ]);
+    //     return response()->json(['message'=>'Updated case parameters successfully']);
+    // }
 
     /**
      * Remove the specified resource from storage.
@@ -381,15 +390,13 @@ class CaseController extends Controller
             return $item['cid'];
         }, $to_delete);
 
-       $disabled = case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
-       $deleted = case_study::whereIn('cid', $cids_to_delete)->delete();
+        $disabled = case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
+        $deleted = case_study::whereIn('cid', $cids_to_delete)->delete();
 
-        if($disabled && $deleted){
+        if ($disabled && $deleted) {
             return response()->json(['message'=>'Case(s) has been removed']);
-        }
-        else{
+        } else {
             return response()->json(['errors'=>'Error deleting case study - Origin: Case controller']);
         }
-
     }
 }

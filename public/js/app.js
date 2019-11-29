@@ -2253,6 +2253,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
@@ -2366,9 +2367,6 @@ __webpack_require__.r(__webpack_exports__);
    * @description handles modal closing event
    */
   mounted: function mounted() {
-    /**
-     * @description handles modal closing event
-     */
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   computed: {
@@ -2507,7 +2505,7 @@ __webpack_require__.r(__webpack_exports__);
         });
         this.dialogue.find(".modal-body").css({
           "padding-top": "40px"
-        }); //if selection made remove selected groups
+        }); //if selection made send users
       } else {
         this.is_selected = true;
         this.sendUsers();
@@ -2572,6 +2570,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -2783,7 +2783,7 @@ __webpack_require__.r(__webpack_exports__);
      */
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0;
+      this.hasError = this.remainingCount < 0; //NOT USED 
     },
 
     /**
@@ -2827,7 +2827,8 @@ __webpack_require__.r(__webpack_exports__);
       this.curr_user = this.urlParams.get("uid"); //get user id
 
       if (this.group_selection) {
-        //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
+        // "group selection" variable sent by group vue to set default in group options,
+        //therefor set the group option default to (curr_group/group selection)
         this.curr_group = this.group_selection; //default dropdown selection
 
         this.disable_dropdown = true;
@@ -2943,6 +2944,13 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3254,6 +3262,12 @@ __webpack_require__.r(__webpack_exports__);
       this.temp = this.tempValue;
       this.changeGroupName(); //send request
     },
+
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the case-create-dbox closes as it calls this
+     * function to reset all errors.
+     */
     resetErrors: function resetErrors() {
       this.errors = [];
     },
@@ -3276,6 +3290,9 @@ __webpack_require__.r(__webpack_exports__);
           _this.users_to_add = _this.users_to_add.filter(function (x) {
             return x.uid !== _this.group_members[k].uid;
           });
+          _this.users_to_add = _this.users_to_add.filter(function (x) {
+            return x.u_role == 3 || x.u_role == 4;
+          }); //filter non collaborators
         };
 
         for (var k = 0; k < _this.group_members.length; k++) {
@@ -3312,7 +3329,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description gets all of the cases of the current group
+     * @description gets all of the case studies of the current group
      */
     fetchCases: function fetchCases() {
       var _this3 = this;
@@ -3363,6 +3380,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/group/rename", {
         method: "put",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -3400,7 +3421,8 @@ __webpack_require__.r(__webpack_exports__);
             "padding-top": "40px"
           });
 
-          _this5.errors = []; //reset
+          _this5.resetErrors(); //reset error variable
+
         } else {
           _this5.errors = res.errors;
         }
@@ -3418,6 +3440,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -3459,7 +3485,8 @@ __webpack_require__.r(__webpack_exports__);
           _this6.fetchUsers(); //update user list
 
 
-          _this6.errors = []; //reset
+          _this6.resetErrors(); //reset error variable
+
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -3472,12 +3499,11 @@ __webpack_require__.r(__webpack_exports__);
      */
     removeUsers: function removeUsers(users_to_remove) {
       var curr = this;
-      this.users_add_remove = users_to_remove; //confirmation dialogue box
+      this.remove = users_to_remove; //confirmation dialogue box
 
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected user(s)?",
-        backdrop: true,
         buttons: {
           confirm: {
             label: "No",
@@ -3496,12 +3522,16 @@ __webpack_require__.r(__webpack_exports__);
             //send request
             fetch("/user-groups/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.users_add_remove)
+              body: JSON.stringify(curr.remove)
             }).then(function (res) {
               return res.json();
             }).then(function (res) {
@@ -3514,8 +3544,7 @@ __webpack_require__.r(__webpack_exports__);
               curr.fetchMembers(); //update member list
 
               curr.fetchUsers(); //update user list
-
-              curr.users_add_remove = []; //reset variable
+              //  curr.users_add_remove = []; //reset variable curr.users_add_remove = []; //reset variable
             })["catch"](function (err) {
               console.error("Error: ", err);
             });
@@ -3545,6 +3574,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -3557,10 +3590,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this7.fetchCases(); //update case study list
           //hide action table dbox
-
-
           _this7.show_dialogue = false; //remove component's backdrop
 
           $("body").removeClass("modal-open");
@@ -3583,9 +3613,55 @@ __webpack_require__.r(__webpack_exports__);
             "padding-top": "40px"
           });
 
-          _this7.errors = []; //reset
+          _this7.appendDefaultParameters(case_study.cid); //default case study parameters
+
+
+          _this7.fetchCases(); //update case study list
+
+
+          _this7.resetErrors(); //reset error variable
+
         } else {
           _this7.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description add null default parameters to Case study
+     */
+    appendDefaultParameters: function appendDefaultParameters(cid) {
+      var _this8 = this;
+
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          cid: cid
+        })
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          _this8.fetchCases(); //update case study list
+
+
+          _this8.resetErrors(); //reset errors
+
+        } else {
+          _this8.errors = res.errors;
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -3706,20 +3782,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      user: "",
       uid: 10,
-      user_name: "",
-      isAdmin: false
+      isAdmin: true,
+      //change to false when integration is complete
+      isViewer: false,
+      isCollaborator: false
     };
   },
   methods: {
     getUser: function getUser() {
+      var _this = this;
+
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
-      //fetch user data and set admin role
+
+      fetch("/user?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.user = res;
+
+        if (_this.user.u_role == 4) {
+          _this.isAdmin = true;
+        } else if (_this.user.u_role == 3) {
+          _this.isCollaborator = true;
+        } else {
+          _this.isViewer = true;
+        }
+
+        _this.uid = _this.user.uid;
+      });
     }
   }
 });
@@ -5236,6 +5338,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /**
  * this component is used to display the cases of a user
@@ -5315,11 +5421,7 @@ __webpack_require__.r(__webpack_exports__);
       //boolean to append group name input to dialogue box when creating a group
       initial_load: true,
       //load initial table tab content when page loads
-      show_dialogue: false,
-      //opens/closes action-table
-      enable_sorting_tab1: false,
-      //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+      show_dialogue: false //opens/closes case create dbox
 
     };
   },
@@ -5410,7 +5512,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description resets all sort variables and icons
+     * @description resets all sort variables and icon's state
      */
     unSort: function unSort() {
       if (this.curr_tab == 1) {
@@ -5481,12 +5583,17 @@ __webpack_require__.r(__webpack_exports__);
         this.selected_cases.push(this.selected_cases[i].cid);
       }
     },
+
+    /**
+     * @description reset errors
+     */
     resetErrors: function resetErrors() {
       this.errors = [];
     },
 
     /**
-     * @description verifies if user has made a selection of a case
+     * @description verifies if user has made a selection of a case study to remove
+     * if selection is made call the remove case method to proceed with removal.
      */
     isCaseSelected: function isCaseSelected() {
       if (this.selected_cases.length == 0) {
@@ -5561,6 +5668,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -5573,10 +5684,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this5.fetchCases(); //update case study list
           //hide action table dbox
-
-
           _this5.show_dialogue = false; //remove component's backdrop
 
           $("body").removeClass("modal-open");
@@ -5599,9 +5707,54 @@ __webpack_require__.r(__webpack_exports__);
             "padding-top": "40px"
           });
 
-          _this5.errors = []; //reset
+          _this5.appendDefaultParameters(case_study.cid); //default case study parameters
+
+
+          _this5.fetchCases(); //update case study list
+
+
+          _this5.resetErrors();
         } else {
           _this5.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description add null default parameters to Case study
+     */
+    appendDefaultParameters: function appendDefaultParameters(cid) {
+      var _this6 = this;
+
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          cid: cid
+        })
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          _this6.fetchCases(); //update case study list
+
+
+          _this6.resetErrors(); //reset errors
+
+        } else {
+          _this6.errors = res.errors;
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -5617,7 +5770,6 @@ __webpack_require__.r(__webpack_exports__);
       this.dialogue = bootbox.confirm({
         title: "Remove",
         message: "Do you want to remove selected case study(s)?",
-        backdrop: true,
         buttons: {
           confirm: {
             label: "No",
@@ -5635,7 +5787,7 @@ __webpack_require__.r(__webpack_exports__);
             //if yes
             for (var i in curr.selected_cases) {
               curr.cases_to_remove.push({
-                //push selected group id's as gid attributes
+                //push selected case study id's as cid attributes
                 cid: curr.selected_cases[i]
               });
             } //send request
@@ -5643,6 +5795,10 @@ __webpack_require__.r(__webpack_exports__);
 
             fetch("/case/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
@@ -5653,7 +5809,7 @@ __webpack_require__.r(__webpack_exports__);
               return res.json();
             }).then(function (res) {
               console.log(res);
-              curr.fetchCases(); //update group list
+              curr.fetchCases(); //update case study list
 
               curr.cases_to_remove = []; //reset variable
             })["catch"](function (err) {
@@ -6109,11 +6265,7 @@ __webpack_require__.r(__webpack_exports__);
       //has the option to select all groups been checked
       gname_box_show: false,
       //boolean to append group name input to dialogue box when creating a group
-      show_dialogue: false,
-      //opens/closes action-table
-      enable_sorting_tab1: false,
-      //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+      show_dialogue: false //opens/closes action-table
 
     };
   },
@@ -6280,6 +6432,7 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description @description verifies if user has made a selection of a group
+     * if selection is made call the remove group method to proceed with removal.
      */
     isGroupSelected: function isGroupSelected() {
       if (this.selected_groups.length == 0) {
@@ -6307,7 +6460,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description get all of system's users when adding a user while creating a group
+     * @description get all of system's users. These are afterwards filtered for collaborators
      */
     fetchUsers: function fetchUsers() {
       var _this4 = this;
@@ -6321,6 +6474,10 @@ __webpack_require__.r(__webpack_exports__);
         _this4.users = _this4.users.filter(function (x) {
           return x.uid !== _this4.curr_user;
         }); //filter owner
+
+        _this4.users = _this4.users.filter(function (x) {
+          return x.u_role == 3 || x.u_role == 4;
+        }); //filter non collaborators
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -6376,6 +6533,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/group/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -6434,6 +6595,10 @@ __webpack_require__.r(__webpack_exports__);
     addUsers: function addUsers(users_to_add) {
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -6458,7 +6623,6 @@ __webpack_require__.r(__webpack_exports__);
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected groups?",
-        backdrop: true,
         buttons: {
           confirm: {
             label: "No",
@@ -6484,6 +6648,10 @@ __webpack_require__.r(__webpack_exports__);
 
             fetch("/group/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
@@ -43151,7 +43319,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/*style for user title*/\n.profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n\n/*style for user's name*/\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 16px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n\n/*style for navbar*/\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n  border: 0;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of dropdown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n\n/*dropdown item text color*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n\n/*dropdown item text hover and focus styles*/\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n\n/*item's padding*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n\n/*item's width*/\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 35px;\n}\n\n/*search bar width*/\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
+exports.push([module.i, "/*style for user title*/\n.profile-usertitle[data-v-798ca618] {\n  text-align: center;\n  margin-top: 20px;\n}\n\n/*style for user's name*/\n.profile-usertitle-name[data-v-798ca618] {\n  color: #5a7391;\n  font-size: 18px;\n  font-weight: 600;\n  margin-bottom: 7px;\n}\n\n/*style for navbar*/\n.navbar-custom[data-v-798ca618] {\n  background-color: #333333;\n  border: 0;\n}\n\n/* change the brand and text color */\n.navbar-custom .navbar-brand[data-v-798ca618],\n.navbar-custom .navbar-text[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.8);\n}\n\n/* change the link color */\n.navbar-custom .navbar-nav .nav-link[data-v-798ca618] {\n  color: rgba(255, 255, 255, 0.5);\n}\n\n/* change the color of active or hovered links */\n.navbar-custom .nav-item.active .nav-link[data-v-798ca618],\n.navbar-custom .nav-item:hover .nav-link[data-v-798ca618] {\n  color: #ffffff;\n}\n\n/* for dropdown only - change the color of dropdown */\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  background-color: #ffffff;\n}\n\n/*dropdown item text color*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  color: black;\n}\n\n/*dropdown item text hover and focus styles*/\n.navbar-custom .dropdown-item[data-v-798ca618]:hover,\n.navbar-custom .dropdown-item[data-v-798ca618]:focus {\n  color: #333333;\n  background-color: lightgray;\n}\n\n/*item's padding*/\n.navbar-custom .dropdown-item[data-v-798ca618] {\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n\n/*item's width*/\n.navbar-custom .dropdown-menu[data-v-798ca618] {\n  width: 250px;\n  max-width: 250px;\n}\n\n/*search bar width*/\n.search input[type=text][data-v-798ca618] {\n  width: 315px !important;\n}", ""]);
 
 // exports
 
@@ -89113,9 +89281,34 @@ var render = function() {
           _vm._m(6),
           _vm._v(" "),
           _c("div", { staticClass: "dropdown-menu dropdown-menu-right" }, [
-            _vm._m(7),
+            _c("div", { staticClass: "profile-usertitle" }, [
+              _c("div", { staticClass: "profile-usertitle-name" }, [
+                _vm._v("Melvin J Malave ")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "profile-usertitle-role" }, [
+                _vm.isAdmin ? _c("a", [_vm._v("Admin")]) : _vm._e(),
+                _vm._v(" "),
+                _vm.isViewer ? _c("a", [_vm._v("Viewer")]) : _vm._e(),
+                _vm._v(" "),
+                _vm.isCollaborator
+                  ? _c("a", [_vm._v("Collaborator")])
+                  : _vm._e()
+              ])
+            ]),
             _vm._v(" "),
             _c("div", { staticClass: "dropdown-divider" }),
+            _vm._v(" "),
+            _vm.isAdmin
+              ? _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "/admin/users-requests" }
+                  },
+                  [_vm._v("Dashboard")]
+                )
+              : _vm._e(),
             _vm._v(" "),
             _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
               _vm._v("Profile")
@@ -89312,20 +89505,6 @@ var staticRenderFns = [
           )
         ]
       )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "profile-usertitle" }, [
-      _c("div", { staticClass: "profile-usertitle-name" }, [
-        _vm._v("Melvin J Malave")
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "profile-usertitle-role" }, [
-        _c("a", { attrs: { href: "/admin/users-requests" } }, [_vm._v("Admin")])
-      ])
     ])
   }
 ]

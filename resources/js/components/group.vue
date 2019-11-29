@@ -27,6 +27,7 @@
         </h1>
       </span>
     </div>
+
     <!-- if edit mode is enabled -->
     <div v-if="edit_title">
       <span class="required">*</span>
@@ -70,6 +71,7 @@
           </div>
         </a>
       </span>
+
       <!-- add button -->
       <span data-toggle="modal" data-target="#action_table_dbox">
         <a
@@ -89,6 +91,7 @@
       </span>
       <p :style=" add_remove_members_permission ? 'margin-left:288px;' : ''">Members</p>
     </h1>
+
     <!-- show table dialogue when adding or removing members -->
     <div v-if="(action=='Add'|| action=='Remove') && show_dialogue">
       <action-table-dbox
@@ -113,6 +116,7 @@
         @createCaseStudy="createCaseStudy"
       ></case-create-dbox>
     </div>
+
     <!-- Members -->
     <div class="card mb-5 shadow" id="members_scroll">
       <div class="row mt-1 pt-2 pl-4" id="members">
@@ -120,7 +124,9 @@
           <div class="card h-100 text-center">
             <i class="material-icons pt-2" style="font-size: 125px">person</i>
             <div class="card-body">
-              <h4 class="card-title"><a href="#" class="stretched-link">{{member.first_name}} {{member.last_name}}</a></h4>
+              <h4 class="card-title">
+                <a href="#" class="stretched-link">{{member.first_name}} {{member.last_name}}</a>
+              </h4>
               <h6 class="card-subtitle text-muted"></h6>
             </div>
             <div class="card-footer">
@@ -152,6 +158,7 @@
       </span>
       <p :style="create_group_case_permission ? 'margin-left:197px;' : ''">Our Cases</p>
     </h1>
+
     <!-- list group's case studies -->
     <div class="mt-1 card mb-5 shadow" id="cases">
       <div class="col-sm-12 mb-3">
@@ -172,7 +179,6 @@
 </template>
 
 <script>
-
 /**
  * this component displays a group page
  */
@@ -291,6 +297,11 @@ export default {
       this.changeGroupName(); //send request
     },
 
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the case-create-dbox closes as it calls this
+     * function to reset all errors.
+     */
     resetErrors() {
       this.errors = [];
     },
@@ -310,6 +321,9 @@ export default {
             this.users_to_add = this.users_to_add.filter(
               x => x.uid !== this.group_members[k].uid
             );
+            this.users_to_add = this.users_to_add.filter(
+              x => x.u_role == 3 || x.u_role == 4
+            ); //filter non collaborators
           }
         })
         .catch(err => console.log(err));
@@ -335,7 +349,7 @@ export default {
     },
 
     /**
-     * @description gets all of the cases of the current group
+     * @description gets all of the case studies of the current group
      */
     fetchCases() {
       fetch("/case/group/show?gid=" + this.curr_group)
@@ -373,6 +387,10 @@ export default {
     changeGroupName() {
       fetch("/group/rename", {
         method: "put",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -383,6 +401,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           console.log(res);
+
           if (!res.errors) {
             this.group_name = this.temp; //group name is the updated name
             this.disableEditTitle();
@@ -402,7 +421,7 @@ export default {
             });
             this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-            this.errors = []; //reset
+            this.resetErrors(); //reset error variable
           } else {
             this.errors = res.errors;
           }
@@ -419,6 +438,10 @@ export default {
     addUsers(users_to_add) {
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -428,7 +451,6 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-
           console.log(res);
 
           if (!res.errors) {
@@ -455,7 +477,7 @@ export default {
 
             this.fetchMembers(); //update member list
             this.fetchUsers(); //update user list
-            this.errors = []; //reset
+            this.resetErrors(); //reset error variable
           }
         })
         .catch(err => {
@@ -469,12 +491,11 @@ export default {
      */
     removeUsers(users_to_remove) {
       var curr = this;
-      this.users_add_remove = users_to_remove;
+      this.remove = users_to_remove;
       //confirmation dialogue box
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected user(s)?",
-        backdrop: true,
 
         buttons: {
           confirm: {
@@ -492,16 +513,19 @@ export default {
             //send request
             fetch("/user-groups/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.users_add_remove)
+              body: JSON.stringify(curr.remove)
             })
               .then(res => res.json())
               .then(res => {
-
                 console.log(res);
 
                 //hide action table dbox
@@ -512,7 +536,7 @@ export default {
 
                 curr.fetchMembers(); //update member list
                 curr.fetchUsers(); //update user list
-                curr.users_add_remove = []; //reset variable
+                //  curr.users_add_remove = []; //reset variable curr.users_add_remove = []; //reset variable
               })
               .catch(err => {
                 console.error("Error: ", err);
@@ -537,6 +561,10 @@ export default {
     createCaseStudy(case_study) {
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -546,18 +574,15 @@ export default {
       })
         .then(res => res.json())
         .then(res => {
-
           console.log(res);
 
           if (!res.errors) {
-
-            this.fetchCases(); //update case study list
-
             //hide action table dbox
             this.show_dialogue = false;
 
             //remove component's backdrop
             $("body").removeClass("modal-open");
+
             $(".modal-backdrop").remove();
             //alert box
             this.dialogue = bootbox.alert({
@@ -575,7 +600,43 @@ export default {
             });
             this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-            this.errors = []; //reset
+            this.appendDefaultParameters(case_study.cid); //default case study parameters
+            this.fetchCases(); //update case study list
+            this.resetErrors(); //reset error variable
+          } else {
+            this.errors = res.errors;
+          }
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    /**
+     * @description add null default parameters to Case study
+     */
+    appendDefaultParameters(cid) {
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({ cid: cid })
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+
+          if (!res.errors) {
+            this.fetchCases(); //update case study list
+
+            this.resetErrors(); //reset errors
           } else {
             this.errors = res.errors;
           }
@@ -633,7 +694,6 @@ h1 a:hover {
 /* icon initial color */
 a {
   color: black;
-
 }
 
 /*move remove icon to right */

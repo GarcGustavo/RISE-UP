@@ -392,9 +392,7 @@ export default {
       is_selected: false, //has user made a selection,
       all_selected: false, //has the option to select all groups been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
-      show_dialogue: false, //opens/closes action-table
-      enable_sorting_tab1: false, //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+      show_dialogue: false //opens/closes action-table
     };
   },
 
@@ -563,6 +561,7 @@ export default {
 
     /**
      * @description @description verifies if user has made a selection of a group
+     * if selection is made call the remove group method to proceed with removal.
      */
 
     isGroupSelected() {
@@ -591,7 +590,7 @@ export default {
       }
     },
     /**
-     * @description get all of system's users when adding a user while creating a group
+     * @description get all of system's users. These are afterwards filtered for collaborators
      */
     fetchUsers() {
       fetch("/users")
@@ -600,7 +599,7 @@ export default {
           this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
           this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner
-
+          this.users = this.users.filter(x => x.u_role == 3 || x.u_role == 4); //filter non collaborators
         })
         .catch(err => console.log(err));
     },
@@ -648,6 +647,10 @@ export default {
     createGroup(group, members) {
       fetch("/group/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -699,6 +702,10 @@ export default {
     addUsers(users_to_add) {
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -724,7 +731,6 @@ export default {
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected groups?",
-        backdrop: true,
 
         buttons: {
           confirm: {
@@ -748,6 +754,10 @@ export default {
             //send request
             fetch("/group/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",

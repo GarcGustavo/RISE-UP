@@ -19,6 +19,7 @@
           </div>
         </a>
       </div>
+
       <!-- create button if clicked, render create case study dialogue box -->
       <div>
         <span data-toggle="modal" data-target="#case_create_dbox">
@@ -87,6 +88,7 @@
         </li>
       </ul>
     </div>
+
     <div class="container" id="entries_search">
       <!--entries for tab1 -->
       <div v-if="curr_tab==1">
@@ -137,6 +139,7 @@
           </div>
         </div>
       </div>
+
       <!-- search bar -->
       <div class="input-group">
         <label>Search</label>
@@ -174,6 +177,7 @@
               @click.prevent="unSort()"
             >Select All</a>
           </template>
+
           <!-- title header -->
           <template v-slot:head(c_title)>
             <a
@@ -219,16 +223,15 @@
               {{data.index +1}}
             </div>
           </template>
+
           <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link
-                class="p-2"
-                :href="'/case/body?cid='+data.item.cid"
-              >{{data.item.c_title}}</b-link>
+              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
+
         <!--paginator -->
         <div id="paginate" v-if="reload_paginator && curr_tab==1">
           <paginator
@@ -241,6 +244,7 @@
           ></paginator>
         </div>
       </div>
+
       <!-- Table of case studies belonging to the groups of the user for tab2-->
       <div class="tab-pane" id="group_cases" role="tabpanel">
         <b-table
@@ -262,6 +266,7 @@
               @click.prevent="unSort()"
             >Index</a>
           </template>
+
           <!-- title header -->
           <template v-slot:head(c_title)>
             <a
@@ -291,6 +296,7 @@
               ></i>
             </a>
           </template>
+
           <!--table rows -->
           <!-- index column -->
           <template v-slot:cell(index)="data">
@@ -299,13 +305,11 @@
           <!-- title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link
-                class="p-2"
-                :href="'/case/body?cid='+data.item.cid"
-              >{{data.item.c_title}}</b-link>
+              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
+
         <!--paginator -->
         <div id="paginate" v-if="reload_paginator && curr_tab==2">
           <paginator
@@ -376,9 +380,7 @@ export default {
       all_selected: false, //has the option to select all case studies been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
       initial_load: true, //load initial table tab content when page loads
-      show_dialogue: false, //opens/closes action-table
-      enable_sorting_tab1: false, //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+      show_dialogue: false //opens/closes case create dbox
     };
   },
   /**
@@ -471,7 +473,7 @@ export default {
     },
 
     /**
-     * @description resets all sort variables and icons
+     * @description resets all sort variables and icon's state
      */
     unSort() {
       if (this.curr_tab == 1) {
@@ -540,12 +542,16 @@ export default {
       }
     },
 
+/**
+ * @description reset errors
+ */
     resetErrors() {
       this.errors = [];
     },
 
     /**
-     * @description verifies if user has made a selection of a case
+     * @description verifies if user has made a selection of a case study to remove
+     * if selection is made call the remove case method to proceed with removal.
      */
     isCaseSelected() {
       if (this.selected_cases.length == 0) {
@@ -610,6 +616,10 @@ export default {
     createCaseStudy(case_study) {
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -622,11 +632,8 @@ export default {
           console.log(res);
 
           if (!res.errors) {
-            this.fetchCases(); //update case study list
-
             //hide action table dbox
             this.show_dialogue = false;
-
             //remove component's backdrop
             $("body").removeClass("modal-open");
             $(".modal-backdrop").remove();
@@ -646,7 +653,43 @@ export default {
             });
             this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-            this.errors = []; //reset
+            this.appendDefaultParameters(case_study.cid); //default case study parameters
+            this.fetchCases(); //update case study list
+            this.resetErrors();
+          } else {
+            this.errors = res.errors;
+          }
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    /**
+     * @description add null default parameters to Case study
+     */
+    appendDefaultParameters(cid) {
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({ cid: cid })
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+
+          if (!res.errors) {
+            this.fetchCases(); //update case study list
+
+            this.resetErrors(); //reset errors
           } else {
             this.errors = res.errors;
           }
@@ -666,7 +709,6 @@ export default {
       this.dialogue = bootbox.confirm({
         title: "Remove",
         message: "Do you want to remove selected case study(s)?",
-        backdrop: true,
 
         buttons: {
           confirm: {
@@ -683,13 +725,17 @@ export default {
             //if yes
             for (let i in curr.selected_cases) {
               curr.cases_to_remove.push({
-                //push selected group id's as gid attributes
+                //push selected case study id's as cid attributes
                 cid: curr.selected_cases[i]
               });
             }
             //send request
             fetch("/case/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
@@ -701,7 +747,7 @@ export default {
               .then(res => {
                 console.log(res);
 
-                curr.fetchCases(); //update group list
+                curr.fetchCases(); //update case study list
 
                 curr.cases_to_remove = []; //reset variable
               })
