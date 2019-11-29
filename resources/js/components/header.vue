@@ -114,6 +114,7 @@ export default {
     };
   },
   methods: {
+
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = Number(this.urlParams.get("uid")); //get user id

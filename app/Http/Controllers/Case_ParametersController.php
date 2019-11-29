@@ -179,7 +179,7 @@ class Case_ParametersController extends Controller
             array_push($case_parameters, [
             'cid' => $request->input('cid'),
             'csp_id' => $value['csp_id'],
-            'opt_selected' => null,]);
+            'opt_selected' => 1,]);
         }
 
         $inserted = Case_Parameters::insert($case_parameters);

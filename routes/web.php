@@ -257,3 +257,4 @@ Route::put('/admin/user/{id}', 'AdminUserController@update');
 //
 
 
+Route::any('/search','SearchController@show');
