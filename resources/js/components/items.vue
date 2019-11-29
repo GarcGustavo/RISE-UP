@@ -284,6 +284,7 @@
                         v-if="!editing && (item.i_type == 2)"
                       >
                         <img :src="'../images/' + item.i_content" />
+                        {{item.i_content}}
                       </div>
                     </div>
                   </div>
@@ -375,17 +376,17 @@ export default {
   mounted() {
     Echo.join(`App.User.${this.user.uid}`)
       .here(users => {
-        //this.usersEditing = users;
+        this.usersEditing = users;
       })
       .joining(user => {
-        //this.usersEditing.push(users[0]);
+        this.usersEditing.push(users[0]);
       })
       .leaving(user => {
-        //this.usersEditing = this.usersEditing.filter(u => u != users[0]);
+        this.usersEditing = this.usersEditing.filter(u => u != users[0]);
       })
       .listenForWhisper("editing", e => {
-        // this.case_study.c_title = e.title;
-        // this.items.i_content = e.body;
+        //this.case_study.c_title = e.title;
+        //this.items.i_content = e.body;
       })
       .listenForWhisper("saved", e => {
         //this.case_study.c_status = e.status;
@@ -604,7 +605,9 @@ export default {
       //   i_name: item_to_update.i_name
       // };
       var formData = new FormData();
-      formData.append("image", this.files[0]);
+      if(this.files){
+        formData.append("image", this.files[0]);
+      }
       formData.append("i_case", item_to_update.i_case);
       formData.append("i_type", item_to_update.i_type);
       formData.append("order", Number(item_to_update.order));
