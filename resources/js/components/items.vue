@@ -593,19 +593,11 @@ export default {
         });
       this.fetchCase();
     },
-    updateItem(item_to_update) {
+    updateItem(item_to_update, index) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      // this.updated_item = {
-      //   iid: Number(item_to_update.iid),
-      //   i_content: item_to_update.i_content,
-      //   i_case: item_to_update.i_case,
-      //   i_type: item_to_update.i_type,
-      //   order: Number(item_to_update.order),
-      //   i_name: item_to_update.i_name
-      // };
       var formData = new FormData();
-      if(this.files){
+      if(this.files && this.images[index]){
         formData.append("image", this.files[0]);
       }
       formData.append("i_case", item_to_update.i_case);
@@ -635,7 +627,7 @@ export default {
     updateItems(items) {
       for (let item in this.items) {
         this.items[item].order = item;
-        this.updateItem(this.items[item]);
+        this.updateItem(this.items[item], item);
       }
       this.fetchItems();
       this.fetchCaseItems();
