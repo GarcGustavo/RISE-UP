@@ -17,17 +17,18 @@
     </button>
 
     <!-- Search bar -->
-    <form class="navbar-form navbar-right ml-auto mt-2 mr-5 search" action>
+    <form action="/search" class="navbar-form navbar-right ml-auto mt-2 mr-5 search">
       <div class="input-group mb-3">
         <input
           type="text"
+          name="q"
           class="form-control"
           placeholder="search"
           aria-label="Search"
           aria-describedby="basic-addon2"
         >
         <div class="input-group-append">
-          <button class="btn btn-primary border-0 btn-sm" type="button">
+          <button class="btn btn-primary border-0 btn-sm" type="submit">
             <i class="material-icons">search</i>
           </button>
         </div>

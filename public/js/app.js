@@ -3833,6 +3833,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -89471,7 +89472,7 @@ var staticRenderFns = [
       "form",
       {
         staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
-        attrs: { action: "" }
+        attrs: { action: "/search" }
       },
       [
         _c("div", { staticClass: "input-group mb-3" }, [
@@ -89479,6 +89480,7 @@ var staticRenderFns = [
             staticClass: "form-control",
             attrs: {
               type: "text",
+              name: "q",
               placeholder: "search",
               "aria-label": "Search",
               "aria-describedby": "basic-addon2"
@@ -89490,7 +89492,7 @@ var staticRenderFns = [
               "button",
               {
                 staticClass: "btn btn-primary border-0 btn-sm",
-                attrs: { type: "button" }
+                attrs: { type: "submit" }
               },
               [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
             )
