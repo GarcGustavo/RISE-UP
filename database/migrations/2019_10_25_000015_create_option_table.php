@@ -16,7 +16,7 @@ class CreateOptionTable extends Migration
         Schema::create('Option', function (Blueprint $table) {
             $table->bigIncrements('oid');
             $table->unsignedBigInteger('o_parameter');
-            $table->foreign('o_parameter')->references('csp_id')->on('CS_Parameter');
+            $table->foreign('o_parameter')->references('csp_id')->on('CS_Parameter')->onDelete('cascade')->onUpdate('cascade');
             $table->string('o_content', 255);
         });
     }
