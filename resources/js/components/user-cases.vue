@@ -222,10 +222,7 @@
           <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link
-                class="p-2"
-                :href="'/case/body?cid='+data.item.cid"
-              >{{data.item.c_title}}</b-link>
+              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -299,10 +296,7 @@
           <!-- title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link
-                class="p-2"
-                :href="'/case/body?cid='+data.item.cid"
-              >{{data.item.c_title}}</b-link>
+              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -376,9 +370,7 @@ export default {
       all_selected: false, //has the option to select all case studies been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
       initial_load: true, //load initial table tab content when page loads
-      show_dialogue: false, //opens/closes action-table
-      enable_sorting_tab1: false, //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+      show_dialogue: false //opens/closes case create dbox
     };
   },
   /**
@@ -471,7 +463,7 @@ export default {
     },
 
     /**
-     * @description resets all sort variables and icons
+     * @description resets all sort variables and icon's state
      */
     unSort() {
       if (this.curr_tab == 1) {
@@ -545,7 +537,8 @@ export default {
     },
 
     /**
-     * @description verifies if user has made a selection of a case
+     * @description verifies if user has made a selection of a case study to remove
+     * if selection is made call the remove case method to proceed with removal.
      */
     isCaseSelected() {
       if (this.selected_cases.length == 0) {
@@ -608,6 +601,7 @@ export default {
      * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
      */
     createCaseStudy(case_study) {
+
       fetch("/case/create", {
         method: "post",
         headers: new Headers({
@@ -622,11 +616,8 @@ export default {
           console.log(res);
 
           if (!res.errors) {
-            this.fetchCases(); //update case study list
-
             //hide action table dbox
             this.show_dialogue = false;
-
             //remove component's backdrop
             $("body").removeClass("modal-open");
             $(".modal-backdrop").remove();
@@ -646,7 +637,42 @@ export default {
             });
             this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-            this.errors = []; //reset
+            this.appendDefaultParameters(case_study.cid); //default case study parameters
+            this.fetchCases(); //update case study list
+            this.resetErrors();
+          } else {
+            this.errors = res.errors;
+          }
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+/**
+ * @description add null default parameters to Case study 
+ */
+    appendDefaultParameters(cid) {
+
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({'cid':cid})
+      })
+        .then(res => res.json())
+        .then(res => {
+
+          console.log(res);
+
+          if (!res.errors) {
+            this.fetchCases(); //update case study list
+
+            this.resetErrors(); //reset errors
+
           } else {
             this.errors = res.errors;
           }
@@ -683,7 +709,7 @@ export default {
             //if yes
             for (let i in curr.selected_cases) {
               curr.cases_to_remove.push({
-                //push selected group id's as gid attributes
+                //push selected case study id's as cid attributes
                 cid: curr.selected_cases[i]
               });
             }
@@ -701,7 +727,7 @@ export default {
               .then(res => {
                 console.log(res);
 
-                curr.fetchCases(); //update group list
+                curr.fetchCases(); //update case study list
 
                 curr.cases_to_remove = []; //reset variable
               })

@@ -393,8 +393,7 @@ export default {
       all_selected: false, //has the option to select all groups been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
       show_dialogue: false, //opens/closes action-table
-      enable_sorting_tab1: false, //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+
     };
   },
 
@@ -563,6 +562,7 @@ export default {
 
     /**
      * @description @description verifies if user has made a selection of a group
+     * if selection is made call the remove group method to proceed with removal.
      */
 
     isGroupSelected() {
@@ -600,7 +600,7 @@ export default {
           this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
           this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner
-          this.users = this.users.filter(x => x.u_role == 3);
+          this.users = this.users.filter(x => x.u_role == 3 || x.u_role == 4); //filter non collaborators
         })
         .catch(err => console.log(err));
     },

@@ -16,7 +16,7 @@ class CreateCaseParametersTable extends Migration
         Schema::create('Case_Parameters', function (Blueprint $table) {
             $table->unsignedBigInteger('cid');
             $table->unsignedBigInteger('csp_id');
-            $table->unsignedBigInteger('opt_selected');
+            $table->unsignedBigInteger('opt_selected')->nullable();
             $table->foreign('cid')->references('cid')->on('Case');
             $table->foreign('csp_id')->references('csp_id')->on('CS_Parameter');
             $table->foreign('opt_selected')->references('oid')->on('Option');

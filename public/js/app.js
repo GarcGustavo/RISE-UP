@@ -2366,9 +2366,6 @@ __webpack_require__.r(__webpack_exports__);
    * @description handles modal closing event
    */
   mounted: function mounted() {
-    /**
-     * @description handles modal closing event
-     */
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   computed: {
@@ -2507,7 +2504,7 @@ __webpack_require__.r(__webpack_exports__);
         });
         this.dialogue.find(".modal-body").css({
           "padding-top": "40px"
-        }); //if selection made remove selected groups
+        }); //if selection made send users 
       } else {
         this.is_selected = true;
         this.sendUsers();
@@ -3118,6 +3115,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * this component displays a group page
@@ -3279,8 +3283,8 @@ __webpack_require__.r(__webpack_exports__);
             return x.uid !== _this.group_members[k].uid;
           });
           _this.users_to_add = _this.users_to_add.filter(function (x) {
-            return x.u_role == 3;
-          });
+            return x.u_role == 3 || x.u_role == 4;
+          }); //filter non collaborators
         };
 
         for (var k = 0; k < _this.group_members.length; k++) {
@@ -3317,7 +3321,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description gets all of the cases of the current group
+     * @description gets all of the case studies of the current group
      */
     fetchCases: function fetchCases() {
       var _this3 = this;
@@ -3405,7 +3409,7 @@ __webpack_require__.r(__webpack_exports__);
             "padding-top": "40px"
           });
 
-          _this5.errors = []; //reset
+          _this5.resetErrors();
         } else {
           _this5.errors = res.errors;
         }
@@ -3464,7 +3468,7 @@ __webpack_require__.r(__webpack_exports__);
           _this6.fetchUsers(); //update user list
 
 
-          _this6.errors = []; //reset
+          _this6.resetErrors();
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -3477,7 +3481,7 @@ __webpack_require__.r(__webpack_exports__);
      */
     removeUsers: function removeUsers(users_to_remove) {
       var curr = this;
-      this.users_add_remove = users_to_remove; //confirmation dialogue box
+      this.remove = users_to_remove; //confirmation dialogue box
 
       this.dialogue = bootbox.confirm({
         title: "Remove?",
@@ -3506,7 +3510,7 @@ __webpack_require__.r(__webpack_exports__);
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.users_add_remove)
+              body: JSON.stringify(curr.remove)
             }).then(function (res) {
               return res.json();
             }).then(function (res) {
@@ -3519,8 +3523,7 @@ __webpack_require__.r(__webpack_exports__);
               curr.fetchMembers(); //update member list
 
               curr.fetchUsers(); //update user list
-
-              curr.users_add_remove = []; //reset variable
+              //  curr.users_add_remove = []; //reset variable curr.users_add_remove = []; //reset variable
             })["catch"](function (err) {
               console.error("Error: ", err);
             });
@@ -3562,10 +3565,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this7.fetchCases(); //update case study list
           //hide action table dbox
-
-
           _this7.show_dialogue = false; //remove component's backdrop
 
           $("body").removeClass("modal-open");
@@ -3588,9 +3588,50 @@ __webpack_require__.r(__webpack_exports__);
             "padding-top": "40px"
           });
 
-          _this7.errors = []; //reset
+          _this7.appendDefaultParameters(case_study.cid); //default case study parameters
+
+
+          _this7.fetchCases(); //update case study list
+
+
+          _this7.resetErrors();
         } else {
           _this7.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+    * @description add null default parameters to Case study
+    */
+    appendDefaultParameters: function appendDefaultParameters(cid) {
+      var _this8 = this;
+
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          'cid': cid
+        })
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          _this8.fetchCases(); //update case study list
+
+
+          _this8.resetErrors(); //reset errors
+
+        } else {
+          _this8.errors = res.errors;
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -5261,12 +5302,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 /**
  * this component is used to display the cases of a user
@@ -5346,11 +5381,7 @@ __webpack_require__.r(__webpack_exports__);
       //boolean to append group name input to dialogue box when creating a group
       initial_load: true,
       //load initial table tab content when page loads
-      show_dialogue: false,
-      //opens/closes action-table
-      enable_sorting_tab1: false,
-      //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+      show_dialogue: false //opens/closes case create dbox
 
     };
   },
@@ -5441,7 +5472,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description resets all sort variables and icons
+     * @description resets all sort variables and icon's state
      */
     unSort: function unSort() {
       if (this.curr_tab == 1) {
@@ -5517,7 +5548,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description verifies if user has made a selection of a case
+     * @description verifies if user has made a selection of a case study to remove
+     * if selection is made call the remove case method to proceed with removal.
      */
     isCaseSelected: function isCaseSelected() {
       if (this.selected_cases.length == 0) {
@@ -5604,10 +5636,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this5.fetchCases(); //update case study list
           //hide action table dbox
-
-
           _this5.show_dialogue = false; //remove component's backdrop
 
           $("body").removeClass("modal-open");
@@ -5630,9 +5659,50 @@ __webpack_require__.r(__webpack_exports__);
             "padding-top": "40px"
           });
 
-          _this5.errors = []; //reset
+          _this5.appendDefaultParameters(case_study.cid); //default case study parameters
+
+
+          _this5.fetchCases(); //update case study list
+
+
+          _this5.resetErrors();
         } else {
           _this5.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description add null default parameters to Case study 
+     */
+    appendDefaultParameters: function appendDefaultParameters(cid) {
+      var _this6 = this;
+
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          'cid': cid
+        })
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          _this6.fetchCases(); //update case study list
+
+
+          _this6.resetErrors(); //reset errors
+
+        } else {
+          _this6.errors = res.errors;
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -5666,7 +5736,7 @@ __webpack_require__.r(__webpack_exports__);
             //if yes
             for (var i in curr.selected_cases) {
               curr.cases_to_remove.push({
-                //push selected group id's as gid attributes
+                //push selected case study id's as cid attributes
                 cid: curr.selected_cases[i]
               });
             } //send request
@@ -5684,7 +5754,7 @@ __webpack_require__.r(__webpack_exports__);
               return res.json();
             }).then(function (res) {
               console.log(res);
-              curr.fetchCases(); //update group list
+              curr.fetchCases(); //update case study list
 
               curr.cases_to_remove = []; //reset variable
             })["catch"](function (err) {
@@ -6140,11 +6210,7 @@ __webpack_require__.r(__webpack_exports__);
       //has the option to select all groups been checked
       gname_box_show: false,
       //boolean to append group name input to dialogue box when creating a group
-      show_dialogue: false,
-      //opens/closes action-table
-      enable_sorting_tab1: false,
-      //not used - can be used to revert back to tab1 original state
-      enable_sorting_tab2: false // not used - can be used to revert back to tab2 original state
+      show_dialogue: false //opens/closes action-table
 
     };
   },
@@ -6311,6 +6377,7 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description @description verifies if user has made a selection of a group
+     * if selection is made call the remove group method to proceed with removal.
      */
     isGroupSelected: function isGroupSelected() {
       if (this.selected_groups.length == 0) {
@@ -6354,8 +6421,8 @@ __webpack_require__.r(__webpack_exports__);
         }); //filter owner
 
         _this4.users = _this4.users.filter(function (x) {
-          return x.u_role == 3;
-        });
+          return x.u_role == 3 || x.u_role == 4;
+        }); //filter non collaborators
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -88683,7 +88750,9 @@ var render = function() {
                   : ""
               },
               [
-                _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
+                _vm._v(
+                  "\n        " + _vm._s(_vm.group_name) + "\n\n\n        "
+                ),
                 _vm._v(" "),
                 _c("div", { attrs: { id: "edit_icon" } }, [
                   _vm.rename_group_permission

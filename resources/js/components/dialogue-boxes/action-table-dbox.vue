@@ -264,9 +264,7 @@ export default {
    * @description handles modal closing event
    */
   mounted() {
-    /**
-     * @description handles modal closing event
-     */
+
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
 
@@ -399,7 +397,7 @@ export default {
         });
         this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-        //if selection made remove selected groups
+        //if selection made send users 
       } else {
         this.is_selected = true;
         this.sendUsers();

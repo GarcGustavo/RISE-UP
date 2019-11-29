@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Case_Study;
 use App\Models\Case_Parameters;
 use App\Models\CS_Parameter;
@@ -127,21 +128,21 @@ class Case_ParametersController extends Controller
             ]);
         return response()->json(['message'=>'Updated case parameters successfully']);
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function createDefaultParameters(Request $request)
-    {        
+    {
         //renaming attributes
         $attributes = array(
             'cid' => 'case study id'
         );
         //validation rules
         $validator = Validator::make($request->all(), [
-            'cid' => 'bail|required'
+            'cid' => 'bail|required|exists:Case|integer'
         ]);
         //apply renaming validation
         $validator->setAttributeNames($attributes);
@@ -149,7 +150,7 @@ class Case_ParametersController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
-        
+
         $all_parameters = CS_Parameter::all();
         $case_parameters = [];
 
@@ -159,7 +160,7 @@ class Case_ParametersController extends Controller
             'csp_id' => $value['csp_id'],
             'opt_selected' => null,]);
         }
-        
+
         $inserted = Case_Parameters::insert($case_parameters);
 
         if ($inserted) {
