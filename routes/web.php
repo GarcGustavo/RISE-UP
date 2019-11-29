@@ -147,8 +147,10 @@ Route::get('/case/{id}/options','Case_ParametersController@getCaseSelectedOption
 Route::post('/case/{id}/update', 'CaseController@updateCaseDetails');
 
 //Update parameters in a case
-Route::post('/parameter/update', 'CaseController@updateCaseParameters');
+Route::post('/parameter/update', 'Case_ParametersController@updateCaseParameters');
 
+//Create default parameters in a case
+Route::post('/parameter/create/defaults', 'Case_ParametersController@createDefaultParameters');
 
 //Admin board
 //User Requirement 2.60. The web application will allow an Admin to view the “Admin Dashboard” page
