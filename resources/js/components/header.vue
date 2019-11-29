@@ -1,7 +1,11 @@
 <template>
   <!-- Navigation -->
   <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
-    <a class="navbar-brand" href="#">Interdisciplinary Research Network</a>
+    <a class="navbar-brand" href="#">
+        <img class="img-fluid rounded " style="width:70px;height:45px;margin-right:10px" src="../../../public/images/iren_logo.png" alt>
+        Interdisciplinary Research Network
+    </a>
+
     <button
       class="navbar-toggler"
       type="button"
@@ -58,15 +62,6 @@
           title="About"
           href="/about"
         >About</a>
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Change languages"
-          href
-        >Language</a>
       </li>
 
       <!-- User menu -->

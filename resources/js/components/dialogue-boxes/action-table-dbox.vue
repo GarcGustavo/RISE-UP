@@ -10,7 +10,7 @@
 
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
-                
+
               <!--Body description -->
               <div v-if="action=='Add'">
                 <p style="font-size:18px;margin:15px,padding-top:25px;" aria-hidden="true">
@@ -159,7 +159,8 @@
 
 <script>
 /**
- *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
+ *  this table is used everytime a user wants to add/remove members of
+ * an existing group or to add an existing
     user to a new group
  */
 export default {
@@ -193,7 +194,7 @@ export default {
         return [];
       }
     },
-    errors: {
+    errors: { //errors sent by parent(user-groups or group) when executing query request
       type: Array,
       default: function() {
         return [];
@@ -211,8 +212,8 @@ export default {
       group_name_input: "", //input for group name
       search: "", //search input
       close_dialog: "", //to close action table
-      uid: "",
-      gid: "",
+      uid: "", //user id
+      gid: "", //group id
 
       users_to_add_remove: [], //list of users to add or remove
       selected_users: [], //list of selected users to add or remove
@@ -249,7 +250,6 @@ export default {
         }
       ],
 
-      valid_input: false, //validate input
       is_selected: false, //validate if user has made a selection to add or remove a user
       all_selected: false //has the option to select all users been checked
     };
@@ -288,6 +288,12 @@ export default {
   },
 
   methods: {
+
+/*region Auxilary methods - These methods provide operational
+functionalities to to the web page. Operations include: validation,
+and resetting variables, calling parent methods to add/remove
+users and create groups.*/
+
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -307,7 +313,7 @@ export default {
       }
     },
     /**
-     * @description if checkbox is checked again uncheck all selections
+     * @description if "select all" checkbox is checked uncheck all selections
      */
     select() {
       this.all_selected = false;
@@ -332,30 +338,13 @@ export default {
       this.group_name_input = "";
       this.users_to_add_remove = [];
       this.$emit("close"); //reset error prop
-      this.select();
-      this.uncheck();
+      this.select(); //reset select all input
+      this.uncheck(); //uncheck all
     },
 
     /**
-     * @description gets all of the system's groups
-     */
-    totalGroups() {
-
-        //define id variables
-      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-      this.uid = this.urlParams.get("uid"); //get user id
-      this.gid = this.urlParams.get("gid"); //get group id
-
-      fetch("/groups")
-        .then(res => res.json())
-        .then(res => {
-          this.groups = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-
-    /**
-     * @description calls the addUsers method from parent window(user_groups or groups)
+     * @description calls the add/removeUsers method from
+     * parent window(user_groups(add) or groups(add/remove))
      *  and sends the user data to be processed
      */
     sendUsers() {
@@ -377,6 +366,7 @@ export default {
 
     /**
      * @description verifies if a selection has been made when performing action(add/remove)
+     * if selection is made sends users to add/remove.
      */
     isUserSelected() {
       if (this.selected_users.length == 0) {
@@ -442,6 +432,7 @@ export default {
         );
       }
       this.totalGroups(); //update total groups
+
       //reset attributes
       this.group_to_create = {
         gid: "",
@@ -450,7 +441,36 @@ export default {
         g_creation_date: "",
         g_owner: ""
       };
-    }
+    },
+/*#endregion*/
+
+
+/*#region Query methods - The following method provides the total amount
+of groups by requesting the data through route calls. The routes passes
+request to a specified predefined controller who processes said request
+via Laravel's eloquent ORM. The data is appended to the global variables
+as needed to be used.*/
+
+
+    /**
+     * @description gets all of the system's groups.
+     * This data is used to determine the new id of a newly created group
+     */
+    totalGroups() {
+        //define id variables
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.uid = this.urlParams.get("uid"); //get user id
+      this.gid = this.urlParams.get("gid"); //get group id
+
+      fetch("/groups")
+        .then(res => res.json())
+        .then(res => {
+          this.groups = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+/*#endregion*/
+
   }
 };
 </script>

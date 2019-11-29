@@ -42,8 +42,8 @@
       <p>My groups</p>
     </h1>
 
+    <!-- if action is to create group(s) render action table dialogue box-->
     <div v-if="action=='Create' && show_dialogue">
-      <!-- if action is to create group(s) render action table dialogue box-->
       <action-table-dbox
         :action="action"
         :acted_on="acted_on"
@@ -117,6 +117,7 @@
           </div>
         </div>
       </div>
+
       <!-- entries for tab2 -->
       <div v-if="curr_tab==2">
         <div class="btn-group">
@@ -223,6 +224,7 @@
               {{data.index +1}}
             </div>
           </template>
+
           <!--group name column -->
           <template v-slot:cell(g_name)="data">
             <div>
@@ -233,6 +235,7 @@
             </div>
           </template>
         </b-table>
+
         <!--paginator-->
         <div id="paginate" v-if="reload_paginator && curr_tab==1">
           <paginator
@@ -267,6 +270,7 @@
               @click.prevent="deSort()"
             >Index</a>
           </template>
+
           <!-- name header -->
           <template v-slot:head(g_name)>
             <a
@@ -301,6 +305,7 @@
           <template v-slot:cell(index)="data">
             <div class="p-2">{{data.index +1}}</div>
           </template>
+
           <!-- group name column-->
           <template v-slot:cell(g_name)="data">
             <div>
@@ -345,9 +350,7 @@ export default {
       acted_on: "", //on what is the action being exected
       search: "", //search table string
       path: "", //URL
-      uid: "", // curr user id - NOT USED
-      close: "",
-      sort_icon_dir: "",
+      sort_icon_dir: "", //sorting direction for icon
 
       user_groups: [], // groups of the user
       groups_user_is_owner: [], //list of groups the user has created
@@ -427,6 +430,12 @@ export default {
   },
 
   methods: {
+
+/*#region Auxilary methods - These methods provide operational
+functionalities to to the web page. Operations include but are
+not limited to :Sorting, updating paginator and content,
+validation, and resetting variables
+
     /**
      * @description refreshes the paginator
      */
@@ -445,7 +454,7 @@ export default {
      */
     sortArr() {
       if (this.curr_tab == 1) {
-        //current tab content will be filtered content
+        //current tab content will be sorted content
         this.page_content_tab1 = this.page_content_tab1
           .slice(0)
           .sort((a, b) =>
@@ -457,7 +466,7 @@ export default {
         this.sort_order_tab1_icon = this.sorting_tab1;
       } else {
         //curr tab is 2
-        //current tab content will be filtered content
+        //current tab content will be sorted content
         this.page_content_tab2 = this.page_content_tab2
           .slice(0)
           .sort((a, b) =>
@@ -478,11 +487,9 @@ export default {
     sortItems() {
       if (this.curr_tab == 1) {
         this.sorting_tab1 *= -1;
-        //  this.enable_sorting_tab1 = true;
       } else {
         //curr tab is 2
         this.sorting_tab2 *= -1;
-        //   this.enable_sorting_tab2 = true;
       }
       this.sortArr(); //call sorting algorithm
     },
@@ -503,6 +510,7 @@ export default {
       }
       this.updatePaginator();
     },
+
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -554,7 +562,11 @@ export default {
         this.selected_groups.push(this.selected_groups[i].gid);
       }
     },
-
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the action-table-dbox closes as it calls this
+     * function to reset all errors.
+     */
     resetErrors() {
       this.errors = [];
     },
@@ -589,8 +601,20 @@ export default {
         this.removeGroups();
       }
     },
+
+/*#endregion*/
+
+
+/*#region Query methods - These methods provide the content of
+the web page by requesting the data through route calls. The routes
+passes the request to a specified predefined controller who processes
+said request via Laravel's eloquent ORM. The data is appended to
+the global variables as needed to be used.
+
+
     /**
-     * @description get all of system's users. These are afterwards filtered for collaborators
+     * @description get all of system's users. These users are afterwards filtered for collaborators.
+     * Sends request to the user controller.
      */
     fetchUsers() {
       fetch("/users")
@@ -605,7 +629,8 @@ export default {
     },
 
     /**
-     * @description gets all the groups of the current user
+     * @description gets all the groups of the current user.
+     * Sends request to the group controller.
      */
     fetchGroups() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
@@ -627,9 +652,7 @@ export default {
           );
 
           //window content varies according to tab
-
           this.page_content_tab1 = this.groups_user_is_owner;
-
           this.page_content_tab2 = this.groups_user_is_member;
 
           this.select(); //deselect all
@@ -641,7 +664,8 @@ export default {
 
     /**
      * @description outputs to the groupController a JSON request to create a group
-     * @param {Array} group - array of group data to create a group - data is sent by action_table_dbox when calling method
+     * @param {Array} group - array of group data to create a group - data is sent
+     * by action_table_dbox when calling method
      * @param {Array} members - array of user id's to add to group
      */
     createGroup(group, members) {
@@ -661,6 +685,8 @@ export default {
         .then(res => res.json())
         .then(res => {
           console.log(res);
+
+          //if there are no errors present
           if (!res.errors) {
             this.addUsers(members); //add users to group
             this.fetchGroups(); //updpate group list
@@ -723,7 +749,7 @@ export default {
     },
 
     /**
-     * @description removes any selected groups by making a delete request to User_Groups controller
+     * @description removes any selected groups by making a delete request to the group controller
      */
     removeGroups() {
       var curr = this;
@@ -788,6 +814,7 @@ export default {
       });
       this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
+/*#endregion*/
   }
 };
 </script>
@@ -809,6 +836,7 @@ tr td a {
   font-size: 18px;
 }
 
+/*pointer on headers*/
 th {
   cursor: pointer;
 }
