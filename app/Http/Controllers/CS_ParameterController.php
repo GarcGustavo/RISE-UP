@@ -10,10 +10,10 @@ use App\Http\Resources\Option as OptionResource;
 
 class CS_ParameterController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+      /**
+     * Display listing of case study parameters
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Http\Resources\cs_parameter
      */
     public function getParameters()
     {
@@ -21,6 +21,12 @@ class CS_ParameterController extends Controller
         return CS_ParameterResource::collection($parameters);
     }
 
+
+     /**
+     * Get the options of a parameter
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Http\Resources\cs_parameter
+     */
     public function getParameterOptions()
     {
         $options = Option::all();

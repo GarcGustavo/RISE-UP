@@ -25,6 +25,14 @@ class Case_ParametersController extends Controller
     //     return OptionResource::collection($options);
     // }
 
+
+  /**
+     * get a case study's parameters.
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\case_parameter
+     */
+
     public function getCaseParameters($id)
     {
 /*
@@ -65,6 +73,14 @@ class Case_ParametersController extends Controller
 */
         return Case_ParametersResource::collection($caseParams);
     }
+
+
+    /**
+     * get a case study's parameters's selected option.
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\case_parameter
+     */
     public function getCaseSelectedOptions($id)
     {
 
@@ -114,6 +130,11 @@ class Case_ParametersController extends Controller
         //
     }
 
+    /**
+     * Update a case study's parameters.
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function updateCaseParameters(Request $request)
     {
         $cid = $request->input('cid');
@@ -130,7 +151,7 @@ class Case_ParametersController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Create default parameters to new case study.
      *
      * @return \Illuminate\Http\Response
      */

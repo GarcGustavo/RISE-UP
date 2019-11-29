@@ -19,6 +19,7 @@
           </div>
         </a>
       </div>
+
       <!-- create button if clicked, render create case study dialogue box -->
       <div>
         <span data-toggle="modal" data-target="#case_create_dbox">
@@ -87,6 +88,7 @@
         </li>
       </ul>
     </div>
+
     <div class="container" id="entries_search">
       <!--entries for tab1 -->
       <div v-if="curr_tab==1">
@@ -137,6 +139,7 @@
           </div>
         </div>
       </div>
+
       <!-- search bar -->
       <div class="input-group">
         <label>Search</label>
@@ -174,6 +177,7 @@
               @click.prevent="unSort()"
             >Select All</a>
           </template>
+
           <!-- title header -->
           <template v-slot:head(c_title)>
             <a
@@ -219,6 +223,7 @@
               {{data.index +1}}
             </div>
           </template>
+
           <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
@@ -226,6 +231,7 @@
             </div>
           </template>
         </b-table>
+
         <!--paginator -->
         <div id="paginate" v-if="reload_paginator && curr_tab==1">
           <paginator
@@ -238,6 +244,7 @@
           ></paginator>
         </div>
       </div>
+
       <!-- Table of case studies belonging to the groups of the user for tab2-->
       <div class="tab-pane" id="group_cases" role="tabpanel">
         <b-table
@@ -259,6 +266,7 @@
               @click.prevent="unSort()"
             >Index</a>
           </template>
+
           <!-- title header -->
           <template v-slot:head(c_title)>
             <a
@@ -288,6 +296,7 @@
               ></i>
             </a>
           </template>
+
           <!--table rows -->
           <!-- index column -->
           <template v-slot:cell(index)="data">
@@ -300,6 +309,7 @@
             </div>
           </template>
         </b-table>
+
         <!--paginator -->
         <div id="paginate" v-if="reload_paginator && curr_tab==2">
           <paginator
@@ -532,6 +542,9 @@ export default {
       }
     },
 
+/**
+ * @description reset errors 
+ */
     resetErrors() {
       this.errors = [];
     },
@@ -601,9 +614,12 @@ export default {
      * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
      */
     createCaseStudy(case_study) {
-
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -649,30 +665,31 @@ export default {
         });
     },
 
-/**
- * @description add null default parameters to Case study 
- */
+    /**
+     * @description add null default parameters to Case study
+     */
     appendDefaultParameters(cid) {
-
       fetch("/parameter/create/defaults", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify({'cid':cid})
+        body: JSON.stringify({ cid: cid })
       })
         .then(res => res.json())
         .then(res => {
-
           console.log(res);
 
           if (!res.errors) {
             this.fetchCases(); //update case study list
 
             this.resetErrors(); //reset errors
-
           } else {
             this.errors = res.errors;
           }
@@ -716,6 +733,10 @@ export default {
             //send request
             fetch("/case/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",

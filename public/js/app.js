@@ -2253,6 +2253,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /**
  *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
@@ -2504,7 +2505,7 @@ __webpack_require__.r(__webpack_exports__);
         });
         this.dialogue.find(".modal-body").css({
           "padding-top": "40px"
-        }); //if selection made send users 
+        }); //if selection made send users
       } else {
         this.is_selected = true;
         this.sendUsers();
@@ -2569,6 +2570,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -2780,7 +2783,7 @@ __webpack_require__.r(__webpack_exports__);
      */
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0;
+      this.hasError = this.remainingCount < 0; //NOT USED 
     },
 
     /**
@@ -2824,7 +2827,8 @@ __webpack_require__.r(__webpack_exports__);
       this.curr_user = this.urlParams.get("uid"); //get user id
 
       if (this.group_selection) {
-        //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
+        // "group selection" variable sent by group vue to set default in group options,
+        //therefor set the group option default to (curr_group/group selection)
         this.curr_group = this.group_selection; //default dropdown selection
 
         this.disable_dropdown = true;
@@ -2940,8 +2944,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
 //
 //
 //
@@ -3260,6 +3262,12 @@ __webpack_require__.r(__webpack_exports__);
       this.temp = this.tempValue;
       this.changeGroupName(); //send request
     },
+
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the case-create-dbox closes as it calls this
+     * function to reset all errors.
+     */
     resetErrors: function resetErrors() {
       this.errors = [];
     },
@@ -3372,6 +3380,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/group/rename", {
         method: "put",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -3409,7 +3421,8 @@ __webpack_require__.r(__webpack_exports__);
             "padding-top": "40px"
           });
 
-          _this5.resetErrors();
+          _this5.resetErrors(); //reset error variable
+
         } else {
           _this5.errors = res.errors;
         }
@@ -3427,6 +3440,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -3468,7 +3485,8 @@ __webpack_require__.r(__webpack_exports__);
           _this6.fetchUsers(); //update user list
 
 
-          _this6.resetErrors();
+          _this6.resetErrors(); //reset error variable
+
         }
       })["catch"](function (err) {
         console.error("Error: ", err);
@@ -3505,6 +3523,10 @@ __webpack_require__.r(__webpack_exports__);
             //send request
             fetch("/user-groups/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
@@ -3553,6 +3575,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -3594,7 +3620,8 @@ __webpack_require__.r(__webpack_exports__);
           _this7.fetchCases(); //update case study list
 
 
-          _this7.resetErrors();
+          _this7.resetErrors(); //reset error variable
+
         } else {
           _this7.errors = res.errors;
         }
@@ -3604,20 +3631,24 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-    * @description add null default parameters to Case study
-    */
+     * @description add null default parameters to Case study
+     */
     appendDefaultParameters: function appendDefaultParameters(cid) {
       var _this8 = this;
 
       fetch("/parameter/create/defaults", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
         body: JSON.stringify({
-          'cid': cid
+          cid: cid
         })
       }).then(function (res) {
         return res.json();
@@ -5302,6 +5333,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * this component is used to display the cases of a user
@@ -5543,6 +5584,10 @@ __webpack_require__.r(__webpack_exports__);
         this.selected_cases.push(this.selected_cases[i].cid);
       }
     },
+
+    /**
+     * @description reset errors 
+     */
     resetErrors: function resetErrors() {
       this.errors = [];
     },
@@ -5624,6 +5669,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -5675,20 +5724,24 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description add null default parameters to Case study 
+     * @description add null default parameters to Case study
      */
     appendDefaultParameters: function appendDefaultParameters(cid) {
       var _this6 = this;
 
       fetch("/parameter/create/defaults", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
         body: JSON.stringify({
-          'cid': cid
+          cid: cid
         })
       }).then(function (res) {
         return res.json();
@@ -5744,6 +5797,10 @@ __webpack_require__.r(__webpack_exports__);
 
             fetch("/case/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
@@ -6405,7 +6462,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description get all of system's users when adding a user while creating a group
+     * @description get all of system's users. These are afterwards filtered for collaborators
      */
     fetchUsers: function fetchUsers() {
       var _this4 = this;
@@ -6478,6 +6535,10 @@ __webpack_require__.r(__webpack_exports__);
 
       fetch("/group/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -6536,6 +6597,10 @@ __webpack_require__.r(__webpack_exports__);
     addUsers: function addUsers(users_to_add) {
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -6586,6 +6651,10 @@ __webpack_require__.r(__webpack_exports__);
 
             fetch("/group/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
@@ -88750,9 +88819,7 @@ var render = function() {
                   : ""
               },
               [
-                _vm._v(
-                  "\n        " + _vm._s(_vm.group_name) + "\n\n\n        "
-                ),
+                _vm._v("\n        " + _vm._s(_vm.group_name) + "\n        "),
                 _vm._v(" "),
                 _c("div", { attrs: { id: "edit_icon" } }, [
                   _vm.rename_group_permission

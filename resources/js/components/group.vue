@@ -9,8 +9,6 @@
           :style=" rename_group_permission ? 'margin-left:185px;margin-top:25px' : ''"
         >
           {{group_name}}
-
-
           <!--render if user has permission-->
           <div id="edit_icon">
             <a
@@ -299,6 +297,11 @@ export default {
       this.changeGroupName(); //send request
     },
 
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the case-create-dbox closes as it calls this
+     * function to reset all errors.
+     */
     resetErrors() {
       this.errors = [];
     },
@@ -318,7 +321,9 @@ export default {
             this.users_to_add = this.users_to_add.filter(
               x => x.uid !== this.group_members[k].uid
             );
-            this.users_to_add = this.users_to_add.filter(x => x.u_role == 3 || x.u_role == 4); //filter non collaborators
+            this.users_to_add = this.users_to_add.filter(
+              x => x.u_role == 3 || x.u_role == 4
+            ); //filter non collaborators
           }
         })
         .catch(err => console.log(err));
@@ -382,6 +387,10 @@ export default {
     changeGroupName() {
       fetch("/group/rename", {
         method: "put",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -392,6 +401,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           console.log(res);
+
           if (!res.errors) {
             this.group_name = this.temp; //group name is the updated name
             this.disableEditTitle();
@@ -411,8 +421,7 @@ export default {
             });
             this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
-            this.resetErrors();
-
+            this.resetErrors(); //reset error variable
           } else {
             this.errors = res.errors;
           }
@@ -429,6 +438,10 @@ export default {
     addUsers(users_to_add) {
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -464,7 +477,7 @@ export default {
 
             this.fetchMembers(); //update member list
             this.fetchUsers(); //update user list
-            this.resetErrors();
+            this.resetErrors(); //reset error variable
           }
         })
         .catch(err => {
@@ -501,6 +514,10 @@ export default {
             //send request
             fetch("/user-groups/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",
@@ -520,7 +537,7 @@ export default {
 
                 curr.fetchMembers(); //update member list
                 curr.fetchUsers(); //update user list
-              //  curr.users_add_remove = []; //reset variable curr.users_add_remove = []; //reset variable
+                //  curr.users_add_remove = []; //reset variable curr.users_add_remove = []; //reset variable
               })
               .catch(err => {
                 console.error("Error: ", err);
@@ -545,6 +562,10 @@ export default {
     createCaseStudy(case_study) {
       fetch("/case/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -557,13 +578,12 @@ export default {
           console.log(res);
 
           if (!res.errors) {
-
-
             //hide action table dbox
             this.show_dialogue = false;
 
             //remove component's backdrop
             $("body").removeClass("modal-open");
+            
             $(".modal-backdrop").remove();
             //alert box
             this.dialogue = bootbox.alert({
@@ -583,7 +603,7 @@ export default {
 
             this.appendDefaultParameters(case_study.cid); //default case study parameters
             this.fetchCases(); //update case study list
-            this.resetErrors();
+            this.resetErrors(); //reset error variable
           } else {
             this.errors = res.errors;
           }
@@ -594,29 +614,30 @@ export default {
     },
 
     /**
- * @description add null default parameters to Case study
- */
+     * @description add null default parameters to Case study
+     */
     appendDefaultParameters(cid) {
-
       fetch("/parameter/create/defaults", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify({'cid':cid})
+        body: JSON.stringify({ cid: cid })
       })
         .then(res => res.json())
         .then(res => {
-
           console.log(res);
 
           if (!res.errors) {
             this.fetchCases(); //update case study list
 
             this.resetErrors(); //reset errors
-
           } else {
             this.errors = res.errors;
           }
@@ -624,7 +645,7 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
-    },
+    }
   }
 };
 </script>

@@ -392,8 +392,7 @@ export default {
       is_selected: false, //has user made a selection,
       all_selected: false, //has the option to select all groups been checked
       gname_box_show: false, //boolean to append group name input to dialogue box when creating a group
-      show_dialogue: false, //opens/closes action-table
-
+      show_dialogue: false //opens/closes action-table
     };
   },
 
@@ -591,7 +590,7 @@ export default {
       }
     },
     /**
-     * @description get all of system's users when adding a user while creating a group
+     * @description get all of system's users. These are afterwards filtered for collaborators
      */
     fetchUsers() {
       fetch("/users")
@@ -648,6 +647,10 @@ export default {
     createGroup(group, members) {
       fetch("/group/create", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -699,6 +702,10 @@ export default {
     addUsers(users_to_add) {
       fetch("/user-groups/add", {
         method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
         headers: new Headers({
           "Content-Type": "application/json",
           "Access-Control-Origin": "*",
@@ -748,6 +755,10 @@ export default {
             //send request
             fetch("/group/remove", {
               method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
               headers: new Headers({
                 "Content-Type": "application/json",
                 "Access-Control-Origin": "*",

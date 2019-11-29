@@ -9,6 +9,7 @@
             <div class="modal-header">
               <h5 class="modal-title">{{action}} {{acted_on}}</h5>
             </div>
+
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
               <!--errors -->
@@ -83,6 +84,7 @@
                     v-on:keyup="countdown"
                   ></textarea>
                 </div>
+
                 <!-- error not used due to character limit -->
                 <p
                   class="text-right h6"
@@ -199,7 +201,7 @@ export default {
      */
     countdown() {
       this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0;
+      this.hasError = this.remainingCount < 0; //NOT USED 
     },
     /**
      * @description resets all case study input fields
@@ -233,7 +235,9 @@ export default {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = this.urlParams.get("uid"); //get user id
       if (this.group_selection) {
-        //variable sent by group vue to set default in group options, therefor set group default to (curr_group/group selection)
+        // "group selection" variable sent by group vue to set default in group options,
+        //therefor set the group option default to (curr_group/group selection)
+
         this.curr_group = this.group_selection; //default dropdown selection
         this.disable_dropdown = true;
       }
