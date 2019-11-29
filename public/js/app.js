@@ -86,6 +86,279 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "../../node_modules/setimmediate/setImmediate.js":
+/*!***************************************************************************!*\
+  !*** /mnt/c/Users/Garc/Desktop/node_modules/setimmediate/setImmediate.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../RISE-UP Development Folder/RISE-UP/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../RISE-UP Development Folder/RISE-UP/node_modules/process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
+/***/ "../../node_modules/timers-browserify/main.js":
+/*!************************************************************************!*\
+  !*** /mnt/c/Users/Garc/Desktop/node_modules/timers-browserify/main.js ***!
+  \************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(/*! setimmediate */ "../../node_modules/setimmediate/setImmediate.js");
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../RISE-UP Development Folder/RISE-UP/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
 /***/ "./node_modules/axios/index.js":
 /*!*************************************!*\
   !*** ./node_modules/axios/index.js ***!
@@ -4320,6 +4593,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -4395,11 +4669,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchUserGroups();
   },
   mounted: function mounted() {
-    Echo.join("App.User.".concat(this.user.uid)).here(function (users) {//this.usersEditing = users;
-    }).joining(function (user) {//this.usersEditing.push(users[0]);
-    }).leaving(function (user) {//this.usersEditing = this.usersEditing.filter(u => u != users[0]);
-    }).listenForWhisper("editing", function (e) {// this.case_study.c_title = e.title;
-      // this.items.i_content = e.body;
+    var _this = this;
+
+    Echo.join("App.User.".concat(this.user.uid)).here(function (users) {
+      _this.usersEditing = users;
+    }).joining(function (user) {
+      _this.usersEditing.push(users[0]);
+    }).leaving(function (user) {
+      _this.usersEditing = _this.usersEditing.filter(function (u) {
+        return u != users[0];
+      });
+    }).listenForWhisper("editing", function (e) {//this.case_study.c_title = e.title;
+      //this.items.i_content = e.body;
     }).listenForWhisper("saved", function (e) {
       //this.case_study.c_status = e.status;
       // clear is status after 1s
@@ -4409,19 +4690,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: {
     editingCase: function editingCase() {
-      var _this = this;
+      var _this2 = this;
 
       var channel = Echo.join("App.User.".concat(this.user.uid)); // show changes after 1s
 
       setTimeout(function () {
         channel.whisper("editing", {
-          title: _this.case_study.c_title,
-          body: _this.items.i_content
+          title: _this2.case_study.c_title,
+          body: _this2.items.i_content
         });
       }, 1000);
     },
     fetchCaseItems: function fetchCaseItems() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
@@ -4430,27 +4711,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.items = res.data;
+        _this3.items = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchItems: function fetchItems() {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.all_items = res.data;
-        _this3.total_items = _this3.all_items.length + 1;
+        _this4.all_items = res.data;
+        _this4.total_items = _this4.all_items.length + 1;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchCase: function fetchCase() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
@@ -4459,14 +4740,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       fetch("/case?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.case_to_show = res.data;
-        _this4.uid = Number(_this4.case_to_show[0].c_owner);
-        _this4.gid = Number(_this4.case_to_show[0].c_group);
-        _this4.initial_gid = _this4.gid;
+        _this5.case_to_show = res.data;
+        _this5.uid = Number(_this5.case_to_show[0].c_owner);
+        _this5.gid = Number(_this5.case_to_show[0].c_group);
+        _this5.initial_gid = _this5.gid;
 
-        _this4.fetchUser(_this4.uid);
+        _this5.fetchUser(_this5.uid);
 
-        _this4.fetchGroup(_this4.gid);
+        _this5.fetchGroup(_this5.gid);
 
         console.log(res.data);
       })["catch"](function (err) {
@@ -4474,23 +4755,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     fetchUser: function fetchUser(uid) {
-      var _this5 = this;
+      var _this6 = this;
 
       fetch("/user?uid=" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this5.users = res.data;
+        _this6.users = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchUserGroups: function fetchUserGroups() {
-      var _this6 = this;
+      var _this7 = this;
 
       fetch("/groups/").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this6.all_groups = res.data;
+        _this7.all_groups = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(res.data);
@@ -4498,12 +4779,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //TODO
     fetchUsersEditing: function fetchUsersEditing(cid) {
-      var _this7 = this;
+      var _this8 = this;
 
       fetch("/user/edit/" + cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this7.usersEditing = res.data;
+        _this8.usersEditing = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -4538,23 +4819,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchUsersEditing(this.cid);
     },
     fetchGroup: function fetchGroup(gid) {
-      var _this8 = this;
+      var _this9 = this;
 
       fetch("/case/group/" + this.gid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this8.groups = res.data;
+        _this9.groups = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this9 = this;
+      var _this10 = this;
 
       fetch("/case/" + this.cid + "/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this9.case_parameters = res.data;
+        _this10.case_parameters = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -4562,12 +4843,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchParameterOptions();
     },
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this10 = this;
+      var _this11 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this10.parameter_options = res.data;
+        _this11.parameter_options = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -4636,21 +4917,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       this.fetchCase();
     },
-    updateItem: function updateItem(item_to_update) {
+    updateItem: function updateItem(item_to_update, index) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
       this.cid = Number(this.path.get("cid")); //get cid
-      // this.updated_item = {
-      //   iid: Number(item_to_update.iid),
-      //   i_content: item_to_update.i_content,
-      //   i_case: item_to_update.i_case,
-      //   i_type: item_to_update.i_type,
-      //   order: Number(item_to_update.order),
-      //   i_name: item_to_update.i_name
-      // };
 
       var formData = new FormData();
-      formData.append("image", this.files[0]);
+
+      if (this.files && this.images[index]) {
+        formData.append("image", this.files[0]);
+      }
+
       formData.append("i_case", item_to_update.i_case);
       formData.append("i_type", item_to_update.i_type);
       formData.append("order", Number(item_to_update.order));
@@ -4677,7 +4954,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     updateItems: function updateItems(items) {
       for (var item in this.items) {
         this.items[item].order = item;
-        this.updateItem(this.items[item]);
+        this.updateItem(this.items[item], item);
       }
 
       this.fetchItems();
@@ -4826,7 +5103,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.case_parameters[index].opt_selected = selected_op.oid;
     },
     uploadImage: function uploadImage(e, item, index) {
-      var _this11 = this;
+      var _this12 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -4835,8 +5112,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.files[0]);
 
       reader.onload = function (e) {
-        _this11.images[index] = e.target.result;
-        _this11.preview = true;
+        _this12.images[index] = e.target.result;
+        _this12.preview = true;
       };
     }
   }
@@ -43507,7 +43784,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\r\n/*\r\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\r\n then adding custom css styles with the following css selectors:\r\n\r\n.pagination - Pagination component container (ul element)\r\n.pagination li - All list items in the pagination component\r\n.pagination li a - All pagination links including first, last, previous and next\r\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\r\n.pagination li.first - The 'First' pagination element\r\n.pagination li.last - The 'Last' pagination element\r\n.pagination li.previous - The 'Previous' pagination element\r\n.pagination li.next - The 'Next' pagination element\r\n*/\r\n", ""]);
 
 // exports
 
@@ -82769,204 +83046,6 @@ runtime.setup(pusher_Pusher);
 
 /***/ }),
 
-/***/ "./node_modules/setimmediate/setImmediate.js":
-/*!***************************************************!*\
-  !*** ./node_modules/setimmediate/setImmediate.js ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
-    "use strict";
-
-    if (global.setImmediate) {
-        return;
-    }
-
-    var nextHandle = 1; // Spec says greater than zero
-    var tasksByHandle = {};
-    var currentlyRunningATask = false;
-    var doc = global.document;
-    var registerImmediate;
-
-    function setImmediate(callback) {
-      // Callback can either be a function or a string
-      if (typeof callback !== "function") {
-        callback = new Function("" + callback);
-      }
-      // Copy function arguments
-      var args = new Array(arguments.length - 1);
-      for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i + 1];
-      }
-      // Store and register the task
-      var task = { callback: callback, args: args };
-      tasksByHandle[nextHandle] = task;
-      registerImmediate(nextHandle);
-      return nextHandle++;
-    }
-
-    function clearImmediate(handle) {
-        delete tasksByHandle[handle];
-    }
-
-    function run(task) {
-        var callback = task.callback;
-        var args = task.args;
-        switch (args.length) {
-        case 0:
-            callback();
-            break;
-        case 1:
-            callback(args[0]);
-            break;
-        case 2:
-            callback(args[0], args[1]);
-            break;
-        case 3:
-            callback(args[0], args[1], args[2]);
-            break;
-        default:
-            callback.apply(undefined, args);
-            break;
-        }
-    }
-
-    function runIfPresent(handle) {
-        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running a task, we'll need to delay this invocation.
-        if (currentlyRunningATask) {
-            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
-            // "too much recursion" error.
-            setTimeout(runIfPresent, 0, handle);
-        } else {
-            var task = tasksByHandle[handle];
-            if (task) {
-                currentlyRunningATask = true;
-                try {
-                    run(task);
-                } finally {
-                    clearImmediate(handle);
-                    currentlyRunningATask = false;
-                }
-            }
-        }
-    }
-
-    function installNextTickImplementation() {
-        registerImmediate = function(handle) {
-            process.nextTick(function () { runIfPresent(handle); });
-        };
-    }
-
-    function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
-        // where `global.postMessage` means something completely different and can't be used for this purpose.
-        if (global.postMessage && !global.importScripts) {
-            var postMessageIsAsynchronous = true;
-            var oldOnMessage = global.onmessage;
-            global.onmessage = function() {
-                postMessageIsAsynchronous = false;
-            };
-            global.postMessage("", "*");
-            global.onmessage = oldOnMessage;
-            return postMessageIsAsynchronous;
-        }
-    }
-
-    function installPostMessageImplementation() {
-        // Installs an event handler on `global` for the `message` event: see
-        // * https://developer.mozilla.org/en/DOM/window.postMessage
-        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
-
-        var messagePrefix = "setImmediate$" + Math.random() + "$";
-        var onGlobalMessage = function(event) {
-            if (event.source === global &&
-                typeof event.data === "string" &&
-                event.data.indexOf(messagePrefix) === 0) {
-                runIfPresent(+event.data.slice(messagePrefix.length));
-            }
-        };
-
-        if (global.addEventListener) {
-            global.addEventListener("message", onGlobalMessage, false);
-        } else {
-            global.attachEvent("onmessage", onGlobalMessage);
-        }
-
-        registerImmediate = function(handle) {
-            global.postMessage(messagePrefix + handle, "*");
-        };
-    }
-
-    function installMessageChannelImplementation() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = function(event) {
-            var handle = event.data;
-            runIfPresent(handle);
-        };
-
-        registerImmediate = function(handle) {
-            channel.port2.postMessage(handle);
-        };
-    }
-
-    function installReadyStateChangeImplementation() {
-        var html = doc.documentElement;
-        registerImmediate = function(handle) {
-            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-            var script = doc.createElement("script");
-            script.onreadystatechange = function () {
-                runIfPresent(handle);
-                script.onreadystatechange = null;
-                html.removeChild(script);
-                script = null;
-            };
-            html.appendChild(script);
-        };
-    }
-
-    function installSetTimeoutImplementation() {
-        registerImmediate = function(handle) {
-            setTimeout(runIfPresent, 0, handle);
-        };
-    }
-
-    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
-    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
-    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
-
-    // Don't get fooled by e.g. browserify environments.
-    if ({}.toString.call(global.process) === "[object process]") {
-        // For Node.js before 0.9
-        installNextTickImplementation();
-
-    } else if (canUsePostMessage()) {
-        // For non-IE10 modern browsers
-        installPostMessageImplementation();
-
-    } else if (global.MessageChannel) {
-        // For web workers, where supported
-        installMessageChannelImplementation();
-
-    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
-        // For IE 6–8
-        installReadyStateChangeImplementation();
-
-    } else {
-        // For older browsers
-        installSetTimeoutImplementation();
-    }
-
-    attachTo.setImmediate = setImmediate;
-    attachTo.clearImmediate = clearImmediate;
-}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
-
-/***/ }),
-
 /***/ "./node_modules/sortablejs/modular/sortable.esm.js":
 /*!*********************************************************!*\
   !*** ./node_modules/sortablejs/modular/sortable.esm.js ***!
@@ -87545,81 +87624,6 @@ module.exports = function (css) {
 
 /***/ }),
 
-/***/ "./node_modules/timers-browserify/main.js":
-/*!************************************************!*\
-  !*** ./node_modules/timers-browserify/main.js ***!
-  \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(/*! setimmediate */ "./node_modules/setimmediate/setImmediate.js");
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
-
-/***/ }),
-
 /***/ "./node_modules/vue-functional-data-merge/dist/lib.esm.js":
 /*!****************************************************************!*\
   !*** ./node_modules/vue-functional-data-merge/dist/lib.esm.js ***!
@@ -89620,7 +89624,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\n    ")]),
+      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\r\n    ")]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -89661,7 +89665,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -89678,7 +89682,7 @@ var staticRenderFns = [
               [
                 _c("h5", { staticClass: "mb-0" }, [
                   _c("a", [
-                    _vm._v("Collapsible Group Item #2\n                    ")
+                    _vm._v("Collapsible Group Item #2\r\n                    ")
                   ])
                 ])
               ]
@@ -89696,7 +89700,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -89729,7 +89733,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -90713,7 +90717,12 @@ var render = function() {
                                             attrs: {
                                               src: "../images/" + item.i_content
                                             }
-                                          })
+                                          }),
+                                          _vm._v(
+                                            "\n                      " +
+                                              _vm._s(item.i_content) +
+                                              "\n                    "
+                                          )
                                         ]
                                       )
                                     : _vm._e()
@@ -104653,7 +104662,7 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../timers-browserify/main.js */ "./node_modules/timers-browserify/main.js").setImmediate))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../../../../node_modules/timers-browserify/main.js */ "../../node_modules/timers-browserify/main.js").setImmediate))
 
 /***/ }),
 
@@ -109324,8 +109333,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
