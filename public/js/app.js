@@ -2256,7 +2256,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
+ *  this table is used everytime a user wants to add/remove members of
+ * an existing group or to add an existing
     user to a new group
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2291,6 +2292,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     errors: {
+      //errors sent by parent(user-groups or group) when executing query request
       type: Array,
       "default": function _default() {
         return [];
@@ -2311,7 +2313,9 @@ __webpack_require__.r(__webpack_exports__);
       close_dialog: "",
       //to close action table
       uid: "",
+      //user id
       gid: "",
+      //group id
       users_to_add_remove: [],
       //list of users to add or remove
       selected_users: [],
@@ -2347,8 +2351,6 @@ __webpack_require__.r(__webpack_exports__);
         label: "Name",
         sortable: true
       }],
-      valid_input: false,
-      //validate input
       is_selected: false,
       //validate if user has made a selection to add or remove a user
       all_selected: false //has the option to select all users been checked
@@ -2389,6 +2391,11 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    /*region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include: validation,
+    and resetting variables, calling parent methods to add/remove
+    users and create groups.*/
+
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -2410,7 +2417,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description if checkbox is checked again uncheck all selections
+     * @description if "select all" checkbox is checked uncheck all selections
      */
     select: function select() {
       this.all_selected = false;
@@ -2436,34 +2443,14 @@ __webpack_require__.r(__webpack_exports__);
       this.users_to_add_remove = [];
       this.$emit("close"); //reset error prop
 
-      this.select();
-      this.uncheck();
+      this.select(); //reset select all input
+
+      this.uncheck(); //uncheck all
     },
 
     /**
-     * @description gets all of the system's groups
-     */
-    totalGroups: function totalGroups() {
-      var _this2 = this;
-
-      //define id variables
-      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-
-      this.uid = this.urlParams.get("uid"); //get user id
-
-      this.gid = this.urlParams.get("gid"); //get group id
-
-      fetch("/groups").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this2.groups = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-
-    /**
-     * @description calls the addUsers method from parent window(user_groups or groups)
+     * @description calls the add/removeUsers method from
+     * parent window(user_groups(add) or groups(add/remove))
      *  and sends the user data to be processed
      */
     sendUsers: function sendUsers() {
@@ -2486,6 +2473,7 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description verifies if a selection has been made when performing action(add/remove)
+     * if selection is made sends users to add/remove.
      */
     isUserSelected: function isUserSelected() {
       if (this.selected_users.length == 0) {
@@ -2555,7 +2543,40 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       };
+    },
+
+    /*#endregion*/
+
+    /*#region Query methods - The following method provides the total amount
+    of groups by requesting the data through route calls. The routes passes
+    request to a specified predefined controller who processes said request
+    via Laravel's eloquent ORM. The data is appended to the global variables
+    as needed to be used.*/
+
+    /**
+     * @description gets all of the system's groups.
+     * This data is used to determine the new id of a newly created group
+     */
+    totalGroups: function totalGroups() {
+      var _this2 = this;
+
+      //define id variables
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.uid = this.urlParams.get("uid"); //get user id
+
+      this.gid = this.urlParams.get("gid"); //get group id
+
+      fetch("/groups").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.groups = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -2709,6 +2730,7 @@ __webpack_require__.r(__webpack_exports__);
       "default": ""
     },
     errors: {
+      //errors sent by parent(user-cases or group) when executing query request
       type: Array,
       "default": function _default() {
         return [];
@@ -2749,8 +2771,6 @@ __webpack_require__.r(__webpack_exports__);
       //maximum amount of characters allowed in the description
       remainingCount: 140,
       //used to determine remaining account of character
-      close: false,
-      //NOT USED
       hasError: false,
       //does description's character count exceed limit - NOT USED IN HTML
       valid_input: false,
@@ -2772,18 +2792,22 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /**
-   * @descriptcion handles modal closing event
+   * @description handles modal closing event
    */
   mounted: function mounted() {
     $(this.$refs.case_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   methods: {
+    /*region Auxilary methods - These methods provide operational
+    functionalities to to the modal. Operations include: resetting variables,
+    calling parent method to create case study*/
+
     /**
      * @description updates the description's remaining characters count
      */
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0; //NOT USED 
+      this.hasError = this.remainingCount < 0; //NOT USED
     },
 
     /**
@@ -2799,48 +2823,6 @@ __webpack_require__.r(__webpack_exports__);
 
       this.remainingCount = 140;
       this.$emit("close"); //reset error prop
-    },
-
-    /**
-     * @description gets all of the system's cases
-     */
-    totalCases: function totalCases() {
-      var _this = this;
-
-      fetch("/cases").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this.all_cases = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-
-    /**
-     * @description gets all the groups of the current user
-     */
-    fetchGroups: function fetchGroups() {
-      var _this2 = this;
-
-      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-
-      this.curr_user = this.urlParams.get("uid"); //get user id
-
-      if (this.group_selection) {
-        // "group selection" variable sent by group vue to set default in group options,
-        //therefor set the group option default to (curr_group/group selection)
-        this.curr_group = this.group_selection; //default dropdown selection
-
-        this.disable_dropdown = true;
-      }
-
-      fetch("/group/show?uid=" + this.curr_user).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this2.user_groups = res.data; //dropdown options
-      })["catch"](function (err) {
-        return console.log(err);
-      });
     },
 
     /**
@@ -2876,7 +2858,60 @@ __webpack_require__.r(__webpack_exports__);
         c_owner: "",
         c_group: ""
       };
+    },
+
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the data used by the
+    modal through route calls. The routes passes the request to a specified
+    predefined controller who processes said request via Laravel's eloquent ORM.
+    The data is appended to the global variables as needed to be used.*/
+
+    /**
+     * @description gets all of the system's cases.
+     * This method is used to determined the id of a newly created case study
+     */
+    totalCases: function totalCases() {
+      var _this = this;
+
+      fetch("/cases").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.all_cases = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description gets all the groups of the current user
+     * Data is used in dropdown
+     */
+    fetchGroups: function fetchGroups() {
+      var _this2 = this;
+
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.curr_user = this.urlParams.get("uid"); //get user id
+
+      if (this.group_selection) {
+        // "group selection" variable sent by group vue to set default in group options,
+        //therefor set the group option default to (curr_group/group selection)
+        this.curr_group = this.group_selection; //default dropdown selection
+
+        this.disable_dropdown = true;
+      }
+
+      fetch("/group/show?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.user_groups = res.data; //dropdown options
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -3153,10 +3188,10 @@ __webpack_require__.r(__webpack_exports__);
       //user name input
       group_members: [],
       //members of group
-      users_add_remove: [],
-      //users to add or remove from group
       users_to_add: [],
+      //users to add to group
       users_to_remove: [],
+      //users to remove from group
       group_cases: [],
       //cases that belong to group
       errors: [],
@@ -3190,9 +3225,14 @@ __webpack_require__.r(__webpack_exports__);
     this.fetchCases();
   },
   methods: {
-    /**
-     * @description determine user priveleges in group
-     */
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include:
+    Setting user priveleges, editing title, and resetting variables
+    
+    
+        /**
+         * @description determine user priveleges in group
+         */
     userPriveleges: function userPriveleges() {
       this.isUserOwner(); //verify if user is owner
 
@@ -3272,10 +3312,18 @@ __webpack_require__.r(__webpack_exports__);
       this.errors = [];
     },
 
-    /**
-     * @description get all of system's users when adding a user to group.
-     *
-     */
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to the
+    global variables as needed to be used.
+    
+        /**
+         * @description get all of system's users when adding a user to group.
+         *
+         */
     fetchUsers: function fetchUsers() {
       var _this = this;
 
@@ -3344,7 +3392,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description gets info of the current group
+     * @description gets attributes of the current group
      */
     fetchGroupInfo: function fetchGroupInfo() {
       var _this4 = this;
@@ -3667,6 +3715,8 @@ __webpack_require__.r(__webpack_exports__);
         console.error("Error: ", err);
       });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -3681,11 +3731,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
 //
 //
 //
@@ -5457,9 +5502,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    /**
-     * @description - refreshes the paginator
-     */
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include but are
+    not limited to :Sorting, updating paginator and content,
+    validation, and resetting variables
+    
+        /**
+         * @description - refreshes the paginator
+         */
     updatePaginator: function updatePaginator() {
       var _this2 = this;
 
@@ -5620,9 +5670,18 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
 
-    /**
-     * @description gets all the cases of the current user
-     */
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to the
+     global variables as needed to be used.
+    
+        /**
+         * @description gets all the cases of the current user
+         * Sends request to the case controller
+         */
     fetchCases: function fetchCases() {
       var _this4 = this;
 
@@ -5661,7 +5720,8 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description outputs to the caseController a JSON request to create case study
-     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     * @param {Array} case_study - array of case study data to create a case study -
+     * data is sent by the case_create_dbox dialogue
      */
     createCaseStudy: function createCaseStudy(case_study) {
       var _this5 = this;
@@ -5723,7 +5783,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description add null default parameters to Case study
+     * @description add null default parameters to case study.
+     * Sends request to Case parameters controller
      */
     appendDefaultParameters: function appendDefaultParameters(cid) {
       var _this6 = this;
@@ -5762,7 +5823,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description removes any selected user cases by making a delete request to caseController
+     * @description removes any selected user cases by making a delete request to caseController.
+     * Sends request to the case controller
      */
     removeCases: function removeCases() {
       var curr = this; //confirmation dialogue box
@@ -5831,6 +5893,8 @@ __webpack_require__.r(__webpack_exports__);
         "padding-top": "40px"
       });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -5845,6 +5909,11 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6196,10 +6265,8 @@ __webpack_require__.r(__webpack_exports__);
       //search table string
       path: "",
       //URL
-      uid: "",
-      // curr user id - NOT USED
-      close: "",
       sort_icon_dir: "",
+      //sorting direction for icon
       user_groups: [],
       // groups of the user
       groups_user_is_owner: [],
@@ -6301,9 +6368,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    /**
-     * @description refreshes the paginator
-     */
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include but are
+    not limited to :Sorting, updating paginator and content,
+    validation, and resetting variables
+    
+        /**
+         * @description refreshes the paginator
+         */
     updatePaginator: function updatePaginator() {
       var _this2 = this;
 
@@ -6322,7 +6394,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       if (this.curr_tab == 1) {
-        //current tab content will be filtered content
+        //current tab content will be sorted content
         this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
           return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab1 : -_this3.sorting_tab1;
         }); //sort icon display is set to sort direction
@@ -6330,7 +6402,7 @@ __webpack_require__.r(__webpack_exports__);
         this.sort_order_tab1_icon = this.sorting_tab1;
       } else {
         //curr tab is 2
-        //current tab content will be filtered content
+        //current tab content will be sorted content
         this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
           return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab2 : -_this3.sorting_tab2;
         }); //sort icon display is set to sort direction
@@ -6346,10 +6418,10 @@ __webpack_require__.r(__webpack_exports__);
      */
     sortItems: function sortItems() {
       if (this.curr_tab == 1) {
-        this.sorting_tab1 *= -1; //  this.enable_sorting_tab1 = true;
+        this.sorting_tab1 *= -1;
       } else {
         //curr tab is 2
-        this.sorting_tab2 *= -1; //   this.enable_sorting_tab2 = true;
+        this.sorting_tab2 *= -1;
       }
 
       this.sortArr(); //call sorting algorithm
@@ -6426,6 +6498,12 @@ __webpack_require__.r(__webpack_exports__);
         this.selected_groups.push(this.selected_groups[i].gid);
       }
     },
+
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the action-table-dbox closes as it calls this
+     * function to reset all errors.
+     */
     resetErrors: function resetErrors() {
       this.errors = [];
     },
@@ -6459,9 +6537,19 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
 
-    /**
-     * @description get all of system's users. These are afterwards filtered for collaborators
-     */
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to
+    the global variables as needed to be used.
+    
+    
+        /**
+         * @description get all of system's users. These users are afterwards filtered for collaborators.
+         * Sends request to the user controller.
+         */
     fetchUsers: function fetchUsers() {
       var _this4 = this;
 
@@ -6484,7 +6572,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description gets all the groups of the current user
+     * @description gets all the groups of the current user.
+     * Sends request to the group controller.
      */
     fetchGroups: function fetchGroups() {
       var _this5 = this;
@@ -6525,7 +6614,8 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description outputs to the groupController a JSON request to create a group
-     * @param {Array} group - array of group data to create a group - data is sent by action_table_dbox when calling method
+     * @param {Array} group - array of group data to create a group - data is sent
+     * by action_table_dbox when calling method
      * @param {Array} members - array of user id's to add to group
      */
     createGroup: function createGroup(group, members) {
@@ -6547,7 +6637,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
-        console.log(res);
+        console.log(res); //if there are no errors present
 
         if (!res.errors) {
           _this6.addUsers(members); //add users to group
@@ -6615,7 +6705,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description removes any selected groups by making a delete request to User_Groups controller
+     * @description removes any selected groups by making a delete request to the group controller
      */
     removeGroups: function removeGroups() {
       var curr = this; //confirmation dialogue box
@@ -6684,6 +6774,8 @@ __webpack_require__.r(__webpack_exports__);
         "padding-top": "40px"
       });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -43357,7 +43449,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\n\n/*pointer on headers*/\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -43376,7 +43468,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-a32253ca] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntr td a[data-v-a32253ca] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-a32253ca] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\n/*When overflow occurs limit display -\ntext overflow currently not used due to character limit*/\ntd a[data-v-a32253ca] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-a32253ca] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-a32253ca] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-a32253ca] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-a32253ca] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-a32253ca]:hover,\nh1 a[data-v-a32253ca]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-a32253ca] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-a32253ca] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-a32253ca] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-a32253ca] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-a32253ca] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-a32253ca] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-a32253ca] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-a32253ca] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-a32253ca] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-a32253ca] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-a32253ca] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-a32253ca] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntr td a[data-v-a32253ca] {\n  display: block;\n  font-size: 18px;\n}\n\n/*pointer on headers*/\nth[data-v-a32253ca] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\n/*When overflow occurs limit display -\ntext overflow currently not used due to character limit*/\ntd a[data-v-a32253ca] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-a32253ca] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-a32253ca] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-a32253ca] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-a32253ca] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-a32253ca]:hover,\nh1 a[data-v-a32253ca]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-a32253ca] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-a32253ca] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-a32253ca] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-a32253ca] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-a32253ca] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-a32253ca] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-a32253ca] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-a32253ca] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-a32253ca] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-a32253ca] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-a32253ca] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -89260,17 +89352,13 @@ var render = function() {
     "nav",
     { staticClass: "navbar fixed-top navbar-expand-lg navbar-custom shadow" },
     [
-      _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
-        _vm._v("Interdisciplinary Research Network")
-      ]),
-      _vm._v(" "),
       _vm._m(0),
       _vm._v(" "),
       _vm._m(1),
       _vm._v(" "),
+      _vm._m(2),
+      _vm._v(" "),
       _c("ul", { staticClass: "navbar-nav mr-3" }, [
-        _vm._m(2),
-        _vm._v(" "),
         _vm._m(3),
         _vm._v(" "),
         _vm._m(4),
@@ -89344,6 +89432,19 @@ var render = function() {
   )
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
+      _c("img", {
+        staticClass: "img-fluid rounded ",
+        staticStyle: { width: "70px", height: "45px", "margin-right": "10px" },
+        attrs: { src: __webpack_require__(/*! ../../../public/images/iren_logo.png */ "./public/images/iren_logo.png"), alt: "" }
+      }),
+      _vm._v("\n      Interdisciplinary Research Network\n  ")
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -89455,26 +89556,6 @@ var staticRenderFns = [
           }
         },
         [_vm._v("About")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: {
-            "data-toggle": "tooltip",
-            "data-placement": "bottom",
-            title: "Change languages",
-            href: ""
-          }
-        },
-        [_vm._v("Language")]
       )
     ])
   },
@@ -107920,6 +108001,17 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+
+/***/ "./public/images/iren_logo.png":
+/*!*************************************!*\
+  !*** ./public/images/iren_logo.png ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/images/iren_logo.png?db834547cb52842e8e659059cf775f3e";
 
 /***/ }),
 
