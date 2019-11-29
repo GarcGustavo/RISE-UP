@@ -25,9 +25,9 @@ class AdminUsersRequestsController extends Controller
 
         //Creates the list of users who have sent a request to become collaborators
         //The method selects those users who have:
-        // a user attribute of ban status = zero
-		// a user attribute of role upgrade request = 1
-        // a user attribute of role = 2 (Viewer role)
+        // a user attribute of ban status == zero
+		// a user attribute of role upgrade request == 1
+        // a user attribute of u_role == 2 (Viewer role)
         //Section 1.64 on Software Requirement Specifications Documents
         $requests = DB::table('User')
             ->join('Role', 'User.u_role', '=', 'Role.rid')
