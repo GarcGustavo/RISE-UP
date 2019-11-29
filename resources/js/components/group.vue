@@ -496,7 +496,6 @@ export default {
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected user(s)?",
-        backdrop: true,
 
         buttons: {
           confirm: {
@@ -583,7 +582,7 @@ export default {
 
             //remove component's backdrop
             $("body").removeClass("modal-open");
-            
+
             $(".modal-backdrop").remove();
             //alert box
             this.dialogue = bootbox.alert({

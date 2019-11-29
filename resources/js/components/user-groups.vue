@@ -731,7 +731,6 @@ export default {
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected groups?",
-        backdrop: true,
 
         buttons: {
           confirm: {

@@ -543,7 +543,7 @@ export default {
     },
 
 /**
- * @description reset errors 
+ * @description reset errors
  */
     resetErrors() {
       this.errors = [];
@@ -709,7 +709,6 @@ export default {
       this.dialogue = bootbox.confirm({
         title: "Remove",
         message: "Do you want to remove selected case study(s)?",
-        backdrop: true,
 
         buttons: {
           confirm: {

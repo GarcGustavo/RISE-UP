@@ -3504,7 +3504,6 @@ __webpack_require__.r(__webpack_exports__);
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected user(s)?",
-        backdrop: true,
         buttons: {
           confirm: {
             label: "No",
@@ -5586,7 +5585,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description reset errors 
+     * @description reset errors
      */
     resetErrors: function resetErrors() {
       this.errors = [];
@@ -5771,7 +5770,6 @@ __webpack_require__.r(__webpack_exports__);
       this.dialogue = bootbox.confirm({
         title: "Remove",
         message: "Do you want to remove selected case study(s)?",
-        backdrop: true,
         buttons: {
           confirm: {
             label: "No",
@@ -6625,7 +6623,6 @@ __webpack_require__.r(__webpack_exports__);
       this.dialogue = bootbox.confirm({
         title: "Remove?",
         message: "Do you want to remove selected groups?",
-        backdrop: true,
         buttons: {
           confirm: {
             label: "No",
