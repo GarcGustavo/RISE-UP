@@ -13,11 +13,11 @@ use App\Http\Resources\Option as OptionResource;
 
 class Case_ParametersController extends Controller
 {
-    // public function getParameters()
-    // {
-    //     $parameters = CS_Parameter::all();
-    //     return CS_ParameterResource::collection($parameters);
-    // }
+     public function getParameters()
+     {
+         $parameters = Case_Parameters::all();
+         return Case_ParametersResource::collection($parameters);
+     }
 
     // public function getParameterOptions()
     // {
