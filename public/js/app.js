@@ -5063,6 +5063,14 @@ var default_styles = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 //
 //
 //
@@ -5150,14 +5158,14 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      selected_param: "",
-      def: 1,
+      selected_param: [],
       case_parameters: [],
       all_cases_parameters: [],
       parameter_options: [],
       selected_options_content: [],
       selected_options_id: [],
-      nose: [],
+      list_cases: [],
+      filtered_cases: [],
       empty: true
     };
   },
@@ -5172,44 +5180,58 @@ __webpack_require__.r(__webpack_exports__);
      * @returns list of cases in accordance to search.
      */
     filterCases: function filterCases() {
-      var _this = this;
+      this.filtered_cases = [];
+      this.temp = [];
 
-      this.temp = this.all_cases_parameters.filter(function (all_cases_parameters) {
-        return all_cases_parameters.opt_selected == _this.selected_param;
-      });
+      for (var j = 0; j < this.all_cases_parameters.length; j++) {
+        for (var c = 0; c < this.case_parameters.length; c++) {
+          if (this.all_cases_parameters[j].opt_selected == this.selected_param[c]) {
+            this.temp.push(this.all_cases_parameters[j]);
+          }
+        }
+      }
+
       console.log(this.temp);
-      this.listOfObjects = Object.values(this.cases);
-
-      var _loop = function _loop(i) {
-        _this.lol = _this.listOfObjects.filter(function (x) {
-          return x.cid == _this.temp[i].cid;
-        });
-      };
 
       for (var i = 0; i < this.temp.length; i++) {
-        _loop(i);
+        //  this.temp_list_cases = this.list_cases.filter(x => {
+        //   return x.cid == this.temp[i].cid;
+        //  });
+        for (var k = 0; k < this.list_cases.length; k++) {
+          if (this.list_cases[k].cid == this.temp[i].cid) {
+            this.filtered_cases.push(this.list_cases[k]);
+          }
+        }
       }
 
-      console.log(this.listOfObjects);
+      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a fitler has been selected
 
-      if (this.selected_param == "") {
-        return this.listOfObjects;
-      } else {
-        return this.lol;
+      if (!this.temp.length && this.selected_param.length) {
+        return [];
+      } //if no case was found and a filter hasn't been selected
+      //This is when page loads and user has not made any changes
+      //return search items
+
+
+      if (!this.temp.length && !this.selected_param.length) {
+        return this.list_cases;
       }
+
+      return this.filtered_cases;
     }
   },
   methods: {
     fetchParameters: function fetchParameters() {
-      var _this2 = this;
+      var _this = this;
 
       fetch("/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.case_parameters = res.data;
+        _this.case_parameters = res.data;
 
-        if (_this2.cases) {
-          _this2.empty = false;
+        if (_this.cases) {
+          _this.list_cases = Object.values(_this.cases);
+          _this.empty = false;
         }
       })["catch"](function (err) {
         return console.log(err);
@@ -5217,23 +5239,23 @@ __webpack_require__.r(__webpack_exports__);
       this.fetchParameterOptions();
     },
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this3 = this;
+      var _this2 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.parameter_options = res.data;
+        _this2.parameter_options = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchAllCasesParameters: function fetchAllCasesParameters() {
-      var _this4 = this;
+      var _this3 = this;
 
       fetch("/cs-parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.all_cases_parameters = res.data;
+        _this3.all_cases_parameters = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -91263,12 +91285,12 @@ var render = function() {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.selected_param,
-                          expression: "selected_param"
+                          value: _vm.selected_param[index],
+                          expression: "selected_param[index]"
                         }
                       ],
                       staticClass: "form-control",
-                      attrs: { id: "group_select" },
+                      attrs: { id: index },
                       on: {
                         click: function($event) {
                           _vm.case_param = case_parameter.cid
@@ -91282,16 +91304,22 @@ var render = function() {
                               var val = "_value" in o ? o._value : o.value
                               return val
                             })
-                          _vm.selected_param = $event.target.multiple
-                            ? $$selectedVal
-                            : $$selectedVal[0]
+                          _vm.$set(
+                            _vm.selected_param,
+                            index,
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
                         }
                       }
                     },
                     [
-                      _c("option", { attrs: { hidden: "" } }, [
-                        _vm._v(_vm._s(case_parameter.csp_name))
-                      ]),
+                      _c(
+                        "option",
+                        { attrs: { selected: "selected", disabled: "" } },
+                        [_vm._v(_vm._s(case_parameter.csp_name))]
+                      ),
                       _vm._v(" "),
                       _vm._l(
                         _vm.filteredOptions(case_parameter.csp_id),

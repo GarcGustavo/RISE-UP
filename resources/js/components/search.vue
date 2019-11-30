@@ -28,11 +28,11 @@
             <div class="form-group">
               <select
                 class="form-control"
-                v-model="selected_param"
+                v-model="selected_param[index]"
                 @click="case_param=case_parameter.cid"
-                id="group_select"
+                :id="index"
               >
-                <option hidden>{{case_parameter.csp_name}}</option>
+                <option selected="selected" disabled>{{case_parameter.csp_name}}</option>
                 <option
                   v-for="option in filteredOptions(case_parameter.csp_id)"
                   :key="option.oid"
@@ -86,15 +86,15 @@ export default {
   },
   data() {
     return {
-      selected_param: "",
+      selected_param: [],
 
-      def: 1,
       case_parameters: [],
       all_cases_parameters: [],
       parameter_options: [],
       selected_options_content: [],
       selected_options_id: [],
-      nose: [],
+      list_cases: [],
+      filtered_cases: [],
 
       empty: true
     };
@@ -111,23 +111,44 @@ export default {
      * @returns list of cases in accordance to search.
      */
     filterCases() {
-      this.temp = this.all_cases_parameters.filter(all_cases_parameters => {
-        return all_cases_parameters.opt_selected == this.selected_param;
-      });
+      this.filtered_cases = [];
+
+      this.temp = [];
+
+      for (let j = 0; j < this.all_cases_parameters.length; j++) {
+        for (let c = 0; c < this.case_parameters.length; c++) {
+          if (
+            this.all_cases_parameters[j].opt_selected == this.selected_param[c]
+          ) {
+            this.temp.push(this.all_cases_parameters[j]);
+          }
+        }
+      }
+
       console.log(this.temp);
-      this.listOfObjects = Object.values(this.cases);
 
       for (let i = 0; i < this.temp.length; i++) {
-        this.lol = this.listOfObjects.filter(x => x.cid == this.temp[i].cid);
+        //  this.temp_list_cases = this.list_cases.filter(x => {
+        //   return x.cid == this.temp[i].cid;
+        //  });
+        for (let k = 0; k < this.list_cases.length; k++) {
+          if (this.list_cases[k].cid == this.temp[i].cid) {
+            this.filtered_cases.push(this.list_cases[k]);
+          }
+        }
       }
-      console.log(this.listOfObjects);
-      if(this.selected_param==""){
-          return this.listOfObjects;
+      this.filtered_cases = [...new Set(this.filtered_cases)];
+      //if no case was found and a fitler has been selected
+      if (!this.temp.length && this.selected_param.length) {
+        return [];
       }
-      else{
-return this.lol;
+      //if no case was found and a filter hasn't been selected
+      //This is when page loads and user has not made any changes
+      //return search items
+      if (!this.temp.length && !this.selected_param.length) {
+        return this.list_cases;
       }
-
+      return this.filtered_cases;
     }
   },
 
@@ -139,6 +160,7 @@ return this.lol;
           this.case_parameters = res.data;
 
           if (this.cases) {
+            this.list_cases = Object.values(this.cases);
             this.empty = false;
           }
         })
@@ -150,7 +172,6 @@ return this.lol;
         .then(res => res.json())
         .then(res => {
           this.parameter_options = res.data;
-
         })
         .catch(err => console.log(err));
     },
@@ -159,7 +180,6 @@ return this.lol;
         .then(res => res.json())
         .then(res => {
           this.all_cases_parameters = res.data;
-
         })
         .catch(err => console.log(err));
     },
