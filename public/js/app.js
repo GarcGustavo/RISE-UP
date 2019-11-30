@@ -5131,39 +5131,85 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     cases: {
-      type: [Object, Number, Array]
+      type: [Object, Number, Array],
+      "default": function _default() {
+        return [];
+      }
     }
   },
   data: function data() {
     return {
+      selected_param: "",
       def: 1,
       case_parameters: [],
       all_cases_parameters: [],
       parameter_options: [],
       selected_options_content: [],
       selected_options_id: [],
+      nose: [],
       empty: true
     };
   },
   created: function created() {
     this.fetchParameters();
     this.fetchParameterOptions();
+    this.fetchAllCasesParameters();
+  },
+  computed: {
+    /**
+     * @description filters cases by dropdown selection.
+     * @returns list of cases in accordance to search.
+     */
+    filterCases: function filterCases() {
+      var _this = this;
+
+      this.temp = this.all_cases_parameters.filter(function (all_cases_parameters) {
+        return all_cases_parameters.opt_selected == _this.selected_param;
+      });
+      console.log(this.temp);
+      this.listOfObjects = Object.values(this.cases);
+
+      var _loop = function _loop(i) {
+        _this.lol = _this.listOfObjects.filter(function (x) {
+          return x.cid == _this.temp[i].cid;
+        });
+      };
+
+      for (var i = 0; i < this.temp.length; i++) {
+        _loop(i);
+      }
+
+      console.log(this.listOfObjects);
+
+      if (this.selected_param == "") {
+        return this.listOfObjects;
+      } else {
+        return this.lol;
+      }
+    }
   },
   methods: {
     fetchParameters: function fetchParameters() {
-      var _this = this;
+      var _this2 = this;
 
       fetch("/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.case_parameters = res.data;
-        console.log(res.data);
+        _this2.case_parameters = res.data;
 
-        if (_this.cases) {
-          _this.empty = false;
+        if (_this2.cases) {
+          _this2.empty = false;
         }
       })["catch"](function (err) {
         return console.log(err);
@@ -5171,25 +5217,23 @@ __webpack_require__.r(__webpack_exports__);
       this.fetchParameterOptions();
     },
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this2 = this;
+      var _this3 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.parameter_options = res.data;
-        console.log(res.data);
+        _this3.parameter_options = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchAllCasesParameters: function fetchAllCasesParameters() {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/cs-parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.all_cases_parameters = res.data;
-        console.log(res.data);
+        _this4.all_cases_parameters = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -91215,8 +91259,34 @@ var render = function() {
                   _c(
                     "select",
                     {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.selected_param,
+                          expression: "selected_param"
+                        }
+                      ],
                       staticClass: "form-control",
-                      attrs: { id: "group_select" }
+                      attrs: { id: "group_select" },
+                      on: {
+                        click: function($event) {
+                          _vm.case_param = case_parameter.cid
+                        },
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.selected_param = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        }
+                      }
                     },
                     [
                       _c("option", { attrs: { hidden: "" } }, [
@@ -91226,9 +91296,14 @@ var render = function() {
                       _vm._l(
                         _vm.filteredOptions(case_parameter.csp_id),
                         function(option) {
-                          return _c("option", { key: option.oid }, [
-                            _vm._v(_vm._s(option.o_content))
-                          ])
+                          return _c(
+                            "option",
+                            {
+                              key: option.oid,
+                              domProps: { value: option.oid }
+                            },
+                            [_vm._v(_vm._s(option.o_content))]
+                          )
                         }
                       )
                     ],
@@ -91249,7 +91324,7 @@ var render = function() {
             _c(
               "div",
               { staticClass: "row mt-1 pt-2 pl-4", attrs: { id: "cases" } },
-              _vm._l(_vm.cases, function(case_study) {
+              _vm._l(_vm.filterCases, function(case_study) {
                 return _c(
                   "div",
                   { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
@@ -91296,7 +91371,7 @@ var render = function() {
           ])
         : _c("div", [
             _c("p", { staticClass: "text-center p-5" }, [
-              _vm._v("No case studies found. Please try again! ")
+              _vm._v("No case studies found. Please try again!")
             ])
           ]),
       _vm._v(" "),

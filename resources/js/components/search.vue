@@ -26,11 +26,17 @@
         <div v-for="(case_parameter, index) in case_parameters" :key="index">
           <div class="col">
             <div class="form-group">
-              <select class="form-control" id="group_select">
+              <select
+                class="form-control"
+                v-model="selected_param"
+                @click="case_param=case_parameter.cid"
+                id="group_select"
+              >
                 <option hidden>{{case_parameter.csp_name}}</option>
                 <option
                   v-for="option in filteredOptions(case_parameter.csp_id)"
                   :key="option.oid"
+                  :value="option.oid"
                 >{{option.o_content}}</option>
               </select>
             </div>
@@ -43,7 +49,7 @@
     <div class="card shadow">
       <div v-if="!empty">
         <div class="row mt-1 pt-2 pl-4" id="cases">
-          <div class="col-lg-6 mb-4" v-for="case_study in cases" :key="case_study.cid">
+          <div class="col-lg-6 mb-4" v-for="case_study in filterCases" :key="case_study.cid">
             <div class="card h-100 text-center">
               <!-- <img src="..." class="card-img-top" alt="..."> -->
               <i class="material-icons pt-2" style="font-size: 125px">image</i>
@@ -60,7 +66,9 @@
           </div>
         </div>
       </div>
-      <div v-else> <p class="text-center p-5">No case studies found. Please try again! </p></div>
+      <div v-else>
+        <p class="text-center p-5">No case studies found. Please try again!</p>
+      </div>
       <div></div>
     </div>
   </div>
@@ -70,34 +78,68 @@
 export default {
   props: {
     cases: {
-      type: [Object,Number,Array]
+      type: [Object, Number, Array],
+      default: function() {
+        return [];
+      }
     }
   },
   data() {
     return {
+      selected_param: "",
+
       def: 1,
       case_parameters: [],
-      all_cases_parameters:[],
+      all_cases_parameters: [],
       parameter_options: [],
       selected_options_content: [],
       selected_options_id: [],
+      nose: [],
 
-      empty:true
+      empty: true
     };
   },
   created() {
     this.fetchParameters();
     this.fetchParameterOptions();
+    this.fetchAllCasesParameters();
   },
+
+  computed: {
+    /**
+     * @description filters cases by dropdown selection.
+     * @returns list of cases in accordance to search.
+     */
+    filterCases() {
+      this.temp = this.all_cases_parameters.filter(all_cases_parameters => {
+        return all_cases_parameters.opt_selected == this.selected_param;
+      });
+      console.log(this.temp);
+      this.listOfObjects = Object.values(this.cases);
+
+      for (let i = 0; i < this.temp.length; i++) {
+        this.lol = this.listOfObjects.filter(x => x.cid == this.temp[i].cid);
+      }
+      console.log(this.listOfObjects);
+      if(this.selected_param==""){
+          return this.listOfObjects;
+      }
+      else{
+return this.lol;
+      }
+
+    }
+  },
+
   methods: {
     fetchParameters() {
       fetch("/parameters")
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
-          console.log(res.data);
-          if(this.cases){
-              this.empty=false;
+
+          if (this.cases) {
+            this.empty = false;
           }
         })
         .catch(err => console.log(err));
@@ -108,19 +150,19 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.parameter_options = res.data;
-          console.log(res.data);
+
         })
         .catch(err => console.log(err));
     },
-fetchAllCasesParameters(){
- fetch("/cs-parameters")
+    fetchAllCasesParameters() {
+      fetch("/cs-parameters")
         .then(res => res.json())
         .then(res => {
           this.all_cases_parameters = res.data;
-          console.log(res.data);
+
         })
         .catch(err => console.log(err));
-},
+    },
     filteredOptions(parameter) {
       return this.parameter_options.filter(
         option => option.o_parameter == parameter
