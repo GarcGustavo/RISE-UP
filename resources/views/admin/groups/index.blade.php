@@ -42,7 +42,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td>Nadie</td>
+                                    <td>No groups.</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>

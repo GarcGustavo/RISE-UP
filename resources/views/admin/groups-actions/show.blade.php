@@ -3,7 +3,7 @@
 @section('adminMainContent')
             <!-- Filters -->
             <div class="card mb-3">
-                <div class="card-header">
+                <div class="card-header font-weight-bold">
                     <i class="fas fa-table"></i>
                     @forelse($groups as $group)
                      {{$group->g_name }} actions:
