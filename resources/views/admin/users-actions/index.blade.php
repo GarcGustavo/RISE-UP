@@ -12,7 +12,7 @@
                             <thead>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Latest Action</th>
+                                <th>Recent Action</th>
                                 <th>Date</th>
                                 <th>More actions</th>
                             </tr>
@@ -20,7 +20,7 @@
                             <tfoot>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Latest Action</th>
+                                <th>Recent Action</th>
                                 <th>Date</th>
                                 <th>More Actions</th>
                             </tr>
@@ -36,8 +36,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td>Nadie</td>
-                                    <td></td>
+                                    <td>No Recent Actions.</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
