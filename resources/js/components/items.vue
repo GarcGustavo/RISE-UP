@@ -333,6 +333,7 @@ export default {
       total_items: "",
       images: [],
       image_names: [],
+      thumbnail_name: "",
       thumbnail_preview: "",
       previewThumbnail: false,
       preview: false,
@@ -601,7 +602,7 @@ export default {
 
       var form_data = new FormData();
       if (this.files && this.thumbnail_preview) {
-        form_data.append("image", this.files[0]);
+        form_data.append("image", this.thumbnail_name);
       }
       form_data.append("cid", this.cid);
       form_data.append("c_title", this.case_to_show[0].c_title);
@@ -839,6 +840,7 @@ export default {
       //var image = new Image();
       var reader = new FileReader();
       this.files = e.target.files || e.dataTransfer.files;
+      this.thumbnail_name = this.files[0];
 
       reader.readAsDataURL(this.files[0]);
       reader.onload = e => {

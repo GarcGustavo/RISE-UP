@@ -4321,6 +4321,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -4339,6 +4356,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       actor: "",
       total_items: "",
       images: [],
+      image_names: [],
+      thumbnail_name: "",
+      thumbnail_preview: "",
+      previewThumbnail: false,
       preview: false,
       case_study: {
         cid: "",
@@ -4398,33 +4419,47 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   mounted: function mounted() {
     var _this = this;
 
-    Echo.join("App.User.".concat(this.user.uid)).here(function (users) {
-      _this.usersEditing = users;
-    }).joining(function (user) {
-      _this.usersEditing.push(users[0]);
-    }).leaving(function (user) {
-      _this.usersEditing = _this.usersEditing.filter(function (u) {
-        return u != users[0];
+    Echo.join("case.".concat(this.case_to_show.cid)).listenForWhisper("editing", function (e) {
+      _this.case_to_show.c_title = e.title;
+
+      _this.items.forEach(function (element) {
+        _this.items[element] = e.items[element];
       });
-    }).listenForWhisper("editing", function (e) {//this.case_study.c_title = e.title;
-      //this.items.i_content = e.body;
-    }).listenForWhisper("saved", function (e) {
-      //this.case_study.c_status = e.status;
-      // clear is status after 1s
-      setTimeout(function () {//this.case_study.c_status = "";
-      }, 1000);
-    });
+
+      console.log("hell from channel");
+    }); // .here(users => {
+    //   this.usersEditing = users;
+    // })
+    // .joining(user => {
+    //   this.usersEditing.push(users[0]);
+    // })
+    // .leaving(user => {
+    //   this.usersEditing = this.usersEditing.filter(u => u != users[0]);
+    // })
+    // .listenForWhisper("saved", e => {
+    //   //this.case_study.c_status = e.status;
+    //   // clear is status after 1s
+    //   setTimeout(() => {
+    //     //this.case_study.c_status = "";
+    //   }, 1000);
+    // });
   },
   methods: {
     editingCase: function editingCase() {
       var _this2 = this;
 
-      var channel = Echo.join("App.User.".concat(this.user.uid)); // show changes after 1s
+      var channel = Echo.join("case.".concat(this.case_to_show.cid)); // pusher.subscribe("").bind("updated", function(message) {
+      //   let [rowIndex, columnIndex, oldValue, newValue] = message.change;
+      //   addCellValue(rowIndex, columnIndex, newValue);
+      //   table.loadData(sheetContent);
+      // });
+
+      console.log("hello from editing case"); //show changes after 1s
 
       setTimeout(function () {
         channel.whisper("editing", {
-          title: _this2.case_study.c_title,
-          body: _this2.items.i_content
+          title: _this2.case_to_show.c_title,
+          items: _this2.items
         });
       }, 1000);
     },
@@ -4617,24 +4652,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     updateCase: function updateCase() {
       this.cid = this.case_to_show[0].cid;
-      this.updated_case = {
-        cid: this.cid,
-        c_title: this.case_to_show[0].c_title,
-        c_description: this.case_to_show[0].c_description,
-        c_thumbnail: this.case_to_show[0].c_thumbnail,
-        c_status: this.case_to_show[0].c_status,
-        c_date: this.case_to_show[0].c_date,
-        c_owner: this.case_to_show[0].c_owner,
-        c_group: this.case_to_show[0].c_group
-      };
+      var form_data = new FormData();
+
+      if (this.files && this.thumbnail_preview) {
+        form_data.append("image", this.thumbnail_name);
+      }
+
+      form_data.append("cid", this.cid);
+      form_data.append("c_title", this.case_to_show[0].c_title);
+      form_data.append("c_description", this.case_to_show[0].c_description);
+      form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
+      form_data.append("c_status", this.case_to_show[0].c_status);
+      form_data.append("c_date", this.case_to_show[0].c_date);
+      form_data.append("c_owner", this.case_to_show[0].c_owner);
+      form_data.append("c_group", this.case_to_show[0].c_group);
       fetch("/case/" + this.cid + "/update", {
         method: "post",
         headers: new Headers({
-          "Content-Type": "application/json",
+          //"Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_case)
+        //body: JSON.stringify(this.updated_case)
+        body: form_data
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -4649,17 +4689,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.cid = Number(this.path.get("cid")); //get cid
 
-      var formData = new FormData();
+      var form_data = new FormData();
 
       if (this.files && this.images[index]) {
-        formData.append("image", this.files[0]);
+        form_data.append("image", this.image_names[index]);
       }
 
-      formData.append("i_case", item_to_update.i_case);
-      formData.append("i_type", item_to_update.i_type);
-      formData.append("order", Number(item_to_update.order));
-      formData.append("i_name", item_to_update.i_name);
-      formData.append("i_content", item_to_update.i_content); //console.log(formData.get('i_content'));
+      form_data.append("i_case", item_to_update.i_case);
+      form_data.append("i_type", item_to_update.i_type);
+      form_data.append("order", Number(item_to_update.order));
+      form_data.append("i_name", item_to_update.i_name);
+      form_data.append("i_content", item_to_update.i_content); //console.log(form_data.get('i_content'));
 
       fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
@@ -4669,7 +4709,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
         //body: JSON.stringify(this.updated_item)
-        body: formData
+        body: form_data
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -4797,6 +4837,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.gid = this.initial_gid;
       this.editing = false;
       this.preview = false;
+      this.previewThumbnail = false;
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
@@ -4816,6 +4857,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onSubmit: function onSubmit(items) {
       this.editing = false;
       this.preview = false;
+      this.previewThumbnail = false;
       this.updateParams();
       this.updateItems(items);
       this.updateCase(); //this.updateParameter();
@@ -4836,11 +4878,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //var image = new Image();
       var reader = new FileReader();
       this.files = e.target.files || e.dataTransfer.files;
+      this.image_names[index] = this.files[0];
       reader.readAsDataURL(this.files[0]);
 
       reader.onload = function (e) {
         _this12.images[index] = e.target.result;
         _this12.preview = true;
+      };
+    },
+    uploadThumbnail: function uploadThumbnail(e) {
+      var _this13 = this;
+
+      //This reads an image from a data url stored in the item
+      //var image = new Image();
+      var reader = new FileReader();
+      this.files = e.target.files || e.dataTransfer.files;
+      this.thumbnail_name = this.files[0];
+      reader.readAsDataURL(this.files[0]);
+
+      reader.onload = function (e) {
+        _this13.thumbnail_preview = e.target.result;
+        _this13.previewThumbnail = true;
       };
     }
   }
@@ -43784,7 +43842,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\r\n/*\r\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\r\n then adding custom css styles with the following css selectors:\r\n\r\n.pagination - Pagination component container (ul element)\r\n.pagination li - All list items in the pagination component\r\n.pagination li a - All pagination links including first, last, previous and next\r\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\r\n.pagination li.first - The 'First' pagination element\r\n.pagination li.last - The 'Last' pagination element\r\n.pagination li.previous - The 'Previous' pagination element\r\n.pagination li.next - The 'Next' pagination element\r\n*/\r\n", ""]);
 
 // exports
 
@@ -89929,7 +89987,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\n    ")]),
+      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\r\n    ")]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -89970,7 +90028,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -89987,7 +90045,7 @@ var staticRenderFns = [
               [
                 _c("h5", { staticClass: "mb-0" }, [
                   _c("a", [
-                    _vm._v("Collapsible Group Item #2\n                    ")
+                    _vm._v("Collapsible Group Item #2\r\n                    ")
                   ])
                 ])
               ]
@@ -90005,7 +90063,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -90038,7 +90096,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -90179,7 +90237,9 @@ var render = function() {
                                 attrs: { type: "text", maxlength: 32 },
                                 domProps: { value: case_study.c_title },
                                 on: {
-                                  keydown: _vm.editingCase,
+                                  keydown: function($event) {
+                                    return _vm.editingCase()
+                                  },
                                   input: function($event) {
                                     if ($event.target.composing) {
                                       return
@@ -90323,7 +90383,7 @@ var render = function() {
             staticStyle: { margin: "50px", background: "white" }
           },
           [
-            _c("div", { staticClass: "col-md-9" }, [
+            _c("div", { staticClass: "col-md-8" }, [
               _c(
                 "h4",
                 {
@@ -90388,8 +90448,59 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _vm._m(0)
-          ]
+            _vm._l(_vm.case_to_show, function(case_study, index) {
+              return _c(
+                "div",
+                {
+                  key: index,
+                  staticClass:
+                    "col-md-4.5 border shadow form-group text-break text-center",
+                  staticStyle: { "margin-top": "10px", "margin-right": "10px" }
+                },
+                [
+                  _c("div", { key: _vm.previewThumbnail }, [
+                    _vm.editing
+                      ? _c("input", {
+                          attrs: {
+                            enctype: "multipart/form-data",
+                            type: "file",
+                            accept: "image/*",
+                            id: "file-input"
+                          },
+                          on: {
+                            change: function($event) {
+                              return _vm.uploadThumbnail($event)
+                            }
+                          }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.editing && !_vm.previewThumbnail
+                      ? _c("img", {
+                          staticStyle: { "margin-top": "10px" },
+                          attrs: { src: "../images/" + case_study.c_thumbnail }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.editing && _vm.previewThumbnail
+                      ? _c("img", {
+                          staticStyle: { "margin-top": "10px" },
+                          attrs: { src: _vm.thumbnail_preview }
+                        })
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  !_vm.editing
+                    ? _c("img", {
+                        staticStyle: { "margin-top": "10px" },
+                        attrs: { src: "../images/" + case_study.c_thumbnail }
+                      })
+                    : _vm._e()
+                ]
+              )
+            })
+          ],
+          2
         ),
         _vm._v(" "),
         _c(
@@ -90578,7 +90689,7 @@ var render = function() {
                           "li",
                           { key: index, staticClass: "list-group-item" },
                           [
-                            _c("a", [
+                            _c("a", { attrs: { href: "#" } }, [
                               _vm._v(
                                 _vm._s(index + 1) + ": " + _vm._s(item.i_name)
                               )
@@ -91050,18 +91161,7 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-2.5 border shadow" }, [
-      _c("img", {
-        attrs: { src: __webpack_require__(/*! ../../../public/images/nsf_logo.jpg */ "./public/images/nsf_logo.jpg") }
-      })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -109936,8 +110036,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
