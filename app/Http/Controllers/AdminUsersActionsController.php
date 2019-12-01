@@ -10,29 +10,29 @@ use Illuminate\Support\Facades\DB;
 class AdminUsersActionsController extends Controller
 {
     //public function index
-    //Selects latest action, for each user
+    //Selects a recent action, for each user
+	//Shows only one action per user per day
     public function index(){
-        $latestDate = DB::table('Action')
-            ->select('a_user', DB::raw('MAX(a_date) as latest_action_date'))
+        $limitActionDate = DB::table('Action')
+            ->select('a_user', DB::raw('MAX(a_date) as recent_action_date'))
             ->groupBy('a_user');
-            //->orderBy('latest_action_date', 'desc');
+            //->orderBy('recent_action_date', 'desc');
             //->get();
 			
-        $ooa = DB::table('Action')
+        $limitActionType = DB::table('Action')
             ->select('a_user', 'a_date', DB::raw('MAX(a_type) as recent_action_type'))
             ->groupBy('a_user')
 			->groupBy('a_date');
             //->orderBy('recent_action_type', 'desc');			
 
         $users = DB::table('User')
-            ->joinSub($latestDate, 'latestDate','latestDate.a_user', '=', 'User.uid')
-
-            ->joinSub($ooa, 'ooa',  function ($join) {
-                $join->on('ooa.a_user', '=', 'latestDate.a_user')
-                     ->on('ooa.a_date', '=', 'latestDate.latest_action_date');
+            ->joinSub($limitActionDate, 'limitActionDate','limitActionDate.a_user', '=', 'User.uid')
+            ->joinSub($limitActionType, 'limitActionType',  function ($join) {
+                $join->on('limitActionType.a_user', '=', 'limitActionDate.a_user')
+                     ->on('limitActionType.a_date', '=', 'limitActionDate.recent_action_date');
             })
-            ->join('Action_Type', 'Action_Type.act_id', '=', 'ooa.recent_action_type')
-            ->orderBy('latest_action_date', 'desc')
+            ->join('Action_Type', 'Action_Type.act_id', '=', 'limitActionType.recent_action_type')
+            ->orderBy('recent_action_date', 'desc')
             ->get();
 
         return view('admin.users-actions.index', ['users' => $users]);
@@ -58,4 +58,3 @@ class AdminUsersActionsController extends Controller
 
     }
 }
-//show only one per user
