@@ -3834,6 +3834,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3842,32 +3843,40 @@ __webpack_require__.r(__webpack_exports__);
       isAdmin: true,
       //change to false when integration is complete
       isViewer: false,
-      isCollaborator: false
+      isCollaborator: false,
+      disable_header_search: false
     };
+  },
+  created: function created() {
+    this.getUser();
   },
   methods: {
     getUser: function getUser() {
-      var _this = this;
-
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
 
-      fetch("/user?uid=" + this.curr_user).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this.user = res;
+      this.q = this.urlParams.get("q");
 
-        if (_this.user.u_role == 4) {
-          _this.isAdmin = true;
-        } else if (_this.user.u_role == 3) {
-          _this.isCollaborator = true;
-        } else {
-          _this.isViewer = true;
-        }
+      if (this.q != null) {
+        this.disable_header_search = true;
+      }
+      /*
+            fetch("/user?uid=" + this.curr_user)
+              .then(res => res.json())
+              .then(res => {
+                this.user = res;
+                if (this.user.u_role == 4) {
+                  this.isAdmin = true;
+                } else if (this.user.u_role == 3) {
+                  this.isCollaborator = true;
+                } else {
+                  this.isViewer = true;
+                }
+                this.uid = this.user.uid;
+              });
+              */
 
-        _this.uid = _this.user.uid;
-      });
     }
   }
 });
@@ -4473,7 +4482,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     editingCase: function editingCase() {
       var _this2 = this;
 
+<<<<<<< HEAD
       var channel = Echo.join("case.".concat(this.case_to_show.cid));
+=======
+      var channel = Echo.join("case.".concat(this.case_to_show.cid)); // pusher.subscribe("").bind("updated", function(message) {
+      //   let [rowIndex, columnIndex, oldValue, newValue] = message.change;
+      //   addCellValue(rowIndex, columnIndex, newValue);
+      //   table.loadData(sheetContent);
+      // });
+
+>>>>>>> ea5186111d99241216df818111b80a37846bdc4b
       console.log("hello from editing case"); //show changes after 1s
 
       setTimeout(function () {
@@ -5254,6 +5272,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /**
  * write a component's description
@@ -5304,28 +5328,64 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
-
-    /**
-     * @description
-     * @returns {any}
-     */
     filterCases: function filterCases() {
-      this.filtered_cases = [];
-      this.temp = []; //temp var for case studies
+      var _this = this;
+
+      this.filtered_cases = []; //These for loops get the case studies on which one or more parameters apply individually
+      //That is if user selects to filter by location and damage type, the algorithm will
+      //fetch all case studies with either one or both of the parameter's selected option.
+
+      this.case_studies_with_selected_option = []; //temp var for case studies
       //look for case studies(cid) where selected option = selected param
 
       for (var j = 0; j < this.all_cases_parameters.length; j++) {
         for (var c = 0; c < this.case_parameters.length; c++) {
           if (this.all_cases_parameters[j].opt_selected == this.selected_param[c]) {
-            this.temp.push(this.all_cases_parameters[j]);
+            this.case_studies_with_selected_option.push(this.all_cases_parameters[j]);
           }
         }
-      } //filter those cid's from the list of case studies with parameters(list_cases)
+      } //get count of selected parameters
 
 
-      for (var i = 0; i < this.temp.length; i++) {
+      this.count = 0;
+      this.selected_param.forEach(function (element) {
+        if (isNaN(element[_this.i])) {
+          _this.count = _this.count + 1;
+        }
+
+        _this.i++;
+      });
+      /*change array to elements that contain only the id's of the case studies*/
+
+      this.ids = [];
+      this.case_studies_with_selected_option.forEach(function (element) {
+        _this.ids.push(element.cid);
+      });
+      this.case_studies_with_selected_option = this.ids;
+      /************************* */
+      //get count of id's
+
+      this.temp = {};
+      var vm = this;
+      this.case_studies_with_selected_option.forEach(function (i) {
+        vm.temp[i] = (vm.temp[i] || 0) + 1;
+      });
+      this.case_study_with_id_count = []; //create array containing count of each case study id
+
+      for (var i in this.temp) {
+        this.case_study_with_id_count.push({
+          cid: i,
+          count: this.temp[i]
+        });
+      }
+
+      console.log(this.case_study_with_id_count); //filter those cid's from the list of case studies with parameters(list_cases)
+
+      for (var _i = 0; _i < this.case_study_with_id_count.length; _i++) {
         for (var k = 0; k < this.list_cases.length; k++) {
-          if (this.list_cases[k].cid == this.temp[i].cid) {
+          //if the count of case study id equals to those of selected parameters
+          //verify if case id is in case study search list(list_cases) and append to filtered list
+          if (this.case_study_with_id_count[_i].count == this.count && this.list_cases[k].cid == this.case_study_with_id_count[_i].cid) {
             this.filtered_cases.push(this.list_cases[k]);
           }
         }
@@ -5334,14 +5394,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a fitler has been selected
 
-      if (!this.temp.length && this.selected_param.length) {
+      if (!this.case_studies_with_selected_option.length && this.selected_param.length) {
         return [];
       } //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
 
 
-      if (!this.temp.length && !this.selected_param.length) {
+      if (!this.case_studies_with_selected_option.length && !this.selected_param.length) {
         return this.list_cases;
       }
 
@@ -5353,16 +5413,16 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch all system parameters(filters)
      */
     fetchParameters: function fetchParameters() {
-      var _this = this;
+      var _this2 = this;
 
       fetch("/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this.case_parameters = res.data;
+        _this2.case_parameters = res.data;
 
-        if (_this.cases) {
-          _this.list_cases = Object.values(_this.cases);
-          _this.empty = false;
+        if (_this2.cases) {
+          _this2.list_cases = Object.values(_this2.cases);
+          _this2.empty = false;
         }
       })["catch"](function (err) {
         return console.log(err);
@@ -5374,12 +5434,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch all parameters options
      */
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this2 = this;
+      var _this3 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.parameter_options = res.data;
+        _this3.parameter_options = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -5389,12 +5449,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch the parameters all case studies have correspondingly
      */
     fetchAllCasesParameters: function fetchAllCasesParameters() {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/cs-parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.all_cases_parameters = res.data;
+        _this4.all_cases_parameters = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -89773,7 +89833,31 @@ var render = function() {
       _vm._v(" "),
       _vm._m(1),
       _vm._v(" "),
-      _vm._m(2),
+      _c(
+        "form",
+        {
+          staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
+          attrs: { action: "/search" }
+        },
+        [
+          !_vm.disable_header_search
+            ? _c("div", { staticClass: "input-group mb-3" }, [
+                _c("input", {
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    name: "q",
+                    placeholder: "search",
+                    "aria-label": "Search",
+                    "aria-describedby": "basic-addon2"
+                  }
+                }),
+                _vm._v(" "),
+                _vm._m(2)
+              ])
+            : _vm._e()
+        ]
+      ),
       _vm._v(" "),
       _c("ul", { staticClass: "navbar-nav mr-3" }, [
         _vm._m(3),
@@ -89884,38 +89968,16 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "form",
-      {
-        staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
-        attrs: { action: "/search" }
-      },
-      [
-        _c("div", { staticClass: "input-group mb-3" }, [
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              name: "q",
-              placeholder: "search",
-              "aria-label": "Search",
-              "aria-describedby": "basic-addon2"
-            }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "input-group-append" }, [
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-primary border-0 btn-sm",
-                attrs: { type: "submit" }
-              },
-              [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
-            )
-          ])
-        ])
-      ]
-    )
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary border-0 btn-sm",
+          attrs: { type: "submit" }
+        },
+        [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
+      )
+    ])
   },
   function() {
     var _vm = this
@@ -91570,15 +91632,17 @@ var render = function() {
                   "div",
                   { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
                   [
-                    _c("div", { staticClass: "card h-100  text-center" }, [
-                      _c(
-                        "i",
-                        {
-                          staticClass: "material-icons pt-2",
-                          staticStyle: { "font-size": "125px" }
-                        },
-                        [_vm._v("image")]
-                      ),
+                    _c("div", { staticClass: "card h-100 text-center" }, [
+                      _c("img", {
+                        staticClass: "card-img-top",
+                        staticStyle: { height: "150px", width: "125px" },
+                        attrs: {
+                          src: "../images/" + case_study.c_thumbnail,
+                          onerror:
+                            "this.onerror=null;this.src='../images/image_placeholder.jpg';",
+                          alt: "..."
+                        }
+                      }),
                       _vm._v(" "),
                       _c("div", { staticClass: "card-body" }, [
                         _c("h5", { staticClass: "card-title" }, [
@@ -91648,7 +91712,7 @@ var staticRenderFns = [
             _c(
               "button",
               {
-                staticClass: "btn btn-light border-0 btn-sm",
+                staticClass: "btn btn-primary border-0 btn-sm",
                 attrs: { type: "submit" }
               },
               [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]

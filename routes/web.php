@@ -260,4 +260,3 @@ Route::get('/admin/user/{id}/edit', 'AdminUserController@edit');
 Route::put('/admin/user/{id}', 'AdminUserController@update');
 
 
-

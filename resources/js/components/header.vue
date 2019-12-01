@@ -17,8 +17,9 @@
     </button>
 
     <!-- Search bar -->
+
     <form action="/search" class="navbar-form navbar-right ml-auto mt-2 mr-5 search">
-      <div class="input-group mb-3">
+      <div v-if="!disable_header_search" class="input-group mb-3">
         <input
           type="text"
           name="q"
@@ -110,15 +111,24 @@ export default {
       uid: 10,
       isAdmin: true, //change to false when integration is complete
       isViewer: false,
-      isCollaborator: false
+      isCollaborator: false,
+      disable_header_search:false
     };
   },
+
+created(){
+this.getUser();
+},
   methods: {
 
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
-
+      this.q = this.urlParams.get("q");
+      if(this.q!=null){
+          this.disable_header_search=true;
+      }
+/*
       fetch("/user?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
@@ -132,6 +142,7 @@ export default {
           }
           this.uid = this.user.uid;
         });
+        */
     }
   }
 };
