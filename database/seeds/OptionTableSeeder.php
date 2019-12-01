@@ -14,12 +14,16 @@ class OptionTableSeeder extends Seeder
 
         $options =
         //option for incident date
-        [['o_content'=>'Placeholder','o_parameter'=>1],
+        [['o_content'=>'This year','o_parameter'=>1],
+		 ['o_content'=>'This month','o_parameter'=>1],
+		 ['o_content'=>'This week','o_parameter'=>1],
+		 ['o_content'=>'Today','o_parameter'=>1],
 
         //options for damage type
         ['o_content'=>'Hurricane','o_parameter'=>2],
         ['o_content'=>'Flooding','o_parameter'=>2],
         ['o_content'=>'Earthquake','o_parameter'=>2],
+		['o_content'=>'Coast Erosion','o_parameter'=>2],
 
         //options for infrastructure
         //['o_content'=>'Hurricane','o_parameter'=>3],
