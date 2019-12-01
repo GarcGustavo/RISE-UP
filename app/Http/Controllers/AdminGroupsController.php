@@ -35,7 +35,7 @@ class AdminGroupsController extends Controller
                      ->on('limitActionType.a_date', '=', 'limitActionDate.recent_action_date');
             })
             ->join('Action_Type', 'Action_Type.act_id', '=', 'limitActionType.recent_action_type')
-            ->join('Group', 'Group.gid', '=', 'User_Groups.gid')
+            ->rightJoin('Group', 'Group.gid', '=', 'User_Groups.gid')
             ->join('User', 'User.uid', '=', 'Group.g_owner')
             ->orderBy('recent_action_date', 'desc')
             //->orderBy('g_creation_date', 'desc')
