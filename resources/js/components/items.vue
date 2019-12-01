@@ -20,7 +20,7 @@
                 v-model="case_study.c_title"
                 v-if="editing"
                 :maxlength="32"
-                @keydown="editingCase"
+                @keydown="editingCase()"
               />
               <h1 class="text-capitalize" v-if="!editing">{{case_study.c_title}}</h1>
             </h1>
@@ -374,37 +374,50 @@ export default {
   },
 
   mounted() {
-    Echo.join(`App.User.${this.user.uid}`)
-      .here(users => {
-        this.usersEditing = users;
-      })
-      .joining(user => {
-        this.usersEditing.push(users[0]);
-      })
-      .leaving(user => {
-        this.usersEditing = this.usersEditing.filter(u => u != users[0]);
-      })
-      .listenForWhisper("editing", e => {
-        //this.case_study.c_title = e.title;
-        //this.items.i_content = e.body;
-      })
-      .listenForWhisper("saved", e => {
-        //this.case_study.c_status = e.status;
+    Echo.join(`case.${this.case_to_show.cid}`).listenForWhisper(
+      "editing",
+      e => {
+        this.case_to_show.c_title = e.title;
+        this.items.forEach(element => {
+          this.items[element] = e.items[element];
+        });
+        console.log("hell from channel");
+      }
+    );
+    // .here(users => {
+    //   this.usersEditing = users;
+    // })
+    // .joining(user => {
+    //   this.usersEditing.push(users[0]);
+    // })
+    // .leaving(user => {
+    //   this.usersEditing = this.usersEditing.filter(u => u != users[0]);
+    // })
+    // .listenForWhisper("saved", e => {
+    //   //this.case_study.c_status = e.status;
 
-        // clear is status after 1s
-        setTimeout(() => {
-          //this.case_study.c_status = "";
-        }, 1000);
-      });
+    //   // clear is status after 1s
+    //   setTimeout(() => {
+    //     //this.case_study.c_status = "";
+    //   }, 1000);
+    // });
   },
   methods: {
     editingCase() {
-      let channel = Echo.join(`App.User.${this.user.uid}`);
-      // show changes after 1s
+      let channel = Echo.join(`case.${this.case_to_show.cid}`);
+
+      // pusher.subscribe("").bind("updated", function(message) {
+      //   let [rowIndex, columnIndex, oldValue, newValue] = message.change;
+      //   addCellValue(rowIndex, columnIndex, newValue);
+      //   table.loadData(sheetContent);
+      // });
+
+      console.log("hello from editing case");
+      //show changes after 1s
       setTimeout(() => {
         channel.whisper("editing", {
-          title: this.case_study.c_title,
-          body: this.items.i_content
+          title: this.case_to_show.c_title,
+          items: this.items
         });
       }, 1000);
     },
@@ -597,7 +610,7 @@ export default {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
       var formData = new FormData();
-      if(this.files && this.images[index]){
+      if (this.files && this.images[index]) {
         formData.append("image", this.files[0]);
       }
       formData.append("i_case", item_to_update.i_case);
