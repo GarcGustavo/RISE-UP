@@ -129,30 +129,6 @@ class CaseController extends Controller
         */
     public function show_case_group($id)
     {
-
-        /*
-        //renaming attributes
-        $attributes = array(
-            'gid' => 'group id',
-        );
-        //validation rules
-        $validator = Validator::make($request->all(), [
-            'gid' => ['bail','exists:Group','required','integer',
-            //if exist verify group has not been removed
-            Rule::exists('Group')->where(function ($query) use ($request) {
-                return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
-            })]
-        ], ['gid.exists' => 'The group id does not exists.']);
-        //apply renaming attributes
-        $validator->setAttributeNames($attributes);
-        //validate request
-        if ($validator->fails()) {
-            return response()->json(['errors'=> $validator->errors()->all()]);
-        }
-        */
-        //process request
-
-
         $gid = $id;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
@@ -324,14 +300,18 @@ class CaseController extends Controller
      */
     public function updateCaseDetails(Request $request, $id)
     {
-        $cid = $request->input('cid');
-        $c_title = $request->input('c_title');
-        $c_description = $request->input('c_description');
-        $c_thumbnail = $request->input('c_thumbnail');
-        $c_status = $request->input('c_status');
-        $c_date = $request->input('c_date');
-        $c_owner = $request->input('c_owner');
-        $c_group = $request->input('c_group');
+        $c_thumbnail = $request->c_thumbnail;
+        if($request->hasFile('image')){
+            $c_thumbnail = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $request->file('image')->move(public_path('images'), $c_thumbnail);
+        }
+        $cid = $request->cid;
+        $c_title = $request->c_title;
+        $c_description = $request->c_description;
+        $c_status = $request->c_status;
+        $c_date = $request->c_date;
+        $c_owner = $request->c_owner;
+        $c_group = $request->c_group;
         Case_Study::where(['cid' => $cid])
         ->update([
             'c_title' => $c_title,

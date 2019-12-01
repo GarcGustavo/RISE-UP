@@ -66,7 +66,7 @@
       </div>
       <div class="row" style="margin: 50px; background: white;">
         <!-- Case Description and Thumbnail -->
-        <div class="col-md-9">
+        <div class="col-md-8">
           <h4 class="card-title border-0" style="margin: 10px;">Description:</h4>
           <div class="card-body">
             <h5 v-for="(case_study,index) in case_to_show" :key="index">
@@ -85,9 +85,26 @@
             </h5>
           </div>
         </div>
-        <div class="col-md-2.5 border shadow">
-          <!-- Thumbnail Placeholder -->
-          <img src="../../../public/images/nsf_logo.jpg" />
+        <div
+          class="col-md-4.5 border shadow form-group text-break text-center"
+          style="margin-top: 10px; margin-right: 10px;"
+          v-for="(case_study,index) in case_to_show"
+          :key="index"
+        >
+          <!-- Thumbnail -->
+          <div :key="previewThumbnail">
+            <input
+              enctype="multipart/form-data"
+              type="file"
+              accept="image/*"
+              v-if="editing"
+              @change="uploadThumbnail($event)"
+              id="file-input"
+            />
+            <img style="margin-top: 10px;" v-if="editing && !previewThumbnail" :src="'../images/' + case_study.c_thumbnail" />
+            <img style="margin-top: 10px;" v-if="editing && previewThumbnail" :src="thumbnail_preview" />
+          </div>
+          <img style="margin-top: 10px;" v-if="!editing" :src="'../images/' + case_study.c_thumbnail" />
         </div>
       </div>
       <div class="row" style="margin: 50px; background: white;">
@@ -145,7 +162,7 @@
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
-                  <a>{{index + 1}}: {{item.i_name}}</a>
+                  <a href="#">{{index + 1}}: {{item.i_name}}</a>
                 </li>
               </ul>
             </div>
@@ -315,6 +332,9 @@ export default {
       actor: "",
       total_items: "",
       images: [],
+      image_names: [],
+      thumbnail_preview: "",
+      previewThumbnail: false,
       preview: false,
       case_study: {
         cid: "",
@@ -578,24 +598,29 @@ export default {
     },
     updateCase() {
       this.cid = this.case_to_show[0].cid;
-      this.updated_case = {
-        cid: this.cid,
-        c_title: this.case_to_show[0].c_title,
-        c_description: this.case_to_show[0].c_description,
-        c_thumbnail: this.case_to_show[0].c_thumbnail,
-        c_status: this.case_to_show[0].c_status,
-        c_date: this.case_to_show[0].c_date,
-        c_owner: this.case_to_show[0].c_owner,
-        c_group: this.case_to_show[0].c_group
-      };
+
+      var form_data = new FormData();
+      if (this.files && this.thumbnail_preview) {
+        form_data.append("image", this.files[0]);
+      }
+      form_data.append("cid", this.cid);
+      form_data.append("c_title", this.case_to_show[0].c_title);
+      form_data.append("c_description", this.case_to_show[0].c_description);
+      form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
+      form_data.append("c_status", this.case_to_show[0].c_status);
+      form_data.append("c_date", this.case_to_show[0].c_date);
+      form_data.append("c_owner", this.case_to_show[0].c_owner);
+      form_data.append("c_group", this.case_to_show[0].c_group);
+
       fetch("/case/" + this.cid + "/update", {
         method: "post",
         headers: new Headers({
-          "Content-Type": "application/json",
+          //"Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_case)
+        //body: JSON.stringify(this.updated_case)
+        body: form_data
       })
         .then(res => res.text())
         .then(text => {
@@ -609,16 +634,16 @@ export default {
     updateItem(item_to_update, index) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      var formData = new FormData();
+      var form_data = new FormData();
       if (this.files && this.images[index]) {
-        formData.append("image", this.files[0]);
+        form_data.append("image", this.image_names[index]);
       }
-      formData.append("i_case", item_to_update.i_case);
-      formData.append("i_type", item_to_update.i_type);
-      formData.append("order", Number(item_to_update.order));
-      formData.append("i_name", item_to_update.i_name);
-      formData.append("i_content", item_to_update.i_content);
-      //console.log(formData.get('i_content'));
+      form_data.append("i_case", item_to_update.i_case);
+      form_data.append("i_type", item_to_update.i_type);
+      form_data.append("order", Number(item_to_update.order));
+      form_data.append("i_name", item_to_update.i_name);
+      form_data.append("i_content", item_to_update.i_content);
+      //console.log(form_data.get('i_content'));
       fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
         headers: new Headers({
@@ -627,7 +652,7 @@ export default {
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
         //body: JSON.stringify(this.updated_item)
-        body: formData
+        body: form_data
       })
         .then(res => res.text())
         .then(text => {
@@ -756,6 +781,7 @@ export default {
       this.gid = this.initial_gid;
       this.editing = false;
       this.preview = false;
+      this.previewThumbnail = false;
 
       this.fetchGroup(this.gid);
       this.fetchItems();
@@ -779,6 +805,7 @@ export default {
     onSubmit(items) {
       this.editing = false;
       this.preview = false;
+      this.previewThumbnail = false;
       this.updateParams();
       this.updateItems(items);
       this.updateCase();
@@ -799,11 +826,24 @@ export default {
       //var image = new Image();
       var reader = new FileReader();
       this.files = e.target.files || e.dataTransfer.files;
+      this.image_names[index] = this.files[0];
 
       reader.readAsDataURL(this.files[0]);
       reader.onload = e => {
         this.images[index] = e.target.result;
         this.preview = true;
+      };
+    },
+    uploadThumbnail(e) {
+      //This reads an image from a data url stored in the item
+      //var image = new Image();
+      var reader = new FileReader();
+      this.files = e.target.files || e.dataTransfer.files;
+
+      reader.readAsDataURL(this.files[0]);
+      reader.onload = e => {
+        this.thumbnail_preview = e.target.result;
+        this.previewThumbnail = true;
       };
     }
   }
