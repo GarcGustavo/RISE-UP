@@ -5147,15 +5147,29 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+
+/**
+ * write a component's description
+ */
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     cases: {
       type: [Object, Number, Array],
+
+      /**
+       * @description
+       * @returns {any}
+       */
       "default": function _default() {
         return [];
       }
     }
   },
+
+  /**
+   * @description
+   * @returns {any}
+   */
   data: function data() {
     return {
       selected_param: [],
@@ -5169,6 +5183,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       empty: true
     };
   },
+
+  /**
+   * @description
+   */
   created: function created() {
     this.fetchParameters();
     this.fetchParameterOptions();
@@ -5179,9 +5197,15 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
+
+    /**
+     * @description
+     * @returns {any}
+     */
     filterCases: function filterCases() {
       this.filtered_cases = [];
-      this.temp = [];
+      this.temp = []; //temp var for case studies
+      //look for case studies(cid) where selected option = selected param
 
       for (var j = 0; j < this.all_cases_parameters.length; j++) {
         for (var c = 0; c < this.case_parameters.length; c++) {
@@ -5189,20 +5213,17 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.temp.push(this.all_cases_parameters[j]);
           }
         }
-      }
+      } //filter those cid's from the list of case studies with parameters(list_cases)
 
-      console.log(this.temp);
 
       for (var i = 0; i < this.temp.length; i++) {
-        //  this.temp_list_cases = this.list_cases.filter(x => {
-        //   return x.cid == this.temp[i].cid;
-        //  });
         for (var k = 0; k < this.list_cases.length; k++) {
           if (this.list_cases[k].cid == this.temp[i].cid) {
             this.filtered_cases.push(this.list_cases[k]);
           }
         }
-      }
+      } //Eliminate duplicates
+
 
       this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a fitler has been selected
 
@@ -5221,6 +5242,9 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     }
   },
   methods: {
+    /**
+     * @description fetch all system parameters(filters)
+     */
     fetchParameters: function fetchParameters() {
       var _this = this;
 
@@ -5238,6 +5262,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       });
       this.fetchParameterOptions();
     },
+
+    /**
+     * @description fetch all parameters options
+     */
     fetchParameterOptions: function fetchParameterOptions() {
       var _this2 = this;
 
@@ -5249,6 +5277,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         return console.log(err);
       });
     },
+
+    /**
+     * @description fetch the parameters all case studies have correspondingly
+     */
     fetchAllCasesParameters: function fetchAllCasesParameters() {
       var _this3 = this;
 
@@ -5260,14 +5292,16 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         return console.log(err);
       });
     },
+
+    /**
+     * @description filterss the options in parameter_options with their corresponding parameter
+     * @param {any} parameter system parameter
+     * @returns {any} options for that parameter
+     */
     filteredOptions: function filteredOptions(parameter) {
       return this.parameter_options.filter(function (option) {
         return option.o_parameter == parameter;
       });
-    },
-    onSelectOption: function onSelectOption(selected_op, index) {
-      this.case_parameters[index].o_content = selected_op.o_content;
-      this.case_parameters[index].opt_selected = selected_op.oid;
     }
   }
 });
@@ -91346,18 +91380,18 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _c("div", { staticClass: "card shadow" }, [
+    _c("div", { staticClass: "card p-3 shadow" }, [
       !_vm.empty
         ? _c("div", [
             _c(
               "div",
-              { staticClass: "row mt-1 pt-2 pl-4", attrs: { id: "cases" } },
+              { staticClass: "row mt-1 pt-2 pl-2", attrs: { id: "cases" } },
               _vm._l(_vm.filterCases, function(case_study) {
                 return _c(
                   "div",
                   { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
                   [
-                    _c("div", { staticClass: "card h-100 text-center" }, [
+                    _c("div", { staticClass: "card h-100  text-center" }, [
                       _c(
                         "i",
                         {

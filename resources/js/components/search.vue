@@ -46,11 +46,11 @@
     </div>
 
     <!-- case studies search -->
-    <div class="card shadow">
+    <div class="card p-3 shadow">
       <div v-if="!empty">
-        <div class="row mt-1 pt-2 pl-4" id="cases">
+        <div class="row mt-1 pt-2 pl-2" id="cases">
           <div class="col-lg-6 mb-4" v-for="case_study in filterCases" :key="case_study.cid">
-            <div class="card h-100 text-center">
+            <div class="card h-100  text-center">
               <!-- <img src="..." class="card-img-top" alt="..."> -->
               <i class="material-icons pt-2" style="font-size: 125px">image</i>
               <div class="card-body">
@@ -75,15 +75,26 @@
 </template>
 
 <script>
+/**
+ * write a component's description
+ */
 export default {
   props: {
     cases: {
       type: [Object, Number, Array],
+      /**
+       * @description
+       * @returns {any}
+       */
       default: function() {
         return [];
       }
     }
   },
+  /**
+   * @description
+   * @returns {any}
+   */
   data() {
     return {
       selected_param: [],
@@ -99,6 +110,9 @@ export default {
       empty: true
     };
   },
+  /**
+   * @description
+   */
   created() {
     this.fetchParameters();
     this.fetchParameterOptions();
@@ -110,11 +124,16 @@ export default {
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
+    /**
+     * @description
+     * @returns {any}
+     */
     filterCases() {
       this.filtered_cases = [];
 
-      this.temp = [];
+      this.temp = []; //temp var for case studies
 
+      //look for case studies(cid) where selected option = selected param
       for (let j = 0; j < this.all_cases_parameters.length; j++) {
         for (let c = 0; c < this.case_parameters.length; c++) {
           if (
@@ -125,19 +144,17 @@ export default {
         }
       }
 
-      console.log(this.temp);
-
+      //filter those cid's from the list of case studies with parameters(list_cases)
       for (let i = 0; i < this.temp.length; i++) {
-        //  this.temp_list_cases = this.list_cases.filter(x => {
-        //   return x.cid == this.temp[i].cid;
-        //  });
         for (let k = 0; k < this.list_cases.length; k++) {
           if (this.list_cases[k].cid == this.temp[i].cid) {
             this.filtered_cases.push(this.list_cases[k]);
           }
         }
       }
+      //Eliminate duplicates
       this.filtered_cases = [...new Set(this.filtered_cases)];
+
       //if no case was found and a fitler has been selected
       if (!this.temp.length && this.selected_param.length) {
         return [];
@@ -153,6 +170,9 @@ export default {
   },
 
   methods: {
+    /**
+     * @description fetch all system parameters(filters)
+     */
     fetchParameters() {
       fetch("/parameters")
         .then(res => res.json())
@@ -167,6 +187,9 @@ export default {
         .catch(err => console.log(err));
       this.fetchParameterOptions();
     },
+    /**
+     * @description fetch all parameters options
+     */
     fetchParameterOptions() {
       fetch("/parameter/options")
         .then(res => res.json())
@@ -175,6 +198,9 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    /**
+     * @description fetch the parameters all case studies have correspondingly
+     */
     fetchAllCasesParameters() {
       fetch("/cs-parameters")
         .then(res => res.json())
@@ -183,16 +209,17 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    /**
+     * @description filterss the options in parameter_options with their corresponding parameter
+     * @param {any} parameter system parameter
+     * @returns {any} options for that parameter
+     */
     filteredOptions(parameter) {
       return this.parameter_options.filter(
         option => option.o_parameter == parameter
       );
     },
 
-    onSelectOption(selected_op, index) {
-      this.case_parameters[index].o_content = selected_op.o_content;
-      this.case_parameters[index].opt_selected = selected_op.oid;
-    }
   }
 };
 </script>
