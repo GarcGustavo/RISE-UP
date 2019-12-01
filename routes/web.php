@@ -39,6 +39,7 @@ Route::get('/user/cases', 'ViewsController@userCases');
 //Software requirement 2.2.3.4 - case study page
 Route::get('/case/body', 'ViewsController@showCaseBody');
 
+Route::any('/search','ViewsController@search');
 
 /********USERS*********/
 
@@ -160,6 +161,9 @@ Route::get('/parameters','CS_ParameterController@getParameters');
 Route::get('/parameter/options','CS_ParameterController@getParameterOptions');
 
 //List case parameters
+Route::get('/cs-parameters', 'Case_ParametersController@getParameters');
+
+//List case parameters of a case study
 Route::get('/case/{id}/parameters','Case_ParametersController@getCaseParameters');
 
 //List case parameter selected options
@@ -254,4 +258,6 @@ Route::get('/admin/user/{id}/edit', 'AdminUserController@edit');
 //Software Requirement 2.76. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
 //Software Requirement 2.77. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
 Route::put('/admin/user/{id}', 'AdminUserController@update');
-//
+
+
+
