@@ -12,7 +12,7 @@
           aria-describedby="basic-addon2"
         >
         <div class="input-group-append">
-          <button class="btn btn-light border-0 btn-sm" type="submit">
+          <button class="btn btn-primary border-0 btn-sm" type="submit">
             <i class="material-icons">search</i>
           </button>
         </div>
@@ -50,9 +50,15 @@
       <div v-if="!empty">
         <div class="row mt-1 pt-2 pl-2" id="cases">
           <div class="col-lg-6 mb-4" v-for="case_study in filterCases" :key="case_study.cid">
-            <div class="card h-100  text-center">
-              <!-- <img src="..." class="card-img-top" alt="..."> -->
-              <i class="material-icons pt-2" style="font-size: 125px">image</i>
+            <div class="card h-100 text-center">
+              <img
+                :src="'../images/'+case_study.c_thumbnail"
+                style="height:150px;width:125px"
+                onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                class="card-img-top"
+                alt="..."
+              >
+              <!-- <i class="material-icons pt-2" style="font-size: 125px">image</i> -->
               <div class="card-body">
                 <h5 class="card-title">
                   <a
@@ -124,30 +130,66 @@ export default {
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
-    /**
-     * @description
-     * @returns {any}
-     */
     filterCases() {
       this.filtered_cases = [];
 
-      this.temp = []; //temp var for case studies
-
+      //These for loops get the case studies on which one or more parameters apply individually
+      //That is if user selects to filter by location and damage type, the algorithm will
+      //fetch all case studies with either one or both of the parameter's selected option.
+      this.case_studies_with_selected_option = []; //temp var for case studies
       //look for case studies(cid) where selected option = selected param
       for (let j = 0; j < this.all_cases_parameters.length; j++) {
         for (let c = 0; c < this.case_parameters.length; c++) {
           if (
             this.all_cases_parameters[j].opt_selected == this.selected_param[c]
           ) {
-            this.temp.push(this.all_cases_parameters[j]);
+            this.case_studies_with_selected_option.push(
+              this.all_cases_parameters[j]
+            );
           }
         }
       }
+      //get count of selected parameters
+      this.count = 0;
+      this.selected_param.forEach(element => {
+        if (isNaN(element[this.i])) {
+          this.count = this.count + 1;
+        }
+        this.i++;
+      });
+      /*change array to elements that contain only the id's of the case studies*/
+      this.ids = [];
+      this.case_studies_with_selected_option.forEach(element => {
+        this.ids.push(element.cid);
+      });
+      this.case_studies_with_selected_option = this.ids;
+      /************************* */
 
+      //get count of id's
+      this.temp = {};
+      var vm = this;
+      this.case_studies_with_selected_option.forEach(function(i) {
+        vm.temp[i] = (vm.temp[i] || 0) + 1;
+      });
+
+      this.case_study_with_id_count = [];
+      //create array containing count of each case study id
+      for (let i in this.temp) {
+        this.case_study_with_id_count.push({
+          cid: i,
+          count: this.temp[i]
+        });
+      }
+      console.log(this.case_study_with_id_count);
       //filter those cid's from the list of case studies with parameters(list_cases)
-      for (let i = 0; i < this.temp.length; i++) {
+      for (let i = 0; i < this.case_study_with_id_count.length; i++) {
         for (let k = 0; k < this.list_cases.length; k++) {
-          if (this.list_cases[k].cid == this.temp[i].cid) {
+          //if the count of case study id equals to those of selected parameters
+          //verify if case id is in case study search list(list_cases) and append to filtered list
+          if (
+            this.case_study_with_id_count[i].count == this.count &&
+            this.list_cases[k].cid == this.case_study_with_id_count[i].cid
+          ) {
             this.filtered_cases.push(this.list_cases[k]);
           }
         }
@@ -156,13 +198,19 @@ export default {
       this.filtered_cases = [...new Set(this.filtered_cases)];
 
       //if no case was found and a fitler has been selected
-      if (!this.temp.length && this.selected_param.length) {
+      if (
+        !this.case_studies_with_selected_option.length &&
+        this.selected_param.length
+      ) {
         return [];
       }
       //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
-      if (!this.temp.length && !this.selected_param.length) {
+      if (
+        !this.case_studies_with_selected_option.length &&
+        !this.selected_param.length
+      ) {
         return this.list_cases;
       }
       return this.filtered_cases;
@@ -218,8 +266,7 @@ export default {
       return this.parameter_options.filter(
         option => option.o_parameter == parameter
       );
-    },
-
+    }
   }
 };
 </script>
