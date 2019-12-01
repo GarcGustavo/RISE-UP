@@ -56,7 +56,7 @@
               <option
                 class="dropdown-item"
                 href="#"
-                v-for="(group, index) in this.all_groups.filter(group => group.g_owner == case_to_show[0].c_owner)"
+                v-for="(group, index) in this.all_groups"
                 :key="index"
                 v-on:click="onSelectGroup(group.gid)"
               >{{index + 1}}: {{group.g_name}}</option>
@@ -101,10 +101,25 @@
               @change="uploadThumbnail($event)"
               id="file-input"
             />
-            <img style="margin-top: 10px;" v-if="editing && !previewThumbnail" :src="'../images/' + case_study.c_thumbnail" />
-            <img style="margin-top: 10px;" v-if="editing && previewThumbnail" :src="thumbnail_preview" />
+            <img
+              style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+              v-if="editing && !previewThumbnail"
+              :src="'../images/' + case_study.c_thumbnail"
+              onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+            />
+            <img
+              style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+              v-if="editing && previewThumbnail"
+              :src="thumbnail_preview"
+              onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+            />
           </div>
-          <img style="margin-top: 10px;" v-if="!editing" :src="'../images/' + case_study.c_thumbnail" />
+          <img
+            style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+            v-if="!editing"
+            :src="'../images/' + case_study.c_thumbnail"
+            onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+          />
         </div>
       </div>
       <div class="row" style="margin: 50px; background: white;">
@@ -278,14 +293,16 @@
                               @change="uploadImage($event, item, index)"
                               id="file-input"
                             />
-                            <div :key="preview">
+                            <div :key="preview[index]">
                               <img
-                                v-if="editing && (item.i_type == 2) && !preview"
+                                v-if="editing && (item.i_type == 2) && !preview[index]"
                                 :src="'../images/' + item.i_content"
+                                onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
                               />
                               <img
-                                v-if="editing && (item.i_type == 2) && preview"
+                                v-if="editing && (item.i_type == 2) && preview[index]"
                                 :src="images[index]"
+                                onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
                               />
                             </div>
                           </div>
@@ -300,7 +317,10 @@
                         class="form-group text-break text-center"
                         v-if="!editing && (item.i_type == 2)"
                       >
-                        <img :src="'../images/' + item.i_content" />
+                        <img
+                          :src="'../images/' + item.i_content"
+                          onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                        />
                         {{item.i_content}}
                       </div>
                     </div>
@@ -335,8 +355,10 @@ export default {
       image_names: [],
       thumbnail_name: "",
       thumbnail_preview: "",
+      thumbnail_files: [],
+      independent: false,
       previewThumbnail: false,
-      preview: false,
+      preview: [],
       case_study: {
         cid: "",
         c_title: "",
@@ -385,6 +407,7 @@ export default {
     };
   },
   created() {
+    this.preview[0] = false;
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
@@ -426,12 +449,6 @@ export default {
   methods: {
     editingCase() {
       let channel = Echo.join(`case.${this.case_to_show.cid}`);
-
-      // pusher.subscribe("").bind("updated", function(message) {
-      //   let [rowIndex, columnIndex, oldValue, newValue] = message.change;
-      //   addCellValue(rowIndex, columnIndex, newValue);
-      //   table.loadData(sheetContent);
-      // });
 
       console.log("hello from editing case");
       //show changes after 1s
@@ -488,16 +505,19 @@ export default {
         .catch(err => console.log(err));
     },
     fetchUserGroups() {
-      fetch("/groups/")
+      fetch("/group/show?uid=" + this.case_to_show[0].c_owner)
         .then(res => res.json())
         .then(res => {
           this.all_groups = res.data;
+          this.all_groups.unshift({
+            gid: null,
+            g_name: "No Group",
+            g_owner: "No Owner"
+          });
           console.log(res.data);
         })
         .catch(err => console.log(res.data));
-      //return this.all_groups.filter(group => group.g_owner == uid);
     },
-    //TODO
     fetchUsersEditing(cid) {
       fetch("/user/edit/" + cid)
         .then(res => res.json())
@@ -536,12 +556,16 @@ export default {
       this.fetchUsersEditing(this.cid);
     },
     fetchGroup(gid) {
-      fetch("/case/group/" + this.gid)
-        .then(res => res.json())
-        .then(res => {
-          this.groups = res.data;
-        })
-        .catch(err => console.log(err));
+      if (this.independent) {
+        this.groups[0].g_name = "No Group";
+      } else {
+        fetch("/case/group/" + this.gid)
+          .then(res => res.json())
+          .then(res => {
+            this.groups = res.data;
+          })
+          .catch(err => console.log(err));
+      }
     },
     fetchCaseParameters() {
       fetch("/case/" + this.cid + "/parameters")
@@ -601,7 +625,7 @@ export default {
       this.cid = this.case_to_show[0].cid;
 
       var form_data = new FormData();
-      if (this.files && this.thumbnail_preview) {
+      if (this.thumbnail_files && this.thumbnail_preview) {
         form_data.append("image", this.thumbnail_name);
       }
       form_data.append("cid", this.cid);
@@ -781,8 +805,10 @@ export default {
     onCancel() {
       this.gid = this.initial_gid;
       this.editing = false;
-      this.preview = false;
       this.previewThumbnail = false;
+      for (let index in this.preview) {
+        this.preview[index] = false;
+      }
 
       this.fetchGroup(this.gid);
       this.fetchItems();
@@ -805,7 +831,9 @@ export default {
     },
     onSubmit(items) {
       this.editing = false;
-      this.preview = false;
+      for (let index in this.preview) {
+        this.preview[index] = false;
+      }
       this.previewThumbnail = false;
       this.updateParams();
       this.updateItems(items);
@@ -814,6 +842,12 @@ export default {
       //this.updateParameter();
     },
     onSelectGroup(selected_gid) {
+      if (!selected_gid) {
+        this.independent = true;
+      }
+      else{
+        this.independent = false;
+      }
       this.gid = selected_gid;
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
@@ -827,24 +861,25 @@ export default {
       //var image = new Image();
       var reader = new FileReader();
       this.files = e.target.files || e.dataTransfer.files;
-      this.image_names[index] = this.files[0];
 
       reader.readAsDataURL(this.files[0]);
       reader.onload = e => {
         this.images[index] = e.target.result;
-        this.preview = true;
+        this.image_names[index] = this.files[0];
+        this.preview[index] = true;
       };
     },
     uploadThumbnail(e) {
       //This reads an image from a data url stored in the item
       //var image = new Image();
       var reader = new FileReader();
-      this.files = e.target.files || e.dataTransfer.files;
-      this.thumbnail_name = this.files[0];
+      this.thumbnail_files = e.target.files || e.dataTransfer.files;
+      //this.files = e.target.files || e.dataTransfer.files;
 
-      reader.readAsDataURL(this.files[0]);
+      reader.readAsDataURL(this.thumbnail_files[0]);
       reader.onload = e => {
         this.thumbnail_preview = e.target.result;
+        this.thumbnail_name = this.thumbnail_files[0];
         this.previewThumbnail = true;
       };
     }
@@ -872,7 +907,7 @@ export default {
 }
 //image display
 img {
-  width: 30%;
+  width: 50%;
   margin: auto;
   display: block;
   margin-bottom: 10px;

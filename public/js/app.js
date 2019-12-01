@@ -4338,6 +4338,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -4359,8 +4379,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       image_names: [],
       thumbnail_name: "",
       thumbnail_preview: "",
+      thumbnail_files: [],
+      independent: false,
       previewThumbnail: false,
-      preview: false,
+      preview: [],
       case_study: {
         cid: "",
         c_title: "",
@@ -4408,6 +4430,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }), _ref;
   },
   created: function created() {
+    this.preview[0] = false;
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
@@ -4448,12 +4471,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     editingCase: function editingCase() {
       var _this2 = this;
 
-      var channel = Echo.join("case.".concat(this.case_to_show.cid)); // pusher.subscribe("").bind("updated", function(message) {
-      //   let [rowIndex, columnIndex, oldValue, newValue] = message.change;
-      //   addCellValue(rowIndex, columnIndex, newValue);
-      //   table.loadData(sheetContent);
-      // });
-
+      var channel = Echo.join("case.".concat(this.case_to_show.cid));
       console.log("hello from editing case"); //show changes after 1s
 
       setTimeout(function () {
@@ -4530,16 +4548,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchUserGroups: function fetchUserGroups() {
       var _this7 = this;
 
-      fetch("/groups/").then(function (res) {
+      fetch("/group/show?uid=" + this.case_to_show[0].c_owner).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this7.all_groups = res.data;
+
+        _this7.all_groups.unshift({
+          gid: null,
+          g_name: "No Group",
+          g_owner: "No Owner"
+        });
+
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(res.data);
-      }); //return this.all_groups.filter(group => group.g_owner == uid);
+      });
     },
-    //TODO
     fetchUsersEditing: function fetchUsersEditing(cid) {
       var _this8 = this;
 
@@ -4583,13 +4607,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchGroup: function fetchGroup(gid) {
       var _this9 = this;
 
-      fetch("/case/group/" + this.gid).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this9.groups = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
+      if (this.independent) {
+        this.groups[0].g_name = "No Group";
+      } else {
+        fetch("/case/group/" + this.gid).then(function (res) {
+          return res.json();
+        }).then(function (res) {
+          _this9.groups = res.data;
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      }
     },
     fetchCaseParameters: function fetchCaseParameters() {
       var _this10 = this;
@@ -4654,7 +4682,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.cid = this.case_to_show[0].cid;
       var form_data = new FormData();
 
-      if (this.files && this.thumbnail_preview) {
+      if (this.thumbnail_files && this.thumbnail_preview) {
         form_data.append("image", this.thumbnail_name);
       }
 
@@ -4836,8 +4864,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onCancel: function onCancel() {
       this.gid = this.initial_gid;
       this.editing = false;
-      this.preview = false;
       this.previewThumbnail = false;
+
+      for (var index in this.preview) {
+        this.preview[index] = false;
+      }
+
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
@@ -4856,13 +4888,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     onSubmit: function onSubmit(items) {
       this.editing = false;
-      this.preview = false;
+
+      for (var index in this.preview) {
+        this.preview[index] = false;
+      }
+
       this.previewThumbnail = false;
       this.updateParams();
       this.updateItems(items);
       this.updateCase(); //this.updateParameter();
     },
     onSelectGroup: function onSelectGroup(selected_gid) {
+      if (!selected_gid) {
+        this.independent = true;
+      } else {
+        this.independent = false;
+      }
+
       this.gid = selected_gid;
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
@@ -4878,12 +4920,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //var image = new Image();
       var reader = new FileReader();
       this.files = e.target.files || e.dataTransfer.files;
-      this.image_names[index] = this.files[0];
       reader.readAsDataURL(this.files[0]);
 
       reader.onload = function (e) {
         _this12.images[index] = e.target.result;
-        _this12.preview = true;
+        _this12.image_names[index] = _this12.files[0];
+        _this12.preview[index] = true;
       };
     },
     uploadThumbnail: function uploadThumbnail(e) {
@@ -4892,12 +4934,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //This reads an image from a data url stored in the item
       //var image = new Image();
       var reader = new FileReader();
-      this.files = e.target.files || e.dataTransfer.files;
-      this.thumbnail_name = this.files[0];
-      reader.readAsDataURL(this.files[0]);
+      this.thumbnail_files = e.target.files || e.dataTransfer.files; //this.files = e.target.files || e.dataTransfer.files;
+
+      reader.readAsDataURL(this.thumbnail_files[0]);
 
       reader.onload = function (e) {
         _this13.thumbnail_preview = e.target.result;
+        _this13.thumbnail_name = _this13.thumbnail_files[0];
         _this13.previewThumbnail = true;
       };
     }
@@ -43747,7 +43790,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\nimg[data-v-475f3ef6] {\n  width: 30%;\n  margin: auto;\n  display: block;\n  margin-bottom: 10px;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\nimg[data-v-475f3ef6] {\n  width: 50%;\n  margin: auto;\n  display: block;\n  margin-bottom: 10px;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
 
 // exports
 
@@ -90338,33 +90381,26 @@ var render = function() {
                             id: "drop"
                           }
                         },
-                        _vm._l(
-                          this.all_groups.filter(function(group) {
-                            return group.g_owner == _vm.case_to_show[0].c_owner
-                          }),
-                          function(group, index) {
-                            return _c(
-                              "option",
-                              {
-                                key: index,
-                                staticClass: "dropdown-item",
-                                attrs: { href: "#" },
-                                on: {
-                                  click: function($event) {
-                                    return _vm.onSelectGroup(group.gid)
-                                  }
+                        _vm._l(this.all_groups, function(group, index) {
+                          return _c(
+                            "option",
+                            {
+                              key: index,
+                              staticClass: "dropdown-item",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.onSelectGroup(group.gid)
                                 }
-                              },
-                              [
-                                _vm._v(
-                                  _vm._s(index + 1) +
-                                    ": " +
-                                    _vm._s(group.g_name)
-                                )
-                              ]
-                            )
-                          }
-                        ),
+                              }
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(index + 1) + ": " + _vm._s(group.g_name)
+                              )
+                            ]
+                          )
+                        }),
                         0
                       )
                     ],
@@ -90477,23 +90513,47 @@ var render = function() {
                     _vm._v(" "),
                     _vm.editing && !_vm.previewThumbnail
                       ? _c("img", {
-                          staticStyle: { "margin-top": "10px" },
-                          attrs: { src: "../images/" + case_study.c_thumbnail }
+                          staticStyle: {
+                            "margin-top": "10px",
+                            "max-width": "250px",
+                            "max-height": "250px"
+                          },
+                          attrs: {
+                            src: "../images/" + case_study.c_thumbnail,
+                            onerror:
+                              "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                          }
                         })
                       : _vm._e(),
                     _vm._v(" "),
                     _vm.editing && _vm.previewThumbnail
                       ? _c("img", {
-                          staticStyle: { "margin-top": "10px" },
-                          attrs: { src: _vm.thumbnail_preview }
+                          staticStyle: {
+                            "margin-top": "10px",
+                            "max-width": "250px",
+                            "max-height": "250px"
+                          },
+                          attrs: {
+                            src: _vm.thumbnail_preview,
+                            onerror:
+                              "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                          }
                         })
                       : _vm._e()
                   ]),
                   _vm._v(" "),
                   !_vm.editing
                     ? _c("img", {
-                        staticStyle: { "margin-top": "10px" },
-                        attrs: { src: "../images/" + case_study.c_thumbnail }
+                        staticStyle: {
+                          "margin-top": "10px",
+                          "max-width": "250px",
+                          "max-height": "250px"
+                        },
+                        attrs: {
+                          src: "../images/" + case_study.c_thumbnail,
+                          onerror:
+                            "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                        }
                       })
                     : _vm._e()
                 ]
@@ -91080,29 +91140,37 @@ var render = function() {
                                               })
                                             : _vm._e(),
                                           _vm._v(" "),
-                                          _c("div", { key: _vm.preview }, [
-                                            _vm.editing &&
-                                            item.i_type == 2 &&
-                                            !_vm.preview
-                                              ? _c("img", {
-                                                  attrs: {
-                                                    src:
-                                                      "../images/" +
-                                                      item.i_content
-                                                  }
-                                                })
-                                              : _vm._e(),
-                                            _vm._v(" "),
-                                            _vm.editing &&
-                                            item.i_type == 2 &&
-                                            _vm.preview
-                                              ? _c("img", {
-                                                  attrs: {
-                                                    src: _vm.images[index]
-                                                  }
-                                                })
-                                              : _vm._e()
-                                          ])
+                                          _c(
+                                            "div",
+                                            { key: _vm.preview[index] },
+                                            [
+                                              _vm.editing &&
+                                              item.i_type == 2 &&
+                                              !_vm.preview[index]
+                                                ? _c("img", {
+                                                    attrs: {
+                                                      src:
+                                                        "../images/" +
+                                                        item.i_content,
+                                                      onerror:
+                                                        "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              _vm.editing &&
+                                              item.i_type == 2 &&
+                                              _vm.preview[index]
+                                                ? _c("img", {
+                                                    attrs: {
+                                                      src: _vm.images[index],
+                                                      onerror:
+                                                        "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                                                    }
+                                                  })
+                                                : _vm._e()
+                                            ]
+                                          )
                                         ])
                                       ])
                                     ]
@@ -91131,7 +91199,10 @@ var render = function() {
                                         [
                                           _c("img", {
                                             attrs: {
-                                              src: "../images/" + item.i_content
+                                              src:
+                                                "../images/" + item.i_content,
+                                              onerror:
+                                                "this.onerror=null;this.src='../images/image_placeholder.jpg';"
                                             }
                                           }),
                                           _vm._v(
