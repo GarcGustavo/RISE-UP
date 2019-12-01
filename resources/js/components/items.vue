@@ -52,6 +52,7 @@
               class="dropdown-menu scrollable-menu"
               aria-labelledby="dropdownMenuButton"
               id="drop"
+              :key="this.independent"
             >
               <option
                 class="dropdown-item"
@@ -177,7 +178,7 @@
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
-                  <a href="#">{{index + 1}}: {{item.i_name}}</a>
+                  <a :href="'#item' + index">{{index + 1}}: {{item.i_name}}</a>
                 </li>
               </ul>
             </div>
@@ -246,6 +247,7 @@
                 style="margin: 25px; margin-left: 0px;"
                 v-for="(item,index) in items"
                 :key="index"
+                :id="'item' + index"
               >
                 <ul class="list-items" style="margin: 25px; margin-left: 0px;">
                   <div class="card h-100 text-left shadow">
@@ -411,6 +413,7 @@ export default {
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
+
     this.fetchCaseParameters();
     //this.fetchSelectedOptions(this.cid);
     this.fetchUsersEditing(this.cid);
@@ -510,9 +513,9 @@ export default {
         .then(res => {
           this.all_groups = res.data;
           this.all_groups.unshift({
-            gid: null,
+            gid: 0,
             g_name: "No Group",
-            g_owner: "No Owner"
+            g_owner: null
           });
           console.log(res.data);
         })
@@ -556,16 +559,17 @@ export default {
       this.fetchUsersEditing(this.cid);
     },
     fetchGroup(gid) {
-      if (this.independent) {
-        this.groups[0].g_name = "No Group";
-      } else {
+      if(this.gid != 0){
         fetch("/case/group/" + this.gid)
           .then(res => res.json())
           .then(res => {
             this.groups = res.data;
           })
-          .catch(err => console.log(err));
-      }
+          .catch(err => console.log(err));}
+      else {
+        this.independent = true;
+        this.groups[0] = {g_name: "No Group", gid:0};
+        }
     },
     fetchCaseParameters() {
       fetch("/case/" + this.cid + "/parameters")

@@ -4358,6 +4358,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
@@ -4554,9 +4556,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this7.all_groups = res.data;
 
         _this7.all_groups.unshift({
-          gid: null,
+          gid: 0,
           g_name: "No Group",
-          g_owner: "No Owner"
+          g_owner: null
         });
 
         console.log(res.data);
@@ -4607,9 +4609,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchGroup: function fetchGroup(gid) {
       var _this9 = this;
 
-      if (this.independent) {
-        this.groups[0].g_name = "No Group";
-      } else {
+      if (this.gid != 0) {
         fetch("/case/group/" + this.gid).then(function (res) {
           return res.json();
         }).then(function (res) {
@@ -4617,6 +4617,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         })["catch"](function (err) {
           return console.log(err);
         });
+      } else {
+        this.independent = true;
+        this.groups[0] = {
+          g_name: "No Group",
+          gid: 0
+        };
       }
     },
     fetchCaseParameters: function fetchCaseParameters() {
@@ -90375,6 +90381,7 @@ var render = function() {
                       _c(
                         "div",
                         {
+                          key: this.independent,
                           staticClass: "dropdown-menu scrollable-menu",
                           attrs: {
                             "aria-labelledby": "dropdownMenuButton",
@@ -90749,7 +90756,7 @@ var render = function() {
                           "li",
                           { key: index, staticClass: "list-group-item" },
                           [
-                            _c("a", { attrs: { href: "#" } }, [
+                            _c("a", { attrs: { href: "#item" + index } }, [
                               _vm._v(
                                 _vm._s(index + 1) + ": " + _vm._s(item.i_name)
                               )
@@ -90963,7 +90970,8 @@ var render = function() {
                       {
                         key: index,
                         staticClass: "col-md",
-                        staticStyle: { margin: "25px", "margin-left": "0px" }
+                        staticStyle: { margin: "25px", "margin-left": "0px" },
+                        attrs: { id: "item" + index }
                       },
                       [
                         _c(

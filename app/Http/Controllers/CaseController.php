@@ -312,6 +312,7 @@ class CaseController extends Controller
         $c_date = $request->c_date;
         $c_owner = $request->c_owner;
         $c_group = $request->c_group;
+
         Case_Study::where(['cid' => $cid])
         ->update([
             'c_title' => $c_title,
@@ -319,26 +320,18 @@ class CaseController extends Controller
             'c_thumbnail' => $c_thumbnail,
             'c_status' => $c_status,
             'c_date' => $c_date,
-            'c_owner' => $c_owner,
-            'c_group' => $c_group
+            'c_owner' => $c_owner
             ]);
+
+        if($c_group == 0){
+            Case_Study::where(['cid' => $cid])->update(['c_group' => NULL]);
+        }
+        else{
+            Case_Study::where(['cid' => $cid])->update(['c_group' => $c_group]);
+        }
+
         return response()->json(['message'=>'Updated case successfully']);
     }
-
-    // public function updateCaseParameters(Request $request)
-    // {
-    //     $cid = $request->input('cid');
-    //     $csp_id = $request->input('csp_id');
-    //     $opt_selected = $request->input('opt_selected');
-    //     Case_Parameters::where(['cid' => $cid])
-    //     ->where(['csp_id' => $csp_id])
-    //     ->update([
-    //         'cid' => $cid,
-    //         'csp_id' => $csp_id,
-    //         'opt_selected' => $opt_selected
-    //         ]);
-    //     return response()->json(['message'=>'Updated case parameters successfully']);
-    // }
 
     /**
      * Remove the specified resource from storage.
