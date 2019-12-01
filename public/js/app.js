@@ -4482,16 +4482,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     editingCase: function editingCase() {
       var _this2 = this;
 
-<<<<<<< HEAD
       var channel = Echo.join("case.".concat(this.case_to_show.cid));
-=======
-      var channel = Echo.join("case.".concat(this.case_to_show.cid)); // pusher.subscribe("").bind("updated", function(message) {
-      //   let [rowIndex, columnIndex, oldValue, newValue] = message.change;
-      //   addCellValue(rowIndex, columnIndex, newValue);
-      //   table.loadData(sheetContent);
-      // });
-
->>>>>>> ea5186111d99241216df818111b80a37846bdc4b
       console.log("hello from editing case"); //show changes after 1s
 
       setTimeout(function () {
