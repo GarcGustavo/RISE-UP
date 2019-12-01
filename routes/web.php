@@ -39,7 +39,7 @@ Route::get('/user/cases', 'ViewsController@userCases');
 //Software requirement 2.2.3.4 - case study page
 Route::get('/case/body', 'ViewsController@showCaseBody');
 
-Route::get('/case/search', 'ViewsController@search');
+Route::any('/search','ViewsController@search');
 
 /********USERS*********/
 
@@ -261,4 +261,3 @@ Route::put('/admin/user/{id}', 'AdminUserController@update');
 
 
 
-Route::any('/search','ViewsController@search');
