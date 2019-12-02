@@ -65,7 +65,7 @@
             class="nav-link"
             data-toggle="tooltip"
             data-placement="bottom"
-            title="Help"
+            title="Collaborator"
             href="#"
           >Collaborator</a>
         </li>
