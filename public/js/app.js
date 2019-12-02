@@ -5203,6 +5203,7 @@ var default_styles = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -5293,10 +5294,29 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * write a component's description
  */
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     cases: {
@@ -5311,6 +5331,9 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       }
     }
   },
+  components: {
+    datepicker: vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
 
   /**
    * @description
@@ -5319,6 +5342,9 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   data: function data() {
     return {
       selected_param: [],
+      date_format: "yyyy-MM-dd",
+      incident_date_start: new Date(),
+      incident_date_end: new Date(),
       case_parameters: [],
       all_cases_parameters: [],
       parameter_options: [],
@@ -5407,7 +5433,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       } //Eliminate duplicates
 
 
-      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a fitler has been selected
+      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
 
       if (!this.case_studies_with_selected_option.length && this.selected_param.length) {
         return [];
@@ -5484,6 +5510,15 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       return this.parameter_options.filter(function (option) {
         return option.o_parameter == parameter;
       });
+    },
+
+    /**
+     * @description formats dates into an array for data manipulation
+     * @returns array of formated dates
+     */
+    formatDate: function formatDate(date) {
+      //console.log(date.toISOString().slice(0, 10));
+      return date.toISOString().slice(0, 10);
     }
   }
 });
@@ -91644,65 +91679,122 @@ var render = function() {
             return _c("div", { key: index }, [
               _c("div", { staticClass: "col" }, [
                 _c("div", { staticClass: "form-group" }, [
-                  _c(
-                    "select",
-                    {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.selected_param[index],
-                          expression: "selected_param[index]"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: { id: index },
-                      on: {
-                        click: function($event) {
-                          _vm.case_param = case_parameter.cid
-                        },
-                        change: function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.$set(
-                            _vm.selected_param,
-                            index,
-                            $event.target.multiple
-                              ? $$selectedVal
-                              : $$selectedVal[0]
-                          )
-                        }
-                      }
-                    },
-                    [
-                      _c(
-                        "option",
-                        { attrs: { selected: "selected", disabled: "" } },
-                        [_vm._v(_vm._s(case_parameter.csp_name))]
-                      ),
-                      _vm._v(" "),
-                      _vm._l(
-                        _vm.filteredOptions(case_parameter.csp_id),
-                        function(option) {
-                          return _c(
-                            "option",
-                            {
-                              key: option.oid,
-                              domProps: { value: option.oid }
-                            },
-                            [_vm._v(_vm._s(option.o_content))]
-                          )
-                        }
-                      )
-                    ],
-                    2
-                  )
+                  _c("button", { attrs: { disabled: "" } }, [
+                    _c("a", { staticClass: "text-center text-break" }, [
+                      _vm._v(_vm._s(case_parameter.csp_name))
+                    ]),
+                    _vm._v(" "),
+                    case_parameter.csp_name == "Incident date"
+                      ? _c(
+                          "div",
+                          [
+                            _vm._v("\n                From:\n                "),
+                            _c("datepicker", {
+                              attrs: { format: _vm.date_format },
+                              model: {
+                                value: _vm.incident_date_start,
+                                callback: function($$v) {
+                                  _vm.incident_date_start = $$v
+                                },
+                                expression: "incident_date_start"
+                              }
+                            }),
+                            _vm._v("\n                To:\n                "),
+                            _c("datepicker", {
+                              attrs: { format: _vm.date_format },
+                              model: {
+                                value: _vm.incident_date_end,
+                                callback: function($$v) {
+                                  _vm.incident_date_end = $$v
+                                },
+                                expression: "incident_date_end"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.incident_date_start > _vm.incident_date_end
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass: "text-center text-break",
+                                    staticStyle: {
+                                      "white-space": "pre-line",
+                                      "max-width": "200px"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                  Invalid date range:\n                  Starting date must be equal to or lower than end date.\n                "
+                                    )
+                                  ]
+                                )
+                              : _vm._e()
+                          ],
+                          1
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    case_parameter.csp_name != "Incident date"
+                      ? _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.selected_param[index],
+                                expression: "selected_param[index]"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { id: index },
+                            on: {
+                              click: function($event) {
+                                _vm.case_param = case_parameter.cid
+                              },
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.selected_param,
+                                  index,
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              }
+                            }
+                          },
+                          [
+                            _c(
+                              "option",
+                              { attrs: { selected: "selected", disabled: "" } },
+                              [_vm._v(_vm._s(case_parameter.csp_name))]
+                            ),
+                            _vm._v(" "),
+                            _vm._l(
+                              _vm.filteredOptions(case_parameter.csp_id),
+                              function(option) {
+                                return _c(
+                                  "option",
+                                  {
+                                    key: option.oid,
+                                    domProps: { value: option.oid }
+                                  },
+                                  [_vm._v(_vm._s(option.o_content))]
+                                )
+                              }
+                            )
+                          ],
+                          2
+                        )
+                      : _vm._e()
+                  ])
                 ])
               ])
             ])
@@ -91712,67 +91804,76 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _c("div", { staticClass: "card p-3 shadow" }, [
-      !_vm.empty
-        ? _c("div", [
-            _c(
-              "div",
-              { staticClass: "row mt-1 pt-2 pl-2", attrs: { id: "cases" } },
-              _vm._l(_vm.filterCases, function(case_study) {
-                return _c(
-                  "div",
-                  { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
-                  [
-                    _c("div", { staticClass: "card h-100 text-center" }, [
-                      _c("img", {
-                        staticClass: "card-img-top",
-                        staticStyle: { height: "150px", width: "125px" },
-                        attrs: {
-                          src: "../images/" + case_study.c_thumbnail,
-                          onerror:
-                            "this.onerror=null;this.src='../images/image_placeholder.jpg';",
-                          alt: "..."
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "card-body" }, [
-                        _c("h5", { staticClass: "card-title" }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "stretched-link",
-                              attrs: {
-                                href: "/case/body?cid=" + case_study.cid
-                              }
-                            },
-                            [_vm._v(_vm._s(case_study.c_title))]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c(
-                          "p",
-                          {
-                            staticClass: "card-text",
-                            staticStyle: { "overflow-y": "auto" }
+    _c(
+      "div",
+      { staticClass: "card p-3 shadow", staticStyle: { "margin-top": "20px" } },
+      [
+        !_vm.empty
+          ? _c("div", [
+              _c(
+                "div",
+                { staticClass: "row mt-1 pt-2 pl-2", attrs: { id: "cases" } },
+                _vm._l(_vm.filterCases, function(case_study) {
+                  return _c(
+                    "div",
+                    { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
+                    [
+                      _c("div", { staticClass: "card h-100 text-center" }, [
+                        _c("img", {
+                          staticClass: "card-img-top",
+                          staticStyle: {
+                            height: "150px",
+                            width: "125px",
+                            "margin-top": "20px",
+                            "margin-left": "200px"
                           },
-                          [_vm._v(_vm._s(case_study.c_description))]
-                        )
+                          attrs: {
+                            src: "../images/" + case_study.c_thumbnail,
+                            onerror:
+                              "this.onerror=null;this.src='../images/image_placeholder.jpg';",
+                            alt: "..."
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "card-body" }, [
+                          _c("h5", { staticClass: "card-title" }, [
+                            _c(
+                              "a",
+                              {
+                                staticClass: "stretched-link",
+                                attrs: {
+                                  href: "/case/body?cid=" + case_study.cid
+                                }
+                              },
+                              [_vm._v(_vm._s(case_study.c_title))]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "p",
+                            {
+                              staticClass: "card-text",
+                              staticStyle: { "overflow-y": "auto" }
+                            },
+                            [_vm._v(_vm._s(case_study.c_description))]
+                          )
+                        ])
                       ])
-                    ])
-                  ]
-                )
-              }),
-              0
-            )
-          ])
-        : _c("div", [
-            _c("p", { staticClass: "text-center p-5" }, [
-              _vm._v("No case studies found. Please try again!")
+                    ]
+                  )
+                }),
+                0
+              )
             ])
-          ]),
-      _vm._v(" "),
-      _c("div")
-    ])
+          : _c("div", [
+              _c("p", { staticClass: "text-center p-5" }, [
+                _vm._v("No case studies found. Please try again!")
+              ])
+            ]),
+        _vm._v(" "),
+        _c("div")
+      ]
+    )
   ])
 }
 var staticRenderFns = [

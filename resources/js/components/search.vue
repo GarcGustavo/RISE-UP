@@ -10,7 +10,7 @@
           placeholder="search"
           aria-label="Search"
           aria-describedby="basic-addon2"
-        >
+        />
         <div class="input-group-append">
           <button class="btn btn-primary border-0 btn-sm" type="submit">
             <i class="material-icons">search</i>
@@ -26,19 +26,37 @@
         <div v-for="(case_parameter, index) in case_parameters" :key="index">
           <div class="col">
             <div class="form-group">
-              <select
-                class="form-control"
-                v-model="selected_param[index]"
-                @click="case_param=case_parameter.cid"
-                :id="index"
-              >
-                <option selected="selected" disabled>{{case_parameter.csp_name}}</option>
-                <option
-                  v-for="option in filteredOptions(case_parameter.csp_id)"
-                  :key="option.oid"
-                  :value="option.oid"
-                >{{option.o_content}}</option>
-              </select>
+              <button disabled>
+                <a class="text-center text-break">{{case_parameter.csp_name}}</a>
+                <div v-if="(case_parameter.csp_name == 'Incident date')">
+                  From:
+                  <datepicker v-model="incident_date_start" :format="date_format"></datepicker>
+                  To:
+                  <datepicker v-model="incident_date_end" :format="date_format"></datepicker>
+                  <div
+                    v-if="incident_date_start > incident_date_end"
+                    class="text-center text-break"
+                    style="white-space: pre-line;max-width: 200px"
+                  >
+                    Invalid date range:
+                    Starting date must be equal to or lower than end date.
+                  </div>
+                </div>
+                <select
+                  v-if="case_parameter.csp_name != 'Incident date'"
+                  class="form-control"
+                  v-model="selected_param[index]"
+                  @click="case_param=case_parameter.cid"
+                  :id="index"
+                >
+                  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>
+                  <option
+                    v-for="option in filteredOptions(case_parameter.csp_id)"
+                    :key="option.oid"
+                    :value="option.oid"
+                  >{{option.o_content}}</option>
+                </select>
+              </button>
             </div>
           </div>
         </div>
@@ -46,18 +64,18 @@
     </div>
 
     <!-- case studies search -->
-    <div class="card p-3 shadow">
+    <div class="card p-3 shadow" style="margin-top:20px;">
       <div v-if="!empty">
         <div class="row mt-1 pt-2 pl-2" id="cases">
           <div class="col-lg-6 mb-4" v-for="case_study in filterCases" :key="case_study.cid">
             <div class="card h-100 text-center">
               <img
-                :src="'../images/'+case_study.c_thumbnail"
-                style="height:150px;width:125px"
+                :src="'../images/'+ case_study.c_thumbnail"
+                style="height:150px;width:125px; margin-top:20px; margin-left:200px"
                 onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
                 class="card-img-top"
                 alt="..."
-              >
+              />
               <!-- <i class="material-icons pt-2" style="font-size: 125px">image</i> -->
               <div class="card-body">
                 <h5 class="card-title">
@@ -81,6 +99,7 @@
 </template>
 
 <script>
+import datepicker from "vuejs-datepicker";
 /**
  * write a component's description
  */
@@ -97,6 +116,9 @@ export default {
       }
     }
   },
+  components: {
+    datepicker
+  },
   /**
    * @description
    * @returns {any}
@@ -104,6 +126,9 @@ export default {
   data() {
     return {
       selected_param: [],
+      date_format: "yyyy-MM-dd",
+      incident_date_start: new Date(),
+      incident_date_end: new Date(),
 
       case_parameters: [],
       all_cases_parameters: [],
@@ -197,7 +222,7 @@ export default {
       //Eliminate duplicates
       this.filtered_cases = [...new Set(this.filtered_cases)];
 
-      //if no case was found and a fitler has been selected
+      //if no case was found and a filter has been selected
       if (
         !this.case_studies_with_selected_option.length &&
         this.selected_param.length
@@ -266,6 +291,14 @@ export default {
       return this.parameter_options.filter(
         option => option.o_parameter == parameter
       );
+    },
+    /**
+     * @description formats dates into an array for data manipulation
+     * @returns array of formated dates
+     */
+    formatDate(date) {
+      //console.log(date.toISOString().slice(0, 10));
+      return date.toISOString().slice(0, 10);
     }
   }
 };
