@@ -12,12 +12,12 @@ class AdminFiltersController extends Controller
     //allows to view a list of search filters for case studies
     public function index(){
 
-        $categories = DB::table('cs_parameter')
-            ->select('cs_parameter.*')
+        $categories = DB::table('CS_Parameter')
+            ->select('CS_Parameter.*')
             ->get();
 
-        $options = DB::table('option')
-            ->select('option.*')
+        $options = DB::table('Option')
+            ->select('Option.*')
             ->get();
 
         return view('admin.filters.index', ['categories' => $categories, 'options' => $options]);

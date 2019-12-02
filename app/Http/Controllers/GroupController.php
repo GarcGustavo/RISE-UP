@@ -14,6 +14,7 @@ class GroupController extends Controller
     /**
      * Return a listing of all system's groups.
      * @return \App\Http\Resources\Group
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -28,7 +29,9 @@ class GroupController extends Controller
 
     /**
          * Return data of a specified group.
+         *@param  \Illuminate\Http\Request  $request
          * @return \App\Http\Resources\Group
+         * @return \Illuminate\Http\Response
          */
     public function info(Request $request)
     {
@@ -110,6 +113,7 @@ class GroupController extends Controller
      * Display a user's list of groups.
      * @param  \Illuminate\Http\Request  $request
      * @return App\Http\Resources\Group
+     *  @return \Illuminate\Http\Response
      */
     public function showGroups(Request $request)
     {

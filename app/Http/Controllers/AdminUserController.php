@@ -12,8 +12,8 @@ class AdminUserController extends Controller
     //public function edit
     public function edit($id){
 
-        $users = DB::table('user')
-            ->select('user.*')
+        $users = DB::table('User')
+            ->select('User.*')
             ->where('uid', '=', $id)
             ->get();
         return view('admin.user.edit', ['users' => $users]);

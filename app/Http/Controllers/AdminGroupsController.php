@@ -9,35 +9,38 @@ use Illuminate\Support\Facades\DB;
 class AdminGroupsController extends Controller
 {
     //public function index
-    //Presents group name, group owner, the latest action, and creation date for each group.
-    public function index(){
-        $latestDate = DB::table('action')
-            ->join('user_groups', 'user_groups.uid', '=', 'action.a_user')
-            ->select('gid', DB::raw('MAX(a_date) as latest_action_date'))
-            ->groupBy('user_groups.gid')
-            ->orderBy('latest_action_date', 'desc');
+    //Presents group name, group owner, a recent action, and creation date for each group.
+	//Show only one action per group per day on index
+	//Show all groups even when the group have no actions
 
-        $latestActions = DB::table('user_groups')
-            ->joinSub($latestDate, 'latestDate','latestDate.gid', '=', 'user_groups.gid')
-            ->join('action',  function ($join) {
-                $join->on('action.a_user', '=', 'user_groups.uid')
-                    ->on('action.a_date', '=', 'latestDate.latest_action_date');
+    public function index(){
+        $limitActionDate = DB::table('Action')
+            ->join('User_Groups', 'User_Groups.uid', '=', 'Action.a_user')
+            ->select('gid', DB::raw('MAX(a_date) as recent_action_date'))
+            ->groupBy('User_Groups.gid');
+            //->orderBy('recent_action_date', 'desc');
+
+        $limitActionType = DB::table('Action')
+			->join('User_Groups', 'User_Groups.uid', '=', 'Action.a_user')
+            ->select('gid', 'a_date', DB::raw('MAX(a_type) as recent_action_type'))
+            ->groupBy('gid')
+			->groupBy('a_date');
+            //->orderBy('recent_action_type', 'desc');	
+
+
+        $groups = DB::table('User_Groups')
+            ->joinSub($limitActionDate, 'limitActionDate','limitActionDate.gid', '=', 'User_Groups.gid')
+            ->joinSub($limitActionType, 'limitActionType',  function ($join) {
+                $join->on('limitActionType.gid', '=', 'User_Groups.uid')
+                     ->on('limitActionType.a_date', '=', 'limitActionDate.recent_action_date');
             })
-            ->join('action_type', 'action_type.act_id', '=', 'action.a_type')
-            ->join('group', 'group.gid', '=', 'user_groups.gid')
-            ->join('user', 'user.uid', '=', 'group.g_owner')
-            ->orderBy('latest_action_date', 'desc')
+            ->join('Action_Type', 'Action_Type.act_id', '=', 'limitActionType.recent_action_type')
+            ->rightJoin('Group', 'Group.gid', '=', 'User_Groups.gid')
+            ->join('User', 'User.uid', '=', 'Group.g_owner')
+            ->orderBy('recent_action_date', 'desc')
             //->orderBy('g_creation_date', 'desc')
             ->get();
-/*
-        $groups = DB::table('group')
-            ->join('user', 'user.uid', '=', 'group.g_owner')
-            ->select('group.*', 'user.first_name', 'user.last_name')
-            ->orderBy('group.g_creation_date', 'desc')
-            ->get();
 
-        return view('admin.groups.index', ['groups' => $groups, 'latestActions'=> $latestActions]);
-*/
-        return view('admin.groups.index', ['latestActions'=> $latestActions]);
+        return view('admin.groups.index', ['groups'=> $groups]);
     }
 }

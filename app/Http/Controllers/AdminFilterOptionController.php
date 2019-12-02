@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\option;
+use App\Models\Option;
 use Illuminate\Http\Request;
 
 class AdminFilterOptionController extends Controller
@@ -29,6 +29,22 @@ class AdminFilterOptionController extends Controller
         $option = option::find($id);
         //dd($option);
         $option->delete();
+        return redirect('/admin/filters');
+    }
+	
+	//public function update
+    public function update($id){
+        $validatedData = request()->validate([
+            'o_parameter' => ['required', 'numeric'],
+            'o_content' => ['required', 'string'],
+        ]);
+
+        $option = option::find($id);
+        //dd($option);
+        $option->o_parameter = $validatedData['o_parameter'];
+        $option->o_content = $validatedData['o_content'];
+        //dd($option);
+        $option->save();
         return redirect('/admin/filters');
     }
 

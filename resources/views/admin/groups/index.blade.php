@@ -14,7 +14,7 @@
                                 <th>Group Name</th>
                                 <th>Group Owner</th>
                                 <th>Group Creation</th>
-                                <th>Latest Group Action</th>
+                                <th>Recent Group Action</th>
                                 <th>Date</th>
                                 <th>More Group Actions</th>
                             </tr>
@@ -24,29 +24,41 @@
                                 <th>Group Name</th>
                                 <th>Group Owner</th>
                                 <th>Group Creation</th>
-                                <th>Latest Group Action</th>
+                                <th>Recent Group Action</th>
                                 <th>Date</th>
                                 <th>More Group Actions</th>
                             </tr>
                             </tfoot>
                             <tbody>
 
-                            @forelse($latestActions as $latestAction)
-                                <tr>
-                                    <td> {{$latestAction->g_name }} </td>
-                                    <td> {{$latestAction->first_name }} {{$latestAction->last_name }}</td>
-                                    <td> {{ \Carbon\Carbon::parse($latestAction->g_creation_date)->format('d F Y')}} </td>
-                                    <td> {{$latestAction->act_name}} </td>
-                                    <td> {{ \Carbon\Carbon::parse($latestAction->latest_action_date)->format('d F Y')}}</td>
-                                    <td class="font-weight-bold"> <a href="/admin/groups-actions/{{$latestAction->gid }}">View</a> </td>
-                                </tr>
+                            @forelse($groups as $group)
+								@if(empty($group->act_name) || empty($group->recent_action_date))
+									<tr>
+										<td class="font-weight-bold"> {{$group->g_name }} </td>
+										<td> {{$group->first_name }} {{$group->last_name }}</td>
+										<td> {{ \Carbon\Carbon::parse($group->g_creation_date)->format('d F Y')}} </td>
+										<td class="font-weight-bold text-danger"> No action </td>
+										<td>  </td>
+										<td class="font-weight-bold text-danger"> No actions </td>
+									</tr>
+								@else
+									<tr>
+										<td class="font-weight-bold"> {{$group->g_name }} </td>
+										<td> {{$group->first_name }} {{$group->last_name }}</td>
+										<td> {{ \Carbon\Carbon::parse($group->g_creation_date)->format('d F Y')}} </td>
+										<td> {{$group->act_name}} </td>
+										<td> {{ \Carbon\Carbon::parse($group->recent_action_date)->format('d F Y')}}</td>
+										<td class="font-weight-bold"> <a href="/admin/groups-actions/{{$group->gid }}">View</a> </td>
+									</tr>							
+								@endif
                             @empty
                                 <tr>
-                                    <td>Nadie</td>
+                                    <td>No groups.</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
+									<td></td>
                                 </tr>
                             @endforelse
 

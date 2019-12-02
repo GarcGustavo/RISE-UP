@@ -10,6 +10,13 @@ use App\Http\Resources\Item as ItemResource;
 class ItemController extends Controller
 {
 
+     /**
+     * Get item of a specificied case study
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\item
+     */
     public function getCaseItems($id)
     {
         $cid = $id;
@@ -21,6 +28,13 @@ class ItemController extends Controller
         return ItemResource::collection($caseItems);
     }
 
+ /**
+     * Store case item in storage
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\item
+     */
     public function addCaseItem(Request $request)
     {
         $caseItem = $request->isMethod('put') ? Item::findOrFail($request->iid): new item;
@@ -36,7 +50,12 @@ class ItemController extends Controller
             return new ItemResource($caseItem);
         }
     }
-
+     /**
+     * Rearranges an item's positioning 
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function updateItemOrder(Request $request, $id)
     {
         $this->validate($request, [
@@ -120,7 +139,7 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         if(($request->i_type == 2) && ($request->hasFile('image'))){
             $content = time().'.'.$request->file('image')->getClientOriginalExtension();
             $request->file('image')->move(public_path('images'), $content);
@@ -140,7 +159,7 @@ class ItemController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
-     * 
+     *
      */
     public function destroy(Request $request)
     {
