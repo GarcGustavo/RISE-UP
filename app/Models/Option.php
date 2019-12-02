@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \App\Models\CsParameter oParameter
  * @property string o_content
  * @property integer o_parameter
+ * @property boolean is_default
  */
 class Option extends Model
 {
@@ -26,7 +27,8 @@ class Option extends Model
 
     public $fillable = [
         'o_content',
-        'o_parameter'
+        'o_parameter',
+        'is_default'
     ];
 
     /**
@@ -37,7 +39,8 @@ class Option extends Model
     protected $casts = [
         'oid' => 'integer',
         'o_content' => 'string',
-        'o_parameter' => 'integer'
+        'o_parameter' => 'integer', 
+        'is_default' => 'boolean'
     ];
 
     /**
@@ -47,7 +50,8 @@ class Option extends Model
      */
     public static $rules = [
         'o_content' => 'required',
-        'o_parameter' => 'required'
+        'o_parameter' => 'required',
+        'is_default' => 'required'
     ];
 
     /**
