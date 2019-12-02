@@ -31,5 +31,21 @@ class AdminFilterOptionController extends Controller
         $option->delete();
         return redirect('/admin/filters');
     }
+	
+	//public function update
+    public function update($id){
+        $validatedData = request()->validate([
+            'o_parameter' => ['required', 'numeric'],
+            'o_content' => ['required', 'string'],
+        ]);
+
+        $option = option::find($id);
+        //dd($option);
+        $option->o_parameter = $validatedData['o_parameter'];
+        $option->o_content = $validatedData['o_content'];
+        //dd($option);
+        $option->save();
+        return redirect('/admin/filters');
+    }
 
 }

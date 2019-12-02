@@ -12,7 +12,7 @@
                             <thead>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Latest Action</th>
+                                <th>Recent Action</th>
                                 <th>Date</th>
                                 <th>More actions</th>
                             </tr>
@@ -20,7 +20,7 @@
                             <tfoot>
                             <tr class="text-center">
                                 <th>Name</th>
-                                <th>Latest Action</th>
+                                <th>Recent Action</th>
                                 <th>Date</th>
                                 <th>More Actions</th>
                             </tr>
@@ -31,13 +31,12 @@
                                 <tr>
                                     <td> {{$user->first_name }} {{$user->last_name}} </td>
                                     <td> {{$user->act_name }} </td>
-                                    <td> {{ \Carbon\Carbon::parse($user->latest_action_date)->format('d F Y')}}  </td>
+                                    <td> {{ \Carbon\Carbon::parse($user->recent_action_date)->format('d F Y')}}  </td>
                                     <td class="font-weight-bold"> <a href="/admin/users-actions/{{$user->uid }}">View</a> </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td>Nadie</td>
-                                    <td></td>
+                                    <td>No Recent Actions.</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
