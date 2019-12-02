@@ -43,9 +43,9 @@
 
                             @forelse($users as $user)
                             <tr>
-                                @if($user->u_role == 1 || $user->u_role == 2)
+                                @if($user->u_role == 3 || $user->u_role == 2)
                                     <td class="font-weight-bold">  <a href="/admin/user/{{$user->uid}}/edit">{{$user->first_name }} {{$user->last_name }}</a>  </td>
-                                @elseif($user->u_role == 3)
+                                @elseif($user->u_role == 1 || $user->u_role == 4)
                                     <td> {{$user->first_name }} {{$user->last_name }}  </td>
                                 @endif
                                 <td> {{$user->contact_email }} </td>
@@ -55,7 +55,7 @@
                             </tr>
                             @empty
                                 <tr>
-                                    <td>Nobody</td>
+                                    <td>No Users.</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -105,7 +105,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td>Nobody</td>
+                                    <td>No Requests.</td>
                                     <td></td>
                                     <td></td>
                                 </tr>

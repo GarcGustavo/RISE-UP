@@ -11,6 +11,7 @@ use App\Models\Case_Parameters;
 use App\Models\Group;
 use App\Http\Resources\Case_Study as Case_StudyResource;
 use App\Http\Resources\Group as GroupResource;
+use Carbon\Carbon;
 
 class CaseController extends Controller
 {
@@ -38,43 +39,12 @@ class CaseController extends Controller
      */
     public function show(Request $request)
     {
-
-
-/*
-        //renaming attributes
-        $attributes = array(
-            'cid' => 'case study id',
-        );
-        //validation rules
-        $validator = Validator::make($request->all(), [
-            'cid' => ['bail','exists:Case','required','integer',
-            //if exist verify case study has not been removed
-            Rule::exists('Case')->where(function ($query) use ($request) {
-                return $query->where('cid', $request->input('cid'))->whereNull('deleted_at');
-            })]
-        ], ['cid.exists' => 'The case study id does not exists.']);
-        //apply renaming attributes
-        $validator->setAttributeNames($attributes);
-        //validate request
-        if ($validator->fails()) {
-            return response()->json(['errors'=> $validator->errors()->all()]);
-        }
-*/
-
         $cid = $request->input('cid');
 
         $case = Case_Study::findOrFail($cid)
         ->where('Case.cid', $cid)
         ->get();
 
-
-        /*
-        if ($case) {
-           return Case_StudyResource::collection($case);
-        } else {
-            return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
-        }
-        */
         return Case_StudyResource::collection($case);
     }
 
@@ -86,38 +56,9 @@ class CaseController extends Controller
         */
     public function show_group_cases($id)
     {
-        /*
-                //renaming attributes
-                $attributes = array(
-                    'gid' => 'group id',
-                );
-                //validation rules
-                $validator = Validator::make($request->all(), [
-                    'gid' => ['bail','exists:Group','required','integer',
-                    //if exist verify group has not been removed
-                    Rule::exists('Group')->where(function ($query) use ($request) {
-                        return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
-                    })]
-                ], ['gid.exists' => 'The group id does not exists.']);
-                //apply renaming attributes
-                $validator->setAttributeNames($attributes);
-                //validate request
-                if ($validator->fails()) {
-                    return response()->json(['errors'=> $validator->errors()->all()]);
-                }
-        */
-        //process request
         $gid = $id;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
-
-        /*
-          if ($cases) {
-             return Case_StudyResource::collection($cases);
-          } else {
-              return response()->json(['errors'=>'Error fetching case study - Origin: Case controller']);
-          }
-        */
 
         return Case_StudyResource::collection($cases);
     }
@@ -129,30 +70,6 @@ class CaseController extends Controller
         */
     public function show_case_group($id)
     {
-
-        /*
-        //renaming attributes
-        $attributes = array(
-            'gid' => 'group id',
-        );
-        //validation rules
-        $validator = Validator::make($request->all(), [
-            'gid' => ['bail','exists:Group','required','integer',
-            //if exist verify group has not been removed
-            Rule::exists('Group')->where(function ($query) use ($request) {
-                return $query->where('gid', $request->input('gid'))->whereNull('deleted_at');
-            })]
-        ], ['gid.exists' => 'The group id does not exists.']);
-        //apply renaming attributes
-        $validator->setAttributeNames($attributes);
-        //validate request
-        if ($validator->fails()) {
-            return response()->json(['errors'=> $validator->errors()->all()]);
-        }
-        */
-        //process request
-
-
         $gid = $id;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
@@ -189,6 +106,7 @@ class CaseController extends Controller
             'c_thumbnail' => 'case study thumbnail',
             'c_status' => 'case study status',
             'c_date' => 'case study creation date',
+            'c_incident_date' => 'case study incident date',
             'c_owner' => 'case study author',
             'c_group' => 'case study group'
         );
@@ -201,6 +119,7 @@ class CaseController extends Controller
             'c_thumbnail' => 'nullable',
             'c_status' => 'bail|required|in:active,disabled',
             'c_date' => 'bail|required|date_format:Y-m-d',
+            'c_incident_date' => 'bail|nullable|date_format:Y-m-d',
             'c_owner' => 'bail|required|integer',
             'c_group' => 'nullable',
         ]);
@@ -218,6 +137,7 @@ class CaseController extends Controller
         $case_study->c_thumbnail = $request->input('c_thumbnail');
         $case_study->c_status = $request->input('c_status');
         $case_study->c_date = $request->input('c_date');
+        $case_study->c_date = $request->input('c_incident_date');
         $case_study->c_owner = $request->input('c_owner');
         $case_study->c_group = $request->input('c_group');
         //process request
@@ -324,14 +244,20 @@ class CaseController extends Controller
      */
     public function updateCaseDetails(Request $request, $id)
     {
-        $cid = $request->input('cid');
-        $c_title = $request->input('c_title');
-        $c_description = $request->input('c_description');
-        $c_thumbnail = $request->input('c_thumbnail');
-        $c_status = $request->input('c_status');
-        $c_date = $request->input('c_date');
-        $c_owner = $request->input('c_owner');
-        $c_group = $request->input('c_group');
+        $c_thumbnail = $request->c_thumbnail;
+        if($request->hasFile('image')){
+            $c_thumbnail = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $request->file('image')->move(public_path('images'), $c_thumbnail);
+        }
+        $cid = $request->cid;
+        $c_title = $request->c_title;
+        $c_description = $request->c_description;
+        $c_status = $request->c_status;
+        $c_date = $request->c_date;
+        $c_incident_date = $request->c_incident_date;
+        $c_owner = $request->c_owner;
+        $c_group = $request->c_group;
+
         Case_Study::where(['cid' => $cid])
         ->update([
             'c_title' => $c_title,
@@ -339,26 +265,25 @@ class CaseController extends Controller
             'c_thumbnail' => $c_thumbnail,
             'c_status' => $c_status,
             'c_date' => $c_date,
-            'c_owner' => $c_owner,
-            'c_group' => $c_group
+            'c_owner' => $c_owner
             ]);
+
+        if($c_group == 0){
+            Case_Study::where(['cid' => $cid])->update(['c_group' => NULL]);
+        }
+        else{
+            Case_Study::where(['cid' => $cid])->update(['c_group' => $c_group]);
+        }
+
+        if(!$c_incident_date){
+            Case_Study::where(['cid' => $cid])->update(['c_incident_date' => NULL]);
+        }
+        else{
+            Case_Study::where(['cid' => $cid])->update(['c_incident_date' => Carbon::parse($c_incident_date)->toDateTimeString()]);
+        }
+
         return response()->json(['message'=>'Updated case successfully']);
     }
-
-    // public function updateCaseParameters(Request $request)
-    // {
-    //     $cid = $request->input('cid');
-    //     $csp_id = $request->input('csp_id');
-    //     $opt_selected = $request->input('opt_selected');
-    //     Case_Parameters::where(['cid' => $cid])
-    //     ->where(['csp_id' => $csp_id])
-    //     ->update([
-    //         'cid' => $cid,
-    //         'csp_id' => $csp_id,
-    //         'opt_selected' => $opt_selected
-    //         ]);
-    //     return response()->json(['message'=>'Updated case parameters successfully']);
-    // }
 
     /**
      * Remove the specified resource from storage.

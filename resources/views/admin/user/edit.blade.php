@@ -19,19 +19,21 @@
                 <small id="roleHelp" class="form-text text-muted">Update this user's account role.</small>
                 <div class="form-check">
                     <label class="form-check-label" for="viewerId">
-                        <input type="radio" class="form-check-input" id="viewerId" name="u_role" value=1 @if ($user->u_role ==1) checked="checked" @endif >Viewer
+                        <input type="radio" class="form-check-input" id="viewerId" name="u_role" value=2 @if ($user->u_role ==2) checked="checked" @endif >Viewer
                     </label>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label" for="collaboratorId">
-                        <input type="radio" class="form-check-input" id="collaboratorId" name="u_role" value=2 @if ($user->u_role ==2) checked="checked" @endif >Collaborator
+                        <input type="radio" class="form-check-input" id="collaboratorId" name="u_role" value=3 @if ($user->u_role ==3) checked="checked" @endif >Collaborator
                     </label>
                 </div>
+				<!--
                 <div class="form-check">
                     <label class="form-check-label">
                         <input type="radio" class="form-check-input" disabled>Admin
                     </label>
                 </div>
+				-->
                 @if($errors->has('u_role'))
                     <span class="alert alert-danger">{{ $errors->first('u_role') }}</span>
                 @endif
@@ -67,7 +69,7 @@
             </div>
 
             <div class="row mt-5">
-                <button type="submit" class="btn btn-dark">Edit</button>
+                <button type="submit" class="btn btn-dark">Save</button>
             </div>
         </div>
     </form>

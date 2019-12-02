@@ -235,6 +235,9 @@ Route::post('/admin/filter-option', 'AdminFilterOptionController@store');
 //Software Requirement: 2.74.  The web application will allow an Admin to remove search filters they have created for case studies
 Route::delete('/admin/filter-option/{id}', 'AdminFilterOptionController@destroy');
 
+//Edit filter 
+//User Requirement: (2.xx)  The web application will allow an Admin to modify search filter they have created for case studies
+Route::put('/admin/filter-option/{id}', 'AdminFilterOptionController@update');
 
 //Add new filter category
 //Software Requirement: 2.71.  The web application will allow an Admin to add new categories to the list of search filters for case studies.
@@ -244,6 +247,11 @@ Route::post('/admin/filter-category', 'AdminFilterCategoryController@store');
 //Remove filter category
 //Software Requirement: 2.75.  The web application will allow an Admin to remove search filter categories they have created for case studies
 Route::delete('/admin/filter-category/{id}', 'AdminFilterCategoryController@destroy');
+
+
+//Edit filter category
+//User Requirement: (2.xx)  The web application will allow an Admin to modify search filter categories they have created for case studies
+Route::put('/admin/filter-category/{id}', 'AdminFilterCategoryController@update');
 
 
 //Admin Edits a User

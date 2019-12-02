@@ -22,11 +22,27 @@ class AdminFilterCategoryController extends Controller
         return redirect('/admin/filters');
     }
 
-    //public function destro
+
+    //public function destroy
     public function destroy($id){
         $cs_parameter = cs_parameter::find($id);
         //dd($option);
         $cs_parameter->delete();
         return redirect('/admin/filters');
     }
+
+	
+	//public function update
+    public function update($id){
+        $validatedData = request()->validate([
+            'csp_name' => ['required', 'string'],
+        ]);
+
+        $cs_parameter = cs_parameter::find($id);
+        //dd($user);
+        $cs_parameter->csp_name = $validatedData['csp_name'];
+        //dd($user);
+        $cs_parameter->save();
+        return redirect('/admin/filters');
+    }	
 }
