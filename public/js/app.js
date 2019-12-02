@@ -3662,12 +3662,8 @@ __webpack_require__.r(__webpack_exports__);
           });
 
           _this7.appendDefaultParameters(case_study.cid); //default case study parameters
-
-
-          _this7.fetchCases(); //update case study list
-
-
-          _this7.resetErrors(); //reset error variable
+          // this.fetchCases(); //update case study list
+          //this.resetErrors(); //reset error variable
 
         } else {
           _this7.errors = res.errors;
@@ -3703,10 +3699,10 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (!res.errors) {
-          _this8.fetchCases(); //update case study list
+          _this8.fetchCases(); //update list
 
 
-          _this8.resetErrors(); //reset errors
+          _this8.resetErrors(); //reset all prior errors
 
         } else {
           _this8.errors = res.errors;
@@ -3835,22 +3831,61 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       user: "",
+      errors: [],
       uid: 10,
       isAdmin: true,
       //change to false when integration is complete
       isViewer: false,
       isCollaborator: false,
-      disable_header_search: false
+      disable_header_search: false,
+      show_dialogue: false
     };
   },
   created: function created() {
     this.getUser();
   },
   methods: {
+    resetErrors: function resetErrors() {
+      this.errors = [];
+    },
     getUser: function getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
@@ -3862,21 +3897,102 @@ __webpack_require__.r(__webpack_exports__);
         this.disable_header_search = true;
       }
       /*
-            fetch("/user?uid=" + this.curr_user)
-              .then(res => res.json())
-              .then(res => {
-                this.user = res;
-                if (this.user.u_role == 4) {
-                  this.isAdmin = true;
-                } else if (this.user.u_role == 3) {
-                  this.isCollaborator = true;
-                } else {
-                  this.isViewer = true;
-                }
-                this.uid = this.user.uid;
-              });
-              */
+      fetch("/user?uid=" + this.curr_user)
+        .then(res => res.json())
+        .then(res => {
+          this.user = res;
+          if (this.user.u_role == 4) {
+            this.isAdmin = true;
+          } else if (this.user.u_role == 3) {
+            this.isCollaborator = true;
+          } else {
+            this.isViewer = true;
+          }
+          this.uid = this.user.uid;
+        });
+        */
 
+    },
+
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     */
+    createCaseStudy: function createCaseStudy(case_study) {
+      var _this = this;
+
+      fetch("/case/create", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          //hide action table dbox
+          _this.show_dialogue = false; //remove component's backdrop
+
+          $("body").removeClass("modal-open");
+          $(".modal-backdrop").remove();
+
+          _this.appendDefaultParameters(case_study.cid); //default case study parameters
+          //  this.resetErrors(); //reset error variable
+
+        } else {
+          _this.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description add null default parameters to Case study
+     */
+    appendDefaultParameters: function appendDefaultParameters(cid) {
+      var _this2 = this;
+
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          cid: cid
+        })
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          _this2.resetErrors(); //reset errors
+          //once creation process is complete go to case study
+
+
+          window.location.href = "http://127.0.0.1:8000/case/body?cid=" + cid;
+        } else {
+          _this2.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
     }
   }
 });
@@ -6092,12 +6208,9 @@ __webpack_require__.r(__webpack_exports__);
           });
 
           _this5.appendDefaultParameters(case_study.cid); //default case study parameters
+          //this.fetchCases(); //update case study list
+          //this.resetErrors();
 
-
-          _this5.fetchCases(); //update case study list
-
-
-          _this5.resetErrors();
         } else {
           _this5.errors = res.errors;
         }
@@ -89723,112 +89836,183 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "nav",
-    { staticClass: "navbar fixed-top navbar-expand-lg navbar-custom shadow" },
-    [
-      _vm._m(0),
-      _vm._v(" "),
-      _vm._m(1),
-      _vm._v(" "),
-      _c(
-        "form",
-        {
-          staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
-          attrs: { action: "/search" }
-        },
-        [
-          !_vm.disable_header_search
-            ? _c("div", { staticClass: "input-group mb-3" }, [
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    name: "q",
-                    placeholder: "search",
-                    "aria-label": "Search",
-                    "aria-describedby": "basic-addon2"
-                  }
-                }),
-                _vm._v(" "),
-                _vm._m(2)
-              ])
-            : _vm._e()
-        ]
-      ),
-      _vm._v(" "),
-      _c("ul", { staticClass: "navbar-nav mr-3" }, [
-        _vm._m(3),
+  return _c("div", [
+    _c(
+      "nav",
+      { staticClass: "navbar fixed-top navbar-expand-lg navbar-custom shadow" },
+      [
+        _vm._m(0),
         _vm._v(" "),
-        _vm._m(4),
+        _vm._m(1),
         _vm._v(" "),
-        _vm._m(5),
+        _c(
+          "form",
+          {
+            staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
+            attrs: { action: "/search" }
+          },
+          [
+            !_vm.disable_header_search
+              ? _c("div", { staticClass: "input-group mb-3" }, [
+                  _c("input", {
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "text",
+                      name: "q",
+                      placeholder: "search",
+                      "aria-label": "Search",
+                      "aria-describedby": "basic-addon2"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _vm._m(2)
+                ])
+              : _vm._e()
+          ]
+        ),
         _vm._v(" "),
-        _c("li", { staticClass: "nav-item dropdown" }, [
-          _vm._m(6),
-          _vm._v(" "),
-          _c("div", { staticClass: "dropdown-menu dropdown-menu-right" }, [
-            _c("div", { staticClass: "profile-usertitle" }, [
-              _c("div", { staticClass: "profile-usertitle-name" }, [
-                _vm._v("Melvin J Malave ")
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "profile-usertitle-role" }, [
-                _vm.isAdmin ? _c("a", [_vm._v("Admin")]) : _vm._e(),
-                _vm._v(" "),
-                _vm.isViewer ? _c("a", [_vm._v("Viewer")]) : _vm._e(),
-                _vm._v(" "),
-                _vm.isCollaborator
-                  ? _c("a", [_vm._v("Collaborator")])
-                  : _vm._e()
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "dropdown-divider" }),
-            _vm._v(" "),
-            _vm.isAdmin
+        _c("ul", { staticClass: "navbar-nav mr-3" }, [
+          _c("li", { staticClass: "nav-item" }, [
+            _vm.isAdmin || _vm.isCollaborator
               ? _c(
-                  "a",
+                  "span",
                   {
-                    staticClass: "dropdown-item",
-                    attrs: { href: "/admin/users-requests" }
+                    attrs: {
+                      "data-toggle": "modal",
+                      "data-target": "#case_create_dbox"
+                    }
                   },
-                  [_vm._v("Dashboard")]
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "nav-link",
+                        attrs: {
+                          "data-toggle": "tooltip",
+                          href: "#case_create_dbox",
+                          "data-placement": "bottom",
+                          title: "Create case study"
+                        },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            _vm.show_dialogue = true
+                          }
+                        }
+                      },
+                      [_vm._v("Collaborate")]
+                    )
+                  ]
                 )
               : _vm._e(),
             _vm._v(" "),
-            _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-              _vm._v("Profile")
-            ]),
+            _vm.isViewer
+              ? _c(
+                  "a",
+                  {
+                    staticClass: "nav-link",
+                    attrs: {
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Help",
+                      href: "#"
+                    }
+                  },
+                  [_vm._v("Collaborator")]
+                )
+              : _vm._e()
+          ]),
+          _vm._v(" "),
+          _vm._m(3),
+          _vm._v(" "),
+          _vm._m(4),
+          _vm._v(" "),
+          _c("li", { staticClass: "nav-item dropdown" }, [
+            _vm._m(5),
             _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "/user/cases?uid=" + _vm.uid }
-              },
-              [_vm._v("Cases")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "dropdown-item",
-                attrs: { href: "/user/groups?uid=" + _vm.uid }
-              },
-              [_vm._v("Groups")]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "dropdown-divider" }),
-            _vm._v(" "),
-            _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-              _vm._v("Logout")
+            _c("div", { staticClass: "dropdown-menu dropdown-menu-right" }, [
+              _c("div", { staticClass: "profile-usertitle" }, [
+                _c("div", { staticClass: "profile-usertitle-name" }, [
+                  _vm._v("Melvin J Malave")
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "profile-usertitle-role" }, [
+                  _vm.isAdmin ? _c("a", [_vm._v("Admin")]) : _vm._e(),
+                  _vm._v(" "),
+                  _vm.isViewer ? _c("a", [_vm._v("Viewer")]) : _vm._e(),
+                  _vm._v(" "),
+                  _vm.isCollaborator
+                    ? _c("a", [_vm._v("Collaborator")])
+                    : _vm._e()
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-divider" }),
+              _vm._v(" "),
+              _vm.isAdmin
+                ? _c(
+                    "a",
+                    {
+                      staticClass: "dropdown-item",
+                      attrs: { href: "/admin/users-requests" }
+                    },
+                    [_vm._v("Dashboard")]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
+                _vm._v("Profile")
+              ]),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "dropdown-item",
+                  attrs: { href: "/user/cases?uid=" + _vm.uid }
+                },
+                [_vm._v("Cases")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "dropdown-item",
+                  attrs: { href: "/user/groups?uid=" + _vm.uid }
+                },
+                [_vm._v("Groups")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-divider" }),
+              _vm._v(" "),
+              _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
+                _vm._v("Logout")
+              ])
             ])
           ])
         ])
-      ])
-    ]
-  )
+      ]
+    ),
+    _vm._v(" "),
+    _vm.show_dialogue
+      ? _c(
+          "div",
+          [
+            _c("case-create-dbox", {
+              attrs: {
+                action: "Create",
+                acted_on: "case study",
+                errors: _vm.errors
+              },
+              on: {
+                close: _vm.resetErrors,
+                createCaseStudy: _vm.createCaseStudy
+              }
+            })
+          ],
+          1
+        )
+      : _vm._e()
+  ])
 }
 var staticRenderFns = [
   function() {
@@ -89837,11 +90021,11 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
       _c("img", {
-        staticClass: "img-fluid rounded ",
+        staticClass: "img-fluid rounded",
         staticStyle: { width: "70px", height: "45px", "margin-right": "10px" },
         attrs: { src: __webpack_require__(/*! ../../../public/images/iren_logo.png */ "./public/images/iren_logo.png"), alt: "" }
       }),
-      _vm._v("\n      Interdisciplinary Research Network\n  ")
+      _vm._v("\n      Interdisciplinary Research Network\n    ")
     ])
   },
   function() {
@@ -89874,26 +90058,6 @@ var staticRenderFns = [
           attrs: { type: "submit" }
         },
         [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: {
-            "data-toggle": "tooltip",
-            "data-placement": "bottom",
-            title: "Create case study",
-            href: ""
-          }
-        },
-        [_vm._v("Collaborate")]
       )
     ])
   },

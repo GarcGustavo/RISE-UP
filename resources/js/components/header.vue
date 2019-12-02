@@ -1,105 +1,139 @@
 <template>
   <!-- Navigation -->
-  <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
-    <a class="navbar-brand" href="#">
-        <img class="img-fluid rounded " style="width:70px;height:45px;margin-right:10px" src="../../../public/images/iren_logo.png" alt>
-        Interdisciplinary Research Network
-    </a>
-
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Search bar -->
-
-    <form action="/search" class="navbar-form navbar-right ml-auto mt-2 mr-5 search">
-      <div v-if="!disable_header_search" class="input-group mb-3">
-        <input
-          type="text"
-          name="q"
-          class="form-control"
-          placeholder="search"
-          aria-label="Search"
-          aria-describedby="basic-addon2"
+  <div>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
+      <a class="navbar-brand" href="#">
+        <img
+          class="img-fluid rounded"
+          style="width:70px;height:45px;margin-right:10px"
+          src="../../../public/images/iren_logo.png"
+          alt
         >
-        <div class="input-group-append">
-          <button class="btn btn-primary border-0 btn-sm" type="submit">
-            <i class="material-icons">search</i>
-          </button>
+        Interdisciplinary Research Network
+      </a>
+
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Search bar -->
+
+      <form action="/search" class="navbar-form navbar-right ml-auto mt-2 mr-5 search">
+        <div v-if="!disable_header_search" class="input-group mb-3">
+          <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="search"
+            aria-label="Search"
+            aria-describedby="basic-addon2"
+          >
+          <div class="input-group-append">
+            <button class="btn btn-primary border-0 btn-sm" type="submit">
+              <i class="material-icons">search</i>
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
 
-    <!-- Nav options -->
-    <ul class="navbar-nav mr-3">
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Create case study"
-          href
-        >Collaborate</a>
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Help"
-          href="/help"
-        >Help</a>
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="About"
-          href="/about"
-        >About</a>
-      </li>
-
-      <!-- User menu -->
-      <li class="nav-item dropdown">
-        <span data-toggle="dropdown">
-          <a
-            href="#"
-            class="nav-link dropdown-toggle"
+      <!-- Nav options -->
+      <ul class="navbar-nav mr-3">
+        <li class="nav-item">
+          <span
+            v-if="isAdmin || isCollaborator"
+            data-toggle="modal"
+            data-target="#case_create_dbox"
+          >
+            <a
+              class="nav-link"
+              data-toggle="tooltip"
+              @click.prevent="show_dialogue=true"
+              href="#case_create_dbox"
+              data-placement="bottom"
+              title="Create case study"
+            >Collaborate</a>
+          </span>
+        <!-- else -->
+           <a
+           v-if="isViewer"
+            class="nav-link"
             data-toggle="tooltip"
             data-placement="bottom"
-            title="Profile"
-          >
-            <i class="material-icons" style="font-size: 25px">person</i>
-          </a>
-        </span>
-        <div class="dropdown-menu dropdown-menu-right">
-          <div class="profile-usertitle">
-            <!--<div class="profile-usertitle-name">{{user.first_name}} {{user.last_name}}</div> -->
-            <div class="profile-usertitle-name">Melvin J Malave </div>
-            <div class="profile-usertitle-role">
-              <a v-if="isAdmin">Admin</a>
-              <a v-if="isViewer">Viewer</a>
-              <a v-if="isCollaborator">Collaborator</a>
+            title="Help"
+            href="#"
+          >Collaborator</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Help"
+            href="/help"
+          >Help</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="About"
+            href="/about"
+          >About</a>
+        </li>
+
+        <!-- User menu -->
+        <li class="nav-item dropdown">
+          <span data-toggle="dropdown">
+            <a
+              href="#"
+              class="nav-link dropdown-toggle"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Profile"
+            >
+              <i class="material-icons" style="font-size: 25px">person</i>
+            </a>
+          </span>
+          <div class="dropdown-menu dropdown-menu-right">
+            <div class="profile-usertitle">
+              <!--<div class="profile-usertitle-name">{{user.first_name}} {{user.last_name}}</div> -->
+              <div class="profile-usertitle-name">Melvin J Malave</div>
+              <div class="profile-usertitle-role">
+                <a v-if="isAdmin">Admin</a>
+                <a v-if="isViewer">Viewer</a>
+                <a v-if="isCollaborator">Collaborator</a>
+              </div>
             </div>
+            <div class="dropdown-divider"></div>
+            <a v-if="isAdmin" href="/admin/users-requests" class="dropdown-item">Dashboard</a>
+            <a href="#" class="dropdown-item">Profile</a>
+            <a :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
+            <a :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">Logout</a>
           </div>
-          <div class="dropdown-divider"></div>
-          <a v-if="isAdmin" href="/admin/users-requests" class="dropdown-item">Dashboard</a>
-          <a href="#" class="dropdown-item">Profile</a>
-          <a :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
-          <a :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">Logout</a>
-        </div>
-      </li>
-    </ul>
-  </nav>
+        </li>
+      </ul>
+
+      <!-- show case study dialogue box when creating it from group -->
+    </nav>
+    <div v-if="show_dialogue">
+      <case-create-dbox
+        :action="'Create'"
+        :acted_on="'case study'"
+        :errors="errors"
+        @close="resetErrors"
+        @createCaseStudy="createCaseStudy"
+      ></case-create-dbox>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -108,27 +142,33 @@ export default {
     return {
       user: "",
 
+      errors: [],
+
       uid: 10,
       isAdmin: true, //change to false when integration is complete
       isViewer: false,
       isCollaborator: false,
-      disable_header_search:false
+      disable_header_search: false,
+      show_dialogue: false
     };
   },
 
-created(){
-this.getUser();
-},
+  created() {
+    this.getUser();
+  },
   methods: {
+    resetErrors() {
+      this.errors = [];
+    },
 
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
       this.q = this.urlParams.get("q");
-      if(this.q!=null){
-          this.disable_header_search=true;
+      if (this.q != null) {
+        this.disable_header_search = true;
       }
-/*
+      /*
       fetch("/user?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
@@ -143,6 +183,83 @@ this.getUser();
           this.uid = this.user.uid;
         });
         */
+    },
+
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     */
+    createCaseStudy(case_study) {
+      fetch("/case/create", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+
+          if (!res.errors) {
+            //hide action table dbox
+            this.show_dialogue = false;
+
+            //remove component's backdrop
+            $("body").removeClass("modal-open");
+
+            $(".modal-backdrop").remove();
+
+            this.appendDefaultParameters(case_study.cid); //default case study parameters
+            //  this.resetErrors(); //reset error variable
+          } else {
+            this.errors = res.errors;
+          }
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
+    },
+
+    /**
+     * @description add null default parameters to Case study
+     */
+    appendDefaultParameters(cid) {
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({ cid: cid })
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res);
+
+          if (!res.errors) {
+            this.resetErrors(); //reset errors
+
+            //once creation process is complete go to case study
+            window.location.href = "http://127.0.0.1:8000/case/body?cid=" + cid;
+          } else {
+            this.errors = res.errors;
+          }
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     }
   }
 };
@@ -211,7 +328,7 @@ this.getUser();
 .navbar-custom .dropdown-menu {
   width: 250px;
 
-  max-width:250px;
+  max-width: 250px;
 }
 /*search bar width*/
 .search input[type="text"] {

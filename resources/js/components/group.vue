@@ -615,8 +615,8 @@ global variables as needed to be used.
             this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
             this.appendDefaultParameters(case_study.cid); //default case study parameters
-            this.fetchCases(); //update case study list
-            this.resetErrors(); //reset error variable
+           // this.fetchCases(); //update case study list
+            //this.resetErrors(); //reset error variable
           } else {
             this.errors = res.errors;
           }
@@ -648,9 +648,8 @@ global variables as needed to be used.
           console.log(res);
 
           if (!res.errors) {
-            this.fetchCases(); //update case study list
-
-            this.resetErrors(); //reset errors
+            this.fetchCases() //update list
+            this.resetErrors(); //reset all prior errors
           } else {
             this.errors = res.errors;
           }
