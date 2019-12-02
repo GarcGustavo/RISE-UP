@@ -383,12 +383,14 @@ export default {
       show_dialogue: false //opens/closes case create dbox
     };
   },
+
   /**
    * @description gets all users cases to populate case table when the page is loaded
    */
   created() {
     this.fetchCases();
   },
+
   computed: {
     /**
      * @description filters cases by title search. Method is called per each key press
@@ -411,7 +413,14 @@ export default {
       });
     }
   },
+
   methods: {
+
+/*#region Auxilary methods - These methods provide operational
+functionalities to to the web page. Operations include but are
+not limited to :Sorting, updating paginator and content,
+validation, and resetting variables
+
     /**
      * @description - refreshes the paginator
      */
@@ -507,6 +516,7 @@ export default {
     select() {
       this.all_selected = false;
     },
+
     /**
      * @description - lists the set of cases of the current table page
      * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
@@ -542,9 +552,9 @@ export default {
       }
     },
 
-/**
- * @description reset errors
- */
+    /**
+     * @description reset errors
+     */
     resetErrors() {
       this.errors = [];
     },
@@ -578,8 +588,19 @@ export default {
         this.removeCases();
       }
     },
+
+/*#endregion*/
+
+
+/*#region Query methods - These methods provide the content of
+the web page by requesting the data through route calls. The routes
+passes the request to a specified predefined controller who processes
+said request via Laravel's eloquent ORM. The data is appended to the
+ global variables as needed to be used.
+
     /**
      * @description gets all the cases of the current user
+     * Sends request to the case controller
      */
     fetchCases() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
@@ -611,7 +632,8 @@ export default {
 
     /**
      * @description outputs to the caseController a JSON request to create case study
-     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     * @param {Array} case_study - array of case study data to create a case study -
+     * data is sent by the case_create_dbox dialogue
      */
     createCaseStudy(case_study) {
       fetch("/case/create", {
@@ -666,7 +688,8 @@ export default {
     },
 
     /**
-     * @description add null default parameters to Case study
+     * @description add null default parameters to case study.
+     * Sends request to Case parameters controller
      */
     appendDefaultParameters(cid) {
       fetch("/parameter/create/defaults", {
@@ -700,7 +723,8 @@ export default {
     },
 
     /**
-     * @description removes any selected user cases by making a delete request to caseController
+     * @description removes any selected user cases by making a delete request to caseController.
+     * Sends request to the case controller
      */
     removeCases() {
       var curr = this;
@@ -766,6 +790,7 @@ export default {
       });
       this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
+/*#endregion*/
   }
 };
 </script>
@@ -786,6 +811,7 @@ table tr td a {
   font-size: 18px;
 }
 
+/*pointer on headers*/
 th {
   cursor: pointer;
 }

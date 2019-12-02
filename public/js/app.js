@@ -2256,7 +2256,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /**
- *  this table is used everytime a user wants to add/remove members of an existing group or to add an existing
+ *  this table is used everytime a user wants to add/remove members of
+ * an existing group or to add an existing
     user to a new group
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2291,6 +2292,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     errors: {
+      //errors sent by parent(user-groups or group) when executing query request
       type: Array,
       "default": function _default() {
         return [];
@@ -2311,7 +2313,9 @@ __webpack_require__.r(__webpack_exports__);
       close_dialog: "",
       //to close action table
       uid: "",
+      //user id
       gid: "",
+      //group id
       users_to_add_remove: [],
       //list of users to add or remove
       selected_users: [],
@@ -2347,8 +2351,6 @@ __webpack_require__.r(__webpack_exports__);
         label: "Name",
         sortable: true
       }],
-      valid_input: false,
-      //validate input
       is_selected: false,
       //validate if user has made a selection to add or remove a user
       all_selected: false //has the option to select all users been checked
@@ -2389,6 +2391,11 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    /*region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include: validation,
+    and resetting variables, calling parent methods to add/remove
+    users and create groups.*/
+
     /**
      * @description  checks all checkboxes when user selects "select all" option
      */
@@ -2410,7 +2417,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description if checkbox is checked again uncheck all selections
+     * @description if "select all" checkbox is checked uncheck all selections
      */
     select: function select() {
       this.all_selected = false;
@@ -2436,34 +2443,14 @@ __webpack_require__.r(__webpack_exports__);
       this.users_to_add_remove = [];
       this.$emit("close"); //reset error prop
 
-      this.select();
-      this.uncheck();
+      this.select(); //reset select all input
+
+      this.uncheck(); //uncheck all
     },
 
     /**
-     * @description gets all of the system's groups
-     */
-    totalGroups: function totalGroups() {
-      var _this2 = this;
-
-      //define id variables
-      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-
-      this.uid = this.urlParams.get("uid"); //get user id
-
-      this.gid = this.urlParams.get("gid"); //get group id
-
-      fetch("/groups").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this2.groups = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-
-    /**
-     * @description calls the addUsers method from parent window(user_groups or groups)
+     * @description calls the add/removeUsers method from
+     * parent window(user_groups(add) or groups(add/remove))
      *  and sends the user data to be processed
      */
     sendUsers: function sendUsers() {
@@ -2486,6 +2473,7 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description verifies if a selection has been made when performing action(add/remove)
+     * if selection is made sends users to add/remove.
      */
     isUserSelected: function isUserSelected() {
       if (this.selected_users.length == 0) {
@@ -2555,7 +2543,40 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       };
+    },
+
+    /*#endregion*/
+
+    /*#region Query methods - The following method provides the total amount
+    of groups by requesting the data through route calls. The routes passes
+    request to a specified predefined controller who processes said request
+    via Laravel's eloquent ORM. The data is appended to the global variables
+    as needed to be used.*/
+
+    /**
+     * @description gets all of the system's groups.
+     * This data is used to determine the new id of a newly created group
+     */
+    totalGroups: function totalGroups() {
+      var _this2 = this;
+
+      //define id variables
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.uid = this.urlParams.get("uid"); //get user id
+
+      this.gid = this.urlParams.get("gid"); //get group id
+
+      fetch("/groups").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.groups = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -2709,6 +2730,7 @@ __webpack_require__.r(__webpack_exports__);
       "default": ""
     },
     errors: {
+      //errors sent by parent(user-cases or group) when executing query request
       type: Array,
       "default": function _default() {
         return [];
@@ -2749,8 +2771,6 @@ __webpack_require__.r(__webpack_exports__);
       //maximum amount of characters allowed in the description
       remainingCount: 140,
       //used to determine remaining account of character
-      close: false,
-      //NOT USED
       hasError: false,
       //does description's character count exceed limit - NOT USED IN HTML
       valid_input: false,
@@ -2772,18 +2792,22 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /**
-   * @descriptcion handles modal closing event
+   * @description handles modal closing event
    */
   mounted: function mounted() {
     $(this.$refs.case_modal).on("hidden.bs.modal", this.resetInputFields);
   },
   methods: {
+    /*region Auxilary methods - These methods provide operational
+    functionalities to to the modal. Operations include: resetting variables,
+    calling parent method to create case study*/
+
     /**
      * @description updates the description's remaining characters count
      */
     countdown: function countdown() {
       this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0; //NOT USED 
+      this.hasError = this.remainingCount < 0; //NOT USED
     },
 
     /**
@@ -2799,48 +2823,6 @@ __webpack_require__.r(__webpack_exports__);
 
       this.remainingCount = 140;
       this.$emit("close"); //reset error prop
-    },
-
-    /**
-     * @description gets all of the system's cases
-     */
-    totalCases: function totalCases() {
-      var _this = this;
-
-      fetch("/cases").then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this.all_cases = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
-    },
-
-    /**
-     * @description gets all the groups of the current user
-     */
-    fetchGroups: function fetchGroups() {
-      var _this2 = this;
-
-      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-
-      this.curr_user = this.urlParams.get("uid"); //get user id
-
-      if (this.group_selection) {
-        // "group selection" variable sent by group vue to set default in group options,
-        //therefor set the group option default to (curr_group/group selection)
-        this.curr_group = this.group_selection; //default dropdown selection
-
-        this.disable_dropdown = true;
-      }
-
-      fetch("/group/show?uid=" + this.curr_user).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this2.user_groups = res.data; //dropdown options
-      })["catch"](function (err) {
-        return console.log(err);
-      });
     },
 
     /**
@@ -2876,7 +2858,60 @@ __webpack_require__.r(__webpack_exports__);
         c_owner: "",
         c_group: ""
       };
+    },
+
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the data used by the
+    modal through route calls. The routes passes the request to a specified
+    predefined controller who processes said request via Laravel's eloquent ORM.
+    The data is appended to the global variables as needed to be used.*/
+
+    /**
+     * @description gets all of the system's cases.
+     * This method is used to determined the id of a newly created case study
+     */
+    totalCases: function totalCases() {
+      var _this = this;
+
+      fetch("/cases").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this.all_cases = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description gets all the groups of the current user
+     * Data is used in dropdown
+     */
+    fetchGroups: function fetchGroups() {
+      var _this2 = this;
+
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.curr_user = this.urlParams.get("uid"); //get user id
+
+      if (this.group_selection) {
+        // "group selection" variable sent by group vue to set default in group options,
+        //therefor set the group option default to (curr_group/group selection)
+        this.curr_group = this.group_selection; //default dropdown selection
+
+        this.disable_dropdown = true;
+      }
+
+      fetch("/group/show?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.user_groups = res.data; //dropdown options
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -3153,10 +3188,10 @@ __webpack_require__.r(__webpack_exports__);
       //user name input
       group_members: [],
       //members of group
-      users_add_remove: [],
-      //users to add or remove from group
       users_to_add: [],
+      //users to add to group
       users_to_remove: [],
+      //users to remove from group
       group_cases: [],
       //cases that belong to group
       errors: [],
@@ -3190,9 +3225,14 @@ __webpack_require__.r(__webpack_exports__);
     this.fetchCases();
   },
   methods: {
-    /**
-     * @description determine user priveleges in group
-     */
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include:
+    Setting user priveleges, editing title, and resetting variables
+    
+    
+        /**
+         * @description determine user priveleges in group
+         */
     userPriveleges: function userPriveleges() {
       this.isUserOwner(); //verify if user is owner
 
@@ -3272,10 +3312,18 @@ __webpack_require__.r(__webpack_exports__);
       this.errors = [];
     },
 
-    /**
-     * @description get all of system's users when adding a user to group.
-     *
-     */
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to the
+    global variables as needed to be used.
+    
+        /**
+         * @description get all of system's users when adding a user to group.
+         *
+         */
     fetchUsers: function fetchUsers() {
       var _this = this;
 
@@ -3344,7 +3392,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description gets info of the current group
+     * @description gets attributes of the current group
      */
     fetchGroupInfo: function fetchGroupInfo() {
       var _this4 = this;
@@ -3667,6 +3715,8 @@ __webpack_require__.r(__webpack_exports__);
         console.error("Error: ", err);
       });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -3785,9 +3835,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3796,32 +3843,40 @@ __webpack_require__.r(__webpack_exports__);
       isAdmin: true,
       //change to false when integration is complete
       isViewer: false,
-      isCollaborator: false
+      isCollaborator: false,
+      disable_header_search: false
     };
+  },
+  created: function created() {
+    this.getUser();
   },
   methods: {
     getUser: function getUser() {
-      var _this = this;
-
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
 
-      fetch("/user?uid=" + this.curr_user).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this.user = res;
+      this.q = this.urlParams.get("q");
 
-        if (_this.user.u_role == 4) {
-          _this.isAdmin = true;
-        } else if (_this.user.u_role == 3) {
-          _this.isCollaborator = true;
-        } else {
-          _this.isViewer = true;
-        }
+      if (this.q != null) {
+        this.disable_header_search = true;
+      }
+      /*
+            fetch("/user?uid=" + this.curr_user)
+              .then(res => res.json())
+              .then(res => {
+                this.user = res;
+                if (this.user.u_role == 4) {
+                  this.isAdmin = true;
+                } else if (this.user.u_role == 3) {
+                  this.isCollaborator = true;
+                } else {
+                  this.isViewer = true;
+                }
+                this.uid = this.user.uid;
+              });
+              */
 
-        _this.uid = _this.user.uid;
-      });
     }
   }
 });
@@ -3973,6 +4028,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuedraggable */ "./node_modules/vuedraggable/dist/vuedraggable.common.js");
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vuedraggable__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -4274,17 +4330,77 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
   components: {
-    draggable: vuedraggable__WEBPACK_IMPORTED_MODULE_0___default.a
+    draggable: vuedraggable__WEBPACK_IMPORTED_MODULE_0___default.a,
+    datepicker: vuejs_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   events: {},
   data: function data() {
     var _ref;
 
     return _ref = {
+      date_format: "yyyy-MM-dd",
+      new_date: new Date(),
       editing: false,
       showModal: false,
       typing: false,
@@ -4292,7 +4408,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       actor: "",
       total_items: "",
       images: [],
-      preview: false,
+      image_names: [],
+      thumbnail_name: "",
+      thumbnail_preview: "",
+      thumbnail_files: [],
+      independent: false,
+      previewThumbnail: false,
+      preview: [],
       case_study: {
         cid: "",
         c_title: "",
@@ -4340,6 +4462,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }), _ref;
   },
   created: function created() {
+    this.preview[0] = false;
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
@@ -4349,33 +4472,49 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchUserGroups();
   },
   mounted: function mounted() {
-    Echo.join("App.User.".concat(this.user.uid)).here(function (users) {//this.usersEditing = users;
-    }).joining(function (user) {//this.usersEditing.push(users[0]);
-    }).leaving(function (user) {//this.usersEditing = this.usersEditing.filter(u => u != users[0]);
-    }).listenForWhisper("editing", function (e) {// this.case_study.c_title = e.title;
-      // this.items.i_content = e.body;
-    }).listenForWhisper("saved", function (e) {
-      //this.case_study.c_status = e.status;
-      // clear is status after 1s
-      setTimeout(function () {//this.case_study.c_status = "";
-      }, 1000);
-    });
+    var _this = this;
+
+    Echo.join("case.".concat(this.case_to_show.cid)).listenForWhisper("editing", function (e) {
+      _this.case_to_show.c_title = e.title;
+
+      _this.items.forEach(function (element) {
+        _this.items[element] = e.items[element];
+      });
+
+      console.log("hell from channel");
+    }); // .here(users => {
+    //   this.usersEditing = users;
+    // })
+    // .joining(user => {
+    //   this.usersEditing.push(users[0]);
+    // })
+    // .leaving(user => {
+    //   this.usersEditing = this.usersEditing.filter(u => u != users[0]);
+    // })
+    // .listenForWhisper("saved", e => {
+    //   //this.case_study.c_status = e.status;
+    //   // clear is status after 1s
+    //   setTimeout(() => {
+    //     //this.case_study.c_status = "";
+    //   }, 1000);
+    // });
   },
   methods: {
     editingCase: function editingCase() {
-      var _this = this;
+      var _this2 = this;
 
-      var channel = Echo.join("App.User.".concat(this.user.uid)); // show changes after 1s
+      var channel = Echo.join("case.".concat(this.case_to_show.cid));
+      console.log("hello from editing case"); //show changes after 1s
 
       setTimeout(function () {
         channel.whisper("editing", {
-          title: _this.case_study.c_title,
-          body: _this.items.i_content
+          title: _this2.case_to_show.c_title,
+          items: _this2.items
         });
       }, 1000);
     },
     fetchCaseItems: function fetchCaseItems() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
@@ -4384,27 +4523,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       fetch("/case/" + this.cid + "/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.items = res.data;
+        _this3.items = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchItems: function fetchItems() {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.all_items = res.data;
-        _this3.total_items = _this3.all_items.length + 1;
+        _this4.all_items = res.data;
+        _this4.total_items = _this4.all_items.length + 1;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchCase: function fetchCase() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
@@ -4413,14 +4552,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       fetch("/case?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.case_to_show = res.data;
-        _this4.uid = Number(_this4.case_to_show[0].c_owner);
-        _this4.gid = Number(_this4.case_to_show[0].c_group);
-        _this4.initial_gid = _this4.gid;
+        _this5.case_to_show = res.data;
+        _this5.uid = Number(_this5.case_to_show[0].c_owner);
+        _this5.gid = Number(_this5.case_to_show[0].c_group);
+        _this5.initial_gid = _this5.gid;
 
-        _this4.fetchUser(_this4.uid);
+        _this5.fetchUser(_this5.uid);
 
-        _this4.fetchGroup(_this4.gid);
+        _this5.fetchGroup(_this5.gid);
 
         console.log(res.data);
       })["catch"](function (err) {
@@ -4428,36 +4567,42 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     fetchUser: function fetchUser(uid) {
-      var _this5 = this;
+      var _this6 = this;
 
       fetch("/user?uid=" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this5.users = res.data;
+        _this6.users = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     fetchUserGroups: function fetchUserGroups() {
-      var _this6 = this;
+      var _this7 = this;
 
-      fetch("/groups/").then(function (res) {
+      fetch("/group/show?uid=" + this.case_to_show[0].c_owner).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this6.all_groups = res.data;
+        _this7.all_groups = res.data;
+
+        _this7.all_groups.unshift({
+          gid: 0,
+          g_name: "No Group",
+          g_owner: null
+        });
+
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(res.data);
-      }); //return this.all_groups.filter(group => group.g_owner == uid);
+      });
     },
-    //TODO
     fetchUsersEditing: function fetchUsersEditing(cid) {
-      var _this7 = this;
+      var _this8 = this;
 
       fetch("/user/edit/" + cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this7.usersEditing = res.data;
+        _this8.usersEditing = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -4492,23 +4637,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchUsersEditing(this.cid);
     },
     fetchGroup: function fetchGroup(gid) {
-      var _this8 = this;
+      var _this9 = this;
 
-      fetch("/case/group/" + this.gid).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        _this8.groups = res.data;
-      })["catch"](function (err) {
-        return console.log(err);
-      });
+      if (this.gid != 0) {
+        fetch("/case/group/" + this.gid).then(function (res) {
+          return res.json();
+        }).then(function (res) {
+          _this9.groups = res.data;
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      } else {
+        this.independent = true;
+        this.groups[0] = {
+          g_name: "No Group",
+          gid: 0
+        };
+      }
     },
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this9 = this;
+      var _this10 = this;
 
       fetch("/case/" + this.cid + "/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this9.case_parameters = res.data;
+        _this10.case_parameters = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -4516,12 +4669,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchParameterOptions();
     },
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this10 = this;
+      var _this11 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this10.parameter_options = res.data;
+        _this11.parameter_options = res.data;
         console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
@@ -4563,24 +4716,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     updateCase: function updateCase() {
       this.cid = this.case_to_show[0].cid;
-      this.updated_case = {
-        cid: this.cid,
-        c_title: this.case_to_show[0].c_title,
-        c_description: this.case_to_show[0].c_description,
-        c_thumbnail: this.case_to_show[0].c_thumbnail,
-        c_status: this.case_to_show[0].c_status,
-        c_date: this.case_to_show[0].c_date,
-        c_owner: this.case_to_show[0].c_owner,
-        c_group: this.case_to_show[0].c_group
-      };
+      var form_data = new FormData();
+
+      if (this.thumbnail_files && this.thumbnail_preview) {
+        form_data.append("image", this.thumbnail_name);
+      }
+
+      form_data.append("cid", this.cid);
+      form_data.append("c_title", this.case_to_show[0].c_title);
+      form_data.append("c_description", this.case_to_show[0].c_description);
+      form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
+      form_data.append("c_status", this.case_to_show[0].c_status);
+      form_data.append("c_date", this.case_to_show[0].c_date);
+      form_data.append("c_incident_date", this.new_date.toUTCString());
+      console.log(this.new_date.toUTCString());
+      form_data.append("c_owner", this.case_to_show[0].c_owner);
+      form_data.append("c_group", this.case_to_show[0].c_group);
       fetch("/case/" + this.cid + "/update", {
         method: "post",
         headers: new Headers({
-          "Content-Type": "application/json",
+          //"Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_case)
+        //body: JSON.stringify(this.updated_case)
+        body: form_data
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -4590,26 +4750,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       this.fetchCase();
     },
-    updateItem: function updateItem(item_to_update) {
+    updateItem: function updateItem(item_to_update, index) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
       this.cid = Number(this.path.get("cid")); //get cid
-      // this.updated_item = {
-      //   iid: Number(item_to_update.iid),
-      //   i_content: item_to_update.i_content,
-      //   i_case: item_to_update.i_case,
-      //   i_type: item_to_update.i_type,
-      //   order: Number(item_to_update.order),
-      //   i_name: item_to_update.i_name
-      // };
 
-      var formData = new FormData();
-      formData.append("image", this.files[0]);
-      formData.append("i_case", item_to_update.i_case);
-      formData.append("i_type", item_to_update.i_type);
-      formData.append("order", Number(item_to_update.order));
-      formData.append("i_name", item_to_update.i_name);
-      formData.append("i_content", item_to_update.i_content); //console.log(formData.get('i_content'));
+      var form_data = new FormData();
+
+      if (this.files && this.images[index]) {
+        form_data.append("image", this.image_names[index]);
+      }
+
+      form_data.append("i_case", item_to_update.i_case);
+      form_data.append("i_type", item_to_update.i_type);
+      form_data.append("order", Number(item_to_update.order));
+      form_data.append("i_name", item_to_update.i_name);
+      form_data.append("i_content", item_to_update.i_content); //console.log(form_data.get('i_content'));
 
       fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
@@ -4619,7 +4775,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
         //body: JSON.stringify(this.updated_item)
-        body: formData
+        body: form_data
       }).then(function (res) {
         return res.text();
       }).then(function (text) {
@@ -4631,7 +4787,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     updateItems: function updateItems(items) {
       for (var item in this.items) {
         this.items[item].order = item;
-        this.updateItem(this.items[item]);
+        this.updateItem(this.items[item], item);
       }
 
       this.fetchItems();
@@ -4746,7 +4902,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onCancel: function onCancel() {
       this.gid = this.initial_gid;
       this.editing = false;
-      this.preview = false;
+      this.previewThumbnail = false;
+
+      for (var index in this.preview) {
+        this.preview[index] = false;
+      }
+
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
@@ -4765,12 +4926,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     onSubmit: function onSubmit(items) {
       this.editing = false;
-      this.preview = false;
+
+      for (var index in this.preview) {
+        this.preview[index] = false;
+      }
+
+      this.previewThumbnail = false;
+      this.new_date = this.case_to_show[0].c_incident_date;
       this.updateParams();
       this.updateItems(items);
       this.updateCase(); //this.updateParameter();
     },
     onSelectGroup: function onSelectGroup(selected_gid) {
+      if (!selected_gid) {
+        this.independent = true;
+      } else {
+        this.independent = false;
+      }
+
       this.gid = selected_gid;
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
@@ -4780,7 +4953,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.case_parameters[index].opt_selected = selected_op.oid;
     },
     uploadImage: function uploadImage(e, item, index) {
-      var _this11 = this;
+      var _this12 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -4789,8 +4962,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.files[0]);
 
       reader.onload = function (e) {
-        _this11.images[index] = e.target.result;
-        _this11.preview = true;
+        _this12.images[index] = e.target.result;
+        _this12.image_names[index] = _this12.files[0];
+        _this12.preview[index] = true;
+      };
+    },
+    uploadThumbnail: function uploadThumbnail(e) {
+      var _this13 = this;
+
+      //This reads an image from a data url stored in the item
+      //var image = new Image();
+      var reader = new FileReader();
+      this.thumbnail_files = e.target.files || e.dataTransfer.files; //this.files = e.target.files || e.dataTransfer.files;
+
+      reader.readAsDataURL(this.thumbnail_files[0]);
+
+      reader.onload = function (e) {
+        _this13.thumbnail_preview = e.target.result;
+        _this13.thumbnail_name = _this13.thumbnail_files[0];
+        _this13.previewThumbnail = true;
       };
     }
   }
@@ -4998,6 +5188,337 @@ var default_styles = {
       this.pager = pager; // emit change page event to parent component
 
       this.$emit("changePage", page_of_items);
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/search.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * write a component's description
+ */
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    cases: {
+      type: [Object, Number, Array],
+
+      /**
+       * @description
+       * @returns {any}
+       */
+      "default": function _default() {
+        return [];
+      }
+    }
+  },
+  components: {
+    datepicker: vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+
+  /**
+   * @description
+   * @returns {any}
+   */
+  data: function data() {
+    return {
+      selected_param: [],
+      date_format: "yyyy-MM-dd",
+      incident_date_start: new Date(),
+      incident_date_end: new Date(),
+      case_parameters: [],
+      all_cases_parameters: [],
+      parameter_options: [],
+      selected_options_content: [],
+      selected_options_id: [],
+      list_cases: [],
+      filtered_cases: [],
+      empty: true
+    };
+  },
+
+  /**
+   * @description
+   */
+  created: function created() {
+    this.fetchParameters();
+    this.fetchParameterOptions();
+    this.fetchAllCasesParameters();
+  },
+  computed: {
+    /**
+     * @description filters cases by dropdown selection.
+     * @returns list of cases in accordance to search.
+     */
+    filterCases: function filterCases() {
+      var _this = this;
+
+      this.filtered_cases = []; //These for loops get the case studies on which one or more parameters apply individually
+      //That is if user selects to filter by location and damage type, the algorithm will
+      //fetch all case studies with either one or both of the parameter's selected option.
+
+      this.case_studies_with_selected_option = []; //temp var for case studies
+      //look for case studies(cid) where selected option = selected param
+
+      for (var j = 0; j < this.all_cases_parameters.length; j++) {
+        for (var c = 0; c < this.case_parameters.length; c++) {
+          if (this.all_cases_parameters[j].opt_selected == this.selected_param[c]) {
+            this.case_studies_with_selected_option.push(this.all_cases_parameters[j]);
+          }
+        }
+      } //get count of selected parameters
+
+
+      this.count = 0;
+      this.selected_param.forEach(function (element) {
+        if (isNaN(element[_this.i])) {
+          _this.count = _this.count + 1;
+        }
+
+        _this.i++;
+      });
+      /*change array to elements that contain only the id's of the case studies*/
+
+      this.ids = [];
+      this.case_studies_with_selected_option.forEach(function (element) {
+        _this.ids.push(element.cid);
+      });
+      this.case_studies_with_selected_option = this.ids;
+      /************************* */
+      //get count of id's
+
+      this.temp = {};
+      var vm = this;
+      this.case_studies_with_selected_option.forEach(function (i) {
+        vm.temp[i] = (vm.temp[i] || 0) + 1;
+      });
+      this.case_study_with_id_count = []; //create array containing count of each case study id
+
+      for (var i in this.temp) {
+        this.case_study_with_id_count.push({
+          cid: i,
+          count: this.temp[i]
+        });
+      }
+
+      console.log(this.case_study_with_id_count); //filter those cid's from the list of case studies with parameters(list_cases)
+
+      for (var _i = 0; _i < this.case_study_with_id_count.length; _i++) {
+        for (var k = 0; k < this.list_cases.length; k++) {
+          //if the count of case study id equals to those of selected parameters
+          //verify if case id is in case study search list(list_cases) and append to filtered list
+          if (this.case_study_with_id_count[_i].count == this.count && this.list_cases[k].cid == this.case_study_with_id_count[_i].cid) {
+            this.filtered_cases.push(this.list_cases[k]);
+          }
+        }
+      } //Eliminate duplicates
+
+
+      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
+
+      if (!this.case_studies_with_selected_option.length && this.selected_param.length) {
+        return [];
+      } //if no case was found and a filter hasn't been selected
+      //This is when page loads and user has not made any changes
+      //return search items
+
+
+      if (!this.case_studies_with_selected_option.length && !this.selected_param.length) {
+        return this.list_cases;
+      }
+
+      return this.filtered_cases;
+    }
+  },
+  methods: {
+    /**
+     * @description fetch all system parameters(filters)
+     */
+    fetchParameters: function fetchParameters() {
+      var _this2 = this;
+
+      fetch("/parameters").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this2.case_parameters = res.data;
+
+        if (_this2.cases) {
+          _this2.list_cases = Object.values(_this2.cases);
+          _this2.empty = false;
+        }
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+      this.fetchParameterOptions();
+    },
+
+    /**
+     * @description fetch all parameters options
+     */
+    fetchParameterOptions: function fetchParameterOptions() {
+      var _this3 = this;
+
+      fetch("/parameter/options").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this3.parameter_options = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description fetch the parameters all case studies have correspondingly
+     */
+    fetchAllCasesParameters: function fetchAllCasesParameters() {
+      var _this4 = this;
+
+      fetch("/cs-parameters").then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this4.all_cases_parameters = res.data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description filterss the options in parameter_options with their corresponding parameter
+     * @param {any} parameter system parameter
+     * @returns {any} options for that parameter
+     */
+    filteredOptions: function filteredOptions(parameter) {
+      return this.parameter_options.filter(function (option) {
+        return option.o_parameter == parameter;
+      });
+    },
+
+    /**
+     * @description formats dates into an array for data manipulation
+     * @returns array of formated dates
+     */
+    formatDate: function formatDate(date) {
+      //console.log(date.toISOString().slice(0, 10));
+      return date.toISOString().slice(0, 10);
     }
   }
 });
@@ -5457,9 +5978,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    /**
-     * @description - refreshes the paginator
-     */
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include but are
+    not limited to :Sorting, updating paginator and content,
+    validation, and resetting variables
+    
+        /**
+         * @description - refreshes the paginator
+         */
     updatePaginator: function updatePaginator() {
       var _this2 = this;
 
@@ -5620,9 +6146,18 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
 
-    /**
-     * @description gets all the cases of the current user
-     */
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to the
+     global variables as needed to be used.
+    
+        /**
+         * @description gets all the cases of the current user
+         * Sends request to the case controller
+         */
     fetchCases: function fetchCases() {
       var _this4 = this;
 
@@ -5661,7 +6196,8 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description outputs to the caseController a JSON request to create case study
-     * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
+     * @param {Array} case_study - array of case study data to create a case study -
+     * data is sent by the case_create_dbox dialogue
      */
     createCaseStudy: function createCaseStudy(case_study) {
       var _this5 = this;
@@ -5723,7 +6259,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description add null default parameters to Case study
+     * @description add null default parameters to case study.
+     * Sends request to Case parameters controller
      */
     appendDefaultParameters: function appendDefaultParameters(cid) {
       var _this6 = this;
@@ -5762,7 +6299,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description removes any selected user cases by making a delete request to caseController
+     * @description removes any selected user cases by making a delete request to caseController.
+     * Sends request to the case controller
      */
     removeCases: function removeCases() {
       var curr = this; //confirmation dialogue box
@@ -5831,6 +6369,8 @@ __webpack_require__.r(__webpack_exports__);
         "padding-top": "40px"
       });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -5845,6 +6385,11 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6196,10 +6741,8 @@ __webpack_require__.r(__webpack_exports__);
       //search table string
       path: "",
       //URL
-      uid: "",
-      // curr user id - NOT USED
-      close: "",
       sort_icon_dir: "",
+      //sorting direction for icon
       user_groups: [],
       // groups of the user
       groups_user_is_owner: [],
@@ -6301,9 +6844,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    /**
-     * @description refreshes the paginator
-     */
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include but are
+    not limited to :Sorting, updating paginator and content,
+    validation, and resetting variables
+    
+        /**
+         * @description refreshes the paginator
+         */
     updatePaginator: function updatePaginator() {
       var _this2 = this;
 
@@ -6322,7 +6870,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       if (this.curr_tab == 1) {
-        //current tab content will be filtered content
+        //current tab content will be sorted content
         this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
           return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab1 : -_this3.sorting_tab1;
         }); //sort icon display is set to sort direction
@@ -6330,7 +6878,7 @@ __webpack_require__.r(__webpack_exports__);
         this.sort_order_tab1_icon = this.sorting_tab1;
       } else {
         //curr tab is 2
-        //current tab content will be filtered content
+        //current tab content will be sorted content
         this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
           return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab2 : -_this3.sorting_tab2;
         }); //sort icon display is set to sort direction
@@ -6346,10 +6894,10 @@ __webpack_require__.r(__webpack_exports__);
      */
     sortItems: function sortItems() {
       if (this.curr_tab == 1) {
-        this.sorting_tab1 *= -1; //  this.enable_sorting_tab1 = true;
+        this.sorting_tab1 *= -1;
       } else {
         //curr tab is 2
-        this.sorting_tab2 *= -1; //   this.enable_sorting_tab2 = true;
+        this.sorting_tab2 *= -1;
       }
 
       this.sortArr(); //call sorting algorithm
@@ -6426,6 +6974,12 @@ __webpack_require__.r(__webpack_exports__);
         this.selected_groups.push(this.selected_groups[i].gid);
       }
     },
+
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the action-table-dbox closes as it calls this
+     * function to reset all errors.
+     */
     resetErrors: function resetErrors() {
       this.errors = [];
     },
@@ -6459,9 +7013,19 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
 
-    /**
-     * @description get all of system's users. These are afterwards filtered for collaborators
-     */
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to
+    the global variables as needed to be used.
+    
+    
+        /**
+         * @description get all of system's users. These users are afterwards filtered for collaborators.
+         * Sends request to the user controller.
+         */
     fetchUsers: function fetchUsers() {
       var _this4 = this;
 
@@ -6484,7 +7048,8 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description gets all the groups of the current user
+     * @description gets all the groups of the current user.
+     * Sends request to the group controller.
      */
     fetchGroups: function fetchGroups() {
       var _this5 = this;
@@ -6525,7 +7090,8 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * @description outputs to the groupController a JSON request to create a group
-     * @param {Array} group - array of group data to create a group - data is sent by action_table_dbox when calling method
+     * @param {Array} group - array of group data to create a group - data is sent
+     * by action_table_dbox when calling method
      * @param {Array} members - array of user id's to add to group
      */
     createGroup: function createGroup(group, members) {
@@ -6547,7 +7113,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
-        console.log(res);
+        console.log(res); //if there are no errors present
 
         if (!res.errors) {
           _this6.addUsers(members); //add users to group
@@ -6615,7 +7181,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
-     * @description removes any selected groups by making a delete request to User_Groups controller
+     * @description removes any selected groups by making a delete request to the group controller
      */
     removeGroups: function removeGroups() {
       var curr = this; //confirmation dialogue box
@@ -6684,6 +7250,8 @@ __webpack_require__.r(__webpack_exports__);
         "padding-top": "40px"
       });
     }
+    /*#endregion*/
+
   }
 });
 
@@ -43338,7 +43906,26 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\nimg[data-v-475f3ef6] {\n  width: 30%;\n  margin: auto;\n  display: block;\n  margin-bottom: 10px;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\nimg[data-v-475f3ef6] {\n  width: 50%;\n  margin: auto;\n  display: block;\n  margin-bottom: 10px;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true&":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true& ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "#cases[data-v-4d55b89a] {\n  min-height: 200px;\n  max-height: 610px;\n  overflow-y: auto;\n}\na[data-v-4d55b89a] {\n  color: black;\n}", ""]);
 
 // exports
 
@@ -43357,7 +43944,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-d1138268] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-d1138268] {\n  display: block;\n  font-size: 18px;\n}\n\n/*pointer on headers*/\nth[data-v-d1138268] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-d1138268] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-d1138268] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-d1138268] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-d1138268] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-d1138268] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-d1138268] {\n  float: right;\n}\n#paginate[data-v-d1138268] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-d1138268] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-d1138268]:hover,\nh1 a[data-v-d1138268]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-d1138268] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-d1138268] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-d1138268] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-d1138268] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-d1138268] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-d1138268] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-d1138268] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-d1138268] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-d1138268] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-d1138268] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-d1138268] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-d1138268] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -43376,7 +43963,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/* align table to center */\ntable[data-v-a32253ca] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntr td a[data-v-a32253ca] {\n  display: block;\n  font-size: 18px;\n}\nth[data-v-a32253ca] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\n/*When overflow occurs limit display -\ntext overflow currently not used due to character limit*/\ntd a[data-v-a32253ca] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-a32253ca] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-a32253ca] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-a32253ca] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-a32253ca] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-a32253ca]:hover,\nh1 a[data-v-a32253ca]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-a32253ca] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-a32253ca] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-a32253ca] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-a32253ca] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-a32253ca] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-a32253ca] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-a32253ca] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-a32253ca] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-a32253ca] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-a32253ca] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-a32253ca] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
+exports.push([module.i, "/* align table to center */\ntable[data-v-a32253ca] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntr td a[data-v-a32253ca] {\n  display: block;\n  font-size: 18px;\n}\n\n/*pointer on headers*/\nth[data-v-a32253ca] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\n/*When overflow occurs limit display -\ntext overflow currently not used due to character limit*/\ntd a[data-v-a32253ca] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-a32253ca] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-a32253ca] {\n  float: right;\n}\n\n/*paginate component sizing*/\n#paginate[data-v-a32253ca] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-a32253ca] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-a32253ca]:hover,\nh1 a[data-v-a32253ca]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-a32253ca] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-a32253ca] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-a32253ca] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-a32253ca] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-a32253ca] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-a32253ca] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-a32253ca] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-a32253ca] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-a32253ca] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-a32253ca] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-a32253ca] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-a32253ca] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -43414,7 +44001,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\r\n/*\r\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\r\n then adding custom css styles with the following css selectors:\r\n\r\n.pagination - Pagination component container (ul element)\r\n.pagination li - All list items in the pagination component\r\n.pagination li a - All pagination links including first, last, previous and next\r\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\r\n.pagination li.first - The 'First' pagination element\r\n.pagination li.last - The 'Last' pagination element\r\n.pagination li.previous - The 'Previous' pagination element\r\n.pagination li.next - The 'Next' pagination element\r\n*/\r\n", ""]);
 
 // exports
 
@@ -86853,6 +87440,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/user-cases.vue?vue&type=style&index=0&id=d1138268&lang=scss&scoped=true&":
 /*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/user-cases.vue?vue&type=style&index=0&id=d1138268&lang=scss&scoped=true& ***!
@@ -89163,9 +89780,11 @@ var render = function() {
               return _c("li", { key: index, staticClass: "list-group-item" }, [
                 _c("div", { staticClass: "card-body" }, [
                   _c("h5", { staticClass: "card-title" }, [
-                    _c("a", { attrs: { href: "#" } }, [
-                      _vm._v(_vm._s(case_study.c_title))
-                    ])
+                    _c(
+                      "a",
+                      { attrs: { href: "/case/body?cid=" + case_study.cid } },
+                      [_vm._v(_vm._s(case_study.c_title))]
+                    )
                   ]),
                   _vm._v(" "),
                   _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
@@ -89260,17 +89879,37 @@ var render = function() {
     "nav",
     { staticClass: "navbar fixed-top navbar-expand-lg navbar-custom shadow" },
     [
-      _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
-        _vm._v("Interdisciplinary Research Network")
-      ]),
-      _vm._v(" "),
       _vm._m(0),
       _vm._v(" "),
       _vm._m(1),
       _vm._v(" "),
+      _c(
+        "form",
+        {
+          staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
+          attrs: { action: "/search" }
+        },
+        [
+          !_vm.disable_header_search
+            ? _c("div", { staticClass: "input-group mb-3" }, [
+                _c("input", {
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    name: "q",
+                    placeholder: "search",
+                    "aria-label": "Search",
+                    "aria-describedby": "basic-addon2"
+                  }
+                }),
+                _vm._v(" "),
+                _vm._m(2)
+              ])
+            : _vm._e()
+        ]
+      ),
+      _vm._v(" "),
       _c("ul", { staticClass: "navbar-nav mr-3" }, [
-        _vm._m(2),
-        _vm._v(" "),
         _vm._m(3),
         _vm._v(" "),
         _vm._m(4),
@@ -89348,6 +89987,19 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
+      _c("img", {
+        staticClass: "img-fluid rounded ",
+        staticStyle: { width: "70px", height: "45px", "margin-right": "10px" },
+        attrs: { src: __webpack_require__(/*! ../../../public/images/iren_logo.png */ "./public/images/iren_logo.png"), alt: "" }
+      }),
+      _vm._v("\n      Interdisciplinary Research Network\n  ")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c(
       "button",
       {
@@ -89366,37 +90018,16 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "form",
-      {
-        staticClass: "navbar-form navbar-right ml-auto mt-2 mr-5 search",
-        attrs: { action: "" }
-      },
-      [
-        _c("div", { staticClass: "input-group mb-3" }, [
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              placeholder: "search",
-              "aria-label": "Search",
-              "aria-describedby": "basic-addon2"
-            }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "input-group-append" }, [
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-primary border-0 btn-sm",
-                attrs: { type: "button" }
-              },
-              [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
-            )
-          ])
-        ])
-      ]
-    )
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary border-0 btn-sm",
+          attrs: { type: "submit" }
+        },
+        [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
+      )
+    ])
   },
   function() {
     var _vm = this
@@ -89462,26 +90093,6 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: {
-            "data-toggle": "tooltip",
-            "data-placement": "bottom",
-            title: "Change languages",
-            href: ""
-          }
-        },
-        [_vm._v("Language")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("span", { attrs: { "data-toggle": "dropdown" } }, [
       _c(
         "a",
@@ -89537,7 +90148,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\n    ")]),
+      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\r\n    ")]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -89578,7 +90189,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -89595,7 +90206,7 @@ var staticRenderFns = [
               [
                 _c("h5", { staticClass: "mb-0" }, [
                   _c("a", [
-                    _vm._v("Collapsible Group Item #2\n                    ")
+                    _vm._v("Collapsible Group Item #2\r\n                    ")
                   ])
                 ])
               ]
@@ -89613,7 +90224,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -89646,7 +90257,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
+                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
                   )
                 ])
               ]
@@ -89787,7 +90398,9 @@ var render = function() {
                                 attrs: { type: "text", maxlength: 32 },
                                 domProps: { value: case_study.c_title },
                                 on: {
-                                  keydown: _vm.editingCase,
+                                  keydown: function($event) {
+                                    return _vm.editingCase()
+                                  },
                                   input: function($event) {
                                     if ($event.target.composing) {
                                       return
@@ -89880,39 +90493,33 @@ var render = function() {
                       _c(
                         "div",
                         {
+                          key: this.independent,
                           staticClass: "dropdown-menu scrollable-menu",
                           attrs: {
                             "aria-labelledby": "dropdownMenuButton",
                             id: "drop"
                           }
                         },
-                        _vm._l(
-                          this.all_groups.filter(function(group) {
-                            return group.g_owner == _vm.case_to_show[0].c_owner
-                          }),
-                          function(group, index) {
-                            return _c(
-                              "option",
-                              {
-                                key: index,
-                                staticClass: "dropdown-item",
-                                attrs: { href: "#" },
-                                on: {
-                                  click: function($event) {
-                                    return _vm.onSelectGroup(group.gid)
-                                  }
+                        _vm._l(this.all_groups, function(group, index) {
+                          return _c(
+                            "option",
+                            {
+                              key: index,
+                              staticClass: "dropdown-item",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.onSelectGroup(group.gid)
                                 }
-                              },
-                              [
-                                _vm._v(
-                                  _vm._s(index + 1) +
-                                    ": " +
-                                    _vm._s(group.g_name)
-                                )
-                              ]
-                            )
-                          }
-                        ),
+                              }
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(index + 1) + ": " + _vm._s(group.g_name)
+                              )
+                            ]
+                          )
+                        }),
                         0
                       )
                     ],
@@ -89931,7 +90538,7 @@ var render = function() {
             staticStyle: { margin: "50px", background: "white" }
           },
           [
-            _c("div", { staticClass: "col-md-9" }, [
+            _c("div", { staticClass: "col-md-8" }, [
               _c(
                 "h4",
                 {
@@ -89996,8 +90603,83 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _vm._m(0)
-          ]
+            _vm._l(_vm.case_to_show, function(case_study, index) {
+              return _c(
+                "div",
+                {
+                  key: index,
+                  staticClass:
+                    "col-md-4.5 border shadow form-group text-break text-center",
+                  staticStyle: { "margin-top": "10px", "margin-right": "10px" }
+                },
+                [
+                  _c("div", { key: _vm.previewThumbnail }, [
+                    _vm.editing
+                      ? _c("input", {
+                          attrs: {
+                            enctype: "multipart/form-data",
+                            type: "file",
+                            accept: "image/*",
+                            id: "file-input"
+                          },
+                          on: {
+                            change: function($event) {
+                              return _vm.uploadThumbnail($event)
+                            }
+                          }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.editing && !_vm.previewThumbnail
+                      ? _c("img", {
+                          staticStyle: {
+                            "margin-top": "10px",
+                            "max-width": "250px",
+                            "max-height": "250px"
+                          },
+                          attrs: {
+                            src: "../images/" + case_study.c_thumbnail,
+                            onerror:
+                              "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                          }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.editing && _vm.previewThumbnail
+                      ? _c("img", {
+                          staticStyle: {
+                            "margin-top": "10px",
+                            "max-width": "250px",
+                            "max-height": "250px"
+                          },
+                          attrs: {
+                            src: _vm.thumbnail_preview,
+                            onerror:
+                              "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                          }
+                        })
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  !_vm.editing
+                    ? _c("img", {
+                        staticStyle: {
+                          "margin-top": "10px",
+                          "max-width": "250px",
+                          "max-height": "250px"
+                        },
+                        attrs: {
+                          src: "../images/" + case_study.c_thumbnail,
+                          onerror:
+                            "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                        }
+                      })
+                    : _vm._e()
+                ]
+              )
+            })
+          ],
+          2
         ),
         _vm._v(" "),
         _c(
@@ -90037,25 +90719,55 @@ var render = function() {
                           }
                         },
                         [
-                          _c(
-                            "h5",
-                            {
-                              staticClass: "btn btn-primary-disabled btn-block",
-                              staticStyle: {
-                                background: "#c0c0c0",
-                                "border-color": "#c0c0c0",
-                                color: "black",
-                                width: "250px"
-                              }
-                            },
-                            [
-                              _vm._v(
-                                _vm._s(case_parameter.csp_name) +
-                                  ": " +
-                                  _vm._s(case_parameter.o_content)
+                          case_parameter.csp_name != "Incident date" ||
+                          !_vm.case_to_show[0].c_incident_date
+                            ? _c(
+                                "h5",
+                                {
+                                  staticClass:
+                                    "btn btn-primary-disabled btn-block",
+                                  staticStyle: {
+                                    background: "#c0c0c0",
+                                    "border-color": "#c0c0c0",
+                                    color: "black",
+                                    width: "250px"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(case_parameter.csp_name) +
+                                      ": " +
+                                      _vm._s(case_parameter.o_content)
+                                  )
+                                ]
                               )
-                            ]
-                          )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          case_parameter.csp_name == "Incident date" &&
+                          _vm.case_to_show[0].c_incident_date
+                            ? _c(
+                                "h5",
+                                {
+                                  staticClass:
+                                    "btn btn-primary-disabled btn-block",
+                                  staticStyle: {
+                                    background: "#c0c0c0",
+                                    "border-color": "#c0c0c0",
+                                    color: "black",
+                                    width: "250px"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(case_parameter.csp_name) +
+                                      ": " +
+                                      _vm._s(
+                                        _vm.case_to_show[0].c_incident_date
+                                      )
+                                  )
+                                ]
+                              )
+                            : _vm._e()
                         ]
                       )
                     }),
@@ -90083,72 +90795,118 @@ var render = function() {
                           }
                         },
                         [
-                          _c("div", { staticClass: "dropdown" }, [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-primary dropdown-toggle",
-                                staticStyle: {
-                                  background: "#c0c0c0",
-                                  "border-color": "#c0c0c0",
-                                  color: "black",
-                                  width: "250px"
-                                },
-                                attrs: {
-                                  type: "button",
-                                  id: "dropdownMenuButton",
-                                  "data-toggle": "dropdown"
-                                }
-                              },
-                              [
-                                _vm._v(
-                                  _vm._s(case_parameter.csp_name) +
-                                    ": " +
-                                    _vm._s(case_parameter.o_content)
-                                )
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                staticClass: "dropdown-menu scrollable-menu",
-                                attrs: {
-                                  "aria-labelledby": "dropdownMenuButton"
-                                }
-                              },
-                              _vm._l(
-                                _vm.filteredOptions(case_parameter.csp_id),
-                                function(option, sd) {
-                                  return _c(
-                                    "a",
-                                    {
-                                      key: sd,
-                                      staticClass: "dropdown-item",
-                                      staticStyle: { width: "250px" },
-                                      attrs: { href: "#" },
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.onSelectOption(
-                                            option,
-                                            index
-                                          )
-                                        }
-                                      }
+                          case_parameter.csp_name == "Incident date"
+                            ? _c("div", [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    staticStyle: {
+                                      background: "#c0c0c0",
+                                      "border-color": "#c0c0c0",
+                                      color: "black",
+                                      width: "250px"
                                     },
-                                    [
-                                      _vm._v(
-                                        _vm._s(sd + 1) +
-                                          ": " +
-                                          _vm._s(option.o_content)
+                                    attrs: { type: "button" }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                " +
+                                        _vm._s(case_parameter.csp_name) +
+                                        ":\n                "
+                                    ),
+                                    _c("datepicker", {
+                                      attrs: { format: _vm.date_format },
+                                      model: {
+                                        value:
+                                          _vm.case_to_show[0].c_incident_date,
+                                        callback: function($$v) {
+                                          _vm.$set(
+                                            _vm.case_to_show[0],
+                                            "c_incident_date",
+                                            $$v
+                                          )
+                                        },
+                                        expression:
+                                          "case_to_show[0].c_incident_date"
+                                      }
+                                    })
+                                  ],
+                                  1
+                                )
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          case_parameter.csp_name != "Incident date"
+                            ? _c("div", { staticClass: "dropdown" }, [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass:
+                                      "btn btn-primary dropdown-toggle",
+                                    staticStyle: {
+                                      background: "#c0c0c0",
+                                      "border-color": "#c0c0c0",
+                                      color: "black",
+                                      width: "250px"
+                                    },
+                                    attrs: {
+                                      type: "button",
+                                      id: "dropdownMenuButton",
+                                      "data-toggle": "dropdown"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(case_parameter.csp_name) +
+                                        ": " +
+                                        _vm._s(case_parameter.o_content)
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "dropdown-menu scrollable-menu",
+                                    attrs: {
+                                      "aria-labelledby": "dropdownMenuButton"
+                                    }
+                                  },
+                                  _vm._l(
+                                    _vm.filteredOptions(case_parameter.csp_id),
+                                    function(option, sd) {
+                                      return _c(
+                                        "a",
+                                        {
+                                          key: sd,
+                                          staticClass: "dropdown-item",
+                                          staticStyle: { width: "250px" },
+                                          attrs: { href: "#" },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.onSelectOption(
+                                                option,
+                                                index
+                                              )
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(sd + 1) +
+                                              ": " +
+                                              _vm._s(option.o_content)
+                                          )
+                                        ]
                                       )
-                                    ]
-                                  )
-                                }
-                              ),
-                              0
-                            )
-                          ])
+                                    }
+                                  ),
+                                  0
+                                )
+                              ])
+                            : _vm._e()
                         ]
                       )
                     }),
@@ -90186,7 +90944,7 @@ var render = function() {
                           "li",
                           { key: index, staticClass: "list-group-item" },
                           [
-                            _c("a", [
+                            _c("a", { attrs: { href: "#item" + index } }, [
                               _vm._v(
                                 _vm._s(index + 1) + ": " + _vm._s(item.i_name)
                               )
@@ -90400,7 +91158,8 @@ var render = function() {
                       {
                         key: index,
                         staticClass: "col-md",
-                        staticStyle: { margin: "25px", "margin-left": "0px" }
+                        staticStyle: { margin: "25px", "margin-left": "0px" },
+                        attrs: { id: "item" + index }
                       },
                       [
                         _c(
@@ -90577,29 +91336,37 @@ var render = function() {
                                               })
                                             : _vm._e(),
                                           _vm._v(" "),
-                                          _c("div", { key: _vm.preview }, [
-                                            _vm.editing &&
-                                            item.i_type == 2 &&
-                                            !_vm.preview
-                                              ? _c("img", {
-                                                  attrs: {
-                                                    src:
-                                                      "../images/" +
-                                                      item.i_content
-                                                  }
-                                                })
-                                              : _vm._e(),
-                                            _vm._v(" "),
-                                            _vm.editing &&
-                                            item.i_type == 2 &&
-                                            _vm.preview
-                                              ? _c("img", {
-                                                  attrs: {
-                                                    src: _vm.images[index]
-                                                  }
-                                                })
-                                              : _vm._e()
-                                          ])
+                                          _c(
+                                            "div",
+                                            { key: _vm.preview[index] },
+                                            [
+                                              _vm.editing &&
+                                              item.i_type == 2 &&
+                                              !_vm.preview[index]
+                                                ? _c("img", {
+                                                    attrs: {
+                                                      src:
+                                                        "../images/" +
+                                                        item.i_content,
+                                                      onerror:
+                                                        "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              _vm.editing &&
+                                              item.i_type == 2 &&
+                                              _vm.preview[index]
+                                                ? _c("img", {
+                                                    attrs: {
+                                                      src: _vm.images[index],
+                                                      onerror:
+                                                        "this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                                                    }
+                                                  })
+                                                : _vm._e()
+                                            ]
+                                          )
                                         ])
                                       ])
                                     ]
@@ -90628,9 +91395,17 @@ var render = function() {
                                         [
                                           _c("img", {
                                             attrs: {
-                                              src: "../images/" + item.i_content
+                                              src:
+                                                "../images/" + item.i_content,
+                                              onerror:
+                                                "this.onerror=null;this.src='../images/image_placeholder.jpg';"
                                             }
-                                          })
+                                          }),
+                                          _vm._v(
+                                            "\n                      " +
+                                              _vm._s(item.i_content) +
+                                              "\n                    "
+                                          )
                                         ]
                                       )
                                     : _vm._e()
@@ -90653,18 +91428,7 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-2.5 border shadow" }, [
-      _c("img", {
-        attrs: { src: __webpack_require__(/*! ../../../public/images/nsf_logo.jpg */ "./public/images/nsf_logo.jpg") }
-      })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -90873,6 +91637,284 @@ var render = function() {
     : _vm._e()
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=template&id=4d55b89a&scoped=true&":
+/*!*********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/search.vue?vue&type=template&id=4d55b89a&scoped=true& ***!
+  \*********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "card" }, [
+      _c(
+        "div",
+        { staticClass: "row mt-3 ml-4" },
+        [
+          _c(
+            "label",
+            {
+              staticStyle: { "padding-top": "7px" },
+              attrs: { for: "group_select" }
+            },
+            [_vm._v("Filters:")]
+          ),
+          _vm._v(" "),
+          _vm._l(_vm.case_parameters, function(case_parameter, index) {
+            return _c("div", { key: index }, [
+              _c("div", { staticClass: "col" }, [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("button", { attrs: { disabled: "" } }, [
+                    _c("a", { staticClass: "text-center text-break" }, [
+                      _vm._v(_vm._s(case_parameter.csp_name))
+                    ]),
+                    _vm._v(" "),
+                    case_parameter.csp_name == "Incident date"
+                      ? _c(
+                          "div",
+                          [
+                            _vm._v("\n                From:\n                "),
+                            _c("datepicker", {
+                              attrs: { format: _vm.date_format },
+                              model: {
+                                value: _vm.incident_date_start,
+                                callback: function($$v) {
+                                  _vm.incident_date_start = $$v
+                                },
+                                expression: "incident_date_start"
+                              }
+                            }),
+                            _vm._v("\n                To:\n                "),
+                            _c("datepicker", {
+                              attrs: { format: _vm.date_format },
+                              model: {
+                                value: _vm.incident_date_end,
+                                callback: function($$v) {
+                                  _vm.incident_date_end = $$v
+                                },
+                                expression: "incident_date_end"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.incident_date_start > _vm.incident_date_end
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass: "text-center text-break",
+                                    staticStyle: {
+                                      "white-space": "pre-line",
+                                      "max-width": "200px"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                  Invalid date range:\n                  Starting date must be equal to or lower than end date.\n                "
+                                    )
+                                  ]
+                                )
+                              : _vm._e()
+                          ],
+                          1
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    case_parameter.csp_name != "Incident date"
+                      ? _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.selected_param[index],
+                                expression: "selected_param[index]"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { id: index },
+                            on: {
+                              click: function($event) {
+                                _vm.case_param = case_parameter.cid
+                              },
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.selected_param,
+                                  index,
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              }
+                            }
+                          },
+                          [
+                            _c(
+                              "option",
+                              { attrs: { selected: "selected", disabled: "" } },
+                              [_vm._v(_vm._s(case_parameter.csp_name))]
+                            ),
+                            _vm._v(" "),
+                            _vm._l(
+                              _vm.filteredOptions(case_parameter.csp_id),
+                              function(option) {
+                                return _c(
+                                  "option",
+                                  {
+                                    key: option.oid,
+                                    domProps: { value: option.oid }
+                                  },
+                                  [_vm._v(_vm._s(option.o_content))]
+                                )
+                              }
+                            )
+                          ],
+                          2
+                        )
+                      : _vm._e()
+                  ])
+                ])
+              ])
+            ])
+          })
+        ],
+        2
+      )
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "card p-3 shadow", staticStyle: { "margin-top": "20px" } },
+      [
+        !_vm.empty
+          ? _c("div", [
+              _c(
+                "div",
+                { staticClass: "row mt-1 pt-2 pl-2", attrs: { id: "cases" } },
+                _vm._l(_vm.filterCases, function(case_study) {
+                  return _c(
+                    "div",
+                    { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
+                    [
+                      _c("div", { staticClass: "card h-100 text-center" }, [
+                        _c("img", {
+                          staticClass: "card-img-top",
+                          staticStyle: {
+                            height: "150px",
+                            width: "125px",
+                            "margin-top": "20px",
+                            "margin-left": "200px"
+                          },
+                          attrs: {
+                            src: "../images/" + case_study.c_thumbnail,
+                            onerror:
+                              "this.onerror=null;this.src='../images/image_placeholder.jpg';",
+                            alt: "..."
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "card-body" }, [
+                          _c("h5", { staticClass: "card-title" }, [
+                            _c(
+                              "a",
+                              {
+                                staticClass: "stretched-link",
+                                attrs: {
+                                  href: "/case/body?cid=" + case_study.cid
+                                }
+                              },
+                              [_vm._v(_vm._s(case_study.c_title))]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "p",
+                            {
+                              staticClass: "card-text",
+                              staticStyle: { "overflow-y": "auto" }
+                            },
+                            [_vm._v(_vm._s(case_study.c_description))]
+                          )
+                        ])
+                      ])
+                    ]
+                  )
+                }),
+                0
+              )
+            ])
+          : _c("div", [
+              _c("p", { staticClass: "text-center p-5" }, [
+                _vm._v("No case studies found. Please try again!")
+              ])
+            ]),
+        _vm._v(" "),
+        _c("div")
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "form",
+      {
+        staticClass: "navbar-form ml-auto mr-auto pt-5 mt-2 mr-5 search",
+        attrs: { action: "/search" }
+      },
+      [
+        _c("div", { staticClass: "input-group mb-3" }, [
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "q",
+              placeholder: "search",
+              "aria-label": "Search",
+              "aria-describedby": "basic-addon2"
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary border-0 btn-sm",
+                attrs: { type: "submit" }
+              },
+              [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
+            )
+          ])
+        ])
+      ]
+    )
+  }
+]
 render._withStripped = true
 
 
@@ -107859,6 +108901,2456 @@ if (typeof window !== "undefined" && "Vue" in window) {
 
 /***/ }),
 
+/***/ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js ***!
+  \********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function _typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+var Language =
+/*#__PURE__*/
+function () {
+  function Language(language, months, monthsAbbr, days) {
+    _classCallCheck(this, Language);
+
+    this.language = language;
+    this.months = months;
+    this.monthsAbbr = monthsAbbr;
+    this.days = days;
+    this.rtl = false;
+    this.ymd = false;
+    this.yearSuffix = '';
+  }
+
+  _createClass(Language, [{
+    key: "language",
+    get: function get() {
+      return this._language;
+    },
+    set: function set(language) {
+      if (typeof language !== 'string') {
+        throw new TypeError('Language must be a string');
+      }
+
+      this._language = language;
+    }
+  }, {
+    key: "months",
+    get: function get() {
+      return this._months;
+    },
+    set: function set(months) {
+      if (months.length !== 12) {
+        throw new RangeError("There must be 12 months for ".concat(this.language, " language"));
+      }
+
+      this._months = months;
+    }
+  }, {
+    key: "monthsAbbr",
+    get: function get() {
+      return this._monthsAbbr;
+    },
+    set: function set(monthsAbbr) {
+      if (monthsAbbr.length !== 12) {
+        throw new RangeError("There must be 12 abbreviated months for ".concat(this.language, " language"));
+      }
+
+      this._monthsAbbr = monthsAbbr;
+    }
+  }, {
+    key: "days",
+    get: function get() {
+      return this._days;
+    },
+    set: function set(days) {
+      if (days.length !== 7) {
+        throw new RangeError("There must be 7 days for ".concat(this.language, " language"));
+      }
+
+      this._days = days;
+    }
+  }]);
+
+  return Language;
+}(); // eslint-disable-next-line
+
+var en = new Language('English', ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']) // eslint-disable-next-line
+;
+
+var utils = {
+  /**
+   * @type {Boolean}
+   */
+  useUtc: false,
+
+  /**
+   * Returns the full year, using UTC or not
+   * @param {Date} date
+   */
+  getFullYear: function getFullYear(date) {
+    return this.useUtc ? date.getUTCFullYear() : date.getFullYear();
+  },
+
+  /**
+   * Returns the month, using UTC or not
+   * @param {Date} date
+   */
+  getMonth: function getMonth(date) {
+    return this.useUtc ? date.getUTCMonth() : date.getMonth();
+  },
+
+  /**
+   * Returns the date, using UTC or not
+   * @param {Date} date
+   */
+  getDate: function getDate(date) {
+    return this.useUtc ? date.getUTCDate() : date.getDate();
+  },
+
+  /**
+   * Returns the day, using UTC or not
+   * @param {Date} date
+   */
+  getDay: function getDay(date) {
+    return this.useUtc ? date.getUTCDay() : date.getDay();
+  },
+
+  /**
+   * Returns the hours, using UTC or not
+   * @param {Date} date
+   */
+  getHours: function getHours(date) {
+    return this.useUtc ? date.getUTCHours() : date.getHours();
+  },
+
+  /**
+   * Returns the minutes, using UTC or not
+   * @param {Date} date
+   */
+  getMinutes: function getMinutes(date) {
+    return this.useUtc ? date.getUTCMinutes() : date.getMinutes();
+  },
+
+  /**
+   * Sets the full year, using UTC or not
+   * @param {Date} date
+   */
+  setFullYear: function setFullYear(date, value, useUtc) {
+    return this.useUtc ? date.setUTCFullYear(value) : date.setFullYear(value);
+  },
+
+  /**
+   * Sets the month, using UTC or not
+   * @param {Date} date
+   */
+  setMonth: function setMonth(date, value, useUtc) {
+    return this.useUtc ? date.setUTCMonth(value) : date.setMonth(value);
+  },
+
+  /**
+   * Sets the date, using UTC or not
+   * @param {Date} date
+   * @param {Number} value
+   */
+  setDate: function setDate(date, value, useUtc) {
+    return this.useUtc ? date.setUTCDate(value) : date.setDate(value);
+  },
+
+  /**
+   * Check if date1 is equivalent to date2, without comparing the time
+   * @see https://stackoverflow.com/a/6202196/4455925
+   * @param {Date} date1
+   * @param {Date} date2
+   */
+  compareDates: function compareDates(date1, date2) {
+    var d1 = new Date(date1.getTime());
+    var d2 = new Date(date2.getTime());
+
+    if (this.useUtc) {
+      d1.setUTCHours(0, 0, 0, 0);
+      d2.setUTCHours(0, 0, 0, 0);
+    } else {
+      d1.setHours(0, 0, 0, 0);
+      d2.setHours(0, 0, 0, 0);
+    }
+
+    return d1.getTime() === d2.getTime();
+  },
+
+  /**
+   * Validates a date object
+   * @param {Date} date - an object instantiated with the new Date constructor
+   * @return {Boolean}
+   */
+  isValidDate: function isValidDate(date) {
+    if (Object.prototype.toString.call(date) !== '[object Date]') {
+      return false;
+    }
+
+    return !isNaN(date.getTime());
+  },
+
+  /**
+   * Return abbreviated week day name
+   * @param {Date}
+   * @param {Array}
+   * @return {String}
+   */
+  getDayNameAbbr: function getDayNameAbbr(date, days) {
+    if (_typeof(date) !== 'object') {
+      throw TypeError('Invalid Type');
+    }
+
+    return days[this.getDay(date)];
+  },
+
+  /**
+   * Return name of the month
+   * @param {Number|Date}
+   * @param {Array}
+   * @return {String}
+   */
+  getMonthName: function getMonthName(month, months) {
+    if (!months) {
+      throw Error('missing 2nd parameter Months array');
+    }
+
+    if (_typeof(month) === 'object') {
+      return months[this.getMonth(month)];
+    }
+
+    if (typeof month === 'number') {
+      return months[month];
+    }
+
+    throw TypeError('Invalid type');
+  },
+
+  /**
+   * Return an abbreviated version of the month
+   * @param {Number|Date}
+   * @return {String}
+   */
+  getMonthNameAbbr: function getMonthNameAbbr(month, monthsAbbr) {
+    if (!monthsAbbr) {
+      throw Error('missing 2nd paramter Months array');
+    }
+
+    if (_typeof(month) === 'object') {
+      return monthsAbbr[this.getMonth(month)];
+    }
+
+    if (typeof month === 'number') {
+      return monthsAbbr[month];
+    }
+
+    throw TypeError('Invalid type');
+  },
+
+  /**
+   * Alternative get total number of days in month
+   * @param {Number} year
+   * @param {Number} m
+   * @return {Number}
+   */
+  daysInMonth: function daysInMonth(year, month) {
+    return /8|3|5|10/.test(month) ? 30 : month === 1 ? !(year % 4) && year % 100 || !(year % 400) ? 29 : 28 : 31;
+  },
+
+  /**
+   * Get nth suffix for date
+   * @param {Number} day
+   * @return {String}
+   */
+  getNthSuffix: function getNthSuffix(day) {
+    switch (day) {
+      case 1:
+      case 21:
+      case 31:
+        return 'st';
+
+      case 2:
+      case 22:
+        return 'nd';
+
+      case 3:
+      case 23:
+        return 'rd';
+
+      default:
+        return 'th';
+    }
+  },
+
+  /**
+   * Formats date object
+   * @param {Date}
+   * @param {String}
+   * @param {Object}
+   * @return {String}
+   */
+  formatDate: function formatDate(date, format, translation) {
+    translation = !translation ? en : translation;
+    var year = this.getFullYear(date);
+    var month = this.getMonth(date) + 1;
+    var day = this.getDate(date);
+    var str = format.replace(/dd/, ('0' + day).slice(-2)).replace(/d/, day).replace(/yyyy/, year).replace(/yy/, String(year).slice(2)).replace(/MMMM/, this.getMonthName(this.getMonth(date), translation.months)).replace(/MMM/, this.getMonthNameAbbr(this.getMonth(date), translation.monthsAbbr)).replace(/MM/, ('0' + month).slice(-2)).replace(/M(?!a|ä|e)/, month).replace(/su/, this.getNthSuffix(this.getDate(date))).replace(/D(?!e|é|i)/, this.getDayNameAbbr(date, translation.days));
+    return str;
+  },
+
+  /**
+   * Creates an array of dates for each day in between two dates.
+   * @param {Date} start
+   * @param {Date} end
+   * @return {Array}
+   */
+  createDateArray: function createDateArray(start, end) {
+    var dates = [];
+
+    while (start <= end) {
+      dates.push(new Date(start));
+      start = this.setDate(new Date(start), this.getDate(new Date(start)) + 1);
+    }
+
+    return dates;
+  },
+
+  /**
+   * method used as a prop validator for input values
+   * @param {*} val
+   * @return {Boolean}
+   */
+  validateDateInput: function validateDateInput(val) {
+    return val === null || val instanceof Date || typeof val === 'string' || typeof val === 'number';
+  }
+};
+var makeDateUtils = function makeDateUtils(useUtc) {
+  return _objectSpread({}, utils, {
+    useUtc: useUtc
+  });
+};
+var utils$1 = _objectSpread({}, utils) // eslint-disable-next-line
+;
+
+var script = {
+  props: {
+    selectedDate: Date,
+    resetTypedDate: [Date],
+    format: [String, Function],
+    translation: Object,
+    inline: Boolean,
+    id: String,
+    name: String,
+    refName: String,
+    openDate: Date,
+    placeholder: String,
+    inputClass: [String, Object, Array],
+    clearButton: Boolean,
+    clearButtonIcon: String,
+    calendarButton: Boolean,
+    calendarButtonIcon: String,
+    calendarButtonIconContent: String,
+    disabled: Boolean,
+    required: Boolean,
+    typeable: Boolean,
+    bootstrapStyling: Boolean,
+    useUtc: Boolean
+  },
+  data: function data() {
+    var constructedDateUtils = makeDateUtils(this.useUtc);
+    return {
+      input: null,
+      typedDate: false,
+      utils: constructedDateUtils
+    };
+  },
+  computed: {
+    formattedValue: function formattedValue() {
+      if (!this.selectedDate) {
+        return null;
+      }
+
+      if (this.typedDate) {
+        return this.typedDate;
+      }
+
+      return typeof this.format === 'function' ? this.format(this.selectedDate) : this.utils.formatDate(new Date(this.selectedDate), this.format, this.translation);
+    },
+    computedInputClass: function computedInputClass() {
+      if (this.bootstrapStyling) {
+        if (typeof this.inputClass === 'string') {
+          return [this.inputClass, 'form-control'].join(' ');
+        }
+
+        return _objectSpread({
+          'form-control': true
+        }, this.inputClass);
+      }
+
+      return this.inputClass;
+    }
+  },
+  watch: {
+    resetTypedDate: function resetTypedDate() {
+      this.typedDate = false;
+    }
+  },
+  methods: {
+    showCalendar: function showCalendar() {
+      this.$emit('showCalendar');
+    },
+
+    /**
+     * Attempt to parse a typed date
+     * @param {Event} event
+     */
+    parseTypedDate: function parseTypedDate(event) {
+      // close calendar if escape or enter are pressed
+      if ([27, // escape
+      13 // enter
+      ].includes(event.keyCode)) {
+        this.input.blur();
+      }
+
+      if (this.typeable) {
+        var typedDate = Date.parse(this.input.value);
+
+        if (!isNaN(typedDate)) {
+          this.typedDate = this.input.value;
+          this.$emit('typedDate', new Date(this.typedDate));
+        }
+      }
+    },
+
+    /**
+     * nullify the typed date to defer to regular formatting
+     * called once the input is blurred
+     */
+    inputBlurred: function inputBlurred() {
+      if (this.typeable && isNaN(Date.parse(this.input.value))) {
+        this.clearDate();
+        this.input.value = null;
+        this.typedDate = null;
+      }
+
+      this.$emit('closeCalendar');
+    },
+
+    /**
+     * emit a clearDate event
+     */
+    clearDate: function clearDate() {
+      this.$emit('clearDate');
+    }
+  },
+  mounted: function mounted() {
+    this.input = this.$el.querySelector('input');
+  }
+} // eslint-disable-next-line
+;
+
+function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier
+/* server only */
+, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
+  if (typeof shadowMode !== 'boolean') {
+    createInjectorSSR = createInjector;
+    createInjector = shadowMode;
+    shadowMode = false;
+  } // Vue.extend constructor export interop.
+
+
+  var options = typeof script === 'function' ? script.options : script; // render functions
+
+  if (template && template.render) {
+    options.render = template.render;
+    options.staticRenderFns = template.staticRenderFns;
+    options._compiled = true; // functional template
+
+    if (isFunctionalTemplate) {
+      options.functional = true;
+    }
+  } // scopedId
+
+
+  if (scopeId) {
+    options._scopeId = scopeId;
+  }
+
+  var hook;
+
+  if (moduleIdentifier) {
+    // server build
+    hook = function hook(context) {
+      // 2.3 injection
+      context = context || // cached call
+      this.$vnode && this.$vnode.ssrContext || // stateful
+      this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext; // functional
+      // 2.2 with runInNewContext: true
+
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__;
+      } // inject component styles
+
+
+      if (style) {
+        style.call(this, createInjectorSSR(context));
+      } // register component module identifier for async chunk inference
+
+
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier);
+      }
+    }; // used by ssr in case component is cached and beforeCreate
+    // never gets called
+
+
+    options._ssrRegister = hook;
+  } else if (style) {
+    hook = shadowMode ? function () {
+      style.call(this, createInjectorShadow(this.$root.$options.shadowRoot));
+    } : function (context) {
+      style.call(this, createInjector(context));
+    };
+  }
+
+  if (hook) {
+    if (options.functional) {
+      // register for functional component in vue file
+      var originalRender = options.render;
+
+      options.render = function renderWithStyleInjection(h, context) {
+        hook.call(context);
+        return originalRender(h, context);
+      };
+    } else {
+      // inject component registration as beforeCreate hook
+      var existing = options.beforeCreate;
+      options.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+    }
+  }
+
+  return script;
+}
+
+var normalizeComponent_1 = normalizeComponent;
+
+/* script */
+const __vue_script__ = script;
+
+/* template */
+var __vue_render__ = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "div",
+    { class: { "input-group": _vm.bootstrapStyling } },
+    [
+      _vm.calendarButton
+        ? _c(
+            "span",
+            {
+              staticClass: "vdp-datepicker__calendar-button",
+              class: { "input-group-prepend": _vm.bootstrapStyling },
+              style: { "cursor:not-allowed;": _vm.disabled },
+              on: { click: _vm.showCalendar }
+            },
+            [
+              _c(
+                "span",
+                { class: { "input-group-text": _vm.bootstrapStyling } },
+                [
+                  _c("i", { class: _vm.calendarButtonIcon }, [
+                    _vm._v(
+                      "\n        " +
+                        _vm._s(_vm.calendarButtonIconContent) +
+                        "\n        "
+                    ),
+                    !_vm.calendarButtonIcon
+                      ? _c("span", [_vm._v("…")])
+                      : _vm._e()
+                  ])
+                ]
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c("input", {
+        ref: _vm.refName,
+        class: _vm.computedInputClass,
+        attrs: {
+          type: _vm.inline ? "hidden" : "text",
+          name: _vm.name,
+          id: _vm.id,
+          "open-date": _vm.openDate,
+          placeholder: _vm.placeholder,
+          "clear-button": _vm.clearButton,
+          disabled: _vm.disabled,
+          required: _vm.required,
+          readonly: !_vm.typeable,
+          autocomplete: "off"
+        },
+        domProps: { value: _vm.formattedValue },
+        on: {
+          click: _vm.showCalendar,
+          keyup: _vm.parseTypedDate,
+          blur: _vm.inputBlurred
+        }
+      }),
+      _vm._v(" "),
+      _vm.clearButton && _vm.selectedDate
+        ? _c(
+            "span",
+            {
+              staticClass: "vdp-datepicker__clear-button",
+              class: { "input-group-append": _vm.bootstrapStyling },
+              on: {
+                click: function($event) {
+                  return _vm.clearDate()
+                }
+              }
+            },
+            [
+              _c(
+                "span",
+                { class: { "input-group-text": _vm.bootstrapStyling } },
+                [
+                  _c("i", { class: _vm.clearButtonIcon }, [
+                    !_vm.clearButtonIcon ? _c("span", [_vm._v("×")]) : _vm._e()
+                  ])
+                ]
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm._t("afterDateInput")
+    ],
+    2
+  )
+};
+var __vue_staticRenderFns__ = [];
+__vue_render__._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__ = undefined;
+  /* scoped */
+  const __vue_scope_id__ = undefined;
+  /* module identifier */
+  const __vue_module_identifier__ = undefined;
+  /* functional template */
+  const __vue_is_functional_template__ = false;
+  /* style inject */
+  
+  /* style inject SSR */
+  
+
+  
+  var DateInput = normalizeComponent_1(
+    { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
+    __vue_inject_styles__,
+    __vue_script__,
+    __vue_scope_id__,
+    __vue_is_functional_template__,
+    __vue_module_identifier__,
+    undefined,
+    undefined
+  );
+
+//
+var script$1 = {
+  props: {
+    showDayView: Boolean,
+    selectedDate: Date,
+    pageDate: Date,
+    pageTimestamp: Number,
+    fullMonthName: Boolean,
+    allowedToShowView: Function,
+    dayCellContent: {
+      type: Function,
+      "default": function _default(day) {
+        return day.date;
+      }
+    },
+    disabledDates: Object,
+    highlighted: Object,
+    calendarClass: [String, Object, Array],
+    calendarStyle: Object,
+    translation: Object,
+    isRtl: Boolean,
+    mondayFirst: Boolean,
+    useUtc: Boolean
+  },
+  data: function data() {
+    var constructedDateUtils = makeDateUtils(this.useUtc);
+    return {
+      utils: constructedDateUtils
+    };
+  },
+  computed: {
+    /**
+     * Returns an array of day names
+     * @return {String[]}
+     */
+    daysOfWeek: function daysOfWeek() {
+      if (this.mondayFirst) {
+        var tempDays = this.translation.days.slice();
+        tempDays.push(tempDays.shift());
+        return tempDays;
+      }
+
+      return this.translation.days;
+    },
+
+    /**
+     * Returns the day number of the week less one for the first of the current month
+     * Used to show amount of empty cells before the first in the day calendar layout
+     * @return {Number}
+     */
+    blankDays: function blankDays() {
+      var d = this.pageDate;
+      var dObj = this.useUtc ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)) : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes());
+
+      if (this.mondayFirst) {
+        return this.utils.getDay(dObj) > 0 ? this.utils.getDay(dObj) - 1 : 6;
+      }
+
+      return this.utils.getDay(dObj);
+    },
+
+    /**
+     * @return {Object[]}
+     */
+    days: function days() {
+      var d = this.pageDate;
+      var days = []; // set up a new date object to the beginning of the current 'page'
+
+      var dObj = this.useUtc ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)) : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes());
+      var daysInMonth = this.utils.daysInMonth(this.utils.getFullYear(dObj), this.utils.getMonth(dObj));
+
+      for (var i = 0; i < daysInMonth; i++) {
+        days.push({
+          date: this.utils.getDate(dObj),
+          timestamp: dObj.getTime(),
+          isSelected: this.isSelectedDate(dObj),
+          isDisabled: this.isDisabledDate(dObj),
+          isHighlighted: this.isHighlightedDate(dObj),
+          isHighlightStart: this.isHighlightStart(dObj),
+          isHighlightEnd: this.isHighlightEnd(dObj),
+          isToday: this.utils.compareDates(dObj, new Date()),
+          isWeekend: this.utils.getDay(dObj) === 0 || this.utils.getDay(dObj) === 6,
+          isSaturday: this.utils.getDay(dObj) === 6,
+          isSunday: this.utils.getDay(dObj) === 0
+        });
+        this.utils.setDate(dObj, this.utils.getDate(dObj) + 1);
+      }
+
+      return days;
+    },
+
+    /**
+     * Gets the name of the month the current page is on
+     * @return {String}
+     */
+    currMonthName: function currMonthName() {
+      var monthName = this.fullMonthName ? this.translation.months : this.translation.monthsAbbr;
+      return this.utils.getMonthNameAbbr(this.utils.getMonth(this.pageDate), monthName);
+    },
+
+    /**
+     * Gets the name of the year that current page is on
+     * @return {Number}
+     */
+    currYearName: function currYearName() {
+      var yearSuffix = this.translation.yearSuffix;
+      return "".concat(this.utils.getFullYear(this.pageDate)).concat(yearSuffix);
+    },
+
+    /**
+     * Is this translation using year/month/day format?
+     * @return {Boolean}
+     */
+    isYmd: function isYmd() {
+      return this.translation.ymd && this.translation.ymd === true;
+    },
+
+    /**
+     * Is the left hand navigation button disabled?
+     * @return {Boolean}
+     */
+    isLeftNavDisabled: function isLeftNavDisabled() {
+      return this.isRtl ? this.isNextMonthDisabled(this.pageTimestamp) : this.isPreviousMonthDisabled(this.pageTimestamp);
+    },
+
+    /**
+     * Is the right hand navigation button disabled?
+     * @return {Boolean}
+     */
+    isRightNavDisabled: function isRightNavDisabled() {
+      return this.isRtl ? this.isPreviousMonthDisabled(this.pageTimestamp) : this.isNextMonthDisabled(this.pageTimestamp);
+    }
+  },
+  methods: {
+    selectDate: function selectDate(date) {
+      if (date.isDisabled) {
+        this.$emit('selectedDisabled', date);
+        return false;
+      }
+
+      this.$emit('selectDate', date);
+    },
+
+    /**
+     * @return {Number}
+     */
+    getPageMonth: function getPageMonth() {
+      return this.utils.getMonth(this.pageDate);
+    },
+
+    /**
+     * Emit an event to show the month picker
+     */
+    showMonthCalendar: function showMonthCalendar() {
+      this.$emit('showMonthCalendar');
+    },
+
+    /**
+     * Change the page month
+     * @param {Number} incrementBy
+     */
+    changeMonth: function changeMonth(incrementBy) {
+      var date = this.pageDate;
+      this.utils.setMonth(date, this.utils.getMonth(date) + incrementBy);
+      this.$emit('changedMonth', date);
+    },
+
+    /**
+     * Decrement the page month
+     */
+    previousMonth: function previousMonth() {
+      if (!this.isPreviousMonthDisabled()) {
+        this.changeMonth(-1);
+      }
+    },
+
+    /**
+     * Is the previous month disabled?
+     * @return {Boolean}
+     */
+    isPreviousMonthDisabled: function isPreviousMonthDisabled() {
+      if (!this.disabledDates || !this.disabledDates.to) {
+        return false;
+      }
+
+      var d = this.pageDate;
+      return this.utils.getMonth(this.disabledDates.to) >= this.utils.getMonth(d) && this.utils.getFullYear(this.disabledDates.to) >= this.utils.getFullYear(d);
+    },
+
+    /**
+     * Increment the current page month
+     */
+    nextMonth: function nextMonth() {
+      if (!this.isNextMonthDisabled()) {
+        this.changeMonth(+1);
+      }
+    },
+
+    /**
+     * Is the next month disabled?
+     * @return {Boolean}
+     */
+    isNextMonthDisabled: function isNextMonthDisabled() {
+      if (!this.disabledDates || !this.disabledDates.from) {
+        return false;
+      }
+
+      var d = this.pageDate;
+      return this.utils.getMonth(this.disabledDates.from) <= this.utils.getMonth(d) && this.utils.getFullYear(this.disabledDates.from) <= this.utils.getFullYear(d);
+    },
+
+    /**
+     * Whether a day is selected
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isSelectedDate: function isSelectedDate(dObj) {
+      return this.selectedDate && this.utils.compareDates(this.selectedDate, dObj);
+    },
+
+    /**
+     * Whether a day is disabled
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isDisabledDate: function isDisabledDate(date) {
+      var _this = this;
+
+      var disabledDates = false;
+
+      if (typeof this.disabledDates === 'undefined') {
+        return false;
+      }
+
+      if (typeof this.disabledDates.dates !== 'undefined') {
+        this.disabledDates.dates.forEach(function (d) {
+          if (_this.utils.compareDates(date, d)) {
+            disabledDates = true;
+            return true;
+          }
+        });
+      }
+
+      if (typeof this.disabledDates.to !== 'undefined' && this.disabledDates.to && date < this.disabledDates.to) {
+        disabledDates = true;
+      }
+
+      if (typeof this.disabledDates.from !== 'undefined' && this.disabledDates.from && date > this.disabledDates.from) {
+        disabledDates = true;
+      }
+
+      if (typeof this.disabledDates.ranges !== 'undefined') {
+        this.disabledDates.ranges.forEach(function (range) {
+          if (typeof range.from !== 'undefined' && range.from && typeof range.to !== 'undefined' && range.to) {
+            if (date < range.to && date > range.from) {
+              disabledDates = true;
+              return true;
+            }
+          }
+        });
+      }
+
+      if (typeof this.disabledDates.days !== 'undefined' && this.disabledDates.days.indexOf(this.utils.getDay(date)) !== -1) {
+        disabledDates = true;
+      }
+
+      if (typeof this.disabledDates.daysOfMonth !== 'undefined' && this.disabledDates.daysOfMonth.indexOf(this.utils.getDate(date)) !== -1) {
+        disabledDates = true;
+      }
+
+      if (typeof this.disabledDates.customPredictor === 'function' && this.disabledDates.customPredictor(date)) {
+        disabledDates = true;
+      }
+
+      return disabledDates;
+    },
+
+    /**
+     * Whether a day is highlighted (only if it is not disabled already except when highlighted.includeDisabled is true)
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isHighlightedDate: function isHighlightedDate(date) {
+      var _this2 = this;
+
+      if (!(this.highlighted && this.highlighted.includeDisabled) && this.isDisabledDate(date)) {
+        return false;
+      }
+
+      var highlighted = false;
+
+      if (typeof this.highlighted === 'undefined') {
+        return false;
+      }
+
+      if (typeof this.highlighted.dates !== 'undefined') {
+        this.highlighted.dates.forEach(function (d) {
+          if (_this2.utils.compareDates(date, d)) {
+            highlighted = true;
+            return true;
+          }
+        });
+      }
+
+      if (this.isDefined(this.highlighted.from) && this.isDefined(this.highlighted.to)) {
+        highlighted = date >= this.highlighted.from && date <= this.highlighted.to;
+      }
+
+      if (typeof this.highlighted.days !== 'undefined' && this.highlighted.days.indexOf(this.utils.getDay(date)) !== -1) {
+        highlighted = true;
+      }
+
+      if (typeof this.highlighted.daysOfMonth !== 'undefined' && this.highlighted.daysOfMonth.indexOf(this.utils.getDate(date)) !== -1) {
+        highlighted = true;
+      }
+
+      if (typeof this.highlighted.customPredictor === 'function' && this.highlighted.customPredictor(date)) {
+        highlighted = true;
+      }
+
+      return highlighted;
+    },
+    dayClasses: function dayClasses(day) {
+      return {
+        'selected': day.isSelected,
+        'disabled': day.isDisabled,
+        'highlighted': day.isHighlighted,
+        'today': day.isToday,
+        'weekend': day.isWeekend,
+        'sat': day.isSaturday,
+        'sun': day.isSunday,
+        'highlight-start': day.isHighlightStart,
+        'highlight-end': day.isHighlightEnd
+      };
+    },
+
+    /**
+     * Whether a day is highlighted and it is the first date
+     * in the highlighted range of dates
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isHighlightStart: function isHighlightStart(date) {
+      return this.isHighlightedDate(date) && this.highlighted.from instanceof Date && this.utils.getFullYear(this.highlighted.from) === this.utils.getFullYear(date) && this.utils.getMonth(this.highlighted.from) === this.utils.getMonth(date) && this.utils.getDate(this.highlighted.from) === this.utils.getDate(date);
+    },
+
+    /**
+     * Whether a day is highlighted and it is the first date
+     * in the highlighted range of dates
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isHighlightEnd: function isHighlightEnd(date) {
+      return this.isHighlightedDate(date) && this.highlighted.to instanceof Date && this.utils.getFullYear(this.highlighted.to) === this.utils.getFullYear(date) && this.utils.getMonth(this.highlighted.to) === this.utils.getMonth(date) && this.utils.getDate(this.highlighted.to) === this.utils.getDate(date);
+    },
+
+    /**
+     * Helper
+     * @param  {mixed}  prop
+     * @return {Boolean}
+     */
+    isDefined: function isDefined(prop) {
+      return typeof prop !== 'undefined' && prop;
+    }
+  } // eslint-disable-next-line
+
+};
+
+/* script */
+const __vue_script__$1 = script$1;
+
+/* template */
+var __vue_render__$1 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.showDayView,
+          expression: "showDayView"
+        }
+      ],
+      class: [_vm.calendarClass, "vdp-datepicker__calendar"],
+      style: _vm.calendarStyle,
+      on: {
+        mousedown: function($event) {
+          $event.preventDefault();
+        }
+      }
+    },
+    [
+      _vm._t("beforeCalendarHeader"),
+      _vm._v(" "),
+      _c("header", [
+        _c(
+          "span",
+          {
+            staticClass: "prev",
+            class: { disabled: _vm.isLeftNavDisabled },
+            on: {
+              click: function($event) {
+                _vm.isRtl ? _vm.nextMonth() : _vm.previousMonth();
+              }
+            }
+          },
+          [_vm._v("<")]
+        ),
+        _vm._v(" "),
+        _c(
+          "span",
+          {
+            staticClass: "day__month_btn",
+            class: _vm.allowedToShowView("month") ? "up" : "",
+            on: { click: _vm.showMonthCalendar }
+          },
+          [
+            _vm._v(
+              _vm._s(_vm.isYmd ? _vm.currYearName : _vm.currMonthName) +
+                " " +
+                _vm._s(_vm.isYmd ? _vm.currMonthName : _vm.currYearName)
+            )
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "span",
+          {
+            staticClass: "next",
+            class: { disabled: _vm.isRightNavDisabled },
+            on: {
+              click: function($event) {
+                _vm.isRtl ? _vm.previousMonth() : _vm.nextMonth();
+              }
+            }
+          },
+          [_vm._v(">")]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        { class: _vm.isRtl ? "flex-rtl" : "" },
+        [
+          _vm._l(_vm.daysOfWeek, function(d) {
+            return _c(
+              "span",
+              { key: d.timestamp, staticClass: "cell day-header" },
+              [_vm._v(_vm._s(d))]
+            )
+          }),
+          _vm._v(" "),
+          _vm.blankDays > 0
+            ? _vm._l(_vm.blankDays, function(d) {
+                return _c("span", {
+                  key: d.timestamp,
+                  staticClass: "cell day blank"
+                })
+              })
+            : _vm._e(),
+          _vm._l(_vm.days, function(day) {
+            return _c("span", {
+              key: day.timestamp,
+              staticClass: "cell day",
+              class: _vm.dayClasses(day),
+              domProps: { innerHTML: _vm._s(_vm.dayCellContent(day)) },
+              on: {
+                click: function($event) {
+                  return _vm.selectDate(day)
+                }
+              }
+            })
+          })
+        ],
+        2
+      )
+    ],
+    2
+  )
+};
+var __vue_staticRenderFns__$1 = [];
+__vue_render__$1._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__$1 = undefined;
+  /* scoped */
+  const __vue_scope_id__$1 = undefined;
+  /* module identifier */
+  const __vue_module_identifier__$1 = undefined;
+  /* functional template */
+  const __vue_is_functional_template__$1 = false;
+  /* style inject */
+  
+  /* style inject SSR */
+  
+
+  
+  var PickerDay = normalizeComponent_1(
+    { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
+    __vue_inject_styles__$1,
+    __vue_script__$1,
+    __vue_scope_id__$1,
+    __vue_is_functional_template__$1,
+    __vue_module_identifier__$1,
+    undefined,
+    undefined
+  );
+
+//
+var script$2 = {
+  props: {
+    showMonthView: Boolean,
+    selectedDate: Date,
+    pageDate: Date,
+    pageTimestamp: Number,
+    disabledDates: Object,
+    calendarClass: [String, Object, Array],
+    calendarStyle: Object,
+    translation: Object,
+    isRtl: Boolean,
+    allowedToShowView: Function,
+    useUtc: Boolean
+  },
+  data: function data() {
+    var constructedDateUtils = makeDateUtils(this.useUtc);
+    return {
+      utils: constructedDateUtils
+    };
+  },
+  computed: {
+    months: function months() {
+      var d = this.pageDate;
+      var months = []; // set up a new date object to the beginning of the current 'page'
+
+      var dObj = this.useUtc ? new Date(Date.UTC(d.getUTCFullYear(), 0, d.getUTCDate())) : new Date(d.getFullYear(), 0, d.getDate(), d.getHours(), d.getMinutes());
+
+      for (var i = 0; i < 12; i++) {
+        months.push({
+          month: this.utils.getMonthName(i, this.translation.months),
+          timestamp: dObj.getTime(),
+          isSelected: this.isSelectedMonth(dObj),
+          isDisabled: this.isDisabledMonth(dObj)
+        });
+        this.utils.setMonth(dObj, this.utils.getMonth(dObj) + 1);
+      }
+
+      return months;
+    },
+
+    /**
+     * Get year name on current page.
+     * @return {String}
+     */
+    pageYearName: function pageYearName() {
+      var yearSuffix = this.translation.yearSuffix;
+      return "".concat(this.utils.getFullYear(this.pageDate)).concat(yearSuffix);
+    },
+
+    /**
+     * Is the left hand navigation disabled
+     * @return {Boolean}
+     */
+    isLeftNavDisabled: function isLeftNavDisabled() {
+      return this.isRtl ? this.isNextYearDisabled(this.pageTimestamp) : this.isPreviousYearDisabled(this.pageTimestamp);
+    },
+
+    /**
+     * Is the right hand navigation disabled
+     * @return {Boolean}
+     */
+    isRightNavDisabled: function isRightNavDisabled() {
+      return this.isRtl ? this.isPreviousYearDisabled(this.pageTimestamp) : this.isNextYearDisabled(this.pageTimestamp);
+    }
+  },
+  methods: {
+    /**
+     * Emits a selectMonth event
+     * @param {Object} month
+     */
+    selectMonth: function selectMonth(month) {
+      if (month.isDisabled) {
+        return false;
+      }
+
+      this.$emit('selectMonth', month);
+    },
+
+    /**
+     * Changes the year up or down
+     * @param {Number} incrementBy
+     */
+    changeYear: function changeYear(incrementBy) {
+      var date = this.pageDate;
+      this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy);
+      this.$emit('changedYear', date);
+    },
+
+    /**
+     * Decrements the year
+     */
+    previousYear: function previousYear() {
+      if (!this.isPreviousYearDisabled()) {
+        this.changeYear(-1);
+      }
+    },
+
+    /**
+     * Checks if the previous year is disabled or not
+     * @return {Boolean}
+     */
+    isPreviousYearDisabled: function isPreviousYearDisabled() {
+      if (!this.disabledDates || !this.disabledDates.to) {
+        return false;
+      }
+
+      return this.utils.getFullYear(this.disabledDates.to) >= this.utils.getFullYear(this.pageDate);
+    },
+
+    /**
+     * Increments the year
+     */
+    nextYear: function nextYear() {
+      if (!this.isNextYearDisabled()) {
+        this.changeYear(1);
+      }
+    },
+
+    /**
+     * Checks if the next year is disabled or not
+     * @return {Boolean}
+     */
+    isNextYearDisabled: function isNextYearDisabled() {
+      if (!this.disabledDates || !this.disabledDates.from) {
+        return false;
+      }
+
+      return this.utils.getFullYear(this.disabledDates.from) <= this.utils.getFullYear(this.pageDate);
+    },
+
+    /**
+     * Emits an event that shows the year calendar
+     */
+    showYearCalendar: function showYearCalendar() {
+      this.$emit('showYearCalendar');
+    },
+
+    /**
+     * Whether the selected date is in this month
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isSelectedMonth: function isSelectedMonth(date) {
+      return this.selectedDate && this.utils.getFullYear(this.selectedDate) === this.utils.getFullYear(date) && this.utils.getMonth(this.selectedDate) === this.utils.getMonth(date);
+    },
+
+    /**
+     * Whether a month is disabled
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isDisabledMonth: function isDisabledMonth(date) {
+      var disabledDates = false;
+
+      if (typeof this.disabledDates === 'undefined') {
+        return false;
+      }
+
+      if (typeof this.disabledDates.to !== 'undefined' && this.disabledDates.to) {
+        if (this.utils.getMonth(date) < this.utils.getMonth(this.disabledDates.to) && this.utils.getFullYear(date) <= this.utils.getFullYear(this.disabledDates.to) || this.utils.getFullYear(date) < this.utils.getFullYear(this.disabledDates.to)) {
+          disabledDates = true;
+        }
+      }
+
+      if (typeof this.disabledDates.from !== 'undefined' && this.disabledDates.from) {
+        if (this.utils.getMonth(date) > this.utils.getMonth(this.disabledDates.from) && this.utils.getFullYear(date) >= this.utils.getFullYear(this.disabledDates.from) || this.utils.getFullYear(date) > this.utils.getFullYear(this.disabledDates.from)) {
+          disabledDates = true;
+        }
+      }
+
+      if (typeof this.disabledDates.customPredictor === 'function' && this.disabledDates.customPredictor(date)) {
+        disabledDates = true;
+      }
+
+      return disabledDates;
+    }
+  } // eslint-disable-next-line
+
+};
+
+/* script */
+const __vue_script__$2 = script$2;
+
+/* template */
+var __vue_render__$2 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.showMonthView,
+          expression: "showMonthView"
+        }
+      ],
+      class: [_vm.calendarClass, "vdp-datepicker__calendar"],
+      style: _vm.calendarStyle,
+      on: {
+        mousedown: function($event) {
+          $event.preventDefault();
+        }
+      }
+    },
+    [
+      _vm._t("beforeCalendarHeader"),
+      _vm._v(" "),
+      _c("header", [
+        _c(
+          "span",
+          {
+            staticClass: "prev",
+            class: { disabled: _vm.isLeftNavDisabled },
+            on: {
+              click: function($event) {
+                _vm.isRtl ? _vm.nextYear() : _vm.previousYear();
+              }
+            }
+          },
+          [_vm._v("<")]
+        ),
+        _vm._v(" "),
+        _c(
+          "span",
+          {
+            staticClass: "month__year_btn",
+            class: _vm.allowedToShowView("year") ? "up" : "",
+            on: { click: _vm.showYearCalendar }
+          },
+          [_vm._v(_vm._s(_vm.pageYearName))]
+        ),
+        _vm._v(" "),
+        _c(
+          "span",
+          {
+            staticClass: "next",
+            class: { disabled: _vm.isRightNavDisabled },
+            on: {
+              click: function($event) {
+                _vm.isRtl ? _vm.previousYear() : _vm.nextYear();
+              }
+            }
+          },
+          [_vm._v(">")]
+        )
+      ]),
+      _vm._v(" "),
+      _vm._l(_vm.months, function(month) {
+        return _c(
+          "span",
+          {
+            key: month.timestamp,
+            staticClass: "cell month",
+            class: { selected: month.isSelected, disabled: month.isDisabled },
+            on: {
+              click: function($event) {
+                $event.stopPropagation();
+                return _vm.selectMonth(month)
+              }
+            }
+          },
+          [_vm._v(_vm._s(month.month))]
+        )
+      })
+    ],
+    2
+  )
+};
+var __vue_staticRenderFns__$2 = [];
+__vue_render__$2._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__$2 = undefined;
+  /* scoped */
+  const __vue_scope_id__$2 = undefined;
+  /* module identifier */
+  const __vue_module_identifier__$2 = undefined;
+  /* functional template */
+  const __vue_is_functional_template__$2 = false;
+  /* style inject */
+  
+  /* style inject SSR */
+  
+
+  
+  var PickerMonth = normalizeComponent_1(
+    { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
+    __vue_inject_styles__$2,
+    __vue_script__$2,
+    __vue_scope_id__$2,
+    __vue_is_functional_template__$2,
+    __vue_module_identifier__$2,
+    undefined,
+    undefined
+  );
+
+//
+var script$3 = {
+  props: {
+    showYearView: Boolean,
+    selectedDate: Date,
+    pageDate: Date,
+    pageTimestamp: Number,
+    disabledDates: Object,
+    highlighted: Object,
+    calendarClass: [String, Object, Array],
+    calendarStyle: Object,
+    translation: Object,
+    isRtl: Boolean,
+    allowedToShowView: Function,
+    useUtc: Boolean
+  },
+  computed: {
+    years: function years() {
+      var d = this.pageDate;
+      var years = []; // set up a new date object to the beginning of the current 'page'7
+
+      var dObj = this.useUtc ? new Date(Date.UTC(Math.floor(d.getUTCFullYear() / 10) * 10, d.getUTCMonth(), d.getUTCDate())) : new Date(Math.floor(d.getFullYear() / 10) * 10, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes());
+
+      for (var i = 0; i < 10; i++) {
+        years.push({
+          year: this.utils.getFullYear(dObj),
+          timestamp: dObj.getTime(),
+          isSelected: this.isSelectedYear(dObj),
+          isDisabled: this.isDisabledYear(dObj)
+        });
+        this.utils.setFullYear(dObj, this.utils.getFullYear(dObj) + 1);
+      }
+
+      return years;
+    },
+
+    /**
+     * @return {String}
+     */
+    getPageDecade: function getPageDecade() {
+      var decadeStart = Math.floor(this.utils.getFullYear(this.pageDate) / 10) * 10;
+      var decadeEnd = decadeStart + 9;
+      var yearSuffix = this.translation.yearSuffix;
+      return "".concat(decadeStart, " - ").concat(decadeEnd).concat(yearSuffix);
+    },
+
+    /**
+     * Is the left hand navigation button disabled?
+     * @return {Boolean}
+     */
+    isLeftNavDisabled: function isLeftNavDisabled() {
+      return this.isRtl ? this.isNextDecadeDisabled(this.pageTimestamp) : this.isPreviousDecadeDisabled(this.pageTimestamp);
+    },
+
+    /**
+     * Is the right hand navigation button disabled?
+     * @return {Boolean}
+     */
+    isRightNavDisabled: function isRightNavDisabled() {
+      return this.isRtl ? this.isPreviousDecadeDisabled(this.pageTimestamp) : this.isNextDecadeDisabled(this.pageTimestamp);
+    }
+  },
+  data: function data() {
+    var constructedDateUtils = makeDateUtils(this.useUtc);
+    return {
+      utils: constructedDateUtils
+    };
+  },
+  methods: {
+    selectYear: function selectYear(year) {
+      if (year.isDisabled) {
+        return false;
+      }
+
+      this.$emit('selectYear', year);
+    },
+    changeYear: function changeYear(incrementBy) {
+      var date = this.pageDate;
+      this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy);
+      this.$emit('changedDecade', date);
+    },
+    previousDecade: function previousDecade() {
+      if (this.isPreviousDecadeDisabled()) {
+        return false;
+      }
+
+      this.changeYear(-10);
+    },
+    isPreviousDecadeDisabled: function isPreviousDecadeDisabled() {
+      if (!this.disabledDates || !this.disabledDates.to) {
+        return false;
+      }
+
+      var disabledYear = this.utils.getFullYear(this.disabledDates.to);
+      var lastYearInPreviousPage = Math.floor(this.utils.getFullYear(this.pageDate) / 10) * 10 - 1;
+      return disabledYear > lastYearInPreviousPage;
+    },
+    nextDecade: function nextDecade() {
+      if (this.isNextDecadeDisabled()) {
+        return false;
+      }
+
+      this.changeYear(10);
+    },
+    isNextDecadeDisabled: function isNextDecadeDisabled() {
+      if (!this.disabledDates || !this.disabledDates.from) {
+        return false;
+      }
+
+      var disabledYear = this.utils.getFullYear(this.disabledDates.from);
+      var firstYearInNextPage = Math.ceil(this.utils.getFullYear(this.pageDate) / 10) * 10;
+      return disabledYear < firstYearInNextPage;
+    },
+
+    /**
+     * Whether the selected date is in this year
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isSelectedYear: function isSelectedYear(date) {
+      return this.selectedDate && this.utils.getFullYear(this.selectedDate) === this.utils.getFullYear(date);
+    },
+
+    /**
+     * Whether a year is disabled
+     * @param {Date}
+     * @return {Boolean}
+     */
+    isDisabledYear: function isDisabledYear(date) {
+      var disabledDates = false;
+
+      if (typeof this.disabledDates === 'undefined' || !this.disabledDates) {
+        return false;
+      }
+
+      if (typeof this.disabledDates.to !== 'undefined' && this.disabledDates.to) {
+        if (this.utils.getFullYear(date) < this.utils.getFullYear(this.disabledDates.to)) {
+          disabledDates = true;
+        }
+      }
+
+      if (typeof this.disabledDates.from !== 'undefined' && this.disabledDates.from) {
+        if (this.utils.getFullYear(date) > this.utils.getFullYear(this.disabledDates.from)) {
+          disabledDates = true;
+        }
+      }
+
+      if (typeof this.disabledDates.customPredictor === 'function' && this.disabledDates.customPredictor(date)) {
+        disabledDates = true;
+      }
+
+      return disabledDates;
+    }
+  } // eslint-disable-next-line
+
+};
+
+/* script */
+const __vue_script__$3 = script$3;
+
+/* template */
+var __vue_render__$3 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.showYearView,
+          expression: "showYearView"
+        }
+      ],
+      class: [_vm.calendarClass, "vdp-datepicker__calendar"],
+      style: _vm.calendarStyle,
+      on: {
+        mousedown: function($event) {
+          $event.preventDefault();
+        }
+      }
+    },
+    [
+      _vm._t("beforeCalendarHeader"),
+      _vm._v(" "),
+      _c("header", [
+        _c(
+          "span",
+          {
+            staticClass: "prev",
+            class: { disabled: _vm.isLeftNavDisabled },
+            on: {
+              click: function($event) {
+                _vm.isRtl ? _vm.nextDecade() : _vm.previousDecade();
+              }
+            }
+          },
+          [_vm._v("<")]
+        ),
+        _vm._v(" "),
+        _c("span", [_vm._v(_vm._s(_vm.getPageDecade))]),
+        _vm._v(" "),
+        _c(
+          "span",
+          {
+            staticClass: "next",
+            class: { disabled: _vm.isRightNavDisabled },
+            on: {
+              click: function($event) {
+                _vm.isRtl ? _vm.previousDecade() : _vm.nextDecade();
+              }
+            }
+          },
+          [_vm._v(">")]
+        )
+      ]),
+      _vm._v(" "),
+      _vm._l(_vm.years, function(year) {
+        return _c(
+          "span",
+          {
+            key: year.timestamp,
+            staticClass: "cell year",
+            class: { selected: year.isSelected, disabled: year.isDisabled },
+            on: {
+              click: function($event) {
+                $event.stopPropagation();
+                return _vm.selectYear(year)
+              }
+            }
+          },
+          [_vm._v(_vm._s(year.year))]
+        )
+      })
+    ],
+    2
+  )
+};
+var __vue_staticRenderFns__$3 = [];
+__vue_render__$3._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__$3 = undefined;
+  /* scoped */
+  const __vue_scope_id__$3 = undefined;
+  /* module identifier */
+  const __vue_module_identifier__$3 = undefined;
+  /* functional template */
+  const __vue_is_functional_template__$3 = false;
+  /* style inject */
+  
+  /* style inject SSR */
+  
+
+  
+  var PickerYear = normalizeComponent_1(
+    { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
+    __vue_inject_styles__$3,
+    __vue_script__$3,
+    __vue_scope_id__$3,
+    __vue_is_functional_template__$3,
+    __vue_module_identifier__$3,
+    undefined,
+    undefined
+  );
+
+//
+var script$4 = {
+  components: {
+    DateInput: DateInput,
+    PickerDay: PickerDay,
+    PickerMonth: PickerMonth,
+    PickerYear: PickerYear
+  },
+  props: {
+    value: {
+      validator: function validator(val) {
+        return utils$1.validateDateInput(val);
+      }
+    },
+    name: String,
+    refName: String,
+    id: String,
+    format: {
+      type: [String, Function],
+      "default": 'dd MMM yyyy'
+    },
+    language: {
+      type: Object,
+      "default": function _default() {
+        return en;
+      }
+    },
+    openDate: {
+      validator: function validator(val) {
+        return utils$1.validateDateInput(val);
+      }
+    },
+    dayCellContent: Function,
+    fullMonthName: Boolean,
+    disabledDates: Object,
+    highlighted: Object,
+    placeholder: String,
+    inline: Boolean,
+    calendarClass: [String, Object, Array],
+    inputClass: [String, Object, Array],
+    wrapperClass: [String, Object, Array],
+    mondayFirst: Boolean,
+    clearButton: Boolean,
+    clearButtonIcon: String,
+    calendarButton: Boolean,
+    calendarButtonIcon: String,
+    calendarButtonIconContent: String,
+    bootstrapStyling: Boolean,
+    initialView: String,
+    disabled: Boolean,
+    required: Boolean,
+    typeable: Boolean,
+    useUtc: Boolean,
+    minimumView: {
+      type: String,
+      "default": 'day'
+    },
+    maximumView: {
+      type: String,
+      "default": 'year'
+    }
+  },
+  data: function data() {
+    var startDate = this.openDate ? new Date(this.openDate) : new Date();
+    var constructedDateUtils = makeDateUtils(this.useUtc);
+    var pageTimestamp = constructedDateUtils.setDate(startDate, 1);
+    return {
+      /*
+       * Vue cannot observe changes to a Date Object so date must be stored as a timestamp
+       * This represents the first day of the current viewing month
+       * {Number}
+       */
+      pageTimestamp: pageTimestamp,
+
+      /*
+       * Selected Date
+       * {Date}
+       */
+      selectedDate: null,
+
+      /*
+       * Flags to show calendar views
+       * {Boolean}
+       */
+      showDayView: false,
+      showMonthView: false,
+      showYearView: false,
+
+      /*
+       * Positioning
+       */
+      calendarHeight: 0,
+      resetTypedDate: new Date(),
+      utils: constructedDateUtils
+    };
+  },
+  watch: {
+    value: function value(_value) {
+      this.setValue(_value);
+    },
+    openDate: function openDate() {
+      this.setPageDate();
+    },
+    initialView: function initialView() {
+      this.setInitialView();
+    }
+  },
+  computed: {
+    computedInitialView: function computedInitialView() {
+      if (!this.initialView) {
+        return this.minimumView;
+      }
+
+      return this.initialView;
+    },
+    pageDate: function pageDate() {
+      return new Date(this.pageTimestamp);
+    },
+    translation: function translation() {
+      return this.language;
+    },
+    calendarStyle: function calendarStyle() {
+      return {
+        position: this.isInline ? 'static' : undefined
+      };
+    },
+    isOpen: function isOpen() {
+      return this.showDayView || this.showMonthView || this.showYearView;
+    },
+    isInline: function isInline() {
+      return !!this.inline;
+    },
+    isRtl: function isRtl() {
+      return this.translation.rtl === true;
+    }
+  },
+  methods: {
+    /**
+     * Called in the event that the user navigates to date pages and
+     * closes the picker without selecting a date.
+     */
+    resetDefaultPageDate: function resetDefaultPageDate() {
+      if (this.selectedDate === null) {
+        this.setPageDate();
+        return;
+      }
+
+      this.setPageDate(this.selectedDate);
+    },
+
+    /**
+     * Effectively a toggle to show/hide the calendar
+     * @return {mixed}
+     */
+    showCalendar: function showCalendar() {
+      if (this.disabled || this.isInline) {
+        return false;
+      }
+
+      if (this.isOpen) {
+        return this.close(true);
+      }
+
+      this.setInitialView();
+    },
+
+    /**
+     * Sets the initial picker page view: day, month or year
+     */
+    setInitialView: function setInitialView() {
+      var initialView = this.computedInitialView;
+
+      if (!this.allowedToShowView(initialView)) {
+        throw new Error("initialView '".concat(this.initialView, "' cannot be rendered based on minimum '").concat(this.minimumView, "' and maximum '").concat(this.maximumView, "'"));
+      }
+
+      switch (initialView) {
+        case 'year':
+          this.showYearCalendar();
+          break;
+
+        case 'month':
+          this.showMonthCalendar();
+          break;
+
+        default:
+          this.showDayCalendar();
+          break;
+      }
+    },
+
+    /**
+     * Are we allowed to show a specific picker view?
+     * @param {String} view
+     * @return {Boolean}
+     */
+    allowedToShowView: function allowedToShowView(view) {
+      var views = ['day', 'month', 'year'];
+      var minimumViewIndex = views.indexOf(this.minimumView);
+      var maximumViewIndex = views.indexOf(this.maximumView);
+      var viewIndex = views.indexOf(view);
+      return viewIndex >= minimumViewIndex && viewIndex <= maximumViewIndex;
+    },
+
+    /**
+     * Show the day picker
+     * @return {Boolean}
+     */
+    showDayCalendar: function showDayCalendar() {
+      if (!this.allowedToShowView('day')) {
+        return false;
+      }
+
+      this.close();
+      this.showDayView = true;
+      return true;
+    },
+
+    /**
+     * Show the month picker
+     * @return {Boolean}
+     */
+    showMonthCalendar: function showMonthCalendar() {
+      if (!this.allowedToShowView('month')) {
+        return false;
+      }
+
+      this.close();
+      this.showMonthView = true;
+      return true;
+    },
+
+    /**
+     * Show the year picker
+     * @return {Boolean}
+     */
+    showYearCalendar: function showYearCalendar() {
+      if (!this.allowedToShowView('year')) {
+        return false;
+      }
+
+      this.close();
+      this.showYearView = true;
+      return true;
+    },
+
+    /**
+     * Set the selected date
+     * @param {Number} timestamp
+     */
+    setDate: function setDate(timestamp) {
+      var date = new Date(timestamp);
+      this.selectedDate = date;
+      this.setPageDate(date);
+      this.$emit('selected', date);
+      this.$emit('input', date);
+    },
+
+    /**
+     * Clear the selected date
+     */
+    clearDate: function clearDate() {
+      this.selectedDate = null;
+      this.setPageDate();
+      this.$emit('selected', null);
+      this.$emit('input', null);
+      this.$emit('cleared');
+    },
+
+    /**
+     * @param {Object} date
+     */
+    selectDate: function selectDate(date) {
+      this.setDate(date.timestamp);
+
+      if (!this.isInline) {
+        this.close(true);
+      }
+
+      this.resetTypedDate = new Date();
+    },
+
+    /**
+     * @param {Object} date
+     */
+    selectDisabledDate: function selectDisabledDate(date) {
+      this.$emit('selectedDisabled', date);
+    },
+
+    /**
+     * @param {Object} month
+     */
+    selectMonth: function selectMonth(month) {
+      var date = new Date(month.timestamp);
+
+      if (this.allowedToShowView('day')) {
+        this.setPageDate(date);
+        this.$emit('changedMonth', month);
+        this.showDayCalendar();
+      } else {
+        this.selectDate(month);
+      }
+    },
+
+    /**
+     * @param {Object} year
+     */
+    selectYear: function selectYear(year) {
+      var date = new Date(year.timestamp);
+
+      if (this.allowedToShowView('month')) {
+        this.setPageDate(date);
+        this.$emit('changedYear', year);
+        this.showMonthCalendar();
+      } else {
+        this.selectDate(year);
+      }
+    },
+
+    /**
+     * Set the datepicker value
+     * @param {Date|String|Number|null} date
+     */
+    setValue: function setValue(date) {
+      if (typeof date === 'string' || typeof date === 'number') {
+        var parsed = new Date(date);
+        date = isNaN(parsed.valueOf()) ? null : parsed;
+      }
+
+      if (!date) {
+        this.setPageDate();
+        this.selectedDate = null;
+        return;
+      }
+
+      this.selectedDate = date;
+      this.setPageDate(date);
+    },
+
+    /**
+     * Sets the date that the calendar should open on
+     */
+    setPageDate: function setPageDate(date) {
+      if (!date) {
+        if (this.openDate) {
+          date = new Date(this.openDate);
+        } else {
+          date = new Date();
+        }
+      }
+
+      this.pageTimestamp = this.utils.setDate(new Date(date), 1);
+    },
+
+    /**
+     * Handles a month change from the day picker
+     */
+    handleChangedMonthFromDayPicker: function handleChangedMonthFromDayPicker(date) {
+      this.setPageDate(date);
+      this.$emit('changedMonth', date);
+    },
+
+    /**
+     * Set the date from a typedDate event
+     */
+    setTypedDate: function setTypedDate(date) {
+      this.setDate(date.getTime());
+    },
+
+    /**
+     * Close all calendar layers
+     * @param {Boolean} emitEvent - emit close event
+     */
+    close: function close(emitEvent) {
+      this.showDayView = this.showMonthView = this.showYearView = false;
+
+      if (!this.isInline) {
+        if (emitEvent) {
+          this.$emit('closed');
+        }
+
+        document.removeEventListener('click', this.clickOutside, false);
+      }
+    },
+
+    /**
+     * Initiate the component
+     */
+    init: function init() {
+      if (this.value) {
+        this.setValue(this.value);
+      }
+
+      if (this.isInline) {
+        this.setInitialView();
+      }
+    }
+  },
+  mounted: function mounted() {
+    this.init();
+  }
+} // eslint-disable-next-line
+;
+
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+function createInjector(context) {
+  return function (id, style) {
+    return addStyle(id, style);
+  };
+}
+var HEAD = document.head || document.getElementsByTagName('head')[0];
+var styles = {};
+
+function addStyle(id, css) {
+  var group = isOldIE ? css.media || 'default' : id;
+  var style = styles[group] || (styles[group] = {
+    ids: new Set(),
+    styles: []
+  });
+
+  if (!style.ids.has(id)) {
+    style.ids.add(id);
+    var code = css.source;
+
+    if (css.map) {
+      // https://developer.chrome.com/devtools/docs/javascript-debugging
+      // this makes source maps inside style tags work properly in Chrome
+      code += '\n/*# sourceURL=' + css.map.sources[0] + ' */'; // http://stackoverflow.com/a/26603875
+
+      code += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) + ' */';
+    }
+
+    if (!style.element) {
+      style.element = document.createElement('style');
+      style.element.type = 'text/css';
+      if (css.media) style.element.setAttribute('media', css.media);
+      HEAD.appendChild(style.element);
+    }
+
+    if ('styleSheet' in style.element) {
+      style.styles.push(code);
+      style.element.styleSheet.cssText = style.styles.filter(Boolean).join('\n');
+    } else {
+      var index = style.ids.size - 1;
+      var textNode = document.createTextNode(code);
+      var nodes = style.element.childNodes;
+      if (nodes[index]) style.element.removeChild(nodes[index]);
+      if (nodes.length) style.element.insertBefore(textNode, nodes[index]);else style.element.appendChild(textNode);
+    }
+  }
+}
+
+var browser = createInjector;
+
+/* script */
+const __vue_script__$4 = script$4;
+
+/* template */
+var __vue_render__$4 = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "div",
+    {
+      staticClass: "vdp-datepicker",
+      class: [_vm.wrapperClass, _vm.isRtl ? "rtl" : ""]
+    },
+    [
+      _c(
+        "date-input",
+        {
+          attrs: {
+            selectedDate: _vm.selectedDate,
+            resetTypedDate: _vm.resetTypedDate,
+            format: _vm.format,
+            translation: _vm.translation,
+            inline: _vm.inline,
+            id: _vm.id,
+            name: _vm.name,
+            refName: _vm.refName,
+            openDate: _vm.openDate,
+            placeholder: _vm.placeholder,
+            inputClass: _vm.inputClass,
+            typeable: _vm.typeable,
+            clearButton: _vm.clearButton,
+            clearButtonIcon: _vm.clearButtonIcon,
+            calendarButton: _vm.calendarButton,
+            calendarButtonIcon: _vm.calendarButtonIcon,
+            calendarButtonIconContent: _vm.calendarButtonIconContent,
+            disabled: _vm.disabled,
+            required: _vm.required,
+            bootstrapStyling: _vm.bootstrapStyling,
+            "use-utc": _vm.useUtc
+          },
+          on: {
+            showCalendar: _vm.showCalendar,
+            closeCalendar: _vm.close,
+            typedDate: _vm.setTypedDate,
+            clearDate: _vm.clearDate
+          }
+        },
+        [_vm._t("afterDateInput", null, { slot: "afterDateInput" })],
+        2
+      ),
+      _vm._v(" "),
+      _vm.allowedToShowView("day")
+        ? _c(
+            "picker-day",
+            {
+              attrs: {
+                pageDate: _vm.pageDate,
+                selectedDate: _vm.selectedDate,
+                showDayView: _vm.showDayView,
+                fullMonthName: _vm.fullMonthName,
+                allowedToShowView: _vm.allowedToShowView,
+                disabledDates: _vm.disabledDates,
+                highlighted: _vm.highlighted,
+                calendarClass: _vm.calendarClass,
+                calendarStyle: _vm.calendarStyle,
+                translation: _vm.translation,
+                pageTimestamp: _vm.pageTimestamp,
+                isRtl: _vm.isRtl,
+                mondayFirst: _vm.mondayFirst,
+                dayCellContent: _vm.dayCellContent,
+                "use-utc": _vm.useUtc
+              },
+              on: {
+                changedMonth: _vm.handleChangedMonthFromDayPicker,
+                selectDate: _vm.selectDate,
+                showMonthCalendar: _vm.showMonthCalendar,
+                selectedDisabled: _vm.selectDisabledDate
+              }
+            },
+            [
+              _vm._t("beforeCalendarHeader", null, {
+                slot: "beforeCalendarHeader"
+              })
+            ],
+            2
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.allowedToShowView("month")
+        ? _c(
+            "picker-month",
+            {
+              attrs: {
+                pageDate: _vm.pageDate,
+                selectedDate: _vm.selectedDate,
+                showMonthView: _vm.showMonthView,
+                allowedToShowView: _vm.allowedToShowView,
+                disabledDates: _vm.disabledDates,
+                calendarClass: _vm.calendarClass,
+                calendarStyle: _vm.calendarStyle,
+                translation: _vm.translation,
+                isRtl: _vm.isRtl,
+                "use-utc": _vm.useUtc
+              },
+              on: {
+                selectMonth: _vm.selectMonth,
+                showYearCalendar: _vm.showYearCalendar,
+                changedYear: _vm.setPageDate
+              }
+            },
+            [
+              _vm._t("beforeCalendarHeader", null, {
+                slot: "beforeCalendarHeader"
+              })
+            ],
+            2
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.allowedToShowView("year")
+        ? _c(
+            "picker-year",
+            {
+              attrs: {
+                pageDate: _vm.pageDate,
+                selectedDate: _vm.selectedDate,
+                showYearView: _vm.showYearView,
+                allowedToShowView: _vm.allowedToShowView,
+                disabledDates: _vm.disabledDates,
+                calendarClass: _vm.calendarClass,
+                calendarStyle: _vm.calendarStyle,
+                translation: _vm.translation,
+                isRtl: _vm.isRtl,
+                "use-utc": _vm.useUtc
+              },
+              on: { selectYear: _vm.selectYear, changedDecade: _vm.setPageDate }
+            },
+            [
+              _vm._t("beforeCalendarHeader", null, {
+                slot: "beforeCalendarHeader"
+              })
+            ],
+            2
+          )
+        : _vm._e()
+    ],
+    1
+  )
+};
+var __vue_staticRenderFns__$4 = [];
+__vue_render__$4._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__$4 = function (inject) {
+    if (!inject) return
+    inject("data-v-64ca2bb5_0", { source: ".rtl {\n  direction: rtl;\n}\n.vdp-datepicker {\n  position: relative;\n  text-align: left;\n}\n.vdp-datepicker * {\n  box-sizing: border-box;\n}\n.vdp-datepicker__calendar {\n  position: absolute;\n  z-index: 100;\n  background: #fff;\n  width: 300px;\n  border: 1px solid #ccc;\n}\n.vdp-datepicker__calendar header {\n  display: block;\n  line-height: 40px;\n}\n.vdp-datepicker__calendar header span {\n  display: inline-block;\n  text-align: center;\n  width: 71.42857142857143%;\n  float: left;\n}\n.vdp-datepicker__calendar header .prev,\n.vdp-datepicker__calendar header .next {\n  width: 14.285714285714286%;\n  float: left;\n  text-indent: -10000px;\n  position: relative;\n}\n.vdp-datepicker__calendar header .prev:after,\n.vdp-datepicker__calendar header .next:after {\n  content: '';\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translateX(-50%) translateY(-50%);\n  border: 6px solid transparent;\n}\n.vdp-datepicker__calendar header .prev:after {\n  border-right: 10px solid #000;\n  margin-left: -5px;\n}\n.vdp-datepicker__calendar header .prev.disabled:after {\n  border-right: 10px solid #ddd;\n}\n.vdp-datepicker__calendar header .next:after {\n  border-left: 10px solid #000;\n  margin-left: 5px;\n}\n.vdp-datepicker__calendar header .next.disabled:after {\n  border-left: 10px solid #ddd;\n}\n.vdp-datepicker__calendar header .prev:not(.disabled),\n.vdp-datepicker__calendar header .next:not(.disabled),\n.vdp-datepicker__calendar header .up:not(.disabled) {\n  cursor: pointer;\n}\n.vdp-datepicker__calendar header .prev:not(.disabled):hover,\n.vdp-datepicker__calendar header .next:not(.disabled):hover,\n.vdp-datepicker__calendar header .up:not(.disabled):hover {\n  background: #eee;\n}\n.vdp-datepicker__calendar .disabled {\n  color: #ddd;\n  cursor: default;\n}\n.vdp-datepicker__calendar .flex-rtl {\n  display: flex;\n  width: inherit;\n  flex-wrap: wrap;\n}\n.vdp-datepicker__calendar .cell {\n  display: inline-block;\n  padding: 0 5px;\n  width: 14.285714285714286%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  vertical-align: middle;\n  border: 1px solid transparent;\n}\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).day,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).month,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).year {\n  cursor: pointer;\n}\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).day:hover,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).month:hover,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).year:hover {\n  border: 1px solid #4bd;\n}\n.vdp-datepicker__calendar .cell.selected {\n  background: #4bd;\n}\n.vdp-datepicker__calendar .cell.selected:hover {\n  background: #4bd;\n}\n.vdp-datepicker__calendar .cell.selected.highlighted {\n  background: #4bd;\n}\n.vdp-datepicker__calendar .cell.highlighted {\n  background: #cae5ed;\n}\n.vdp-datepicker__calendar .cell.highlighted.disabled {\n  color: #a3a3a3;\n}\n.vdp-datepicker__calendar .cell.grey {\n  color: #888;\n}\n.vdp-datepicker__calendar .cell.grey:hover {\n  background: inherit;\n}\n.vdp-datepicker__calendar .cell.day-header {\n  font-size: 75%;\n  white-space: nowrap;\n  cursor: inherit;\n}\n.vdp-datepicker__calendar .cell.day-header:hover {\n  background: inherit;\n}\n.vdp-datepicker__calendar .month,\n.vdp-datepicker__calendar .year {\n  width: 33.333%;\n}\n.vdp-datepicker__clear-button,\n.vdp-datepicker__calendar-button {\n  cursor: pointer;\n  font-style: normal;\n}\n.vdp-datepicker__clear-button.disabled,\n.vdp-datepicker__calendar-button.disabled {\n  color: #999;\n  cursor: default;\n}\n", map: {"version":3,"sources":["Datepicker.vue"],"names":[],"mappings":"AAAA;EACE,cAAc;AAChB;AACA;EACE,kBAAkB;EAClB,gBAAgB;AAClB;AACA;EACE,sBAAsB;AACxB;AACA;EACE,kBAAkB;EAClB,YAAY;EACZ,gBAAgB;EAChB,YAAY;EACZ,sBAAsB;AACxB;AACA;EACE,cAAc;EACd,iBAAiB;AACnB;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,yBAAyB;EACzB,WAAW;AACb;AACA;;EAEE,0BAA0B;EAC1B,WAAW;EACX,qBAAqB;EACrB,kBAAkB;AACpB;AACA;;EAEE,WAAW;EACX,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,4CAA4C;EAC5C,6BAA6B;AAC/B;AACA;EACE,6BAA6B;EAC7B,iBAAiB;AACnB;AACA;EACE,6BAA6B;AAC/B;AACA;EACE,4BAA4B;EAC5B,gBAAgB;AAClB;AACA;EACE,4BAA4B;AAC9B;AACA;;;EAGE,eAAe;AACjB;AACA;;;EAGE,gBAAgB;AAClB;AACA;EACE,WAAW;EACX,eAAe;AACjB;AACA;EACE,aAAa;EACb,cAAc;EACd,eAAe;AACjB;AACA;EACE,qBAAqB;EACrB,cAAc;EACd,0BAA0B;EAC1B,YAAY;EACZ,iBAAiB;EACjB,kBAAkB;EAClB,sBAAsB;EACtB,6BAA6B;AAC/B;AACA;;;EAGE,eAAe;AACjB;AACA;;;EAGE,sBAAsB;AACxB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,mBAAmB;AACrB;AACA;EACE,cAAc;AAChB;AACA;EACE,WAAW;AACb;AACA;EACE,mBAAmB;AACrB;AACA;EACE,cAAc;EACd,mBAAmB;EACnB,eAAe;AACjB;AACA;EACE,mBAAmB;AACrB;AACA;;EAEE,cAAc;AAChB;AACA;;EAEE,eAAe;EACf,kBAAkB;AACpB;AACA;;EAEE,WAAW;EACX,eAAe;AACjB","file":"Datepicker.vue","sourcesContent":[".rtl {\n  direction: rtl;\n}\n.vdp-datepicker {\n  position: relative;\n  text-align: left;\n}\n.vdp-datepicker * {\n  box-sizing: border-box;\n}\n.vdp-datepicker__calendar {\n  position: absolute;\n  z-index: 100;\n  background: #fff;\n  width: 300px;\n  border: 1px solid #ccc;\n}\n.vdp-datepicker__calendar header {\n  display: block;\n  line-height: 40px;\n}\n.vdp-datepicker__calendar header span {\n  display: inline-block;\n  text-align: center;\n  width: 71.42857142857143%;\n  float: left;\n}\n.vdp-datepicker__calendar header .prev,\n.vdp-datepicker__calendar header .next {\n  width: 14.285714285714286%;\n  float: left;\n  text-indent: -10000px;\n  position: relative;\n}\n.vdp-datepicker__calendar header .prev:after,\n.vdp-datepicker__calendar header .next:after {\n  content: '';\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translateX(-50%) translateY(-50%);\n  border: 6px solid transparent;\n}\n.vdp-datepicker__calendar header .prev:after {\n  border-right: 10px solid #000;\n  margin-left: -5px;\n}\n.vdp-datepicker__calendar header .prev.disabled:after {\n  border-right: 10px solid #ddd;\n}\n.vdp-datepicker__calendar header .next:after {\n  border-left: 10px solid #000;\n  margin-left: 5px;\n}\n.vdp-datepicker__calendar header .next.disabled:after {\n  border-left: 10px solid #ddd;\n}\n.vdp-datepicker__calendar header .prev:not(.disabled),\n.vdp-datepicker__calendar header .next:not(.disabled),\n.vdp-datepicker__calendar header .up:not(.disabled) {\n  cursor: pointer;\n}\n.vdp-datepicker__calendar header .prev:not(.disabled):hover,\n.vdp-datepicker__calendar header .next:not(.disabled):hover,\n.vdp-datepicker__calendar header .up:not(.disabled):hover {\n  background: #eee;\n}\n.vdp-datepicker__calendar .disabled {\n  color: #ddd;\n  cursor: default;\n}\n.vdp-datepicker__calendar .flex-rtl {\n  display: flex;\n  width: inherit;\n  flex-wrap: wrap;\n}\n.vdp-datepicker__calendar .cell {\n  display: inline-block;\n  padding: 0 5px;\n  width: 14.285714285714286%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  vertical-align: middle;\n  border: 1px solid transparent;\n}\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).day,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).month,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).year {\n  cursor: pointer;\n}\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).day:hover,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).month:hover,\n.vdp-datepicker__calendar .cell:not(.blank):not(.disabled).year:hover {\n  border: 1px solid #4bd;\n}\n.vdp-datepicker__calendar .cell.selected {\n  background: #4bd;\n}\n.vdp-datepicker__calendar .cell.selected:hover {\n  background: #4bd;\n}\n.vdp-datepicker__calendar .cell.selected.highlighted {\n  background: #4bd;\n}\n.vdp-datepicker__calendar .cell.highlighted {\n  background: #cae5ed;\n}\n.vdp-datepicker__calendar .cell.highlighted.disabled {\n  color: #a3a3a3;\n}\n.vdp-datepicker__calendar .cell.grey {\n  color: #888;\n}\n.vdp-datepicker__calendar .cell.grey:hover {\n  background: inherit;\n}\n.vdp-datepicker__calendar .cell.day-header {\n  font-size: 75%;\n  white-space: nowrap;\n  cursor: inherit;\n}\n.vdp-datepicker__calendar .cell.day-header:hover {\n  background: inherit;\n}\n.vdp-datepicker__calendar .month,\n.vdp-datepicker__calendar .year {\n  width: 33.333%;\n}\n.vdp-datepicker__clear-button,\n.vdp-datepicker__calendar-button {\n  cursor: pointer;\n  font-style: normal;\n}\n.vdp-datepicker__clear-button.disabled,\n.vdp-datepicker__calendar-button.disabled {\n  color: #999;\n  cursor: default;\n}\n"]}, media: undefined });
+
+  };
+  /* scoped */
+  const __vue_scope_id__$4 = undefined;
+  /* module identifier */
+  const __vue_module_identifier__$4 = undefined;
+  /* functional template */
+  const __vue_is_functional_template__$4 = false;
+  /* style inject SSR */
+  
+
+  
+  var Datepicker = normalizeComponent_1(
+    { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
+    __vue_inject_styles__$4,
+    __vue_script__$4,
+    __vue_scope_id__$4,
+    __vue_is_functional_template__$4,
+    __vue_module_identifier__$4,
+    browser,
+    undefined
+  );
+
+/* harmony default export */ __webpack_exports__["default"] = (Datepicker);
+
+
+/***/ }),
+
 /***/ "./node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -107923,6 +111415,17 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./public/images/iren_logo.png":
+/*!*************************************!*\
+  !*** ./public/images/iren_logo.png ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/images/iren_logo.png?db834547cb52842e8e659059cf775f3e";
+
+/***/ }),
+
 /***/ "./public/images/nsf_logo.jpg":
 /*!************************************!*\
   !*** ./public/images/nsf_logo.jpg ***!
@@ -107946,6 +111449,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bootstrap_vue_dist_bootstrap_vue_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap-vue/dist/bootstrap-vue.css */ "./node_modules/bootstrap-vue/dist/bootstrap-vue.css");
 /* harmony import */ var bootstrap_vue_dist_bootstrap_vue_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bootstrap_vue_dist_bootstrap_vue_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var bootstrap_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap-vue */ "./node_modules/bootstrap-vue/esm/index.js");
+/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -107956,9 +111460,11 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 
 
+
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 window.bootbox = __webpack_require__(/*! bootbox */ "./node_modules/bootbox/bootbox.all.js");
 Vue.use(bootstrap_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
+Vue.use(vuejs_datepicker__WEBPACK_IMPORTED_MODULE_2__["default"]);
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -107983,6 +111489,7 @@ Vue.component('iren-user-groups', __webpack_require__(/*! ./components/user-grou
 Vue.component('iren-user-cases', __webpack_require__(/*! ./components/user-cases.vue */ "./resources/js/components/user-cases.vue")["default"]);
 Vue.component('iren-404', __webpack_require__(/*! ./components/errors/404-error.vue */ "./resources/js/components/errors/404-error.vue")["default"]);
 Vue.component('case_study', __webpack_require__(/*! ./components/case_study.vue */ "./resources/js/components/case_study.vue")["default"]);
+Vue.component('iren-search', __webpack_require__(/*! ./components/search.vue */ "./resources/js/components/search.vue")["default"]);
 Vue.component('home', __webpack_require__(/*! ./components/home.vue */ "./resources/js/components/home.vue")["default"]);
 Vue.component('items', __webpack_require__(/*! ./components/items.vue */ "./resources/js/components/items.vue")["default"]);
 /**
@@ -109038,6 +112545,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/search.vue":
+/*!********************************************!*\
+  !*** ./resources/js/components/search.vue ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _search_vue_vue_type_template_id_4d55b89a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./search.vue?vue&type=template&id=4d55b89a&scoped=true& */ "./resources/js/components/search.vue?vue&type=template&id=4d55b89a&scoped=true&");
+/* harmony import */ var _search_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./search.vue?vue&type=script&lang=js& */ "./resources/js/components/search.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _search_vue_vue_type_style_index_0_id_4d55b89a_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true& */ "./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _search_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _search_vue_vue_type_template_id_4d55b89a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _search_vue_vue_type_template_id_4d55b89a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "4d55b89a",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/search.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/search.vue?vue&type=script&lang=js&":
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/search.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./search.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true&":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true& ***!
+  \******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_style_index_0_id_4d55b89a_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_style_index_0_id_4d55b89a_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_style_index_0_id_4d55b89a_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_style_index_0_id_4d55b89a_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_style_index_0_id_4d55b89a_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_style_index_0_id_4d55b89a_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/search.vue?vue&type=template&id=4d55b89a&scoped=true&":
+/*!***************************************************************************************!*\
+  !*** ./resources/js/components/search.vue?vue&type=template&id=4d55b89a&scoped=true& ***!
+  \***************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_template_id_4d55b89a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./search.vue?vue&type=template&id=4d55b89a&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=template&id=4d55b89a&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_template_id_4d55b89a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_search_vue_vue_type_template_id_4d55b89a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/user-cases.vue":
 /*!************************************************!*\
   !*** ./resources/js/components/user-cases.vue ***!
@@ -109230,8 +112824,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

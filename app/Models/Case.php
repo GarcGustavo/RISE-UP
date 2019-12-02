@@ -37,6 +37,7 @@ class case_study extends Model
         'c_title',
         'c_description',
         'c_thumbnail',
+        'c_incident_date',
         'c_group'
     ];
     /**
@@ -51,6 +52,7 @@ class case_study extends Model
         'c_thumbnail' => 'string',
         'c_status' => 'string',
         'c_date' => 'date:Y-m-d',
+        'c_incident_date' => 'date:Y-m-d',
         'c_owner' => 'integer',
         'c_group' => 'integer'
     ];
@@ -65,6 +67,7 @@ class case_study extends Model
         'c_thumbnail' => 'nullable',
         'c_status' => 'required',
         'c_date' => 'required',
+        'c_incident_date' => 'nullable',
         'c_owner' => 'required',
         'c_group' => 'nullable'
     ];

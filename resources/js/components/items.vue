@@ -20,7 +20,7 @@
                 v-model="case_study.c_title"
                 v-if="editing"
                 :maxlength="32"
-                @keydown="editingCase"
+                @keydown="editingCase()"
               />
               <h1 class="text-capitalize" v-if="!editing">{{case_study.c_title}}</h1>
             </h1>
@@ -52,11 +52,12 @@
               class="dropdown-menu scrollable-menu"
               aria-labelledby="dropdownMenuButton"
               id="drop"
+              :key="this.independent"
             >
               <option
                 class="dropdown-item"
                 href="#"
-                v-for="(group, index) in this.all_groups.filter(group => group.g_owner == case_to_show[0].c_owner)"
+                v-for="(group, index) in this.all_groups"
                 :key="index"
                 v-on:click="onSelectGroup(group.gid)"
               >{{index + 1}}: {{group.g_name}}</option>
@@ -66,7 +67,7 @@
       </div>
       <div class="row" style="margin: 50px; background: white;">
         <!-- Case Description and Thumbnail -->
-        <div class="col-md-9">
+        <div class="col-md-8">
           <h4 class="card-title border-0" style="margin: 10px;">Description:</h4>
           <div class="card-body">
             <h5 v-for="(case_study,index) in case_to_show" :key="index">
@@ -85,9 +86,41 @@
             </h5>
           </div>
         </div>
-        <div class="col-md-2.5 border shadow">
-          <!-- Thumbnail Placeholder -->
-          <img src="../../../public/images/nsf_logo.jpg" />
+        <div
+          class="col-md-4.5 border shadow form-group text-break text-center"
+          style="margin-top: 10px; margin-right: 10px;"
+          v-for="(case_study,index) in case_to_show"
+          :key="index"
+        >
+          <!-- Thumbnail -->
+          <div :key="previewThumbnail">
+            <input
+              enctype="multipart/form-data"
+              type="file"
+              accept="image/*"
+              v-if="editing"
+              @change="uploadThumbnail($event)"
+              id="file-input"
+            />
+            <img
+              style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+              v-if="editing && !previewThumbnail"
+              :src="'../images/' + case_study.c_thumbnail"
+              onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+            />
+            <img
+              style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+              v-if="editing && previewThumbnail"
+              :src="thumbnail_preview"
+              onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+            />
+          </div>
+          <img
+            style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+            v-if="!editing"
+            :src="'../images/' + case_study.c_thumbnail"
+            onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+          />
         </div>
       </div>
       <div class="row" style="margin: 50px; background: white;">
@@ -102,9 +135,15 @@
               style="margin: 50px; margin-bottom: 20px; margin-top: 20px;"
             >
               <h5
+                v-if="(case_parameter.csp_name != 'Incident date' || !case_to_show[0].c_incident_date)"
                 class="btn btn-primary-disabled btn-block"
                 style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
               >{{case_parameter.csp_name}}: {{case_parameter.o_content}}</h5>
+              <h5
+                v-if="(case_parameter.csp_name == 'Incident date' && case_to_show[0].c_incident_date)"
+                class="btn btn-primary-disabled btn-block"
+                style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
+              >{{case_parameter.csp_name}}: {{case_to_show[0].c_incident_date}}</h5>
             </div>
           </div>
           <div class="row border" v-if="editing">
@@ -114,7 +153,17 @@
               :key="index"
               style="margin: 50px; margin-bottom: 30px; margin-top: 20px;"
             >
-              <div class="dropdown">
+              <div v-if="(case_parameter.csp_name == 'Incident date')">
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
+                >
+                  {{case_parameter.csp_name}}:
+                  <datepicker v-model="case_to_show[0].c_incident_date" :format="date_format"></datepicker>
+                </button>
+              </div>
+              <div class="dropdown" v-if="(case_parameter.csp_name != 'Incident date')">
                 <button
                   class="btn btn-primary dropdown-toggle"
                   type="button"
@@ -145,7 +194,7 @@
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
-                  <a>{{index + 1}}: {{item.i_name}}</a>
+                  <a :href="'#item' + index">{{index + 1}}: {{item.i_name}}</a>
                 </li>
               </ul>
             </div>
@@ -214,6 +263,7 @@
                 style="margin: 25px; margin-left: 0px;"
                 v-for="(item,index) in items"
                 :key="index"
+                :id="'item' + index"
               >
                 <ul class="list-items" style="margin: 25px; margin-left: 0px;">
                   <div class="card h-100 text-left shadow">
@@ -261,14 +311,16 @@
                               @change="uploadImage($event, item, index)"
                               id="file-input"
                             />
-                            <div :key="preview">
+                            <div :key="preview[index]">
                               <img
-                                v-if="editing && (item.i_type == 2) && !preview"
+                                v-if="editing && (item.i_type == 2) && !preview[index]"
                                 :src="'../images/' + item.i_content"
+                                onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
                               />
                               <img
-                                v-if="editing && (item.i_type == 2) && preview"
+                                v-if="editing && (item.i_type == 2) && preview[index]"
                                 :src="images[index]"
+                                onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
                               />
                             </div>
                           </div>
@@ -283,7 +335,11 @@
                         class="form-group text-break text-center"
                         v-if="!editing && (item.i_type == 2)"
                       >
-                        <img :src="'../images/' + item.i_content" />
+                        <img
+                          :src="'../images/' + item.i_content"
+                          onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                        />
+                        {{item.i_content}}
                       </div>
                     </div>
                   </div>
@@ -299,14 +355,18 @@
 
 <script>
 import draggable from "vuedraggable";
+import datepicker from "vuejs-datepicker";
 export default {
   //name: 'app',
   components: {
-    draggable
+    draggable,
+    datepicker
   },
   events: {},
   data() {
     return {
+      date_format: "yyyy-MM-dd",
+      new_date: new Date(),
       editing: false,
       showModal: false,
       typing: false,
@@ -314,7 +374,13 @@ export default {
       actor: "",
       total_items: "",
       images: [],
-      preview: false,
+      image_names: [],
+      thumbnail_name: "",
+      thumbnail_preview: "",
+      thumbnail_files: [],
+      independent: false,
+      previewThumbnail: false,
+      preview: [],
       case_study: {
         cid: "",
         c_title: "",
@@ -363,9 +429,11 @@ export default {
     };
   },
   created() {
+    this.preview[0] = false;
     this.fetchItems();
     this.fetchCaseItems();
     this.fetchCase();
+
     this.fetchCaseParameters();
     //this.fetchSelectedOptions(this.cid);
     this.fetchUsersEditing(this.cid);
@@ -373,37 +441,44 @@ export default {
   },
 
   mounted() {
-    Echo.join(`App.User.${this.user.uid}`)
-      .here(users => {
-        //this.usersEditing = users;
-      })
-      .joining(user => {
-        //this.usersEditing.push(users[0]);
-      })
-      .leaving(user => {
-        //this.usersEditing = this.usersEditing.filter(u => u != users[0]);
-      })
-      .listenForWhisper("editing", e => {
-        // this.case_study.c_title = e.title;
-        // this.items.i_content = e.body;
-      })
-      .listenForWhisper("saved", e => {
-        //this.case_study.c_status = e.status;
+    Echo.join(`case.${this.case_to_show.cid}`).listenForWhisper(
+      "editing",
+      e => {
+        this.case_to_show.c_title = e.title;
+        this.items.forEach(element => {
+          this.items[element] = e.items[element];
+        });
+        console.log("hell from channel");
+      }
+    );
+    // .here(users => {
+    //   this.usersEditing = users;
+    // })
+    // .joining(user => {
+    //   this.usersEditing.push(users[0]);
+    // })
+    // .leaving(user => {
+    //   this.usersEditing = this.usersEditing.filter(u => u != users[0]);
+    // })
+    // .listenForWhisper("saved", e => {
+    //   //this.case_study.c_status = e.status;
 
-        // clear is status after 1s
-        setTimeout(() => {
-          //this.case_study.c_status = "";
-        }, 1000);
-      });
+    //   // clear is status after 1s
+    //   setTimeout(() => {
+    //     //this.case_study.c_status = "";
+    //   }, 1000);
+    // });
   },
   methods: {
     editingCase() {
-      let channel = Echo.join(`App.User.${this.user.uid}`);
-      // show changes after 1s
+      let channel = Echo.join(`case.${this.case_to_show.cid}`);
+
+      console.log("hello from editing case");
+      //show changes after 1s
       setTimeout(() => {
         channel.whisper("editing", {
-          title: this.case_study.c_title,
-          body: this.items.i_content
+          title: this.case_to_show.c_title,
+          items: this.items
         });
       }, 1000);
     },
@@ -453,16 +528,19 @@ export default {
         .catch(err => console.log(err));
     },
     fetchUserGroups() {
-      fetch("/groups/")
+      fetch("/group/show?uid=" + this.case_to_show[0].c_owner)
         .then(res => res.json())
         .then(res => {
           this.all_groups = res.data;
+          this.all_groups.unshift({
+            gid: 0,
+            g_name: "No Group",
+            g_owner: null
+          });
           console.log(res.data);
         })
         .catch(err => console.log(res.data));
-      //return this.all_groups.filter(group => group.g_owner == uid);
     },
-    //TODO
     fetchUsersEditing(cid) {
       fetch("/user/edit/" + cid)
         .then(res => res.json())
@@ -501,12 +579,17 @@ export default {
       this.fetchUsersEditing(this.cid);
     },
     fetchGroup(gid) {
-      fetch("/case/group/" + this.gid)
-        .then(res => res.json())
-        .then(res => {
-          this.groups = res.data;
-        })
-        .catch(err => console.log(err));
+      if (this.gid != 0) {
+        fetch("/case/group/" + this.gid)
+          .then(res => res.json())
+          .then(res => {
+            this.groups = res.data;
+          })
+          .catch(err => console.log(err));
+      } else {
+        this.independent = true;
+        this.groups[0] = { g_name: "No Group", gid: 0 };
+      }
     },
     fetchCaseParameters() {
       fetch("/case/" + this.cid + "/parameters")
@@ -564,24 +647,31 @@ export default {
     },
     updateCase() {
       this.cid = this.case_to_show[0].cid;
-      this.updated_case = {
-        cid: this.cid,
-        c_title: this.case_to_show[0].c_title,
-        c_description: this.case_to_show[0].c_description,
-        c_thumbnail: this.case_to_show[0].c_thumbnail,
-        c_status: this.case_to_show[0].c_status,
-        c_date: this.case_to_show[0].c_date,
-        c_owner: this.case_to_show[0].c_owner,
-        c_group: this.case_to_show[0].c_group
-      };
+
+      var form_data = new FormData();
+      if (this.thumbnail_files && this.thumbnail_preview) {
+        form_data.append("image", this.thumbnail_name);
+      }
+      form_data.append("cid", this.cid);
+      form_data.append("c_title", this.case_to_show[0].c_title);
+      form_data.append("c_description", this.case_to_show[0].c_description);
+      form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
+      form_data.append("c_status", this.case_to_show[0].c_status);
+      form_data.append("c_date", this.case_to_show[0].c_date);
+      form_data.append("c_incident_date", this.new_date.toUTCString());
+      console.log(this.new_date.toUTCString());
+      form_data.append("c_owner", this.case_to_show[0].c_owner);
+      form_data.append("c_group", this.case_to_show[0].c_group);
+
       fetch("/case/" + this.cid + "/update", {
         method: "post",
         headers: new Headers({
-          "Content-Type": "application/json",
+          //"Content-Type": "application/json",
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(this.updated_case)
+        //body: JSON.stringify(this.updated_case)
+        body: form_data
       })
         .then(res => res.text())
         .then(text => {
@@ -592,25 +682,19 @@ export default {
         });
       this.fetchCase();
     },
-    updateItem(item_to_update) {
+    updateItem(item_to_update, index) {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      // this.updated_item = {
-      //   iid: Number(item_to_update.iid),
-      //   i_content: item_to_update.i_content,
-      //   i_case: item_to_update.i_case,
-      //   i_type: item_to_update.i_type,
-      //   order: Number(item_to_update.order),
-      //   i_name: item_to_update.i_name
-      // };
-      var formData = new FormData();
-      formData.append("image", this.files[0]);
-      formData.append("i_case", item_to_update.i_case);
-      formData.append("i_type", item_to_update.i_type);
-      formData.append("order", Number(item_to_update.order));
-      formData.append("i_name", item_to_update.i_name);
-      formData.append("i_content", item_to_update.i_content);
-      //console.log(formData.get('i_content'));
+      var form_data = new FormData();
+      if (this.files && this.images[index]) {
+        form_data.append("image", this.image_names[index]);
+      }
+      form_data.append("i_case", item_to_update.i_case);
+      form_data.append("i_type", item_to_update.i_type);
+      form_data.append("order", Number(item_to_update.order));
+      form_data.append("i_name", item_to_update.i_name);
+      form_data.append("i_content", item_to_update.i_content);
+      //console.log(form_data.get('i_content'));
       fetch("/item/" + item_to_update.iid + "/update", {
         method: "post",
         headers: new Headers({
@@ -619,7 +703,7 @@ export default {
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
         //body: JSON.stringify(this.updated_item)
-        body: formData
+        body: form_data
       })
         .then(res => res.text())
         .then(text => {
@@ -632,7 +716,7 @@ export default {
     updateItems(items) {
       for (let item in this.items) {
         this.items[item].order = item;
-        this.updateItem(this.items[item]);
+        this.updateItem(this.items[item], item);
       }
       this.fetchItems();
       this.fetchCaseItems();
@@ -747,7 +831,10 @@ export default {
     onCancel() {
       this.gid = this.initial_gid;
       this.editing = false;
-      this.preview = false;
+      this.previewThumbnail = false;
+      for (let index in this.preview) {
+        this.preview[index] = false;
+      }
 
       this.fetchGroup(this.gid);
       this.fetchItems();
@@ -770,7 +857,11 @@ export default {
     },
     onSubmit(items) {
       this.editing = false;
-      this.preview = false;
+      for (let index in this.preview) {
+        this.preview[index] = false;
+      }
+      this.previewThumbnail = false;
+      this.new_date = this.case_to_show[0].c_incident_date;
       this.updateParams();
       this.updateItems(items);
       this.updateCase();
@@ -778,6 +869,11 @@ export default {
       //this.updateParameter();
     },
     onSelectGroup(selected_gid) {
+      if (!selected_gid) {
+        this.independent = true;
+      } else {
+        this.independent = false;
+      }
       this.gid = selected_gid;
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
@@ -795,7 +891,22 @@ export default {
       reader.readAsDataURL(this.files[0]);
       reader.onload = e => {
         this.images[index] = e.target.result;
-        this.preview = true;
+        this.image_names[index] = this.files[0];
+        this.preview[index] = true;
+      };
+    },
+    uploadThumbnail(e) {
+      //This reads an image from a data url stored in the item
+      //var image = new Image();
+      var reader = new FileReader();
+      this.thumbnail_files = e.target.files || e.dataTransfer.files;
+      //this.files = e.target.files || e.dataTransfer.files;
+
+      reader.readAsDataURL(this.thumbnail_files[0]);
+      reader.onload = e => {
+        this.thumbnail_preview = e.target.result;
+        this.thumbnail_name = this.thumbnail_files[0];
+        this.previewThumbnail = true;
       };
     }
   }
@@ -822,7 +933,7 @@ export default {
 }
 //image display
 img {
-  width: 30%;
+  width: 50%;
   margin: auto;
   display: block;
   margin-bottom: 10px;

@@ -9,6 +9,7 @@
 require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
+import Datepicker from 'vuejs-datepicker';
 
 
 window.Vue = require('vue');
@@ -16,7 +17,7 @@ window.Vue = require('vue');
 window.bootbox = require('bootbox');
 
 Vue.use(BootstrapVue);
-
+Vue.use(Datepicker);
 
 /**
  * The following block of code may be used to automatically register your
@@ -43,6 +44,7 @@ Vue.component('iren-user-groups', require('./components/user-groups.vue').defaul
 Vue.component('iren-user-cases', require('./components/user-cases.vue').default);
 Vue.component('iren-404', require('./components/errors/404-error.vue').default);
 Vue.component('case_study', require('./components/case_study.vue').default);
+Vue.component('iren-search', require('./components/search.vue').default);
 Vue.component('home', require('./components/home.vue').default);
 Vue.component('items', require('./components/items.vue').default);
 /**

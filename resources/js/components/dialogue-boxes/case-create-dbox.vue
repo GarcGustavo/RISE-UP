@@ -136,7 +136,7 @@ export default {
       type: String,
       default: ""
     },
-    errors: {
+    errors: { //errors sent by parent(user-cases or group) when executing query request
       type: Array,
       default: function() {
         return [];
@@ -173,10 +173,10 @@ export default {
       maxCount: 140, //maximum amount of characters allowed in the description
       remainingCount: 140, //used to determine remaining account of character
 
-      close: false, //NOT USED
       hasError: false, //does description's character count exceed limit - NOT USED IN HTML
       valid_input: false, //is input valid
       disable_dropdown: false, //disable dropdown options for group
+
       curr_group: null //curr group id
     };
   },
@@ -189,19 +189,24 @@ export default {
     this.totalCases();
   },
   /**
-   * @descriptcion handles modal closing event
+   * @description handles modal closing event
    */
   mounted() {
     $(this.$refs.case_modal).on("hidden.bs.modal", this.resetInputFields);
   },
 
   methods: {
+
+/*region Auxilary methods - These methods provide operational
+functionalities to to the modal. Operations include: resetting variables,
+calling parent method to create case study*/
+
     /**
      * @description updates the description's remaining characters count
      */
     countdown() {
       this.remainingCount = this.maxCount - this.description.length;
-      this.hasError = this.remainingCount < 0; //NOT USED 
+      this.hasError = this.remainingCount < 0; //NOT USED
     },
     /**
      * @description resets all case study input fields
@@ -216,38 +221,6 @@ export default {
       this.$emit("close"); //reset error prop
     },
 
-    /**
-     * @description gets all of the system's cases
-     */
-    totalCases() {
-      fetch("/cases")
-        .then(res => res.json())
-        .then(res => {
-          this.all_cases = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-
-    /**
-     * @description gets all the groups of the current user
-     */
-    fetchGroups() {
-      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-      this.curr_user = this.urlParams.get("uid"); //get user id
-      if (this.group_selection) {
-        // "group selection" variable sent by group vue to set default in group options,
-        //therefor set the group option default to (curr_group/group selection)
-
-        this.curr_group = this.group_selection; //default dropdown selection
-        this.disable_dropdown = true;
-      }
-      fetch("/group/show?uid=" + this.curr_user)
-        .then(res => res.json())
-        .then(res => {
-          this.user_groups = res.data; //dropdown options
-        })
-        .catch(err => console.log(err));
-    },
 
     /**
      * @description calls the createCaseStudy method from parent window(user_cases or group)
@@ -280,7 +253,49 @@ export default {
         c_owner: "",
         c_group: ""
       };
+    },
+/*#endregion*/
+
+/*#region Query methods - These methods provide the data used by the
+modal through route calls. The routes passes the request to a specified
+predefined controller who processes said request via Laravel's eloquent ORM.
+The data is appended to the global variables as needed to be used.*/
+
+    /**
+     * @description gets all of the system's cases.
+     * This method is used to determined the id of a newly created case study
+     */
+    totalCases() {
+      fetch("/cases")
+        .then(res => res.json())
+        .then(res => {
+          this.all_cases = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+
+    /**
+     * @description gets all the groups of the current user
+     * Data is used in dropdown
+     */
+    fetchGroups() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = this.urlParams.get("uid"); //get user id
+      if (this.group_selection) {
+        // "group selection" variable sent by group vue to set default in group options,
+        //therefor set the group option default to (curr_group/group selection)
+
+        this.curr_group = this.group_selection; //default dropdown selection
+        this.disable_dropdown = true;
+      }
+      fetch("/group/show?uid=" + this.curr_user)
+        .then(res => res.json())
+        .then(res => {
+          this.user_groups = res.data; //dropdown options
+        })
+        .catch(err => console.log(err));
     }
+/*#endregion*/
   }
 };
 </script>

@@ -51,7 +51,7 @@ class case_parameters extends Model
      */
     public static $rules = [
         'csp_id' => 'required',
-        'opt_selected' => 'nullable'
+        'opt_selected' => 'required'
     ];
 
     /**

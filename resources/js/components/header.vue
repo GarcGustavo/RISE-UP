@@ -1,7 +1,11 @@
 <template>
   <!-- Navigation -->
   <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
-    <a class="navbar-brand" href="#">Interdisciplinary Research Network</a>
+    <a class="navbar-brand" href="#">
+        <img class="img-fluid rounded " style="width:70px;height:45px;margin-right:10px" src="../../../public/images/iren_logo.png" alt>
+        Interdisciplinary Research Network
+    </a>
+
     <button
       class="navbar-toggler"
       type="button"
@@ -13,17 +17,19 @@
     </button>
 
     <!-- Search bar -->
-    <form class="navbar-form navbar-right ml-auto mt-2 mr-5 search" action>
-      <div class="input-group mb-3">
+
+    <form action="/search" class="navbar-form navbar-right ml-auto mt-2 mr-5 search">
+      <div v-if="!disable_header_search" class="input-group mb-3">
         <input
           type="text"
+          name="q"
           class="form-control"
           placeholder="search"
           aria-label="Search"
           aria-describedby="basic-addon2"
         >
         <div class="input-group-append">
-          <button class="btn btn-primary border-0 btn-sm" type="button">
+          <button class="btn btn-primary border-0 btn-sm" type="submit">
             <i class="material-icons">search</i>
           </button>
         </div>
@@ -58,15 +64,6 @@
           title="About"
           href="/about"
         >About</a>
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Change languages"
-          href
-        >Language</a>
       </li>
 
       <!-- User menu -->
@@ -114,14 +111,24 @@ export default {
       uid: 10,
       isAdmin: true, //change to false when integration is complete
       isViewer: false,
-      isCollaborator: false
+      isCollaborator: false,
+      disable_header_search:false
     };
   },
+
+created(){
+this.getUser();
+},
   methods: {
+
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
-
+      this.q = this.urlParams.get("q");
+      if(this.q!=null){
+          this.disable_header_search=true;
+      }
+/*
       fetch("/user?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
@@ -135,6 +142,7 @@ export default {
           }
           this.uid = this.user.uid;
         });
+        */
     }
   }
 };

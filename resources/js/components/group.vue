@@ -166,7 +166,7 @@
           <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
             <div class="card-body">
               <h5 class="card-title">
-                <a href="#">{{case_study.c_title}}</a>
+                <a :href="'/case/body?cid='+case_study.cid">{{case_study.c_title}}</a>
               </h5>
               <h6 class="card-subtitle mb-2 text-muted">{{case_study.c_date}}</h6>
               <p class="card-text">{{case_study.c_description}}</p>
@@ -199,9 +199,8 @@ export default {
       temp: "", //user name input
 
       group_members: [], //members of group
-      users_add_remove: [], //users to add or remove from group
-      users_to_add: [],
-      users_to_remove: [],
+      users_to_add: [], //users to add to group
+      users_to_remove: [], //users to remove from group
       group_cases: [], //cases that belong to group
       errors: [], //input errors
 
@@ -228,6 +227,12 @@ export default {
     this.fetchCases();
   },
   methods: {
+
+/*#region Auxilary methods - These methods provide operational
+functionalities to to the web page. Operations include:
+Setting user priveleges, editing title, and resetting variables
+
+
     /**
      * @description determine user priveleges in group
      */
@@ -306,6 +311,15 @@ export default {
       this.errors = [];
     },
 
+/*#endregion*/
+
+
+/*#region Query methods - These methods provide the content of
+the web page by requesting the data through route calls. The routes
+passes the request to a specified predefined controller who processes
+said request via Laravel's eloquent ORM. The data is appended to the
+global variables as needed to be used.
+
     /**
      * @description get all of system's users when adding a user to group.
      *
@@ -361,7 +375,7 @@ export default {
     },
 
     /**
-     * @description gets info of the current group
+     * @description gets attributes of the current group
      */
     fetchGroupInfo() {
       //define variables
@@ -645,6 +659,7 @@ export default {
           console.error("Error: ", err);
         });
     }
+/*#endregion*/
   }
 };
 </script>

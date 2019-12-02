@@ -13,11 +13,11 @@ use App\Http\Resources\Option as OptionResource;
 
 class Case_ParametersController extends Controller
 {
-    // public function getParameters()
-    // {
-    //     $parameters = CS_Parameter::all();
-    //     return CS_ParameterResource::collection($parameters);
-    // }
+     public function getParameters()
+     {
+         $parameters = Case_Parameters::all();
+         return Case_ParametersResource::collection($parameters);
+     }
 
     // public function getParameterOptions()
     // {
@@ -35,26 +35,6 @@ class Case_ParametersController extends Controller
 
     public function getCaseParameters($id)
     {
-/*
-        //renaming attributes
-        $attributes = array(
-            'cid' => 'case study id',
-        );
-        //validation rules
-        $validator = Validator::make($request->all(), [
-            'cid' => ['bail','exists:Case','required','integer',
-            //if exist verify case study has not been removed
-            Rule::exists('Case')->where(function ($query) use ($request) {
-                return $query->where('cid', $request->input('cid'))->whereNull('deleted_at');
-            })]
-        ], ['cid.exists' => 'The case study id does not exists.']);
-        //apply renaming attributes
-        $validator->setAttributeNames($attributes);
-        //validate request
-        if ($validator->fails()) {
-            return response()->json(['errors'=> $validator->errors()->all()]);
-        }
-*/
 
         //process request
         $cid = $id;
@@ -64,13 +44,7 @@ class Case_ParametersController extends Controller
         ->join('Option', 'Case_Parameters.opt_selected', '=', 'Option.oid')
         ->select('Case_Parameters.cid','Case_Parameters.opt_selected', 'Case_Parameters.csp_id', 'CS_Parameter.csp_name', 'Option.o_content')
         ->get();
-/*
-        if ($caseParams) {
-           return Case_ParametersResource::collection($caseParams);
-        } else {
-            return response()->json(['errors'=>'Error fetching case parameters - Origin: Case Parameters controller']);
-        }
-*/
+        
         return Case_ParametersResource::collection($caseParams);
     }
 
@@ -179,7 +153,7 @@ class Case_ParametersController extends Controller
             array_push($case_parameters, [
             'cid' => $request->input('cid'),
             'csp_id' => $value['csp_id'],
-            'opt_selected' => null,]);
+            'opt_selected' => 1,]);
         }
 
         $inserted = Case_Parameters::insert($case_parameters);
