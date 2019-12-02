@@ -68,9 +68,9 @@ class CaseController extends Controller
         * @param  \Illuminate\Http\Request  $request
         * @return \App\Http\Resources\Group
         */
-    public function show_case_group($id)
+    public function show_case_group(Request $request)
     {
-        $gid = $id;
+        $gid = $request->input('gid');;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
         $case_group = Group::
@@ -242,7 +242,7 @@ class CaseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateCaseDetails(Request $request, $id)
+    public function updateCaseDetails(Request $request)
     {
         $c_thumbnail = $request->c_thumbnail;
         if($request->hasFile('image')){

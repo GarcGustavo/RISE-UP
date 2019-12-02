@@ -4715,7 +4715,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchUsersEditing: function fetchUsersEditing(cid) {
       var _this8 = this;
 
-      fetch("/user/edit/" + cid).then(function (res) {
+      fetch("/user/edit?cid=" + cid).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this8.usersEditing = res.data;
@@ -4735,7 +4735,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         };
       }
 
-      fetch("/user/" + user_editing_id + "/edit/", {
+      fetch("/user/edit?uid=" + user_editing_id, {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -4756,7 +4756,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this9 = this;
 
       if (this.gid != 0) {
-        fetch("/case/group/" + this.gid).then(function (res) {
+        fetch("/case/group?gid=" + this.gid).then(function (res) {
           return res.json();
         }).then(function (res) {
           _this9.groups = res.data;
@@ -4774,7 +4774,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fetchCaseParameters: function fetchCaseParameters() {
       var _this10 = this;
 
-      fetch("/case/" + this.cid + "/parameters").then(function (res) {
+      fetch("/case/parameters?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this10.case_parameters = res.data;
@@ -4848,7 +4848,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log(this.new_date.toUTCString());
       form_data.append("c_owner", this.case_to_show[0].c_owner);
       form_data.append("c_group", this.case_to_show[0].c_group);
-      fetch("/case/" + this.cid + "/update", {
+      fetch("/case/update", {
         method: "post",
         headers: new Headers({
           //"Content-Type": "application/json",
@@ -4883,7 +4883,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       form_data.append("i_name", item_to_update.i_name);
       form_data.append("i_content", item_to_update.i_content); //console.log(form_data.get('i_content'));
 
-      fetch("/item/" + item_to_update.iid + "/update", {
+      fetch("/item/update?iid=" + item_to_update.iid, {
         method: "post",
         headers: new Headers({
           //"Content-Type": "multipart/form-data",
@@ -4960,7 +4960,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log(item_to_remove.iid);
 
       if (confirm("Do you want to delete this item permanently?")) {
-        fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
+        fetch("/item/remove?iid=" + Number(item_to_remove.iid), {
           method: "delete",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -5633,8 +5633,21 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @returns array of formated dates
      */
     formatDate: function formatDate(date) {
-      //console.log(date.toISOString().slice(0, 10));
       return date.toISOString().slice(0, 10);
+    },
+
+    /**
+     * @description compares date range to incident date of cases in list
+     * @returns array of filtered cases by date
+     */
+    filterDate: function filterDate(date_start, date_end, cases_list) {
+      var filtered_list = [];
+      cases_list.forEach(function (element) {
+        if (formatDate(date_start) < element.c_incident_date && formatDate(date_end) > element.c_incident_date) {
+          filtered_list.push(element);
+        }
+      });
+      return filtered_list;
     }
   }
 });
@@ -90066,7 +90079,7 @@ var render = function() {
                     attrs: {
                       "data-toggle": "tooltip",
                       "data-placement": "bottom",
-                      title: "Help",
+                      title: "Collaborator",
                       href: "#"
                     }
                   },
@@ -111677,7 +111690,7 @@ var app = new Vue({
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -111710,10 +111723,11 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "785da5d6e7b9677c9162",
-  cluster: "us2",
+  key: process.env.MIX_PUSHER_APP_KEY,
+  cluster: process.env.MIX_PUSHER_APP_CLUSTER,
   encrypted: true
 });
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -112988,8 +113002,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/garc/Desktop/RISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/garc/Desktop/RISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -542,7 +542,7 @@ export default {
         .catch(err => console.log(res.data));
     },
     fetchUsersEditing(cid) {
-      fetch("/user/edit/" + cid)
+      fetch("/user/edit?cid=" + cid)
         .then(res => res.json())
         .then(res => {
           this.usersEditing = res.data;
@@ -560,7 +560,7 @@ export default {
           current_edit_cid: "0"
         };
       }
-      fetch("/user/" + user_editing_id + "/edit/", {
+      fetch("/user/edit?uid=" + user_editing_id, {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -580,7 +580,7 @@ export default {
     },
     fetchGroup(gid) {
       if (this.gid != 0) {
-        fetch("/case/group/" + this.gid)
+        fetch("/case/group?gid=" + this.gid)
           .then(res => res.json())
           .then(res => {
             this.groups = res.data;
@@ -592,7 +592,7 @@ export default {
       }
     },
     fetchCaseParameters() {
-      fetch("/case/" + this.cid + "/parameters")
+      fetch("/case/parameters?cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
@@ -663,7 +663,7 @@ export default {
       form_data.append("c_owner", this.case_to_show[0].c_owner);
       form_data.append("c_group", this.case_to_show[0].c_group);
 
-      fetch("/case/" + this.cid + "/update", {
+      fetch("/case/update", {
         method: "post",
         headers: new Headers({
           //"Content-Type": "application/json",
@@ -695,7 +695,7 @@ export default {
       form_data.append("i_name", item_to_update.i_name);
       form_data.append("i_content", item_to_update.i_content);
       //console.log(form_data.get('i_content'));
-      fetch("/item/" + item_to_update.iid + "/update", {
+      fetch("/item/update?iid=" + item_to_update.iid, {
         method: "post",
         headers: new Headers({
           //"Content-Type": "multipart/form-data",
@@ -769,7 +769,7 @@ export default {
     removeItem(item_to_remove) {
       console.log(item_to_remove.iid);
       if (confirm("Do you want to delete this item permanently?")) {
-        fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
+        fetch("/item/remove?iid=" + Number(item_to_remove.iid), {
           method: "delete",
           headers: new Headers({
             "Content-Type": "application/json",

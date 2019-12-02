@@ -33,11 +33,11 @@ class Case_ParametersController extends Controller
      * @return \App\Http\Resources\case_parameter
      */
 
-    public function getCaseParameters($id)
+    public function getCaseParameters(Request $request)
     {
 
         //process request
-        $cid = $id;
+        $cid = $request->input('cid');
         $caseParams = Case_Parameters::
         where('cid', $cid)
         ->join('CS_Parameter', 'Case_Parameters.csp_id', '=', 'CS_Parameter.csp_id')

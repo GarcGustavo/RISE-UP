@@ -150,7 +150,7 @@ class ItemController extends Controller
         $type = $request->i_type;
         $order = $request->order;
         $name = $request->i_name;
-        Item::where(['iid' => $id])->update(['i_content' => $content,'i_type' => $type,'order' => $order,'i_name' => $name]);
+        Item::where(['iid' => $request->input('iid')])->update(['i_content' => $content,'i_type' => $type,'order' => $order,'i_name' => $name]);
         return response()->json(['message'=>'Updated item successfully']);
     }
 
@@ -172,9 +172,9 @@ class ItemController extends Controller
         //Item::whereIn('iid', $iid_to_delete)->delete();
         //return response()->json(['message'=>'Item has been removed from case']);
     }
-    public function removeItem($id)
+    public function removeItem(Request $request)
     {
-        $iid_to_delete = $id;
+        $iid_to_delete = $request->input('iid');
         Item::where('iid', $iid_to_delete)->delete();
         return response()->json(['message'=>'Item has been removed from case']);
     }
