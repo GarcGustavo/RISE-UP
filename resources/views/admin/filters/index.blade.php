@@ -27,12 +27,17 @@
                     <ul class="list-group">
                     @forelse($options as $option)
                         @if ($category->csp_id == $option->o_parameter)
+							<li class="list-group-item mb-5">
                             @include('admin.filters.removeOptionForm')
+							@include('admin.filters.editOptionForm')
+							</li>
                         @endif
                     @empty
 
                     @endforelse
+							<li class="list-group-item">
                             @include('admin.filters.addOptionForm')
+							</li>
                     </ul>
                 </div>
                 <div class="card-footer small text-muted">
