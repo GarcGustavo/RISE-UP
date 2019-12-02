@@ -16,6 +16,12 @@ class ActionTableSeeder extends Seeder
 		
 		DB::table('action')->insert([
 			'a_date'=> now(),
+			'a_user'=> 8,
+			'a_type'=>  1,
+		]);
+
+		DB::table('action')->insert([
+			'a_date'=> now(),
 			'a_user'=> 12,
 			'a_type'=>  2,
 		]);
