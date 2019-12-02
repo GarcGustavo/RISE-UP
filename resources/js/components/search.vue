@@ -297,8 +297,20 @@ export default {
      * @returns array of formated dates
      */
     formatDate(date) {
-      //console.log(date.toISOString().slice(0, 10));
       return date.toISOString().slice(0, 10);
+    },
+    /**
+     * @description compares date range to incident date of cases in list
+     * @returns array of filtered cases by date
+     */
+    filterDate(date_start, date_end, cases_list) {
+      var filtered_list = [];
+      cases_list.forEach(element => {
+        if(formatDate(date_start)<element.c_incident_date && formatDate(date_end)>element.c_incident_date){
+          filtered_list.push(element);
+        }
+      });
+      return filtered_list;
     }
   }
 };
