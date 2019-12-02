@@ -21,6 +21,7 @@
                     <i class="fas fa-table"></i>
                         @include('admin.filters.removeCategoryForm')
                         @include('admin.filters.addCategoryForm')
+						@include('admin.filters.editCategoryForm')
                 </div>
                 <div class="card-body mt-5">
                     <ul class="list-group">

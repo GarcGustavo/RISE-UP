@@ -219,6 +219,11 @@ Route::post('/admin/filter-category', 'AdminFilterCategoryController@store');
 Route::delete('/admin/filter-category/{id}', 'AdminFilterCategoryController@destroy');
 
 
+//Edit filter category
+//User Requirement: (2.xx)  The web application will allow an Admin to modify search filter categories they have created for case studies
+Route::put('/admin/filter-category/{id}', 'AdminFilterCategoryController@update');
+
+
 //Admin Edits a User
 //User Requirement 2.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
 //User Requirement 2.76. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
