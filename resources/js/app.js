@@ -9,6 +9,7 @@
 require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
+import Datepicker from 'vuejs-datepicker';
 
 
 window.Vue = require('vue');
@@ -16,7 +17,7 @@ window.Vue = require('vue');
 window.bootbox = require('bootbox');
 
 Vue.use(BootstrapVue);
-
+Vue.use(Datepicker);
 
 /**
  * The following block of code may be used to automatically register your

@@ -135,9 +135,15 @@
               style="margin: 50px; margin-bottom: 20px; margin-top: 20px;"
             >
               <h5
+                v-if="(case_parameter.csp_name != 'Incident date' || !case_to_show[0].c_incident_date)"
                 class="btn btn-primary-disabled btn-block"
                 style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
               >{{case_parameter.csp_name}}: {{case_parameter.o_content}}</h5>
+              <h5
+                v-if="(case_parameter.csp_name == 'Incident date' && case_to_show[0].c_incident_date)"
+                class="btn btn-primary-disabled btn-block"
+                style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
+              >{{case_parameter.csp_name}}: {{case_to_show[0].c_incident_date}}</h5>
             </div>
           </div>
           <div class="row border" v-if="editing">
@@ -147,7 +153,17 @@
               :key="index"
               style="margin: 50px; margin-bottom: 30px; margin-top: 20px;"
             >
-              <div class="dropdown">
+              <div v-if="(case_parameter.csp_name == 'Incident date')">
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
+                >
+                  {{case_parameter.csp_name}}:
+                  <datepicker v-model="case_to_show[0].c_incident_date" :format="date_format"></datepicker>
+                </button>
+              </div>
+              <div class="dropdown" v-if="(case_parameter.csp_name != 'Incident date')">
                 <button
                   class="btn btn-primary dropdown-toggle"
                   type="button"
@@ -339,14 +355,18 @@
 
 <script>
 import draggable from "vuedraggable";
+import datepicker from "vuejs-datepicker";
 export default {
   //name: 'app',
   components: {
-    draggable
+    draggable,
+    datepicker
   },
   events: {},
   data() {
     return {
+      date_format: "yyyy-MM-dd",
+      new_date: new Date(),
       editing: false,
       showModal: false,
       typing: false,
@@ -559,17 +579,17 @@ export default {
       this.fetchUsersEditing(this.cid);
     },
     fetchGroup(gid) {
-      if(this.gid != 0){
+      if (this.gid != 0) {
         fetch("/case/group/" + this.gid)
           .then(res => res.json())
           .then(res => {
             this.groups = res.data;
           })
-          .catch(err => console.log(err));}
-      else {
+          .catch(err => console.log(err));
+      } else {
         this.independent = true;
-        this.groups[0] = {g_name: "No Group", gid:0};
-        }
+        this.groups[0] = { g_name: "No Group", gid: 0 };
+      }
     },
     fetchCaseParameters() {
       fetch("/case/" + this.cid + "/parameters")
@@ -638,6 +658,8 @@ export default {
       form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
       form_data.append("c_status", this.case_to_show[0].c_status);
       form_data.append("c_date", this.case_to_show[0].c_date);
+      form_data.append("c_incident_date", this.new_date.toUTCString());
+      console.log(this.new_date.toUTCString());
       form_data.append("c_owner", this.case_to_show[0].c_owner);
       form_data.append("c_group", this.case_to_show[0].c_group);
 
@@ -839,6 +861,7 @@ export default {
         this.preview[index] = false;
       }
       this.previewThumbnail = false;
+      this.new_date = this.case_to_show[0].c_incident_date;
       this.updateParams();
       this.updateItems(items);
       this.updateCase();
@@ -848,8 +871,7 @@ export default {
     onSelectGroup(selected_gid) {
       if (!selected_gid) {
         this.independent = true;
-      }
-      else{
+      } else {
         this.independent = false;
       }
       this.gid = selected_gid;
