@@ -92698,7 +92698,10 @@ var render = function() {
                           [
                             _vm._v("\n                From:\n                "),
                             _c("datepicker", {
-                              attrs: { format: _vm.date_format },
+                              attrs: {
+                                "use-utc": true,
+                                format: _vm.date_format
+                              },
                               model: {
                                 value: _vm.incident_date_start,
                                 callback: function($$v) {
@@ -92709,7 +92712,10 @@ var render = function() {
                             }),
                             _vm._v("To:\n                "),
                             _c("datepicker", {
-                              attrs: { format: _vm.date_format },
+                              attrs: {
+                                "use-utc": true,
+                                format: _vm.date_format
+                              },
                               model: {
                                 value: _vm.incident_date_end,
                                 callback: function($$v) {
