@@ -78,8 +78,12 @@
 
     <script>
         $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+            if ($('#wrapper').hasClass("toggled"))
+                $('#menu-toggle').text('Show');
+            else
+                $('#menu-toggle').text('Hide');
         });
     </script>
 
