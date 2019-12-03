@@ -41,28 +41,30 @@
                     Starting date must be equal to or lower than end date.
                   </div>
                 </div>
-                <select
-                  v-if="case_parameter.csp_name != 'Incident date'"
-                  class="form-control"
-                  v-model="selected_options[index]"
-                  @change="selected(case_parameter.csp_id), filterCases()"
-                  :id="case_parameter.csp_id"
-                >
-                  <!--  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>-->
-                  <option selected disabled hidden style="display: none" value></option>
-                  <option label="None">None</option>
-                  <option
-                    v-for="option in filteredOptions(case_parameter.csp_id)"
-                    :key="option.oid"
-                    :value="option.oid"
-                  >{{option.o_content}}</option>
-                </select>
+                <div id="Frame">
+                  <select
+                    v-if="case_parameter.csp_name != 'Incident date'"
+                    class="form-control"
+                    v-model="selected_options[index]"
+                    @change="selected(case_parameter.csp_id), filterCases()"
+                    :id="case_parameter.csp_id"
+                  >
+                    <!--  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>-->
+                    <!--  <option selected disabled hidden  value></option> -->
+                    <option label="None">None</option>
+                    <option
+                      v-for="option in filteredOptions(case_parameter.csp_id)"
+                      :key="option.oid"
+                      :value="option.oid"
+                    >{{option.o_content}}</option>
+                  </select>
+                </div>
               </button>
             </div>
           </div>
         </div>
       </div>
-      <button @click="clear()">Clear</button>
+      <button type="button" @click="clearFilter()">Clear</button>
     </div>
     <h4 class="mt-5">Search results for: {{search_for}}</h4>
     <!-- case studies search -->
@@ -144,9 +146,9 @@ export default {
       filtered_cases: [],
       search: [],
 
+      refresh: 0,
       initial_load: true,
-      empty: true,
-
+      empty: true
     };
   },
   /**
@@ -295,15 +297,14 @@ export default {
       //return this.filtered_cases;
     },
 
-forceRerender() {
-        // Remove my-component from the DOM
-        this.refresh = false;
-
-        this.$nextTick(() => {
-          // Add the component back in
-          this.refresh = true;
-        });
-      },
+    forceRerender() {
+      // Remove my-component from the DOM
+      this.refresh = false;
+      this.$nextTick(() => {
+        // Add the component back in
+        this.refresh = true;
+      });
+    },
 
     getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
@@ -317,17 +318,21 @@ forceRerender() {
       this.selected_param = id;
     },
 
-    clear() {
+    clearFilter() {
       // this.clear = false;
       this.parameters = document.getElementsByTagName("select");
-
-      for (let i = 0; i < this.parameters.length; i++) {
-        this.parameters[i].selectedIndex = 0;
-
-      }
-
+      this.incident_date_start="";
+      this.incident_date_end="";
+      this.selected_options=[];
       this.search = this.list_cases;
+      this.$nextTick(function() {
+        this.search = this.list_cases; // true
 
+        for (let i = 0; i < this.parameters.length; i++) {
+          this.parameters[i].selectedIndex = -1;
+        }
+
+      });
     },
 
     /**

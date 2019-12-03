@@ -5461,6 +5461,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
 
 
 /**
@@ -5505,6 +5507,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       list_cases: [],
       filtered_cases: [],
       search: [],
+      refresh: 0,
       initial_load: true,
       empty: true
     };
@@ -5644,15 +5647,20 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     selected: function selected(id) {
       this.selected_param = id;
     },
-    clear: function clear() {
+    clearFilter: function clearFilter() {
       // this.clear = false;
       this.parameters = document.getElementsByTagName("select");
-
-      for (var i = 0; i < this.parameters.length; i++) {
-        this.parameters[i].selectedIndex = 0;
-      }
-
+      this.incident_date_start = "";
+      this.incident_date_end = "";
+      this.selected_options = [];
       this.search = this.list_cases;
+      this.$nextTick(function () {
+        this.search = this.list_cases; // true
+
+        for (var i = 0; i < this.parameters.length; i++) {
+          this.parameters[i].selectedIndex = -1;
+        }
+      });
     },
 
     /**
@@ -92783,79 +92791,71 @@ var render = function() {
                         )
                       : _vm._e(),
                     _vm._v(" "),
-                    case_parameter.csp_name != "Incident date"
-                      ? _c(
-                          "select",
-                          {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.selected_options[index],
-                                expression: "selected_options[index]"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { id: case_parameter.csp_id },
-                            on: {
-                              change: [
-                                function($event) {
-                                  var $$selectedVal = Array.prototype.filter
-                                    .call($event.target.options, function(o) {
-                                      return o.selected
-                                    })
-                                    .map(function(o) {
-                                      var val =
-                                        "_value" in o ? o._value : o.value
-                                      return val
-                                    })
-                                  _vm.$set(
-                                    _vm.selected_options,
-                                    index,
-                                    $event.target.multiple
-                                      ? $$selectedVal
-                                      : $$selectedVal[0]
-                                  )
-                                },
-                                function($event) {
-                                  _vm.selected(case_parameter.csp_id),
-                                    _vm.filterCases()
+                    _c("div", { attrs: { id: "Frame" } }, [
+                      case_parameter.csp_name != "Incident date"
+                        ? _c(
+                            "select",
+                            {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.selected_options[index],
+                                  expression: "selected_options[index]"
                                 }
-                              ]
-                            }
-                          },
-                          [
-                            _c("option", {
-                              staticStyle: { display: "none" },
-                              attrs: {
-                                selected: "",
-                                disabled: "",
-                                hidden: "",
-                                value: ""
-                              }
-                            }),
-                            _vm._v(" "),
-                            _c("option", { attrs: { label: "None" } }, [
-                              _vm._v("None")
-                            ]),
-                            _vm._v(" "),
-                            _vm._l(
-                              _vm.filteredOptions(case_parameter.csp_id),
-                              function(option) {
-                                return _c(
-                                  "option",
-                                  {
-                                    key: option.oid,
-                                    domProps: { value: option.oid }
+                              ],
+                              staticClass: "form-control",
+                              attrs: { id: case_parameter.csp_id },
+                              on: {
+                                change: [
+                                  function($event) {
+                                    var $$selectedVal = Array.prototype.filter
+                                      .call($event.target.options, function(o) {
+                                        return o.selected
+                                      })
+                                      .map(function(o) {
+                                        var val =
+                                          "_value" in o ? o._value : o.value
+                                        return val
+                                      })
+                                    _vm.$set(
+                                      _vm.selected_options,
+                                      index,
+                                      $event.target.multiple
+                                        ? $$selectedVal
+                                        : $$selectedVal[0]
+                                    )
                                   },
-                                  [_vm._v(_vm._s(option.o_content))]
-                                )
+                                  function($event) {
+                                    _vm.selected(case_parameter.csp_id),
+                                      _vm.filterCases()
+                                  }
+                                ]
                               }
-                            )
-                          ],
-                          2
-                        )
-                      : _vm._e()
+                            },
+                            [
+                              _c("option", { attrs: { label: "None" } }, [
+                                _vm._v("None")
+                              ]),
+                              _vm._v(" "),
+                              _vm._l(
+                                _vm.filteredOptions(case_parameter.csp_id),
+                                function(option) {
+                                  return _c(
+                                    "option",
+                                    {
+                                      key: option.oid,
+                                      domProps: { value: option.oid }
+                                    },
+                                    [_vm._v(_vm._s(option.o_content))]
+                                  )
+                                }
+                              )
+                            ],
+                            2
+                          )
+                        : _vm._e()
+                    ])
                   ])
                 ])
               ])
@@ -92868,9 +92868,10 @@ var render = function() {
       _c(
         "button",
         {
+          attrs: { type: "button" },
           on: {
             click: function($event) {
-              return _vm.clear()
+              return _vm.clearFilter()
             }
           }
         },
