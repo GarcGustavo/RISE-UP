@@ -35,23 +35,13 @@ class Case_ParametersController extends Controller
 
     public function getCaseParameters(Request $request)
     {
-
-        //process request
-        // $cid = $request->input('cid');
-        // $case_params = Case_Parameters::
-        // where('cid', $cid)
-        // ->join('CS_Parameter', 'Case_Parameters.csp_id', '=', 'CS_Parameter.csp_id')
-        // ->join('Option', 'Case_Parameters.opt_selected', '=', 'Option.oid')
-        // ->select('Case_Parameters.cid','Case_Parameters.opt_selected', 'Case_Parameters.csp_id', 'CS_Parameter.csp_name', 'Option.o_content')
-        // ->get();
-
         //process request
         $cid = $request->input('cid');
         $caseParams = Case_Parameters::
         where('cid', $cid)
         ->join('CS_Parameter', 'Case_Parameters.csp_id', '=', 'CS_Parameter.csp_id')
-        ->join('Option', 'Case_Parameters.opt_selected', '=', 'Option.oid')
-        ->orWhereNull('opt_selected')
+        ->leftJoin('Option', 'Case_Parameters.opt_selected', '=', 'Option.oid')
+        //->orWhereNull('opt_selected')
         ->select('Case_Parameters.cid','Case_Parameters.opt_selected', 'Case_Parameters.csp_id', 'CS_Parameter.csp_name', 'Option.o_content')
         ->get();
         return Case_ParametersResource::collection($caseParams);
@@ -66,27 +56,6 @@ class Case_ParametersController extends Controller
      */
     public function getCaseSelectedOptions($id)
     {
-
-/*
-        //renaming attributes
-        $attributes = array(
-            'cid' => 'case study id',
-        );
-        //validation rules
-        $validator = Validator::make($request->all(), [
-            'cid' => ['bail','exists:Case','required','integer',
-            //if exist verify case study has not been removed
-            Rule::exists('Case')->where(function ($query) use ($request) {
-                return $query->where('cid', $request->input('cid'))->whereNull('deleted_at');
-            })]
-        ], ['cid.exists' => 'The case study id does not exists.']);
-        //apply renaming attributes
-        $validator->setAttributeNames($attributes);
-        //validate request
-        if ($validator->fails()) {
-            return response()->json(['errors'=> $validator->errors()->all()]);
-        }
-*/
 
         $cid = $id;
         $caseOps = Case_Parameters::

@@ -18,6 +18,7 @@ class CreateOptionTable extends Migration
             $table->unsignedBigInteger('o_parameter');
             $table->foreign('o_parameter')->references('csp_id')->on('CS_Parameter')->onDelete('cascade')->onUpdate('cascade');
             $table->string('o_content', 255);
+            $table->boolean('is_default')->default(false);
         });
     }
 
