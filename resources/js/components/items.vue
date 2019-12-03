@@ -482,10 +482,11 @@ export default {
         });
       }, 1000);
     },
+    //Get items belonging to a case
     fetchCaseItems() {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      fetch("/case/" + this.cid + "/items")
+      fetch("/case/items?cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.items = res.data;
@@ -493,6 +494,7 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    //Fetch total items to add/delete items without conflict
     fetchItems() {
       fetch("/items")
         .then(res => res.json())
@@ -503,6 +505,7 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    //Fetch case details
     fetchCase() {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
@@ -519,6 +522,7 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    //Fetch user details
     fetchUser(uid) {
       fetch("/user?uid=" + this.uid)
         .then(res => res.json())
@@ -527,6 +531,7 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    //Fetch owner groups
     fetchUserGroups() {
       fetch("/group/show?uid=" + this.case_to_show[0].c_owner)
         .then(res => res.json())
@@ -541,15 +546,16 @@ export default {
         })
         .catch(err => console.log(res.data));
     },
+    //Fetch users actively editing current cid
     fetchUsersEditing(cid) {
-      fetch("/user/edit/" + cid)
+      fetch("/user/edit?cid=" + cid)
         .then(res => res.json())
         .then(res => {
           this.usersEditing = res.data;
         })
         .catch(err => console.log(err));
     },
-    //TODO
+    //Update list of active users editing current cid
     updateUsersEditing(user_editing_id) {
       if (this.editing) {
         this.updated_user_edit = {
@@ -560,7 +566,7 @@ export default {
           current_edit_cid: "0"
         };
       }
-      fetch("/user/" + user_editing_id + "/edit/", {
+      fetch("/user/edit?uid=" + user_editing_id, {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -576,11 +582,12 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
-      this.fetchUsersEditing(this.cid);
+      this.fetchUsersEditing(this.cid); //Fetch users once updated
     },
+    //Fetch case group details if a group is set, if not set as independent
     fetchGroup(gid) {
       if (this.gid != 0) {
-        fetch("/case/group/" + this.gid)
+        fetch("/case/group?gid=" + this.gid)
           .then(res => res.json())
           .then(res => {
             this.groups = res.data;
@@ -591,8 +598,9 @@ export default {
         this.groups[0] = { g_name: "No Group", gid: 0 };
       }
     },
+    //Fetch case parameters via cid
     fetchCaseParameters() {
-      fetch("/case/" + this.cid + "/parameters")
+      fetch("/case/parameters?cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
@@ -601,6 +609,7 @@ export default {
         .catch(err => console.log(err));
       this.fetchParameterOptions();
     },
+    //Fetch options for each parameter in case to populate dropdown
     fetchParameterOptions() {
       fetch("/parameter/options")
         .then(res => res.json())
@@ -610,11 +619,13 @@ export default {
         })
         .catch(err => console.log(err));
     },
+    //Filter options via parameter to populate appropriate dropdown
     filteredOptions(parameter) {
       return this.parameter_options.filter(
         option => option.o_parameter == parameter
       );
     },
+    //Update parameter of case to reflect selected options
     updateParameter(updated_param) {
       this.updated_parameter = {
         cid: this.cid,
@@ -638,13 +649,14 @@ export default {
           console.error("Error: ", err);
         });
     },
+    //Loop through all parameters and update them appropriately
     updateParams() {
       for (let param in this.case_parameters) {
         this.updated_param = this.case_parameters[param];
         this.updateParameter(this.updated_param);
       }
-      //this.fetchCaseParameters();
     },
+    //Update case details (thumbnail, description, title, dates, group, and status)
     updateCase() {
       this.cid = this.case_to_show[0].cid;
 
@@ -663,7 +675,7 @@ export default {
       form_data.append("c_owner", this.case_to_show[0].c_owner);
       form_data.append("c_group", this.case_to_show[0].c_group);
 
-      fetch("/case/" + this.cid + "/update", {
+      fetch("/case/update", {
         method: "post",
         headers: new Headers({
           //"Content-Type": "application/json",
@@ -680,22 +692,25 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
-      this.fetchCase();
+      this.fetchCase(); //Fetch case again after update
     },
+    //Update items content
     updateItem(item_to_update, index) {
-      this.path = new URLSearchParams(window.location.search); //get url parameters
-      this.cid = Number(this.path.get("cid")); //get cid
+      //Request must use form data to upload files
       var form_data = new FormData();
+
+      //check preview images/filestream to ensure file exists
       if (this.files && this.images[index]) {
         form_data.append("image", this.image_names[index]);
       }
+      //Append item details
       form_data.append("i_case", item_to_update.i_case);
       form_data.append("i_type", item_to_update.i_type);
       form_data.append("order", Number(item_to_update.order));
       form_data.append("i_name", item_to_update.i_name);
       form_data.append("i_content", item_to_update.i_content);
       //console.log(form_data.get('i_content'));
-      fetch("/item/" + item_to_update.iid + "/update", {
+      fetch("/item/update?iid=" + item_to_update.iid, {
         method: "post",
         headers: new Headers({
           //"Content-Type": "multipart/form-data",
@@ -713,17 +728,19 @@ export default {
           console.error("Error: ", err);
         });
     },
+    //Iterate through items and update them appropriately
     updateItems(items) {
       for (let item in this.items) {
         this.items[item].order = item;
         this.updateItem(this.items[item], item);
       }
+      //Fetch updated items
       this.fetchItems();
       this.fetchCaseItems();
     },
+    //Add new item to case
     addItem(new_item, item_type) {
-      this.path = new URLSearchParams(window.location.search); //get url parameters
-      this.cid = Number(this.path.get("cid")); //get cid
+      //Initialize item content
       var item_name = "New Text";
       var item_content = "Add content here!";
       if (item_type == 2) {
@@ -736,7 +753,7 @@ export default {
       this.new_item.i_type = item_type;
       this.new_item.order = "1";
       this.new_item.i_name = item_name;
-      console.log(new_item);
+      //console.log(new_item);
       fetch("/item/add", {
         method: "post",
         headers: new Headers({
@@ -766,10 +783,13 @@ export default {
         i_name: ""
       };
     },
+    //Remove item from case
     removeItem(item_to_remove) {
-      console.log(item_to_remove.iid);
+      //console.log(item_to_remove.iid);
+
+      //Confirm item to be deleted
       if (confirm("Do you want to delete this item permanently?")) {
-        fetch("/item/" + Number(item_to_remove.iid) + "/remove", {
+        fetch("/item/remove?iid=" + Number(item_to_remove.iid), {
           method: "delete",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -786,10 +806,13 @@ export default {
             console.error("Error: ", err);
           });
       }
+      //Fetch updated items
       this.fetchCaseItems();
       this.fetchItems();
     },
+    //Delete case study permanently
     deleteCaseStudy() {
+      //Confirm deletion
       if (confirm("Do you want to delete this case study permanently?")) {
         //send request
         fetch("/case/remove", {
@@ -810,15 +833,15 @@ export default {
           });
       }
     },
-    //TODO
-    languageToggle() {},
+    //When a user edits a content field this method updates users editing and item content
     onEdit() {
       this.editing = true;
       this.fetchUserGroups();
-
+      //update list of editors
       for (let user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
       }
+      //update case parameters
       for (let option in this.case_parameters) {
         this.selected_options_content[option] = this.case_parameters[
           option
@@ -828,14 +851,18 @@ export default {
         ].opt_selected;
       }
     },
+    //Resets content and throws away any edits not submitted to database
     onCancel() {
+      //Resets variables that may have been changed by an editor
       this.gid = this.initial_gid;
       this.editing = false;
       this.previewThumbnail = false;
+      //Reset uploaded images and their previews
       for (let index in this.preview) {
         this.preview[index] = false;
       }
 
+      //Reload data from database
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
@@ -843,9 +870,11 @@ export default {
       this.fetchCaseParameters();
       this.fetchParameterOptions();
 
+      //Update editors list
       for (let user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
       }
+      //Reset parameter options
       for (let option in this.selected_options_content) {
         this.case_parameters[option].o_content = this.selected_options_content[
           option
@@ -855,6 +884,7 @@ export default {
         ];
       }
     },
+    //Submit new data to database
     onSubmit(items) {
       this.editing = false;
       for (let index in this.preview) {
@@ -868,6 +898,7 @@ export default {
 
       //this.updateParameter();
     },
+    //Update selected group for case study
     onSelectGroup(selected_gid) {
       if (!selected_gid) {
         this.independent = true;
@@ -878,10 +909,12 @@ export default {
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
     },
+    //Update parameter option selected
     onSelectOption(selected_op, index) {
       this.case_parameters[index].o_content = selected_op.o_content;
       this.case_parameters[index].opt_selected = selected_op.oid;
     },
+    //Upload image to a specific item, index is used to track files being uploaded
     uploadImage(e, item, index) {
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -895,6 +928,7 @@ export default {
         this.preview[index] = true;
       };
     },
+    //Seperate image uploader for thumbnail since it is a seperate file stream
     uploadThumbnail(e) {
       //This reads an image from a data url stored in the item
       //var image = new Image();
