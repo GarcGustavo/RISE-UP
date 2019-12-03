@@ -69,7 +69,7 @@
     <div class="card p-3 shadow" style="margin-top:20px;">
       <div v-if="!empty">
         <div class="row mt-1 pt-2 pl-2" id="cases">
-          <div class="col-lg-6 mb-4" v-for="case_study in test" :key="case_study.cid">
+          <div class="col-lg-6 mb-4" v-for="case_study in search" :key="case_study.cid">
             <div class="card h-100 text-center">
               <img
                 :src="'../images/'+ case_study.c_thumbnail"
@@ -142,7 +142,7 @@ export default {
       selected_options_id: [],
       list_cases: [],
       filtered_cases: [],
-      test: [],
+      search: [],
 
       initial_load: true,
       empty: true,
@@ -264,7 +264,7 @@ export default {
         this.selected_options_filtered.length
       ) {
         //return [];
-        this.test = [];
+        this.search = [];
       }
       //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
@@ -282,7 +282,7 @@ export default {
         );
         // return this.list_cases_temp;
 
-        this.test = this.list_cases_temp;
+        this.search = this.list_cases_temp;
       }
 
       //filter if dates have been selected
@@ -291,7 +291,7 @@ export default {
         this.incident_date_end,
         this.filtered_cases
       );
-      this.test = this.filtered_cases;
+      this.search = this.filtered_cases;
       //return this.filtered_cases;
     },
 
@@ -326,7 +326,7 @@ forceRerender() {
 
       }
 
-      this.test = this.list_cases;
+      this.search = this.list_cases;
 
     },
 
@@ -341,7 +341,7 @@ forceRerender() {
 
           if (this.cases) {
             this.list_cases = Object.values(this.cases);
-            this.test = this.list_cases;
+            this.search = this.list_cases;
             this.empty = false;
           }
         })
