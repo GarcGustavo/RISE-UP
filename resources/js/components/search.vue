@@ -64,7 +64,7 @@
       </div>
       <button @click="clear()">Clear</button>
     </div>
-    <h4 class="mt-5">Search results for: {{search}}</h4>
+    <h4 class="mt-5">Search results for: {{search_for}}</h4>
     <!-- case studies search -->
     <div class="card p-3 shadow" style="margin-top:20px;">
       <div v-if="!empty">
@@ -131,7 +131,7 @@ export default {
       date_format: "yyyy-MM-dd",
       incident_date_start: "",
       incident_date_end: "",
-      search: "",
+      search_for: "",
       selected_param: "",
 
       selected_options: [],
@@ -307,7 +307,7 @@ forceRerender() {
 
     getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-      this.search = this.urlParams.get("q"); //get search
+      this.search_for = this.urlParams.get("q"); //get search
     },
 
     /**

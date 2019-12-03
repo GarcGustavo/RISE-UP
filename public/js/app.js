@@ -5494,7 +5494,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       date_format: "yyyy-MM-dd",
       incident_date_start: "",
       incident_date_end: "",
-      search: "",
+      search_for: "",
       selected_param: "",
       selected_options: [],
       case_parameters: [],
@@ -5504,7 +5504,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       selected_options_id: [],
       list_cases: [],
       filtered_cases: [],
-      test: [],
+      search: [],
       initial_load: true,
       empty: true
     };
@@ -5605,7 +5605,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       if (!this.case_studies_with_selected_option.length && this.selected_options_filtered.length) {
         //return [];
-        this.test = [];
+        this.search = [];
       } //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
@@ -5615,12 +5615,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         //filter is dates have been selected
         this.list_cases_temp = this.filterDate(this.incident_date_start, this.incident_date_end, this.list_cases); // return this.list_cases_temp;
 
-        this.test = this.list_cases_temp;
+        this.search = this.list_cases_temp;
       } //filter if dates have been selected
 
 
       this.filtered_cases = this.filterDate(this.incident_date_start, this.incident_date_end, this.filtered_cases);
-      this.test = this.filtered_cases; //return this.filtered_cases;
+      this.search = this.filtered_cases; //return this.filtered_cases;
     },
     forceRerender: function forceRerender() {
       var _this2 = this;
@@ -5635,7 +5635,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     getSearch: function getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
-      this.search = this.urlParams.get("q"); //get search
+      this.search_for = this.urlParams.get("q"); //get search
     },
 
     /**
@@ -5652,7 +5652,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         this.parameters[i].selectedIndex = 0;
       }
 
-      this.test = this.list_cases;
+      this.search = this.list_cases;
     },
 
     /**
@@ -5668,7 +5668,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         if (_this3.cases) {
           _this3.list_cases = Object.values(_this3.cases);
-          _this3.test = _this3.list_cases;
+          _this3.search = _this3.list_cases;
           _this3.empty = false;
         }
       })["catch"](function (err) {
@@ -92879,7 +92879,7 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("h4", { staticClass: "mt-5" }, [
-      _vm._v("Search results for: " + _vm._s(_vm.search))
+      _vm._v("Search results for: " + _vm._s(_vm.search_for))
     ]),
     _vm._v(" "),
     _c(
@@ -92891,7 +92891,7 @@ var render = function() {
               _c(
                 "div",
                 { staticClass: "row mt-1 pt-2 pl-2", attrs: { id: "cases" } },
-                _vm._l(_vm.test, function(case_study) {
+                _vm._l(_vm.search, function(case_study) {
                   return _c(
                     "div",
                     { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
