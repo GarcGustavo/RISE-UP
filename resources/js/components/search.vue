@@ -41,33 +41,37 @@
                     Starting date must be equal to or lower than end date.
                   </div>
                 </div>
-                <select
-                  v-if="case_parameter.csp_name != 'Incident date'"
-                  class="form-control"
-                  v-model="selected_options[index]"
-                  @change="selected(case_parameter.csp_id)"
-                  :id="case_parameter.csp_id"
-                >
-                  <!-- <option selected="selected" disabled>{{case_parameter.csp_name}}</option> -->
-                  <option value>None</option>
-                  <option
-                    v-for="option in filteredOptions(case_parameter.csp_id)"
-                    :key="option.oid"
-                    :value="option.oid"
-                  >{{option.o_content}}</option>
-                </select>
+                <div id="Frame">
+                  <select
+                    v-if="case_parameter.csp_name != 'Incident date'"
+                    class="form-control"
+                    v-model="selected_options[index]"
+                    @change="selected(case_parameter.csp_id), filterCases()"
+                    :id="case_parameter.csp_id"
+                  >
+                    <!--  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>-->
+                    <!--  <option selected disabled hidden  value></option> -->
+                    <option label="None">None</option>
+                    <option
+                      v-for="option in filteredOptions(case_parameter.csp_id)"
+                      :key="option.oid"
+                      :value="option.oid"
+                    >{{option.o_content}}</option>
+                  </select>
+                </div>
               </button>
             </div>
           </div>
         </div>
       </div>
+      <button type="button" @click="clearFilter()">Clear</button>
     </div>
-
+    <h4 class="mt-5">Search results for: {{search_for}}</h4>
     <!-- case studies search -->
     <div class="card p-3 shadow" style="margin-top:20px;">
       <div v-if="!empty">
         <div class="row mt-1 pt-2 pl-2" id="cases">
-          <div class="col-lg-6 mb-4" v-for="case_study in filterCases" :key="case_study.cid">
+          <div class="col-lg-6 mb-4" v-for="case_study in search" :key="case_study.cid">
             <div class="card h-100 text-center">
               <img
                 :src="'../images/'+ case_study.c_thumbnail"
@@ -129,6 +133,8 @@ export default {
       date_format: "yyyy-MM-dd",
       incident_date_start: "",
       incident_date_end: "",
+      search_for: "",
+      selected_param: "",
 
       selected_options: [],
       case_parameters: [],
@@ -138,8 +144,10 @@ export default {
       selected_options_id: [],
       list_cases: [],
       filtered_cases: [],
-      selected_param: "",
+      search: [],
 
+      refresh: 0,
+      initial_load: true,
       empty: true
     };
   },
@@ -147,30 +155,38 @@ export default {
    * @description
    */
   created() {
+    this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
     this.fetchAllCasesParameters();
+    // this.filterCases();
   },
 
-  computed: {
+  computed: {},
+
+  methods: {
     /**
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
     filterCases() {
-      // this.cases_by_date = filterDate(this.incident_date_start, this.incident_date_end);
-
       this.filtered_cases = [];
+
+      //create new array of selected options to manipulate data set without changing original array
+      this.selected_options_temp = this.selected_options.slice();
 
       //Selected_option None equals to "", convert to Null so it matches values on database
       for (let a = 0; a < this.selected_options.length; a++) {
-        if (this.selected_options[a] == "") {
-          this.selected_options[a] = null;
+        if (
+          this.selected_options[a] == "" ||
+          this.selected_options[a] == "None"
+        ) {
+          this.selected_options_temp[a] = null;
         }
       }
       //selected_option returns empty values on none selected filters
       //Remove undefined empty values
-      this.data = this.selected_options.filter(function(element) {
+      this.data = this.selected_options_temp.filter(function(element) {
         return element !== undefined;
       });
 
@@ -194,9 +210,6 @@ export default {
           }
         }
       }
-
-      //  console.log(this.selected_options_filtered);
-      // console.log(this.case_studies_with_selected_option);
 
       //get count of selected parameters
       this.count = 0;
@@ -252,11 +265,13 @@ export default {
         !this.case_studies_with_selected_option.length &&
         this.selected_options_filtered.length
       ) {
-        return [];
+        //return [];
+        this.search = [];
       }
       //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
+
       if (
         !this.case_studies_with_selected_option.length &&
         !this.selected_options_filtered.length
@@ -267,22 +282,57 @@ export default {
           this.incident_date_end,
           this.list_cases
         );
-        return this.list_cases_temp;
+        // return this.list_cases_temp;
+
+        this.search = this.list_cases_temp;
       }
-      //filter if dates have been selecte
+
+      //filter if dates have been selected
       this.filtered_cases = this.filterDate(
         this.incident_date_start,
         this.incident_date_end,
         this.filtered_cases
       );
+      this.search = this.filtered_cases;
+      //return this.filtered_cases;
+    },
 
-      return this.filtered_cases;
-    }
-  },
+    forceRerender() {
+      // Remove my-component from the DOM
+      this.refresh = false;
+      this.$nextTick(() => {
+        // Add the component back in
+        this.refresh = true;
+      });
+    },
 
-  methods: {
+    getSearch() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.search_for = this.urlParams.get("q"); //get search
+    },
+
+    /**
+     * @description get selected case parameter
+     */
     selected(id) {
       this.selected_param = id;
+    },
+
+    clearFilter() {
+      // this.clear = false;
+      this.parameters = document.getElementsByTagName("select");
+      this.incident_date_start="";
+      this.incident_date_end="";
+      this.selected_options=[];
+      this.search = this.list_cases;
+      this.$nextTick(function() {
+        this.search = this.list_cases; // true
+
+        for (let i = 0; i < this.parameters.length; i++) {
+          this.parameters[i].selectedIndex = -1;
+        }
+
+      });
     },
 
     /**
@@ -296,6 +346,7 @@ export default {
 
           if (this.cases) {
             this.list_cases = Object.values(this.cases);
+            this.search = this.list_cases;
             this.empty = false;
           }
         })
