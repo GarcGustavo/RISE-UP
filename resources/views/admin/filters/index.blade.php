@@ -18,7 +18,7 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="fas fa-table"></i>
+                    <i class="fas fa-table mb-2"></i>
                     @if( ! $category->is_default )   
                         @include('admin.filters.removeCategoryForm')
 					    @include('admin.filters.editCategoryForm')
@@ -30,16 +30,27 @@
                     @forelse($options as $option)
                         @if ($category->csp_id == $option->o_parameter)
 							<li class="list-group-item mb-5">
-                            @include('admin.filters.removeOptionForm')
-							@include('admin.filters.editOptionForm')
+                                <div class="d-flex flex-row">
+                                    <span class="mr-auto text-primary"> {{$option->o_content}} </span>
+                                    @if( ! $option->is_default )
+                                        @include('admin.filters.removeOptionForm')
+                                    @endif
+                                </div>
+                                <div class="d-flex flex-row">
+                                    @if( ! $option->is_default )
+							            @include('admin.filters.editOptionForm')
+                                    @endif
+                                </div>
 							</li>
                         @endif
                     @empty
 
                     @endforelse
-							<li class="list-group-item">
+                    <li class="list-group-item mb-5">
+                        <div class="d-flex flex-row">
                             @include('admin.filters.addOptionForm')
-							</li>
+                        </div>
+                    </li>
                     </ul>
                 </div>
                 <div class="card-footer small text-muted">
