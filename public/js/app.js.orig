@@ -4145,6 +4145,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuedraggable */ "./node_modules/vuedraggable/dist/vuedraggable.common.js");
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vuedraggable__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
+/* harmony import */ var vue_linkify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-linkify */ "./node_modules/vue-linkify/dist/vue-linkify.min.js");
+/* harmony import */ var vue_linkify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_linkify__WEBPACK_IMPORTED_MODULE_2__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -4502,12 +4504,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   //name: 'app',
   components: {
     draggable: vuedraggable__WEBPACK_IMPORTED_MODULE_0___default.a,
+    linkify: vue_linkify__WEBPACK_IMPORTED_MODULE_2___default.a,
     datepicker: vuejs_datepicker__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   events: {},
@@ -4518,6 +4532,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       date_format: "yyyy-MM-dd",
       new_date: new Date(),
       editing: false,
+      uploadPercentage: 0,
       showModal: false,
       typing: false,
       action: "",
@@ -4595,9 +4610,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       _this.items.forEach(function (element) {
         _this.items[element] = e.items[element];
-      });
+      }); //console.log("hell from channel");
 
-      console.log("hell from channel");
     }); // .here(users => {
     //   this.usersEditing = users;
     // })
@@ -4629,6 +4643,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }, 1000);
     },
+    //Get items belonging to a case
     fetchCaseItems: function fetchCaseItems() {
       var _this3 = this;
 
@@ -4636,7 +4651,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.cid = Number(this.path.get("cid")); //get cid
 
-      fetch("/case/" + this.cid + "/items").then(function (res) {
+      fetch("/case/items?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this3.items = res.data;
@@ -4645,6 +4660,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch total items to add/delete items without conflict
     fetchItems: function fetchItems() {
       var _this4 = this;
 
@@ -4658,6 +4674,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch case details
     fetchCase: function fetchCase() {
       var _this5 = this;
 
@@ -4682,6 +4699,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch user details
     fetchUser: function fetchUser(uid) {
       var _this6 = this;
 
@@ -4693,6 +4711,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch owner groups
     fetchUserGroups: function fetchUserGroups() {
       var _this7 = this;
 
@@ -4712,6 +4731,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(res.data);
       });
     },
+    //Fetch users actively editing current cid
     fetchUsersEditing: function fetchUsersEditing(cid) {
       var _this8 = this;
 
@@ -4723,7 +4743,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    //TODO
+    //Update list of active users editing current cid
     updateUsersEditing: function updateUsersEditing(user_editing_id) {
       if (this.editing) {
         this.updated_user_edit = {
@@ -4750,8 +4770,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
-      this.fetchUsersEditing(this.cid);
+      this.fetchUsersEditing(this.cid); //Fetch users once updated
     },
+    //Fetch case group details if a group is set, if not set as independent
     fetchGroup: function fetchGroup(gid) {
       var _this9 = this;
 
@@ -4771,6 +4792,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         };
       }
     },
+    //Fetch case parameters via cid
     fetchCaseParameters: function fetchCaseParameters() {
       var _this10 = this;
 
@@ -4784,6 +4806,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       this.fetchParameterOptions();
     },
+    //Fetch options for each parameter in case to populate dropdown
     fetchParameterOptions: function fetchParameterOptions() {
       var _this11 = this;
 
@@ -4796,11 +4819,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Filter options via parameter to populate appropriate dropdown
     filteredOptions: function filteredOptions(parameter) {
       return this.parameter_options.filter(function (option) {
         return option.o_parameter == parameter;
       });
     },
+    //Update parameter of case to reflect selected options
     updateParameter: function updateParameter(updated_param) {
       this.updated_parameter = {
         cid: this.cid,
@@ -4823,13 +4848,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.error("Error: ", err);
       });
     },
+    //Loop through all parameters and update them appropriately
     updateParams: function updateParams() {
       for (var param in this.case_parameters) {
         this.updated_param = this.case_parameters[param];
         this.updateParameter(this.updated_param);
-      } //this.fetchCaseParameters();
-
+      }
     },
+    //Update case details (thumbnail, description, title, dates, group, and status)
     updateCase: function updateCase() {
       this.cid = this.case_to_show[0].cid;
       var form_data = new FormData();
@@ -4844,8 +4870,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
       form_data.append("c_status", this.case_to_show[0].c_status);
       form_data.append("c_date", this.case_to_show[0].c_date);
-      form_data.append("c_incident_date", this.new_date.toUTCString());
-      console.log(this.new_date.toUTCString());
+
+      if (this.new_date instanceof Date) {
+        form_data.append("c_incident_date", this.new_date.toUTCString());
+      } else {
+        form_data.append("c_incident_date", this.new_date);
+      } //console.log(this.new_date.toUTCString());
+
+
       form_data.append("c_owner", this.case_to_show[0].c_owner);
       form_data.append("c_group", this.case_to_show[0].c_group);
       fetch("/case/update", {
@@ -4864,18 +4896,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
-      this.fetchCase();
+      this.fetchCase(); //Fetch case again after update
     },
+    //Update items content
     updateItem: function updateItem(item_to_update, index) {
-      this.path = new URLSearchParams(window.location.search); //get url parameters
-
-      this.cid = Number(this.path.get("cid")); //get cid
-
-      var form_data = new FormData();
+      //Request must use form data to upload files
+      var form_data = new FormData(); //check preview images/filestream to ensure file exists
 
       if (this.files && this.images[index]) {
         form_data.append("image", this.image_names[index]);
-      }
+      } //Append item details
+
 
       form_data.append("i_case", item_to_update.i_case);
       form_data.append("i_type", item_to_update.i_type);
@@ -4900,20 +4931,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.error("Error: ", err);
       });
     },
+    //Iterate through items and update them appropriately
     updateItems: function updateItems(items) {
       for (var item in this.items) {
         this.items[item].order = item;
         this.updateItem(this.items[item], item);
-      }
+      } //Fetch updated items
+
 
       this.fetchItems();
       this.fetchCaseItems();
     },
+    //Add new item to case
     addItem: function addItem(new_item, item_type) {
-      this.path = new URLSearchParams(window.location.search); //get url parameters
-
-      this.cid = Number(this.path.get("cid")); //get cid
-
+      //Initialize item content
       var item_name = "New Text";
       var item_content = "Add content here!";
 
@@ -4927,8 +4958,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.new_item.i_case = this.cid;
       this.new_item.i_type = item_type;
       this.new_item.order = "1";
-      this.new_item.i_name = item_name;
-      console.log(new_item);
+      this.new_item.i_name = item_name; //console.log(new_item);
+
       fetch("/item/add", {
         method: "post",
         headers: new Headers({
@@ -4956,9 +4987,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         i_name: ""
       };
     },
+    //Remove item from case
     removeItem: function removeItem(item_to_remove) {
-      console.log(item_to_remove.iid);
-
+      //console.log(item_to_remove.iid);
+      //Confirm item to be deleted
       if (confirm("Do you want to delete this item permanently?")) {
         fetch("/item/remove?iid=" + Number(item_to_remove.iid), {
           method: "delete",
@@ -4975,12 +5007,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         })["catch"](function (err) {
           console.error("Error: ", err);
         });
-      }
+      } //Fetch updated items
+
 
       this.fetchCaseItems();
       this.fetchItems();
     },
+    //Delete case study permanently
     deleteCaseStudy: function deleteCaseStudy() {
+      //Confirm deletion
       if (confirm("Do you want to delete this case study permanently?")) {
         //send request
         fetch("/case/remove", {
@@ -5000,47 +5035,54 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }
     },
-    //TODO
-    languageToggle: function languageToggle() {},
+    //When a user edits a content field this method updates users editing and item content
     onEdit: function onEdit() {
       this.editing = true;
-      this.fetchUserGroups();
+      this.fetchUserGroups(); //update list of editors
 
       for (var user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
-      }
+      } //update case parameters
+
 
       for (var option in this.case_parameters) {
         this.selected_options_content[option] = this.case_parameters[option].o_content;
         this.selected_options_id[option] = this.case_parameters[option].opt_selected;
       }
     },
+    //Resets content and throws away any edits not submitted to database
     onCancel: function onCancel() {
+      //Resets variables that may have been changed by an editor
       this.gid = this.initial_gid;
       this.editing = false;
-      this.previewThumbnail = false;
+      this.previewThumbnail = false; //Reset uploaded images and their previews
 
       for (var index in this.preview) {
         this.preview[index] = false;
-      }
+      } //Reload data from database
+
 
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
       this.fetchCase();
       this.fetchCaseParameters();
-      this.fetchParameterOptions();
+      this.fetchParameterOptions(); //Update editors list
 
       for (var user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
-      }
+      } //Reset parameter options
+
 
       for (var option in this.selected_options_content) {
         this.case_parameters[option].o_content = this.selected_options_content[option];
         this.case_parameters[option].opt_selected = this.selected_options_id[option];
       }
     },
+    //Submit new data to database
     onSubmit: function onSubmit(items) {
+      var _this12 = this;
+
       this.editing = false;
 
       for (var index in this.preview) {
@@ -5049,10 +5091,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.previewThumbnail = false;
       this.new_date = this.case_to_show[0].c_incident_date;
-      this.updateParams();
-      this.updateItems(items);
-      this.updateCase(); //this.updateParameter();
+      this.$nextTick(function () {
+        _this12.updateParams();
+
+        _this12.updateItems(items);
+
+        _this12.updateCase();
+      }); //this.updateParameter();
     },
+    //Update selected group for case study
     onSelectGroup: function onSelectGroup(selected_gid) {
       if (!selected_gid) {
         this.independent = true;
@@ -5064,12 +5111,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
     },
+    //Update parameter option selected
     onSelectOption: function onSelectOption(selected_op, index) {
       this.case_parameters[index].o_content = selected_op.o_content;
       this.case_parameters[index].opt_selected = selected_op.oid;
     },
+    validURL: function validURL(str) {
+      var pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$", "i"); // fragment locator
+
+      return !!pattern.test(str);
+    },
+    //Upload image to a specific item, index is used to track files being uploaded
     uploadImage: function uploadImage(e, item, index) {
-      var _this12 = this;
+      var _this13 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -5078,13 +5137,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.files[0]);
 
       reader.onload = function (e) {
-        _this12.images[index] = e.target.result;
-        _this12.image_names[index] = _this12.files[0];
-        _this12.preview[index] = true;
+        _this13.images[index] = e.target.result;
+        _this13.image_names[index] = _this13.files[0];
+        _this13.preview[index] = true;
       };
     },
+    //Seperate image uploader for thumbnail since it is a seperate file stream
     uploadThumbnail: function uploadThumbnail(e) {
-      var _this13 = this;
+      var _this14 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -5094,9 +5154,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.thumbnail_files[0]);
 
       reader.onload = function (e) {
-        _this13.thumbnail_preview = e.target.result;
-        _this13.thumbnail_name = _this13.thumbnail_files[0];
-        _this13.previewThumbnail = true;
+        _this14.thumbnail_preview = e.target.result;
+        _this14.thumbnail_name = _this14.thumbnail_files[0];
+        _this14.previewThumbnail = true;
       };
     }
   }
@@ -5320,6 +5380,8 @@ var default_styles = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! util */ "./node_modules/util/util.js");
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_1__);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -5428,6 +5490,11 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+
 
 /**
  * write a component's description
@@ -5458,8 +5525,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   data: function data() {
     return {
       date_format: "yyyy-MM-dd",
-      incident_date_start: new Date(),
-      incident_date_end: new Date(),
+      incident_date_start: "",
+      incident_date_end: "",
+      search_for: "",
+      selected_param: "",
       selected_options: [],
       case_parameters: [],
       all_cases_parameters: [],
@@ -5468,7 +5537,9 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       selected_options_id: [],
       list_cases: [],
       filtered_cases: [],
-      selected_param: "",
+      search: [],
+      refresh: 0,
+      initial_load: true,
       empty: true
     };
   },
@@ -5477,11 +5548,13 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
    * @description
    */
   created: function created() {
+    this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
-    this.fetchAllCasesParameters();
+    this.fetchAllCasesParameters(); // this.filterCases();
   },
-  computed: {
+  computed: {},
+  methods: {
     /**
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
@@ -5489,21 +5562,22 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     filterCases: function filterCases() {
       var _this = this;
 
-      this.filtered_cases = [];
-      /*
-      for (let a = 0; a < this.parameters.length; a++) {
-        this.options = this.parameters[a].getElementsByTagName("option");
-         for (let b = 0; b < this.options.length; b++) {
-          //  console.log(this.options[b].value);
-          for (let c = 0; c < this.selected_options.length; c++) {
-            if (this.options[b].value == this.selected_options[c]) {
-              this.selected_params.push(this.parameters[a].getAttribute('id'));
-            }
-          }
+      this.filtered_cases = []; //create new array of selected options to manipulate data set without changing original array
+
+      this.selected_options_temp = this.selected_options.slice(); //Selected_option None equals to "", convert to Null so it matches values on database
+
+      for (var a = 0; a < this.selected_options.length; a++) {
+        if (this.selected_options[a] == "" || this.selected_options[a] == "None") {
+          this.selected_options_temp[a] = null;
         }
-      }
-      */
-      //These for loops get the case studies on which one or more parameters apply individually
+      } //selected_option returns empty values on none selected filters
+      //Remove undefined empty values
+
+
+      this.data = this.selected_options_temp.filter(function (element) {
+        return element !== undefined;
+      });
+      this.selected_options_filtered = this.data; //These for loops get the case studies on which one or more parameters apply individually
       //That is if user selects to filter by location and damage type, the algorithm will
       //fetch all case studies with either one or both of the parameter's selected option.
 
@@ -5511,8 +5585,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       //look for case studies(cid) where selected option = selected param
 
       for (var j = 0; j < this.all_cases_parameters.length; j++) {
-        for (var c = 0; c < this.case_parameters.length; c++) {
-          if (this.all_cases_parameters[j].opt_selected == this.selected_options[c] && this.selected_param == this.all_cases_parameters[j].csp_id) {
+        for (var c = 0; c < this.selected_options_filtered.length; c++) {
+          if (this.all_cases_parameters[j].opt_selected == this.selected_options_filtered[c] && this.selected_param == this.all_cases_parameters[j].csp_id) {
             this.case_studies_with_selected_option.push(this.all_cases_parameters[j]);
           }
         }
@@ -5520,12 +5594,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 
       this.count = 0;
-      this.selected_options.forEach(function (element) {
-        if (isNaN(element[_this.i])) {
+      this.selected_options_filtered.forEach(function (element) {
+        if (!element || Object(util__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(element)) {
           _this.count = _this.count + 1;
         }
-
-        _this.i++;
       });
       /*change array to elements that contain only the id's of the case studies*/
 
@@ -5549,9 +5621,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           cid: i,
           count: this.temp[i]
         });
-      }
+      } //filter those cid's from the list of case studies with parameters(list_cases)
 
-      console.log(this.case_study_with_id_count); //filter those cid's from the list of case studies with parameters(list_cases)
 
       for (var _i = 0; _i < this.case_study_with_id_count.length; _i++) {
         for (var k = 0; k < this.list_cases.length; k++) {
@@ -5566,39 +5637,78 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
 
-      if (!this.case_studies_with_selected_option.length && this.selected_options.length) {
-        return [];
+      if (!this.case_studies_with_selected_option.length && this.selected_options_filtered.length) {
+        //return [];
+        this.search = [];
       } //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
 
 
-      if (!this.case_studies_with_selected_option.length && !this.selected_options.length) {
-        return this.list_cases;
-      }
+      if (!this.case_studies_with_selected_option.length && !this.selected_options_filtered.length) {
+        //filter is dates have been selected
+        this.list_cases_temp = this.filterDate(this.incident_date_start, this.incident_date_end, this.list_cases); // return this.list_cases_temp;
 
-      return this.filtered_cases;
-    }
-  },
-  methods: {
+        this.search = this.list_cases_temp;
+      } //filter if dates have been selected
+
+
+      this.filtered_cases = this.filterDate(this.incident_date_start, this.incident_date_end, this.filtered_cases);
+      this.search = this.filtered_cases; //return this.filtered_cases;
+    },
+    forceRerender: function forceRerender() {
+      var _this2 = this;
+
+      // Remove my-component from the DOM
+      this.refresh = false;
+      this.$nextTick(function () {
+        // Add the component back in
+        _this2.refresh = true;
+      });
+    },
+    getSearch: function getSearch() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.search_for = this.urlParams.get("q"); //get search
+    },
+
+    /**
+     * @description get selected case parameter
+     */
     selected: function selected(id) {
       this.selected_param = id;
+    },
+    clearFilter: function clearFilter() {
+      // this.clear = false;
+      this.parameters = document.getElementsByTagName("select");
+      this.incident_date_start = "";
+      this.incident_date_end = "";
+      this.selected_options = [];
+      this.search = this.list_cases;
+      this.$nextTick(function () {
+        this.search = this.list_cases; // true
+
+        for (var i = 0; i < this.parameters.length; i++) {
+          this.parameters[i].selectedIndex = -1;
+        }
+      });
     },
 
     /**
      * @description fetch all system parameters(filters)
      */
     fetchParameters: function fetchParameters() {
-      var _this2 = this;
+      var _this3 = this;
 
       fetch("/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.case_parameters = res.data;
+        _this3.case_parameters = res.data;
 
-        if (_this2.cases) {
-          _this2.list_cases = Object.values(_this2.cases);
-          _this2.empty = false;
+        if (_this3.cases) {
+          _this3.list_cases = Object.values(_this3.cases);
+          _this3.search = _this3.list_cases;
+          _this3.empty = false;
         }
       })["catch"](function (err) {
         return console.log(err);
@@ -5610,12 +5720,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch all parameters options
      */
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.parameter_options = res.data;
+        _this4.parameter_options = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -5625,12 +5735,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch the parameters all case studies have correspondingly
      */
     fetchAllCasesParameters: function fetchAllCasesParameters() {
-      var _this4 = this;
+      var _this5 = this;
 
       fetch("/cs-parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.all_cases_parameters = res.data;
+        _this5.all_cases_parameters = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -5652,27 +5762,30 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @returns array of formated dates
      */
     formatDate: function formatDate(date) {
-      return date.toISOString().slice(0, 10);
+      if (date) {
+        return date.toISOString().slice(0, 10);
+      }
     },
 
     /**
      * @description compares date range to incident date of cases in list
      * @returns array of filtered cases by date
      */
-<<<<<<< HEAD
-    filterDate: function filterDate(date_start, date_end) {
-      var filtered_list = [];
-      this.list_cases.forEach(function (element) {
-=======
     filterDate: function filterDate(date_start, date_end, cases_list) {
+      var _this6 = this;
+
       var filtered_list = [];
-      cases_list.forEach(function (element) {
->>>>>>> 237bd045aee1fdf304491cd8e37a3f54cf01cbcb
-        if (formatDate(date_start) < element.c_incident_date && formatDate(date_end) > element.c_incident_date) {
-          filtered_list.push(element);
-        }
-      });
-      return filtered_list;
+
+      if (date_start && date_end) {
+        cases_list.forEach(function (element) {
+          if (_this6.formatDate(date_start) <= element.c_incident_date && _this6.formatDate(date_end) >= element.c_incident_date) {
+            filtered_list.push(element);
+          }
+        });
+        return filtered_list;
+      }
+
+      return cases_list;
     }
   }
 });
@@ -56331,6 +56444,2492 @@ var Echo = function () {
 
 /***/ }),
 
+/***/ "./node_modules/linkifyjs/html.js":
+/*!****************************************!*\
+  !*** ./node_modules/linkifyjs/html.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! ./lib/linkify-html */ "./node_modules/linkifyjs/lib/linkify-html.js").default;
+
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify-html.js":
+/*!****************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify-html.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.default = linkifyHtml;
+
+var _simpleHtmlTokenizer = __webpack_require__(/*! ./simple-html-tokenizer */ "./node_modules/linkifyjs/lib/simple-html-tokenizer.js");
+
+var _simpleHtmlTokenizer2 = _interopRequireDefault(_simpleHtmlTokenizer);
+
+var _linkify = __webpack_require__(/*! ./linkify */ "./node_modules/linkifyjs/lib/linkify.js");
+
+var linkify = _interopRequireWildcard(_linkify);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var options = linkify.options;
+var Options = options.Options;
+
+
+var StartTag = 'StartTag';
+var EndTag = 'EndTag';
+var Chars = 'Chars';
+var Comment = 'Comment';
+
+/**
+	`tokens` and `token` in this section refer to tokens generated by the HTML
+	parser.
+*/
+function linkifyHtml(str) {
+	var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	var tokens = _simpleHtmlTokenizer2.default.tokenize(str);
+	var linkifiedTokens = [];
+	var linkified = [];
+	var i;
+
+	opts = new Options(opts);
+
+	// Linkify the tokens given by the parser
+	for (i = 0; i < tokens.length; i++) {
+		var token = tokens[i];
+
+		if (token.type === StartTag) {
+			linkifiedTokens.push(token);
+
+			// Ignore all the contents of ignored tags
+			var tagName = token.tagName.toUpperCase();
+			var isIgnored = tagName === 'A' || options.contains(opts.ignoreTags, tagName);
+			if (!isIgnored) {
+				continue;
+			}
+
+			var preskipLen = linkifiedTokens.length;
+			skipTagTokens(tagName, tokens, ++i, linkifiedTokens);
+			i += linkifiedTokens.length - preskipLen - 1;
+			continue;
+		} else if (token.type !== Chars) {
+			// Skip this token, it's not important
+			linkifiedTokens.push(token);
+			continue;
+		}
+
+		// Valid text token, linkify it!
+		var linkifedChars = linkifyChars(token.chars, opts);
+		linkifiedTokens.push.apply(linkifiedTokens, linkifedChars);
+	}
+
+	// Convert the tokens back into a string
+	for (i = 0; i < linkifiedTokens.length; i++) {
+		var _token = linkifiedTokens[i];
+		switch (_token.type) {
+			case StartTag:
+				{
+					var link = '<' + _token.tagName;
+					if (_token.attributes.length > 0) {
+						var attrs = attrsToStrings(_token.attributes);
+						link += ' ' + attrs.join(' ');
+					}
+					link += '>';
+					linkified.push(link);
+					break;
+				}
+			case EndTag:
+				linkified.push('</' + _token.tagName + '>');
+				break;
+			case Chars:
+				linkified.push(escapeText(_token.chars));
+				break;
+			case Comment:
+				linkified.push('<!--' + escapeText(_token.chars) + '-->');
+				break;
+		}
+	}
+
+	return linkified.join('');
+}
+
+/**
+	`tokens` and `token` in this section referes to tokens returned by
+	`linkify.tokenize`. `linkified` will contain HTML Parser-style tokens
+*/
+function linkifyChars(str, opts) {
+	var tokens = linkify.tokenize(str);
+	var result = [];
+
+	for (var i = 0; i < tokens.length; i++) {
+		var token = tokens[i];
+
+		if (token.type === 'nl' && opts.nl2br) {
+			result.push({
+				type: StartTag,
+				tagName: 'br',
+				attributes: [],
+				selfClosing: true
+			});
+			continue;
+		} else if (!token.isLink || !opts.check(token)) {
+			result.push({ type: Chars, chars: token.toString() });
+			continue;
+		}
+
+		var _opts$resolve = opts.resolve(token),
+		    formatted = _opts$resolve.formatted,
+		    formattedHref = _opts$resolve.formattedHref,
+		    tagName = _opts$resolve.tagName,
+		    className = _opts$resolve.className,
+		    target = _opts$resolve.target,
+		    attributes = _opts$resolve.attributes;
+
+		// Build up attributes
+
+
+		var attributeArray = [['href', formattedHref]];
+
+		if (className) {
+			attributeArray.push(['class', className]);
+		}
+
+		if (target) {
+			attributeArray.push(['target', target]);
+		}
+
+		for (var attr in attributes) {
+			attributeArray.push([attr, attributes[attr]]);
+		}
+
+		// Add the required tokens
+		result.push({
+			type: StartTag,
+			tagName: tagName,
+			attributes: attributeArray,
+			selfClosing: false
+		});
+		result.push({ type: Chars, chars: formatted });
+		result.push({ type: EndTag, tagName: tagName });
+	}
+
+	return result;
+}
+
+/**
+	Returns a list of tokens skipped until the closing tag of tagName.
+
+	* `tagName` is the closing tag which will prompt us to stop skipping
+	* `tokens` is the array of tokens generated by HTML5Tokenizer which
+	* `i` is the index immediately after the opening tag to skip
+	* `skippedTokens` is an array which skipped tokens are being pushed into
+
+	Caveats
+
+	* Assumes that i is the first token after the given opening tagName
+	* The closing tag will be skipped, but nothing after it
+	* Will track whether there is a nested tag of the same type
+*/
+function skipTagTokens(tagName, tokens, i, skippedTokens) {
+
+	// number of tokens of this type on the [fictional] stack
+	var stackCount = 1;
+
+	while (i < tokens.length && stackCount > 0) {
+		var token = tokens[i];
+
+		if (token.type === StartTag && token.tagName.toUpperCase() === tagName) {
+			// Nested tag of the same type, "add to stack"
+			stackCount++;
+		} else if (token.type === EndTag && token.tagName.toUpperCase() === tagName) {
+			// Closing tag
+			stackCount--;
+		}
+
+		skippedTokens.push(token);
+		i++;
+	}
+
+	// Note that if stackCount > 0 here, the HTML is probably invalid
+	return skippedTokens;
+}
+
+function escapeText(text) {
+	// Not required, HTML tokenizer ensures this occurs properly
+	return text;
+}
+
+function escapeAttr(attr) {
+	return attr.replace(/"/g, '&quot;');
+}
+
+function attrsToStrings(attrs) {
+	var attrStrs = [];
+	for (var i = 0; i < attrs.length; i++) {
+		var _attrs$i = attrs[i],
+		    name = _attrs$i[0],
+		    value = _attrs$i[1];
+
+		attrStrs.push(name + '="' + escapeAttr(value) + '"');
+	}
+	return attrStrs;
+}
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify.js":
+/*!***********************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.tokenize = exports.test = exports.scanner = exports.parser = exports.options = exports.inherits = exports.find = undefined;
+
+var _class = __webpack_require__(/*! ./linkify/utils/class */ "./node_modules/linkifyjs/lib/linkify/utils/class.js");
+
+var _options = __webpack_require__(/*! ./linkify/utils/options */ "./node_modules/linkifyjs/lib/linkify/utils/options.js");
+
+var options = _interopRequireWildcard(_options);
+
+var _scanner = __webpack_require__(/*! ./linkify/core/scanner */ "./node_modules/linkifyjs/lib/linkify/core/scanner.js");
+
+var scanner = _interopRequireWildcard(_scanner);
+
+var _parser = __webpack_require__(/*! ./linkify/core/parser */ "./node_modules/linkifyjs/lib/linkify/core/parser.js");
+
+var parser = _interopRequireWildcard(_parser);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+if (!Array.isArray) {
+	Array.isArray = function (arg) {
+		return Object.prototype.toString.call(arg) === '[object Array]';
+	};
+}
+
+/**
+	Converts a string into tokens that represent linkable and non-linkable bits
+	@method tokenize
+	@param {String} str
+	@return {Array} tokens
+*/
+var tokenize = function tokenize(str) {
+	return parser.run(scanner.run(str));
+};
+
+/**
+	Returns a list of linkable items in the given string.
+*/
+var find = function find(str) {
+	var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+	var tokens = tokenize(str);
+	var filtered = [];
+
+	for (var i = 0; i < tokens.length; i++) {
+		var token = tokens[i];
+		if (token.isLink && (!type || token.type === type)) {
+			filtered.push(token.toObject());
+		}
+	}
+
+	return filtered;
+};
+
+/**
+	Is the given string valid linkable text of some sort
+	Note that this does not trim the text for you.
+
+	Optionally pass in a second `type` param, which is the type of link to test
+	for.
+
+	For example,
+
+		test(str, 'email');
+
+	Will return `true` if str is a valid email.
+*/
+var test = function test(str) {
+	var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+	var tokens = tokenize(str);
+	return tokens.length === 1 && tokens[0].isLink && (!type || tokens[0].type === type);
+};
+
+// Scanner and parser provide states and tokens for the lexicographic stage
+// (will be used to add additional link types)
+exports.find = find;
+exports.inherits = _class.inherits;
+exports.options = options;
+exports.parser = parser;
+exports.scanner = scanner;
+exports.test = test;
+exports.tokenize = tokenize;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/core/parser.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/core/parser.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.start = exports.run = exports.TOKENS = exports.State = undefined;
+
+var _state = __webpack_require__(/*! ./state */ "./node_modules/linkifyjs/lib/linkify/core/state.js");
+
+var _multi = __webpack_require__(/*! ./tokens/multi */ "./node_modules/linkifyjs/lib/linkify/core/tokens/multi.js");
+
+var MULTI_TOKENS = _interopRequireWildcard(_multi);
+
+var _text = __webpack_require__(/*! ./tokens/text */ "./node_modules/linkifyjs/lib/linkify/core/tokens/text.js");
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+	Not exactly parser, more like the second-stage scanner (although we can
+	theoretically hotswap the code here with a real parser in the future... but
+	for a little URL-finding utility abstract syntax trees may be a little
+	overkill).
+
+	URL format: http://en.wikipedia.org/wiki/URI_scheme
+	Email format: http://en.wikipedia.org/wiki/Email_address (links to RFC in
+	reference)
+
+	@module linkify
+	@submodule parser
+	@main parser
+*/
+
+var makeState = function makeState(tokenClass) {
+	return new _state.TokenState(tokenClass);
+};
+
+// The universal starting state.
+var S_START = makeState();
+
+// Intermediate states for URLs. Note that domains that begin with a protocol
+// are treated slighly differently from those that don't.
+var S_PROTOCOL = makeState(); // e.g., 'http:'
+var S_MAILTO = makeState(); // 'mailto:'
+var S_PROTOCOL_SLASH = makeState(); // e.g., '/', 'http:/''
+var S_PROTOCOL_SLASH_SLASH = makeState(); // e.g., '//', 'http://'
+var S_DOMAIN = makeState(); // parsed string ends with a potential domain name (A)
+var S_DOMAIN_DOT = makeState(); // (A) domain followed by DOT
+var S_TLD = makeState(_multi.URL); // (A) Simplest possible URL with no query string
+var S_TLD_COLON = makeState(); // (A) URL followed by colon (potential port number here)
+var S_TLD_PORT = makeState(_multi.URL); // TLD followed by a port number
+var S_URL = makeState(_multi.URL); // Long URL with optional port and maybe query string
+var S_URL_NON_ACCEPTING = makeState(); // URL followed by some symbols (will not be part of the final URL)
+var S_URL_OPENBRACE = makeState(); // URL followed by {
+var S_URL_OPENBRACKET = makeState(); // URL followed by [
+var S_URL_OPENANGLEBRACKET = makeState(); // URL followed by <
+var S_URL_OPENPAREN = makeState(); // URL followed by (
+var S_URL_OPENBRACE_Q = makeState(_multi.URL); // URL followed by { and some symbols that the URL can end it
+var S_URL_OPENBRACKET_Q = makeState(_multi.URL); // URL followed by [ and some symbols that the URL can end it
+var S_URL_OPENANGLEBRACKET_Q = makeState(_multi.URL); // URL followed by < and some symbols that the URL can end it
+var S_URL_OPENPAREN_Q = makeState(_multi.URL); // URL followed by ( and some symbols that the URL can end it
+var S_URL_OPENBRACE_SYMS = makeState(); // S_URL_OPENBRACE_Q followed by some symbols it cannot end it
+var S_URL_OPENBRACKET_SYMS = makeState(); // S_URL_OPENBRACKET_Q followed by some symbols it cannot end it
+var S_URL_OPENANGLEBRACKET_SYMS = makeState(); // S_URL_OPENANGLEBRACKET_Q followed by some symbols it cannot end it
+var S_URL_OPENPAREN_SYMS = makeState(); // S_URL_OPENPAREN_Q followed by some symbols it cannot end it
+var S_EMAIL_DOMAIN = makeState(); // parsed string starts with local email info + @ with a potential domain name (C)
+var S_EMAIL_DOMAIN_DOT = makeState(); // (C) domain followed by DOT
+var S_EMAIL = makeState(_multi.EMAIL); // (C) Possible email address (could have more tlds)
+var S_EMAIL_COLON = makeState(); // (C) URL followed by colon (potential port number here)
+var S_EMAIL_PORT = makeState(_multi.EMAIL); // (C) Email address with a port
+var S_MAILTO_EMAIL = makeState(_multi.MAILTOEMAIL); // Email that begins with the mailto prefix (D)
+var S_MAILTO_EMAIL_NON_ACCEPTING = makeState(); // (D) Followed by some non-query string chars
+var S_LOCALPART = makeState(); // Local part of the email address
+var S_LOCALPART_AT = makeState(); // Local part of the email address plus @
+var S_LOCALPART_DOT = makeState(); // Local part of the email address plus '.' (localpart cannot end in .)
+var S_NL = makeState(_multi.NL); // single new line
+
+// Make path from start to protocol (with '//')
+S_START.on(_text.NL, S_NL).on(_text.PROTOCOL, S_PROTOCOL).on(_text.MAILTO, S_MAILTO).on(_text.SLASH, S_PROTOCOL_SLASH);
+
+S_PROTOCOL.on(_text.SLASH, S_PROTOCOL_SLASH);
+S_PROTOCOL_SLASH.on(_text.SLASH, S_PROTOCOL_SLASH_SLASH);
+
+// The very first potential domain name
+S_START.on(_text.TLD, S_DOMAIN).on(_text.DOMAIN, S_DOMAIN).on(_text.LOCALHOST, S_TLD).on(_text.NUM, S_DOMAIN);
+
+// Force URL for protocol followed by anything sane
+S_PROTOCOL_SLASH_SLASH.on(_text.TLD, S_URL).on(_text.DOMAIN, S_URL).on(_text.NUM, S_URL).on(_text.LOCALHOST, S_URL);
+
+// Account for dots and hyphens
+// hyphens are usually parts of domain names
+S_DOMAIN.on(_text.DOT, S_DOMAIN_DOT);
+S_EMAIL_DOMAIN.on(_text.DOT, S_EMAIL_DOMAIN_DOT);
+
+// Hyphen can jump back to a domain name
+
+// After the first domain and a dot, we can find either a URL or another domain
+S_DOMAIN_DOT.on(_text.TLD, S_TLD).on(_text.DOMAIN, S_DOMAIN).on(_text.NUM, S_DOMAIN).on(_text.LOCALHOST, S_DOMAIN);
+
+S_EMAIL_DOMAIN_DOT.on(_text.TLD, S_EMAIL).on(_text.DOMAIN, S_EMAIL_DOMAIN).on(_text.NUM, S_EMAIL_DOMAIN).on(_text.LOCALHOST, S_EMAIL_DOMAIN);
+
+// S_TLD accepts! But the URL could be longer, try to find a match greedily
+// The `run` function should be able to "rollback" to the accepting state
+S_TLD.on(_text.DOT, S_DOMAIN_DOT);
+S_EMAIL.on(_text.DOT, S_EMAIL_DOMAIN_DOT);
+
+// Become real URLs after `SLASH` or `COLON NUM SLASH`
+// Here PSS and non-PSS converge
+S_TLD.on(_text.COLON, S_TLD_COLON).on(_text.SLASH, S_URL);
+S_TLD_COLON.on(_text.NUM, S_TLD_PORT);
+S_TLD_PORT.on(_text.SLASH, S_URL);
+S_EMAIL.on(_text.COLON, S_EMAIL_COLON);
+S_EMAIL_COLON.on(_text.NUM, S_EMAIL_PORT);
+
+// Types of characters the URL can definitely end in
+var qsAccepting = [_text.DOMAIN, _text.AT, _text.LOCALHOST, _text.NUM, _text.PLUS, _text.POUND, _text.PROTOCOL, _text.SLASH, _text.TLD, _text.UNDERSCORE, _text.SYM, _text.AMPERSAND];
+
+// Types of tokens that can follow a URL and be part of the query string
+// but cannot be the very last characters
+// Characters that cannot appear in the URL at all should be excluded
+var qsNonAccepting = [_text.COLON, _text.DOT, _text.QUERY, _text.PUNCTUATION, _text.CLOSEBRACE, _text.CLOSEBRACKET, _text.CLOSEANGLEBRACKET, _text.CLOSEPAREN, _text.OPENBRACE, _text.OPENBRACKET, _text.OPENANGLEBRACKET, _text.OPENPAREN];
+
+// These states are responsible primarily for determining whether or not to
+// include the final round bracket.
+
+// URL, followed by an opening bracket
+S_URL.on(_text.OPENBRACE, S_URL_OPENBRACE).on(_text.OPENBRACKET, S_URL_OPENBRACKET).on(_text.OPENANGLEBRACKET, S_URL_OPENANGLEBRACKET).on(_text.OPENPAREN, S_URL_OPENPAREN);
+
+// URL with extra symbols at the end, followed by an opening bracket
+S_URL_NON_ACCEPTING.on(_text.OPENBRACE, S_URL_OPENBRACE).on(_text.OPENBRACKET, S_URL_OPENBRACKET).on(_text.OPENANGLEBRACKET, S_URL_OPENANGLEBRACKET).on(_text.OPENPAREN, S_URL_OPENPAREN);
+
+// Closing bracket component. This character WILL be included in the URL
+S_URL_OPENBRACE.on(_text.CLOSEBRACE, S_URL);
+S_URL_OPENBRACKET.on(_text.CLOSEBRACKET, S_URL);
+S_URL_OPENANGLEBRACKET.on(_text.CLOSEANGLEBRACKET, S_URL);
+S_URL_OPENPAREN.on(_text.CLOSEPAREN, S_URL);
+S_URL_OPENBRACE_Q.on(_text.CLOSEBRACE, S_URL);
+S_URL_OPENBRACKET_Q.on(_text.CLOSEBRACKET, S_URL);
+S_URL_OPENANGLEBRACKET_Q.on(_text.CLOSEANGLEBRACKET, S_URL);
+S_URL_OPENPAREN_Q.on(_text.CLOSEPAREN, S_URL);
+S_URL_OPENBRACE_SYMS.on(_text.CLOSEBRACE, S_URL);
+S_URL_OPENBRACKET_SYMS.on(_text.CLOSEBRACKET, S_URL);
+S_URL_OPENANGLEBRACKET_SYMS.on(_text.CLOSEANGLEBRACKET, S_URL);
+S_URL_OPENPAREN_SYMS.on(_text.CLOSEPAREN, S_URL);
+
+// URL that beings with an opening bracket, followed by a symbols.
+// Note that the final state can still be `S_URL_OPENBRACE_Q` (if the URL only
+// has a single opening bracket for some reason).
+S_URL_OPENBRACE.on(qsAccepting, S_URL_OPENBRACE_Q);
+S_URL_OPENBRACKET.on(qsAccepting, S_URL_OPENBRACKET_Q);
+S_URL_OPENANGLEBRACKET.on(qsAccepting, S_URL_OPENANGLEBRACKET_Q);
+S_URL_OPENPAREN.on(qsAccepting, S_URL_OPENPAREN_Q);
+S_URL_OPENBRACE.on(qsNonAccepting, S_URL_OPENBRACE_SYMS);
+S_URL_OPENBRACKET.on(qsNonAccepting, S_URL_OPENBRACKET_SYMS);
+S_URL_OPENANGLEBRACKET.on(qsNonAccepting, S_URL_OPENANGLEBRACKET_SYMS);
+S_URL_OPENPAREN.on(qsNonAccepting, S_URL_OPENPAREN_SYMS);
+
+// URL that begins with an opening bracket, followed by some symbols
+S_URL_OPENBRACE_Q.on(qsAccepting, S_URL_OPENBRACE_Q);
+S_URL_OPENBRACKET_Q.on(qsAccepting, S_URL_OPENBRACKET_Q);
+S_URL_OPENANGLEBRACKET_Q.on(qsAccepting, S_URL_OPENANGLEBRACKET_Q);
+S_URL_OPENPAREN_Q.on(qsAccepting, S_URL_OPENPAREN_Q);
+S_URL_OPENBRACE_Q.on(qsNonAccepting, S_URL_OPENBRACE_Q);
+S_URL_OPENBRACKET_Q.on(qsNonAccepting, S_URL_OPENBRACKET_Q);
+S_URL_OPENANGLEBRACKET_Q.on(qsNonAccepting, S_URL_OPENANGLEBRACKET_Q);
+S_URL_OPENPAREN_Q.on(qsNonAccepting, S_URL_OPENPAREN_Q);
+
+S_URL_OPENBRACE_SYMS.on(qsAccepting, S_URL_OPENBRACE_Q);
+S_URL_OPENBRACKET_SYMS.on(qsAccepting, S_URL_OPENBRACKET_Q);
+S_URL_OPENANGLEBRACKET_SYMS.on(qsAccepting, S_URL_OPENANGLEBRACKET_Q);
+S_URL_OPENPAREN_SYMS.on(qsAccepting, S_URL_OPENPAREN_Q);
+S_URL_OPENBRACE_SYMS.on(qsNonAccepting, S_URL_OPENBRACE_SYMS);
+S_URL_OPENBRACKET_SYMS.on(qsNonAccepting, S_URL_OPENBRACKET_SYMS);
+S_URL_OPENANGLEBRACKET_SYMS.on(qsNonAccepting, S_URL_OPENANGLEBRACKET_SYMS);
+S_URL_OPENPAREN_SYMS.on(qsNonAccepting, S_URL_OPENPAREN_SYMS);
+
+// Account for the query string
+S_URL.on(qsAccepting, S_URL);
+S_URL_NON_ACCEPTING.on(qsAccepting, S_URL);
+
+S_URL.on(qsNonAccepting, S_URL_NON_ACCEPTING);
+S_URL_NON_ACCEPTING.on(qsNonAccepting, S_URL_NON_ACCEPTING);
+
+// Email address-specific state definitions
+// Note: We are not allowing '/' in email addresses since this would interfere
+// with real URLs
+
+// For addresses with the mailto prefix
+// 'mailto:' followed by anything sane is a valid email
+S_MAILTO.on(_text.TLD, S_MAILTO_EMAIL).on(_text.DOMAIN, S_MAILTO_EMAIL).on(_text.NUM, S_MAILTO_EMAIL).on(_text.LOCALHOST, S_MAILTO_EMAIL);
+
+// Greedily get more potential valid email values
+S_MAILTO_EMAIL.on(qsAccepting, S_MAILTO_EMAIL).on(qsNonAccepting, S_MAILTO_EMAIL_NON_ACCEPTING);
+S_MAILTO_EMAIL_NON_ACCEPTING.on(qsAccepting, S_MAILTO_EMAIL).on(qsNonAccepting, S_MAILTO_EMAIL_NON_ACCEPTING);
+
+// For addresses without the mailto prefix
+// Tokens allowed in the localpart of the email
+var localpartAccepting = [_text.DOMAIN, _text.NUM, _text.PLUS, _text.POUND, _text.QUERY, _text.UNDERSCORE, _text.SYM, _text.AMPERSAND, _text.TLD];
+
+// Some of the tokens in `localpartAccepting` are already accounted for here and
+// will not be overwritten (don't worry)
+S_DOMAIN.on(localpartAccepting, S_LOCALPART).on(_text.AT, S_LOCALPART_AT);
+S_TLD.on(localpartAccepting, S_LOCALPART).on(_text.AT, S_LOCALPART_AT);
+S_DOMAIN_DOT.on(localpartAccepting, S_LOCALPART);
+
+// Okay we're on a localpart. Now what?
+// TODO: IP addresses and what if the email starts with numbers?
+S_LOCALPART.on(localpartAccepting, S_LOCALPART).on(_text.AT, S_LOCALPART_AT) // close to an email address now
+.on(_text.DOT, S_LOCALPART_DOT);
+S_LOCALPART_DOT.on(localpartAccepting, S_LOCALPART);
+S_LOCALPART_AT.on(_text.TLD, S_EMAIL_DOMAIN).on(_text.DOMAIN, S_EMAIL_DOMAIN).on(_text.LOCALHOST, S_EMAIL);
+// States following `@` defined above
+
+var run = function run(tokens) {
+	var len = tokens.length;
+	var cursor = 0;
+	var multis = [];
+	var textTokens = [];
+
+	while (cursor < len) {
+		var state = S_START;
+		var secondState = null;
+		var nextState = null;
+		var multiLength = 0;
+		var latestAccepting = null;
+		var sinceAccepts = -1;
+
+		while (cursor < len && !(secondState = state.next(tokens[cursor]))) {
+			// Starting tokens with nowhere to jump to.
+			// Consider these to be just plain text
+			textTokens.push(tokens[cursor++]);
+		}
+
+		while (cursor < len && (nextState = secondState || state.next(tokens[cursor]))) {
+
+			// Get the next state
+			secondState = null;
+			state = nextState;
+
+			// Keep track of the latest accepting state
+			if (state.accepts()) {
+				sinceAccepts = 0;
+				latestAccepting = state;
+			} else if (sinceAccepts >= 0) {
+				sinceAccepts++;
+			}
+
+			cursor++;
+			multiLength++;
+		}
+
+		if (sinceAccepts < 0) {
+
+			// No accepting state was found, part of a regular text token
+			// Add all the tokens we looked at to the text tokens array
+			for (var i = cursor - multiLength; i < cursor; i++) {
+				textTokens.push(tokens[i]);
+			}
+		} else {
+
+			// Accepting state!
+
+			// First close off the textTokens (if available)
+			if (textTokens.length > 0) {
+				multis.push(new _multi.TEXT(textTokens));
+				textTokens = [];
+			}
+
+			// Roll back to the latest accepting state
+			cursor -= sinceAccepts;
+			multiLength -= sinceAccepts;
+
+			// Create a new multitoken
+			var MULTI = latestAccepting.emit();
+			multis.push(new MULTI(tokens.slice(cursor - multiLength, cursor)));
+		}
+	}
+
+	// Finally close off the textTokens (if available)
+	if (textTokens.length > 0) {
+		multis.push(new _multi.TEXT(textTokens));
+	}
+
+	return multis;
+};
+
+exports.State = _state.TokenState;
+exports.TOKENS = MULTI_TOKENS;
+exports.run = run;
+exports.start = S_START;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/core/scanner.js":
+/*!************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/core/scanner.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.start = exports.run = exports.TOKENS = exports.State = undefined;
+
+var _state = __webpack_require__(/*! ./state */ "./node_modules/linkifyjs/lib/linkify/core/state.js");
+
+var _text = __webpack_require__(/*! ./tokens/text */ "./node_modules/linkifyjs/lib/linkify/core/tokens/text.js");
+
+var TOKENS = _interopRequireWildcard(_text);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var tlds = 'aaa|aarp|abarth|abb|abbott|abbvie|abc|able|abogado|abudhabi|ac|academy|accenture|accountant|accountants|aco|active|actor|ad|adac|ads|adult|ae|aeg|aero|aetna|af|afamilycompany|afl|africa|ag|agakhan|agency|ai|aig|aigo|airbus|airforce|airtel|akdn|al|alfaromeo|alibaba|alipay|allfinanz|allstate|ally|alsace|alstom|am|americanexpress|americanfamily|amex|amfam|amica|amsterdam|analytics|android|anquan|anz|ao|aol|apartments|app|apple|aq|aquarelle|ar|arab|aramco|archi|army|arpa|art|arte|as|asda|asia|associates|at|athleta|attorney|au|auction|audi|audible|audio|auspost|author|auto|autos|avianca|aw|aws|ax|axa|az|azure|ba|baby|baidu|banamex|bananarepublic|band|bank|bar|barcelona|barclaycard|barclays|barefoot|bargains|baseball|basketball|bauhaus|bayern|bb|bbc|bbt|bbva|bcg|bcn|bd|be|beats|beauty|beer|bentley|berlin|best|bestbuy|bet|bf|bg|bh|bharti|bi|bible|bid|bike|bing|bingo|bio|biz|bj|black|blackfriday|blanco|blockbuster|blog|bloomberg|blue|bm|bms|bmw|bn|bnl|bnpparibas|bo|boats|boehringer|bofa|bom|bond|boo|book|booking|boots|bosch|bostik|boston|bot|boutique|box|br|bradesco|bridgestone|broadway|broker|brother|brussels|bs|bt|budapest|bugatti|build|builders|business|buy|buzz|bv|bw|by|bz|bzh|ca|cab|cafe|cal|call|calvinklein|cam|camera|camp|cancerresearch|canon|capetown|capital|capitalone|car|caravan|cards|care|career|careers|cars|cartier|casa|case|caseih|cash|casino|cat|catering|catholic|cba|cbn|cbre|cbs|cc|cd|ceb|center|ceo|cern|cf|cfa|cfd|cg|ch|chanel|channel|chase|chat|cheap|chintai|chloe|christmas|chrome|chrysler|church|ci|cipriani|circle|cisco|citadel|citi|citic|city|cityeats|ck|cl|claims|cleaning|click|clinic|clinique|clothing|cloud|club|clubmed|cm|cn|co|coach|codes|coffee|college|cologne|com|comcast|commbank|community|company|compare|computer|comsec|condos|construction|consulting|contact|contractors|cooking|cookingchannel|cool|coop|corsica|country|coupon|coupons|courses|cr|credit|creditcard|creditunion|cricket|crown|crs|cruise|cruises|csc|cu|cuisinella|cv|cw|cx|cy|cymru|cyou|cz|dabur|dad|dance|data|date|dating|datsun|day|dclk|dds|de|deal|dealer|deals|degree|delivery|dell|deloitte|delta|democrat|dental|dentist|desi|design|dev|dhl|diamonds|diet|digital|direct|directory|discount|discover|dish|diy|dj|dk|dm|dnp|do|docs|doctor|dodge|dog|doha|domains|dot|download|drive|dtv|dubai|duck|dunlop|duns|dupont|durban|dvag|dvr|dz|earth|eat|ec|eco|edeka|edu|education|ee|eg|email|emerck|energy|engineer|engineering|enterprises|epost|epson|equipment|er|ericsson|erni|es|esq|estate|esurance|et|etisalat|eu|eurovision|eus|events|everbank|exchange|expert|exposed|express|extraspace|fage|fail|fairwinds|faith|family|fan|fans|farm|farmers|fashion|fast|fedex|feedback|ferrari|ferrero|fi|fiat|fidelity|fido|film|final|finance|financial|fire|firestone|firmdale|fish|fishing|fit|fitness|fj|fk|flickr|flights|flir|florist|flowers|fly|fm|fo|foo|food|foodnetwork|football|ford|forex|forsale|forum|foundation|fox|fr|free|fresenius|frl|frogans|frontdoor|frontier|ftr|fujitsu|fujixerox|fun|fund|furniture|futbol|fyi|ga|gal|gallery|gallo|gallup|game|games|gap|garden|gb|gbiz|gd|gdn|ge|gea|gent|genting|george|gf|gg|ggee|gh|gi|gift|gifts|gives|giving|gl|glade|glass|gle|global|globo|gm|gmail|gmbh|gmo|gmx|gn|godaddy|gold|goldpoint|golf|goo|goodhands|goodyear|goog|google|gop|got|gov|gp|gq|gr|grainger|graphics|gratis|green|gripe|grocery|group|gs|gt|gu|guardian|gucci|guge|guide|guitars|guru|gw|gy|hair|hamburg|hangout|haus|hbo|hdfc|hdfcbank|health|healthcare|help|helsinki|here|hermes|hgtv|hiphop|hisamitsu|hitachi|hiv|hk|hkt|hm|hn|hockey|holdings|holiday|homedepot|homegoods|homes|homesense|honda|honeywell|horse|hospital|host|hosting|hot|hoteles|hotels|hotmail|house|how|hr|hsbc|ht|htc|hu|hughes|hyatt|hyundai|ibm|icbc|ice|icu|id|ie|ieee|ifm|ikano|il|im|imamat|imdb|immo|immobilien|in|industries|infiniti|info|ing|ink|institute|insurance|insure|int|intel|international|intuit|investments|io|ipiranga|iq|ir|irish|is|iselect|ismaili|ist|istanbul|it|itau|itv|iveco|iwc|jaguar|java|jcb|jcp|je|jeep|jetzt|jewelry|jio|jlc|jll|jm|jmp|jnj|jo|jobs|joburg|jot|joy|jp|jpmorgan|jprs|juegos|juniper|kaufen|kddi|ke|kerryhotels|kerrylogistics|kerryproperties|kfh|kg|kh|ki|kia|kim|kinder|kindle|kitchen|kiwi|km|kn|koeln|komatsu|kosher|kp|kpmg|kpn|kr|krd|kred|kuokgroup|kw|ky|kyoto|kz|la|lacaixa|ladbrokes|lamborghini|lamer|lancaster|lancia|lancome|land|landrover|lanxess|lasalle|lat|latino|latrobe|law|lawyer|lb|lc|lds|lease|leclerc|lefrak|legal|lego|lexus|lgbt|li|liaison|lidl|life|lifeinsurance|lifestyle|lighting|like|lilly|limited|limo|lincoln|linde|link|lipsy|live|living|lixil|lk|loan|loans|locker|locus|loft|lol|london|lotte|lotto|love|lpl|lplfinancial|lr|ls|lt|ltd|ltda|lu|lundbeck|lupin|luxe|luxury|lv|ly|ma|macys|madrid|maif|maison|makeup|man|management|mango|map|market|marketing|markets|marriott|marshalls|maserati|mattel|mba|mc|mckinsey|md|me|med|media|meet|melbourne|meme|memorial|men|menu|meo|merckmsd|metlife|mg|mh|miami|microsoft|mil|mini|mint|mit|mitsubishi|mk|ml|mlb|mls|mm|mma|mn|mo|mobi|mobile|mobily|moda|moe|moi|mom|monash|money|monster|mopar|mormon|mortgage|moscow|moto|motorcycles|mov|movie|movistar|mp|mq|mr|ms|msd|mt|mtn|mtr|mu|museum|mutual|mv|mw|mx|my|mz|na|nab|nadex|nagoya|name|nationwide|natura|navy|nba|nc|ne|nec|net|netbank|netflix|network|neustar|new|newholland|news|next|nextdirect|nexus|nf|nfl|ng|ngo|nhk|ni|nico|nike|nikon|ninja|nissan|nissay|nl|no|nokia|northwesternmutual|norton|now|nowruz|nowtv|np|nr|nra|nrw|ntt|nu|nyc|nz|obi|observer|off|office|okinawa|olayan|olayangroup|oldnavy|ollo|om|omega|one|ong|onl|online|onyourside|ooo|open|oracle|orange|org|organic|origins|osaka|otsuka|ott|ovh|pa|page|panasonic|panerai|paris|pars|partners|parts|party|passagens|pay|pccw|pe|pet|pf|pfizer|pg|ph|pharmacy|phd|philips|phone|photo|photography|photos|physio|piaget|pics|pictet|pictures|pid|pin|ping|pink|pioneer|pizza|pk|pl|place|play|playstation|plumbing|plus|pm|pn|pnc|pohl|poker|politie|porn|post|pr|pramerica|praxi|press|prime|pro|prod|productions|prof|progressive|promo|properties|property|protection|pru|prudential|ps|pt|pub|pw|pwc|py|qa|qpon|quebec|quest|qvc|racing|radio|raid|re|read|realestate|realtor|realty|recipes|red|redstone|redumbrella|rehab|reise|reisen|reit|reliance|ren|rent|rentals|repair|report|republican|rest|restaurant|review|reviews|rexroth|rich|richardli|ricoh|rightathome|ril|rio|rip|rmit|ro|rocher|rocks|rodeo|rogers|room|rs|rsvp|ru|rugby|ruhr|run|rw|rwe|ryukyu|sa|saarland|safe|safety|sakura|sale|salon|samsclub|samsung|sandvik|sandvikcoromant|sanofi|sap|sapo|sarl|sas|save|saxo|sb|sbi|sbs|sc|sca|scb|schaeffler|schmidt|scholarships|school|schule|schwarz|science|scjohnson|scor|scot|sd|se|search|seat|secure|security|seek|select|sener|services|ses|seven|sew|sex|sexy|sfr|sg|sh|shangrila|sharp|shaw|shell|shia|shiksha|shoes|shop|shopping|shouji|show|showtime|shriram|si|silk|sina|singles|site|sj|sk|ski|skin|sky|skype|sl|sling|sm|smart|smile|sn|sncf|so|soccer|social|softbank|software|sohu|solar|solutions|song|sony|soy|space|spiegel|spot|spreadbetting|sr|srl|srt|st|stada|staples|star|starhub|statebank|statefarm|statoil|stc|stcgroup|stockholm|storage|store|stream|studio|study|style|su|sucks|supplies|supply|support|surf|surgery|suzuki|sv|swatch|swiftcover|swiss|sx|sy|sydney|symantec|systems|sz|tab|taipei|talk|taobao|target|tatamotors|tatar|tattoo|tax|taxi|tc|tci|td|tdk|team|tech|technology|tel|telecity|telefonica|temasek|tennis|teva|tf|tg|th|thd|theater|theatre|tiaa|tickets|tienda|tiffany|tips|tires|tirol|tj|tjmaxx|tjx|tk|tkmaxx|tl|tm|tmall|tn|to|today|tokyo|tools|top|toray|toshiba|total|tours|town|toyota|toys|tr|trade|trading|training|travel|travelchannel|travelers|travelersinsurance|trust|trv|tt|tube|tui|tunes|tushu|tv|tvs|tw|tz|ua|ubank|ubs|uconnect|ug|uk|unicom|university|uno|uol|ups|us|uy|uz|va|vacations|vana|vanguard|vc|ve|vegas|ventures|verisign|versicherung|vet|vg|vi|viajes|video|vig|viking|villas|vin|vip|virgin|visa|vision|vista|vistaprint|viva|vivo|vlaanderen|vn|vodka|volkswagen|volvo|vote|voting|voto|voyage|vu|vuelos|wales|walmart|walter|wang|wanggou|warman|watch|watches|weather|weatherchannel|webcam|weber|website|wed|wedding|weibo|weir|wf|whoswho|wien|wiki|williamhill|win|windows|wine|winners|wme|wolterskluwer|woodside|work|works|world|wow|ws|wtc|wtf|xbox|xerox|xfinity|xihuan|xin|xn--11b4c3d|xn--1ck2e1b|xn--1qqw23a|xn--2scrj9c|xn--30rr7y|xn--3bst00m|xn--3ds443g|xn--3e0b707e|xn--3hcrj9c|xn--3oq18vl8pn36a|xn--3pxu8k|xn--42c2d9a|xn--45br5cyl|xn--45brj9c|xn--45q11c|xn--4gbrim|xn--54b7fta0cc|xn--55qw42g|xn--55qx5d|xn--5su34j936bgsg|xn--5tzm5g|xn--6frz82g|xn--6qq986b3xl|xn--80adxhks|xn--80ao21a|xn--80aqecdr1a|xn--80asehdb|xn--80aswg|xn--8y0a063a|xn--90a3ac|xn--90ae|xn--90ais|xn--9dbq2a|xn--9et52u|xn--9krt00a|xn--b4w605ferd|xn--bck1b9a5dre4c|xn--c1avg|xn--c2br7g|xn--cck2b3b|xn--cg4bki|xn--clchc0ea0b2g2a9gcd|xn--czr694b|xn--czrs0t|xn--czru2d|xn--d1acj3b|xn--d1alf|xn--e1a4c|xn--eckvdtc9d|xn--efvy88h|xn--estv75g|xn--fct429k|xn--fhbei|xn--fiq228c5hs|xn--fiq64b|xn--fiqs8s|xn--fiqz9s|xn--fjq720a|xn--flw351e|xn--fpcrj9c3d|xn--fzc2c9e2c|xn--fzys8d69uvgm|xn--g2xx48c|xn--gckr3f0f|xn--gecrj9c|xn--gk3at1e|xn--h2breg3eve|xn--h2brj9c|xn--h2brj9c8c|xn--hxt814e|xn--i1b6b1a6a2e|xn--imr513n|xn--io0a7i|xn--j1aef|xn--j1amh|xn--j6w193g|xn--jlq61u9w7b|xn--jvr189m|xn--kcrx77d1x4a|xn--kprw13d|xn--kpry57d|xn--kpu716f|xn--kput3i|xn--l1acc|xn--lgbbat1ad8j|xn--mgb9awbf|xn--mgba3a3ejt|xn--mgba3a4f16a|xn--mgba7c0bbn0a|xn--mgbaakc7dvf|xn--mgbaam7a8h|xn--mgbab2bd|xn--mgbai9azgqp6j|xn--mgbayh7gpa|xn--mgbb9fbpob|xn--mgbbh1a|xn--mgbbh1a71e|xn--mgbc0a9azcg|xn--mgbca7dzdo|xn--mgberp4a5d4ar|xn--mgbgu82a|xn--mgbi4ecexp|xn--mgbpl2fh|xn--mgbt3dhd|xn--mgbtx2b|xn--mgbx4cd0ab|xn--mix891f|xn--mk1bu44c|xn--mxtq1m|xn--ngbc5azd|xn--ngbe9e0a|xn--ngbrx|xn--node|xn--nqv7f|xn--nqv7fs00ema|xn--nyqy26a|xn--o3cw4h|xn--ogbpf8fl|xn--p1acf|xn--p1ai|xn--pbt977c|xn--pgbs0dh|xn--pssy2u|xn--q9jyb4c|xn--qcka1pmc|xn--qxam|xn--rhqv96g|xn--rovu88b|xn--rvc1e0am3e|xn--s9brj9c|xn--ses554g|xn--t60b56a|xn--tckwe|xn--tiq49xqyj|xn--unup4y|xn--vermgensberater-ctb|xn--vermgensberatung-pwb|xn--vhquv|xn--vuq861b|xn--w4r85el8fhu5dnra|xn--w4rs40l|xn--wgbh1c|xn--wgbl6a|xn--xhq521b|xn--xkc2al3hye2a|xn--xkc2dl3a5ee0h|xn--y9a3aq|xn--yfro4i67o|xn--ygbi2ammx|xn--zfr164b|xperia|xxx|xyz|yachts|yahoo|yamaxun|yandex|ye|yodobashi|yoga|yokohama|you|youtube|yt|yun|za|zappos|zara|zero|zip|zippo|zm|zone|zuerich|zw'.split('|'); // macro, see gulpfile.js
+
+/**
+	The scanner provides an interface that takes a string of text as input, and
+	outputs an array of tokens instances that can be used for easy URL parsing.
+
+	@module linkify
+	@submodule scanner
+	@main scanner
+*/
+
+var NUMBERS = '0123456789'.split('');
+var ALPHANUM = '0123456789abcdefghijklmnopqrstuvwxyz'.split('');
+var WHITESPACE = [' ', '\f', '\r', '\t', '\v', '\xA0', '\u1680', '\u180E']; // excluding line breaks
+
+var domainStates = []; // states that jump to DOMAIN on /[a-z0-9]/
+var makeState = function makeState(tokenClass) {
+	return new _state.CharacterState(tokenClass);
+};
+
+// Frequently used states
+var S_START = makeState();
+var S_NUM = makeState(_text.NUM);
+var S_DOMAIN = makeState(_text.DOMAIN);
+var S_DOMAIN_HYPHEN = makeState(); // domain followed by 1 or more hyphen characters
+var S_WS = makeState(_text.WS);
+
+// States for special URL symbols
+S_START.on('@', makeState(_text.AT)).on('.', makeState(_text.DOT)).on('+', makeState(_text.PLUS)).on('#', makeState(_text.POUND)).on('?', makeState(_text.QUERY)).on('/', makeState(_text.SLASH)).on('_', makeState(_text.UNDERSCORE)).on(':', makeState(_text.COLON)).on('{', makeState(_text.OPENBRACE)).on('[', makeState(_text.OPENBRACKET)).on('<', makeState(_text.OPENANGLEBRACKET)).on('(', makeState(_text.OPENPAREN)).on('}', makeState(_text.CLOSEBRACE)).on(']', makeState(_text.CLOSEBRACKET)).on('>', makeState(_text.CLOSEANGLEBRACKET)).on(')', makeState(_text.CLOSEPAREN)).on('&', makeState(_text.AMPERSAND)).on([',', ';', '!', '"', '\''], makeState(_text.PUNCTUATION));
+
+// Whitespace jumps
+// Tokens of only non-newline whitespace are arbitrarily long
+S_START.on('\n', makeState(_text.NL)).on(WHITESPACE, S_WS);
+
+// If any whitespace except newline, more whitespace!
+S_WS.on(WHITESPACE, S_WS);
+
+// Generates states for top-level domains
+// Note that this is most accurate when tlds are in alphabetical order
+for (var i = 0; i < tlds.length; i++) {
+	var newStates = (0, _state.stateify)(tlds[i], S_START, _text.TLD, _text.DOMAIN);
+	domainStates.push.apply(domainStates, newStates);
+}
+
+// Collect the states generated by different protocls
+var partialProtocolFileStates = (0, _state.stateify)('file', S_START, _text.DOMAIN, _text.DOMAIN);
+var partialProtocolFtpStates = (0, _state.stateify)('ftp', S_START, _text.DOMAIN, _text.DOMAIN);
+var partialProtocolHttpStates = (0, _state.stateify)('http', S_START, _text.DOMAIN, _text.DOMAIN);
+var partialProtocolMailtoStates = (0, _state.stateify)('mailto', S_START, _text.DOMAIN, _text.DOMAIN);
+
+// Add the states to the array of DOMAINeric states
+domainStates.push.apply(domainStates, partialProtocolFileStates);
+domainStates.push.apply(domainStates, partialProtocolFtpStates);
+domainStates.push.apply(domainStates, partialProtocolHttpStates);
+domainStates.push.apply(domainStates, partialProtocolMailtoStates);
+
+// Protocol states
+var S_PROTOCOL_FILE = partialProtocolFileStates.pop();
+var S_PROTOCOL_FTP = partialProtocolFtpStates.pop();
+var S_PROTOCOL_HTTP = partialProtocolHttpStates.pop();
+var S_MAILTO = partialProtocolMailtoStates.pop();
+var S_PROTOCOL_SECURE = makeState(_text.DOMAIN);
+var S_FULL_PROTOCOL = makeState(_text.PROTOCOL); // Full protocol ends with COLON
+var S_FULL_MAILTO = makeState(_text.MAILTO); // Mailto ends with COLON
+
+// Secure protocols (end with 's')
+S_PROTOCOL_FTP.on('s', S_PROTOCOL_SECURE).on(':', S_FULL_PROTOCOL);
+
+S_PROTOCOL_HTTP.on('s', S_PROTOCOL_SECURE).on(':', S_FULL_PROTOCOL);
+
+domainStates.push(S_PROTOCOL_SECURE);
+
+// Become protocol tokens after a COLON
+S_PROTOCOL_FILE.on(':', S_FULL_PROTOCOL);
+S_PROTOCOL_SECURE.on(':', S_FULL_PROTOCOL);
+S_MAILTO.on(':', S_FULL_MAILTO);
+
+// Localhost
+var partialLocalhostStates = (0, _state.stateify)('localhost', S_START, _text.LOCALHOST, _text.DOMAIN);
+domainStates.push.apply(domainStates, partialLocalhostStates);
+
+// Everything else
+// DOMAINs make more DOMAINs
+// Number and character transitions
+S_START.on(NUMBERS, S_NUM);
+S_NUM.on('-', S_DOMAIN_HYPHEN).on(NUMBERS, S_NUM).on(ALPHANUM, S_DOMAIN); // number becomes DOMAIN
+
+S_DOMAIN.on('-', S_DOMAIN_HYPHEN).on(ALPHANUM, S_DOMAIN);
+
+// All the generated states should have a jump to DOMAIN
+for (var _i = 0; _i < domainStates.length; _i++) {
+	domainStates[_i].on('-', S_DOMAIN_HYPHEN).on(ALPHANUM, S_DOMAIN);
+}
+
+S_DOMAIN_HYPHEN.on('-', S_DOMAIN_HYPHEN).on(NUMBERS, S_DOMAIN).on(ALPHANUM, S_DOMAIN);
+
+// Set default transition
+S_START.defaultTransition = makeState(_text.SYM);
+
+/**
+	Given a string, returns an array of TOKEN instances representing the
+	composition of that string.
+
+	@method run
+	@param {String} str Input string to scan
+	@return {Array} Array of TOKEN instances
+*/
+var run = function run(str) {
+
+	// The state machine only looks at lowercase strings.
+	// This selective `toLowerCase` is used because lowercasing the entire
+	// string causes the length and character position to vary in some in some
+	// non-English strings. This happens only on V8-based runtimes.
+	var lowerStr = str.replace(/[A-Z]/g, function (c) {
+		return c.toLowerCase();
+	});
+	var len = str.length;
+	var tokens = []; // return value
+
+	var cursor = 0;
+
+	// Tokenize the string
+	while (cursor < len) {
+		var state = S_START;
+		var nextState = null;
+		var tokenLength = 0;
+		var latestAccepting = null;
+		var sinceAccepts = -1;
+
+		while (cursor < len && (nextState = state.next(lowerStr[cursor]))) {
+			state = nextState;
+
+			// Keep track of the latest accepting state
+			if (state.accepts()) {
+				sinceAccepts = 0;
+				latestAccepting = state;
+			} else if (sinceAccepts >= 0) {
+				sinceAccepts++;
+			}
+
+			tokenLength++;
+			cursor++;
+		}
+
+		if (sinceAccepts < 0) {
+			continue;
+		} // Should never happen
+
+		// Roll back to the latest accepting state
+		cursor -= sinceAccepts;
+		tokenLength -= sinceAccepts;
+
+		// Get the class for the new token
+		var TOKEN = latestAccepting.emit(); // Current token class
+
+		// No more jumps, just make a new token
+		tokens.push(new TOKEN(str.substr(cursor - tokenLength, tokenLength)));
+	}
+
+	return tokens;
+};
+
+var start = S_START;
+exports.State = _state.CharacterState;
+exports.TOKENS = TOKENS;
+exports.run = run;
+exports.start = start;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/core/state.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/core/state.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.stateify = exports.TokenState = exports.CharacterState = undefined;
+
+var _class = __webpack_require__(/*! ../utils/class */ "./node_modules/linkifyjs/lib/linkify/utils/class.js");
+
+function createStateClass() {
+	return function (tClass) {
+		this.j = [];
+		this.T = tClass || null;
+	};
+}
+
+/**
+	A simple state machine that can emit token classes
+
+	The `j` property in this class refers to state jumps. It's a
+	multidimensional array where for each element:
+
+	* index [0] is a symbol or class of symbols to transition to.
+	* index [1] is a State instance which matches
+
+	The type of symbol will depend on the target implementation for this class.
+	In Linkify, we have a two-stage scanner. Each stage uses this state machine
+	but with a slighly different (polymorphic) implementation.
+
+	The `T` property refers to the token class.
+
+	TODO: Can the `on` and `next` methods be combined?
+
+	@class BaseState
+*/
+var BaseState = createStateClass();
+BaseState.prototype = {
+	defaultTransition: false,
+
+	/**
+ 	@method constructor
+ 	@param {Class} tClass Pass in the kind of token to emit if there are
+ 		no jumps after this state and the state is accepting.
+ */
+
+	/**
+ 	On the given symbol(s), this machine should go to the given state
+ 		@method on
+ 	@param {Array|Mixed} symbol
+ 	@param {BaseState} state Note that the type of this state should be the
+ 		same as the current instance (i.e., don't pass in a different
+ 		subclass)
+ */
+	on: function on(symbol, state) {
+		if (symbol instanceof Array) {
+			for (var i = 0; i < symbol.length; i++) {
+				this.j.push([symbol[i], state]);
+			}
+			return this;
+		}
+		this.j.push([symbol, state]);
+		return this;
+	},
+
+
+	/**
+ 	Given the next item, returns next state for that item
+ 	@method next
+ 	@param {Mixed} item Should be an instance of the symbols handled by
+ 		this particular machine.
+ 	@return {State} state Returns false if no jumps are available
+ */
+	next: function next(item) {
+		for (var i = 0; i < this.j.length; i++) {
+			var jump = this.j[i];
+			var symbol = jump[0]; // Next item to check for
+			var state = jump[1]; // State to jump to if items match
+
+			// compare item with symbol
+			if (this.test(item, symbol)) {
+				return state;
+			}
+		}
+
+		// Nowhere left to jump!
+		return this.defaultTransition;
+	},
+
+
+	/**
+ 	Does this state accept?
+ 	`true` only of `this.T` exists
+ 		@method accepts
+ 	@return {Boolean}
+ */
+	accepts: function accepts() {
+		return !!this.T;
+	},
+
+
+	/**
+ 	Determine whether a given item "symbolizes" the symbol, where symbol is
+ 	a class of items handled by this state machine.
+ 		This method should be overriden in extended classes.
+ 		@method test
+ 	@param {Mixed} item Does this item match the given symbol?
+ 	@param {Mixed} symbol
+ 	@return {Boolean}
+ */
+	test: function test(item, symbol) {
+		return item === symbol;
+	},
+
+
+	/**
+ 	Emit the token for this State (just return it in this case)
+ 	If this emits a token, this instance is an accepting state
+ 	@method emit
+ 	@return {Class} T
+ */
+	emit: function emit() {
+		return this.T;
+	}
+};
+
+/**
+	State machine for string-based input
+
+	@class CharacterState
+	@extends BaseState
+*/
+var CharacterState = (0, _class.inherits)(BaseState, createStateClass(), {
+	/**
+ 	Does the given character match the given character or regular
+ 	expression?
+ 		@method test
+ 	@param {String} char
+ 	@param {String|RegExp} charOrRegExp
+ 	@return {Boolean}
+ */
+	test: function test(character, charOrRegExp) {
+		return character === charOrRegExp || charOrRegExp instanceof RegExp && charOrRegExp.test(character);
+	}
+});
+
+/**
+	State machine for input in the form of TextTokens
+
+	@class TokenState
+	@extends BaseState
+*/
+var TokenState = (0, _class.inherits)(BaseState, createStateClass(), {
+
+	/**
+  * Similar to `on`, but returns the state the results in the transition from
+  * the given item
+  * @method jump
+  * @param {Mixed} item
+  * @param {Token} [token]
+  * @return state
+  */
+	jump: function jump(token) {
+		var tClass = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+		var state = this.next(new token('')); // dummy temp token
+		if (state === this.defaultTransition) {
+			// Make a new state!
+			state = new this.constructor(tClass);
+			this.on(token, state);
+		} else if (tClass) {
+			state.T = tClass;
+		}
+		return state;
+	},
+
+
+	/**
+ 	Is the given token an instance of the given token class?
+ 		@method test
+ 	@param {TextToken} token
+ 	@param {Class} tokenClass
+ 	@return {Boolean}
+ */
+	test: function test(token, tokenClass) {
+		return token instanceof tokenClass;
+	}
+});
+
+/**
+	Given a non-empty target string, generates states (if required) for each
+	consecutive substring of characters in str starting from the beginning of
+	the string. The final state will have a special value, as specified in
+	options. All other "in between" substrings will have a default end state.
+
+	This turns the state machine into a Trie-like data structure (rather than a
+	intelligently-designed DFA).
+
+	Note that I haven't really tried these with any strings other than
+	DOMAIN.
+
+	@param {String} str
+	@param {CharacterState} start State to jump from the first character
+	@param {Class} endToken Token class to emit when the given string has been
+		matched and no more jumps exist.
+	@param {Class} defaultToken "Filler token", or which token type to emit when
+		we don't have a full match
+	@return {Array} list of newly-created states
+*/
+function stateify(str, start, endToken, defaultToken) {
+	var i = 0,
+	    len = str.length,
+	    state = start,
+	    newStates = [],
+	    nextState = void 0;
+
+	// Find the next state without a jump to the next character
+	while (i < len && (nextState = state.next(str[i]))) {
+		state = nextState;
+		i++;
+	}
+
+	if (i >= len) {
+		return [];
+	} // no new tokens were added
+
+	while (i < len - 1) {
+		nextState = new CharacterState(defaultToken);
+		newStates.push(nextState);
+		state.on(str[i], nextState);
+		state = nextState;
+		i++;
+	}
+
+	nextState = new CharacterState(endToken);
+	newStates.push(nextState);
+	state.on(str[len - 1], nextState);
+
+	return newStates;
+}
+
+exports.CharacterState = CharacterState;
+exports.TokenState = TokenState;
+exports.stateify = stateify;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/core/tokens/create-token-class.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/core/tokens/create-token-class.js ***!
+  \******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+function createTokenClass() {
+	return function (value) {
+		if (value) {
+			this.v = value;
+		}
+	};
+}
+
+exports.createTokenClass = createTokenClass;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/core/tokens/multi.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/core/tokens/multi.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.URL = exports.TEXT = exports.NL = exports.EMAIL = exports.MAILTOEMAIL = exports.Base = undefined;
+
+var _createTokenClass = __webpack_require__(/*! ./create-token-class */ "./node_modules/linkifyjs/lib/linkify/core/tokens/create-token-class.js");
+
+var _class = __webpack_require__(/*! ../../utils/class */ "./node_modules/linkifyjs/lib/linkify/utils/class.js");
+
+var _text = __webpack_require__(/*! ./text */ "./node_modules/linkifyjs/lib/linkify/core/tokens/text.js");
+
+/******************************************************************************
+	Multi-Tokens
+	Tokens composed of arrays of TextTokens
+******************************************************************************/
+
+// Is the given token a valid domain token?
+// Should nums be included here?
+function isDomainToken(token) {
+	return token instanceof _text.DOMAIN || token instanceof _text.TLD;
+}
+
+/**
+	Abstract class used for manufacturing tokens of text tokens. That is rather
+	than the value for a token being a small string of text, it's value an array
+	of text tokens.
+
+	Used for grouping together URLs, emails, hashtags, and other potential
+	creations.
+
+	@class MultiToken
+	@abstract
+*/
+var MultiToken = (0, _createTokenClass.createTokenClass)();
+
+MultiToken.prototype = {
+	/**
+ 	String representing the type for this token
+ 	@property type
+ 	@default 'TOKEN'
+ */
+	type: 'token',
+
+	/**
+ 	Is this multitoken a link?
+ 	@property isLink
+ 	@default false
+ */
+	isLink: false,
+
+	/**
+ 	Return the string this token represents.
+ 	@method toString
+ 	@return {String}
+ */
+	toString: function toString() {
+		var result = [];
+		for (var i = 0; i < this.v.length; i++) {
+			result.push(this.v[i].toString());
+		}
+		return result.join('');
+	},
+
+
+	/**
+ 	What should the value for this token be in the `href` HTML attribute?
+ 	Returns the `.toString` value by default.
+ 		@method toHref
+ 	@return {String}
+ */
+	toHref: function toHref() {
+		return this.toString();
+	},
+
+
+	/**
+ 	Returns a hash of relevant values for this token, which includes keys
+ 	* type - Kind of token ('url', 'email', etc.)
+ 	* value - Original text
+ 	* href - The value that should be added to the anchor tag's href
+ 		attribute
+ 		@method toObject
+ 	@param {String} [protocol] `'http'` by default
+ 	@return {Object}
+ */
+	toObject: function toObject() {
+		var protocol = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'http';
+
+		return {
+			type: this.type,
+			value: this.toString(),
+			href: this.toHref(protocol)
+		};
+	}
+};
+
+/**
+	Represents an arbitrarily mailto email address with the prefix included
+	@class MAILTO
+	@extends MultiToken
+*/
+var MAILTOEMAIL = (0, _class.inherits)(MultiToken, (0, _createTokenClass.createTokenClass)(), {
+	type: 'email',
+	isLink: true
+});
+
+/**
+	Represents a list of tokens making up a valid email address
+	@class EMAIL
+	@extends MultiToken
+*/
+var EMAIL = (0, _class.inherits)(MultiToken, (0, _createTokenClass.createTokenClass)(), {
+	type: 'email',
+	isLink: true,
+	toHref: function toHref() {
+		return 'mailto:' + this.toString();
+	}
+});
+
+/**
+	Represents some plain text
+	@class TEXT
+	@extends MultiToken
+*/
+var TEXT = (0, _class.inherits)(MultiToken, (0, _createTokenClass.createTokenClass)(), { type: 'text' });
+
+/**
+	Multi-linebreak token - represents a line break
+	@class NL
+	@extends MultiToken
+*/
+var NL = (0, _class.inherits)(MultiToken, (0, _createTokenClass.createTokenClass)(), { type: 'nl' });
+
+/**
+	Represents a list of tokens making up a valid URL
+	@class URL
+	@extends MultiToken
+*/
+var URL = (0, _class.inherits)(MultiToken, (0, _createTokenClass.createTokenClass)(), {
+	type: 'url',
+	isLink: true,
+
+	/**
+ 	Lowercases relevant parts of the domain and adds the protocol if
+ 	required. Note that this will not escape unsafe HTML characters in the
+ 	URL.
+ 		@method href
+ 	@param {String} protocol
+ 	@return {String}
+ */
+	toHref: function toHref() {
+		var protocol = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'http';
+
+		var hasProtocol = false;
+		var hasSlashSlash = false;
+		var tokens = this.v;
+		var result = [];
+		var i = 0;
+
+		// Make the first part of the domain lowercase
+		// Lowercase protocol
+		while (tokens[i] instanceof _text.PROTOCOL) {
+			hasProtocol = true;
+			result.push(tokens[i].toString().toLowerCase());
+			i++;
+		}
+
+		// Skip slash-slash
+		while (tokens[i] instanceof _text.SLASH) {
+			hasSlashSlash = true;
+			result.push(tokens[i].toString());
+			i++;
+		}
+
+		// Lowercase all other characters in the domain
+		while (isDomainToken(tokens[i])) {
+			result.push(tokens[i].toString().toLowerCase());
+			i++;
+		}
+
+		// Leave all other characters as they were written
+		for (; i < tokens.length; i++) {
+			result.push(tokens[i].toString());
+		}
+
+		result = result.join('');
+
+		if (!(hasProtocol || hasSlashSlash)) {
+			result = protocol + '://' + result;
+		}
+
+		return result;
+	},
+	hasProtocol: function hasProtocol() {
+		return this.v[0] instanceof _text.PROTOCOL;
+	}
+});
+
+exports.Base = MultiToken;
+exports.MAILTOEMAIL = MAILTOEMAIL;
+exports.EMAIL = EMAIL;
+exports.NL = NL;
+exports.TEXT = TEXT;
+exports.URL = URL;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/core/tokens/text.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/core/tokens/text.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.AMPERSAND = exports.CLOSEPAREN = exports.CLOSEANGLEBRACKET = exports.CLOSEBRACKET = exports.CLOSEBRACE = exports.OPENPAREN = exports.OPENANGLEBRACKET = exports.OPENBRACKET = exports.OPENBRACE = exports.WS = exports.TLD = exports.SYM = exports.UNDERSCORE = exports.SLASH = exports.MAILTO = exports.PROTOCOL = exports.QUERY = exports.POUND = exports.PLUS = exports.NUM = exports.NL = exports.LOCALHOST = exports.PUNCTUATION = exports.DOT = exports.COLON = exports.AT = exports.DOMAIN = exports.Base = undefined;
+
+var _createTokenClass = __webpack_require__(/*! ./create-token-class */ "./node_modules/linkifyjs/lib/linkify/core/tokens/create-token-class.js");
+
+var _class = __webpack_require__(/*! ../../utils/class */ "./node_modules/linkifyjs/lib/linkify/utils/class.js");
+
+/******************************************************************************
+	Text Tokens
+	Tokens composed of strings
+******************************************************************************/
+
+/**
+	Abstract class used for manufacturing text tokens.
+	Pass in the value this token represents
+
+	@class TextToken
+	@abstract
+*/
+var TextToken = (0, _createTokenClass.createTokenClass)();
+TextToken.prototype = {
+	toString: function toString() {
+		return this.v + '';
+	}
+};
+
+function inheritsToken(value) {
+	var props = value ? { v: value } : {};
+	return (0, _class.inherits)(TextToken, (0, _createTokenClass.createTokenClass)(), props);
+}
+
+/**
+	A valid domain token
+	@class DOMAIN
+	@extends TextToken
+*/
+var DOMAIN = inheritsToken();
+
+/**
+	@class AT
+	@extends TextToken
+*/
+var AT = inheritsToken('@');
+
+/**
+	Represents a single colon `:` character
+
+	@class COLON
+	@extends TextToken
+*/
+var COLON = inheritsToken(':');
+
+/**
+	@class DOT
+	@extends TextToken
+*/
+var DOT = inheritsToken('.');
+
+/**
+	A character class that can surround the URL, but which the URL cannot begin
+	or end with. Does not include certain English punctuation like parentheses.
+
+	@class PUNCTUATION
+	@extends TextToken
+*/
+var PUNCTUATION = inheritsToken();
+
+/**
+	The word localhost (by itself)
+	@class LOCALHOST
+	@extends TextToken
+*/
+var LOCALHOST = inheritsToken();
+
+/**
+	Newline token
+	@class NL
+	@extends TextToken
+*/
+var NL = inheritsToken('\n');
+
+/**
+	@class NUM
+	@extends TextToken
+*/
+var NUM = inheritsToken();
+
+/**
+	@class PLUS
+	@extends TextToken
+*/
+var PLUS = inheritsToken('+');
+
+/**
+	@class POUND
+	@extends TextToken
+*/
+var POUND = inheritsToken('#');
+
+/**
+	Represents a web URL protocol. Supported types include
+
+	* `http:`
+	* `https:`
+	* `ftp:`
+	* `ftps:`
+
+	@class PROTOCOL
+	@extends TextToken
+*/
+var PROTOCOL = inheritsToken();
+
+/**
+	Represents the start of the email URI protocol
+
+	@class MAILTO
+	@extends TextToken
+*/
+var MAILTO = inheritsToken('mailto:');
+
+/**
+	@class QUERY
+	@extends TextToken
+*/
+var QUERY = inheritsToken('?');
+
+/**
+	@class SLASH
+	@extends TextToken
+*/
+var SLASH = inheritsToken('/');
+
+/**
+	@class UNDERSCORE
+	@extends TextToken
+*/
+var UNDERSCORE = inheritsToken('_');
+
+/**
+	One ore more non-whitespace symbol.
+	@class SYM
+	@extends TextToken
+*/
+var SYM = inheritsToken();
+
+/**
+	@class TLD
+	@extends TextToken
+*/
+var TLD = inheritsToken();
+
+/**
+	Represents a string of consecutive whitespace characters
+
+	@class WS
+	@extends TextToken
+*/
+var WS = inheritsToken();
+
+/**
+	Opening/closing bracket classes
+*/
+
+var OPENBRACE = inheritsToken('{');
+var OPENBRACKET = inheritsToken('[');
+var OPENANGLEBRACKET = inheritsToken('<');
+var OPENPAREN = inheritsToken('(');
+var CLOSEBRACE = inheritsToken('}');
+var CLOSEBRACKET = inheritsToken(']');
+var CLOSEANGLEBRACKET = inheritsToken('>');
+var CLOSEPAREN = inheritsToken(')');
+
+var AMPERSAND = inheritsToken('&');
+
+exports.Base = TextToken;
+exports.DOMAIN = DOMAIN;
+exports.AT = AT;
+exports.COLON = COLON;
+exports.DOT = DOT;
+exports.PUNCTUATION = PUNCTUATION;
+exports.LOCALHOST = LOCALHOST;
+exports.NL = NL;
+exports.NUM = NUM;
+exports.PLUS = PLUS;
+exports.POUND = POUND;
+exports.QUERY = QUERY;
+exports.PROTOCOL = PROTOCOL;
+exports.MAILTO = MAILTO;
+exports.SLASH = SLASH;
+exports.UNDERSCORE = UNDERSCORE;
+exports.SYM = SYM;
+exports.TLD = TLD;
+exports.WS = WS;
+exports.OPENBRACE = OPENBRACE;
+exports.OPENBRACKET = OPENBRACKET;
+exports.OPENANGLEBRACKET = OPENANGLEBRACKET;
+exports.OPENPAREN = OPENPAREN;
+exports.CLOSEBRACE = CLOSEBRACE;
+exports.CLOSEBRACKET = CLOSEBRACKET;
+exports.CLOSEANGLEBRACKET = CLOSEANGLEBRACKET;
+exports.CLOSEPAREN = CLOSEPAREN;
+exports.AMPERSAND = AMPERSAND;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/utils/class.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/utils/class.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.inherits = inherits;
+function inherits(parent, child) {
+	var props = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	var extended = Object.create(parent.prototype);
+	for (var p in props) {
+		extended[p] = props[p];
+	}
+	extended.constructor = child;
+	child.prototype = extended;
+	return child;
+}
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/linkify/utils/options.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/linkify/utils/options.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var defaults = {
+	defaultProtocol: 'http',
+	events: null,
+	format: noop,
+	formatHref: noop,
+	nl2br: false,
+	tagName: 'a',
+	target: typeToTarget,
+	validate: true,
+	ignoreTags: [],
+	attributes: null,
+	className: 'linkified' // Deprecated value - no default class will be provided in the future
+};
+
+exports.defaults = defaults;
+exports.Options = Options;
+exports.contains = contains;
+
+
+function Options(opts) {
+	opts = opts || {};
+
+	this.defaultProtocol = opts.hasOwnProperty('defaultProtocol') ? opts.defaultProtocol : defaults.defaultProtocol;
+	this.events = opts.hasOwnProperty('events') ? opts.events : defaults.events;
+	this.format = opts.hasOwnProperty('format') ? opts.format : defaults.format;
+	this.formatHref = opts.hasOwnProperty('formatHref') ? opts.formatHref : defaults.formatHref;
+	this.nl2br = opts.hasOwnProperty('nl2br') ? opts.nl2br : defaults.nl2br;
+	this.tagName = opts.hasOwnProperty('tagName') ? opts.tagName : defaults.tagName;
+	this.target = opts.hasOwnProperty('target') ? opts.target : defaults.target;
+	this.validate = opts.hasOwnProperty('validate') ? opts.validate : defaults.validate;
+	this.ignoreTags = [];
+
+	// linkAttributes and linkClass is deprecated
+	this.attributes = opts.attributes || opts.linkAttributes || defaults.attributes;
+	this.className = opts.hasOwnProperty('className') ? opts.className : opts.linkClass || defaults.className;
+
+	// Make all tags names upper case
+	var ignoredTags = opts.hasOwnProperty('ignoreTags') ? opts.ignoreTags : defaults.ignoreTags;
+	for (var i = 0; i < ignoredTags.length; i++) {
+		this.ignoreTags.push(ignoredTags[i].toUpperCase());
+	}
+}
+
+Options.prototype = {
+	/**
+  * Given the token, return all options for how it should be displayed
+  */
+	resolve: function resolve(token) {
+		var href = token.toHref(this.defaultProtocol);
+		return {
+			formatted: this.get('format', token.toString(), token),
+			formattedHref: this.get('formatHref', href, token),
+			tagName: this.get('tagName', href, token),
+			className: this.get('className', href, token),
+			target: this.get('target', href, token),
+			events: this.getObject('events', href, token),
+			attributes: this.getObject('attributes', href, token)
+		};
+	},
+
+
+	/**
+  * Returns true or false based on whether a token should be displayed as a
+  * link based on the user options. By default,
+  */
+	check: function check(token) {
+		return this.get('validate', token.toString(), token);
+	},
+
+
+	// Private methods
+
+	/**
+  * Resolve an option's value based on the value of the option and the given
+  * params.
+  * @param {String} key Name of option to use
+  * @param operator will be passed to the target option if it's method
+  * @param {MultiToken} token The token from linkify.tokenize
+  */
+	get: function get(key, operator, token) {
+		var optionValue = void 0,
+		    option = this[key];
+		if (!option) {
+			return option;
+		}
+
+		switch (typeof option === 'undefined' ? 'undefined' : _typeof(option)) {
+			case 'function':
+				return option(operator, token.type);
+			case 'object':
+				optionValue = option.hasOwnProperty(token.type) ? option[token.type] : defaults[key];
+				return typeof optionValue === 'function' ? optionValue(operator, token.type) : optionValue;
+		}
+
+		return option;
+	},
+	getObject: function getObject(key, operator, token) {
+		var option = this[key];
+		return typeof option === 'function' ? option(operator, token.type) : option;
+	}
+};
+
+/**
+ * Quick indexOf replacement for checking the ignoreTags option
+ */
+function contains(arr, value) {
+	for (var i = 0; i < arr.length; i++) {
+		if (arr[i] === value) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function noop(val) {
+	return val;
+}
+
+function typeToTarget(href, type) {
+	return type === 'url' ? '_blank' : null;
+}
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/simple-html-tokenizer.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/simple-html-tokenizer.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _html5NamedCharRefs = __webpack_require__(/*! ./simple-html-tokenizer/html5-named-char-refs */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/html5-named-char-refs.js");
+
+var _html5NamedCharRefs2 = _interopRequireDefault(_html5NamedCharRefs);
+
+var _entityParser = __webpack_require__(/*! ./simple-html-tokenizer/entity-parser */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/entity-parser.js");
+
+var _entityParser2 = _interopRequireDefault(_entityParser);
+
+var _eventedTokenizer = __webpack_require__(/*! ./simple-html-tokenizer/evented-tokenizer */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/evented-tokenizer.js");
+
+var _eventedTokenizer2 = _interopRequireDefault(_eventedTokenizer);
+
+var _tokenizer = __webpack_require__(/*! ./simple-html-tokenizer/tokenizer */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/tokenizer.js");
+
+var _tokenizer2 = _interopRequireDefault(_tokenizer);
+
+var _tokenize = __webpack_require__(/*! ./simple-html-tokenizer/tokenize */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/tokenize.js");
+
+var _tokenize2 = _interopRequireDefault(_tokenize);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var HTML5Tokenizer = {
+	HTML5NamedCharRefs: _html5NamedCharRefs2.default,
+	EntityParser: _entityParser2.default,
+	EventedTokenizer: _eventedTokenizer2.default,
+	Tokenizer: _tokenizer2.default,
+	tokenize: _tokenize2.default
+};
+
+exports.default = HTML5Tokenizer;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/simple-html-tokenizer/entity-parser.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/simple-html-tokenizer/entity-parser.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+function EntityParser(named) {
+  this.named = named;
+}
+
+var HEXCHARCODE = /^#[xX]([A-Fa-f0-9]+)$/;
+var CHARCODE = /^#([0-9]+)$/;
+var NAMED = /^([A-Za-z0-9]+)$/;
+
+EntityParser.prototype.parse = function (entity) {
+  if (!entity) {
+    return;
+  }
+  var matches = entity.match(HEXCHARCODE);
+  if (matches) {
+    return "&#x" + matches[1] + ";";
+  }
+  matches = entity.match(CHARCODE);
+  if (matches) {
+    return "&#" + matches[1] + ";";
+  }
+  matches = entity.match(NAMED);
+  if (matches) {
+    return this.named[matches[1]] || "&" + matches[1] + ";";
+  }
+};
+
+exports.default = EntityParser;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/simple-html-tokenizer/evented-tokenizer.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/simple-html-tokenizer/evented-tokenizer.js ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _utils = __webpack_require__(/*! ./utils */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/utils.js");
+
+function EventedTokenizer(delegate, entityParser) {
+  this.delegate = delegate;
+  this.entityParser = entityParser;
+
+  this.state = null;
+  this.input = null;
+
+  this.index = -1;
+  this.line = -1;
+  this.column = -1;
+  this.tagLine = -1;
+  this.tagColumn = -1;
+
+  this.reset();
+}
+
+EventedTokenizer.prototype = {
+  reset: function reset() {
+    this.state = 'beforeData';
+    this.input = '';
+
+    this.index = 0;
+    this.line = 1;
+    this.column = 0;
+
+    this.tagLine = -1;
+    this.tagColumn = -1;
+
+    this.delegate.reset();
+  },
+
+  tokenize: function tokenize(input) {
+    this.reset();
+    this.tokenizePart(input);
+    this.tokenizeEOF();
+  },
+
+  tokenizePart: function tokenizePart(input) {
+    this.input += (0, _utils.preprocessInput)(input);
+
+    while (this.index < this.input.length) {
+      this.states[this.state].call(this);
+    }
+  },
+
+  tokenizeEOF: function tokenizeEOF() {
+    this.flushData();
+  },
+
+  flushData: function flushData() {
+    if (this.state === 'data') {
+      this.delegate.finishData();
+      this.state = 'beforeData';
+    }
+  },
+
+  peek: function peek() {
+    return this.input.charAt(this.index);
+  },
+
+  consume: function consume() {
+    var char = this.peek();
+
+    this.index++;
+
+    if (char === "\n") {
+      this.line++;
+      this.column = 0;
+    } else {
+      this.column++;
+    }
+
+    return char;
+  },
+
+  consumeCharRef: function consumeCharRef() {
+    var endIndex = this.input.indexOf(';', this.index);
+    if (endIndex === -1) {
+      return;
+    }
+    var entity = this.input.slice(this.index, endIndex);
+    var chars = this.entityParser.parse(entity);
+    if (chars) {
+      var count = entity.length;
+      // consume the entity chars
+      while (count) {
+        this.consume();
+        count--;
+      }
+      // consume the `;`
+      this.consume();
+
+      return chars;
+    }
+  },
+
+  markTagStart: function markTagStart() {
+    // these properties to be removed in next major bump
+    this.tagLine = this.line;
+    this.tagColumn = this.column;
+
+    if (this.delegate.tagOpen) {
+      this.delegate.tagOpen();
+    }
+  },
+
+  states: {
+    beforeData: function beforeData() {
+      var char = this.peek();
+
+      if (char === "<") {
+        this.state = 'tagOpen';
+        this.markTagStart();
+        this.consume();
+      } else {
+        this.state = 'data';
+        this.delegate.beginData();
+      }
+    },
+
+    data: function data() {
+      var char = this.peek();
+
+      if (char === "<") {
+        this.delegate.finishData();
+        this.state = 'tagOpen';
+        this.markTagStart();
+        this.consume();
+      } else if (char === "&") {
+        this.consume();
+        this.delegate.appendToData(this.consumeCharRef() || "&");
+      } else {
+        this.consume();
+        this.delegate.appendToData(char);
+      }
+    },
+
+    tagOpen: function tagOpen() {
+      var char = this.consume();
+
+      if (char === "!") {
+        this.state = 'markupDeclaration';
+      } else if (char === "/") {
+        this.state = 'endTagOpen';
+      } else if ((0, _utils.isAlpha)(char)) {
+        this.state = 'tagName';
+        this.delegate.beginStartTag();
+        this.delegate.appendToTagName(char.toLowerCase());
+      }
+    },
+
+    markupDeclaration: function markupDeclaration() {
+      var char = this.consume();
+
+      if (char === "-" && this.input.charAt(this.index) === "-") {
+        this.consume();
+        this.state = 'commentStart';
+        this.delegate.beginComment();
+      }
+    },
+
+    commentStart: function commentStart() {
+      var char = this.consume();
+
+      if (char === "-") {
+        this.state = 'commentStartDash';
+      } else if (char === ">") {
+        this.delegate.finishComment();
+        this.state = 'beforeData';
+      } else {
+        this.delegate.appendToCommentData(char);
+        this.state = 'comment';
+      }
+    },
+
+    commentStartDash: function commentStartDash() {
+      var char = this.consume();
+
+      if (char === "-") {
+        this.state = 'commentEnd';
+      } else if (char === ">") {
+        this.delegate.finishComment();
+        this.state = 'beforeData';
+      } else {
+        this.delegate.appendToCommentData("-");
+        this.state = 'comment';
+      }
+    },
+
+    comment: function comment() {
+      var char = this.consume();
+
+      if (char === "-") {
+        this.state = 'commentEndDash';
+      } else {
+        this.delegate.appendToCommentData(char);
+      }
+    },
+
+    commentEndDash: function commentEndDash() {
+      var char = this.consume();
+
+      if (char === "-") {
+        this.state = 'commentEnd';
+      } else {
+        this.delegate.appendToCommentData("-" + char);
+        this.state = 'comment';
+      }
+    },
+
+    commentEnd: function commentEnd() {
+      var char = this.consume();
+
+      if (char === ">") {
+        this.delegate.finishComment();
+        this.state = 'beforeData';
+      } else {
+        this.delegate.appendToCommentData("--" + char);
+        this.state = 'comment';
+      }
+    },
+
+    tagName: function tagName() {
+      var char = this.consume();
+
+      if ((0, _utils.isSpace)(char)) {
+        this.state = 'beforeAttributeName';
+      } else if (char === "/") {
+        this.state = 'selfClosingStartTag';
+      } else if (char === ">") {
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.delegate.appendToTagName(char);
+      }
+    },
+
+    beforeAttributeName: function beforeAttributeName() {
+      var char = this.peek();
+
+      if ((0, _utils.isSpace)(char)) {
+        this.consume();
+        return;
+      } else if (char === "/") {
+        this.state = 'selfClosingStartTag';
+        this.consume();
+      } else if (char === ">") {
+        this.consume();
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.state = 'attributeName';
+        this.delegate.beginAttribute();
+        this.consume();
+        this.delegate.appendToAttributeName(char);
+      }
+    },
+
+    attributeName: function attributeName() {
+      var char = this.peek();
+
+      if ((0, _utils.isSpace)(char)) {
+        this.state = 'afterAttributeName';
+        this.consume();
+      } else if (char === "/") {
+        this.delegate.beginAttributeValue(false);
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.state = 'selfClosingStartTag';
+      } else if (char === "=") {
+        this.state = 'beforeAttributeValue';
+        this.consume();
+      } else if (char === ">") {
+        this.delegate.beginAttributeValue(false);
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.consume();
+        this.delegate.appendToAttributeName(char);
+      }
+    },
+
+    afterAttributeName: function afterAttributeName() {
+      var char = this.peek();
+
+      if ((0, _utils.isSpace)(char)) {
+        this.consume();
+        return;
+      } else if (char === "/") {
+        this.delegate.beginAttributeValue(false);
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.state = 'selfClosingStartTag';
+      } else if (char === "=") {
+        this.consume();
+        this.state = 'beforeAttributeValue';
+      } else if (char === ">") {
+        this.delegate.beginAttributeValue(false);
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.delegate.beginAttributeValue(false);
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.state = 'attributeName';
+        this.delegate.beginAttribute();
+        this.delegate.appendToAttributeName(char);
+      }
+    },
+
+    beforeAttributeValue: function beforeAttributeValue() {
+      var char = this.peek();
+
+      if ((0, _utils.isSpace)(char)) {
+        this.consume();
+      } else if (char === '"') {
+        this.state = 'attributeValueDoubleQuoted';
+        this.delegate.beginAttributeValue(true);
+        this.consume();
+      } else if (char === "'") {
+        this.state = 'attributeValueSingleQuoted';
+        this.delegate.beginAttributeValue(true);
+        this.consume();
+      } else if (char === ">") {
+        this.delegate.beginAttributeValue(false);
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.state = 'attributeValueUnquoted';
+        this.delegate.beginAttributeValue(false);
+        this.consume();
+        this.delegate.appendToAttributeValue(char);
+      }
+    },
+
+    attributeValueDoubleQuoted: function attributeValueDoubleQuoted() {
+      var char = this.consume();
+
+      if (char === '"') {
+        this.delegate.finishAttributeValue();
+        this.state = 'afterAttributeValueQuoted';
+      } else if (char === "&") {
+        this.delegate.appendToAttributeValue(this.consumeCharRef('"') || "&");
+      } else {
+        this.delegate.appendToAttributeValue(char);
+      }
+    },
+
+    attributeValueSingleQuoted: function attributeValueSingleQuoted() {
+      var char = this.consume();
+
+      if (char === "'") {
+        this.delegate.finishAttributeValue();
+        this.state = 'afterAttributeValueQuoted';
+      } else if (char === "&") {
+        this.delegate.appendToAttributeValue(this.consumeCharRef("'") || "&");
+      } else {
+        this.delegate.appendToAttributeValue(char);
+      }
+    },
+
+    attributeValueUnquoted: function attributeValueUnquoted() {
+      var char = this.peek();
+
+      if ((0, _utils.isSpace)(char)) {
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.state = 'beforeAttributeName';
+      } else if (char === "&") {
+        this.consume();
+        this.delegate.appendToAttributeValue(this.consumeCharRef(">") || "&");
+      } else if (char === ">") {
+        this.delegate.finishAttributeValue();
+        this.consume();
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.consume();
+        this.delegate.appendToAttributeValue(char);
+      }
+    },
+
+    afterAttributeValueQuoted: function afterAttributeValueQuoted() {
+      var char = this.peek();
+
+      if ((0, _utils.isSpace)(char)) {
+        this.consume();
+        this.state = 'beforeAttributeName';
+      } else if (char === "/") {
+        this.consume();
+        this.state = 'selfClosingStartTag';
+      } else if (char === ">") {
+        this.consume();
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.state = 'beforeAttributeName';
+      }
+    },
+
+    selfClosingStartTag: function selfClosingStartTag() {
+      var char = this.peek();
+
+      if (char === ">") {
+        this.consume();
+        this.delegate.markTagAsSelfClosing();
+        this.delegate.finishTag();
+        this.state = 'beforeData';
+      } else {
+        this.state = 'beforeAttributeName';
+      }
+    },
+
+    endTagOpen: function endTagOpen() {
+      var char = this.consume();
+
+      if ((0, _utils.isAlpha)(char)) {
+        this.state = 'tagName';
+        this.delegate.beginEndTag();
+        this.delegate.appendToTagName(char.toLowerCase());
+      }
+    }
+  }
+};
+
+exports.default = EventedTokenizer;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/simple-html-tokenizer/html5-named-char-refs.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/simple-html-tokenizer/html5-named-char-refs.js ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+var HTML5NamedCharRefs = {
+    // We don't need the complete named character reference because linkifyHtml
+    // does not modify the escape sequences. We do need &nbsp; so that
+    // whitespace is parsed properly. Other types of whitespace should already
+    // be accounted for
+    nbsp: "\xA0"
+};
+exports.default = HTML5NamedCharRefs;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/simple-html-tokenizer/tokenize.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/simple-html-tokenizer/tokenize.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.default = tokenize;
+
+var _tokenizer = __webpack_require__(/*! ./tokenizer */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/tokenizer.js");
+
+var _tokenizer2 = _interopRequireDefault(_tokenizer);
+
+var _entityParser = __webpack_require__(/*! ./entity-parser */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/entity-parser.js");
+
+var _entityParser2 = _interopRequireDefault(_entityParser);
+
+var _html5NamedCharRefs = __webpack_require__(/*! ./html5-named-char-refs */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/html5-named-char-refs.js");
+
+var _html5NamedCharRefs2 = _interopRequireDefault(_html5NamedCharRefs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function tokenize(input, options) {
+  var tokenizer = new _tokenizer2.default(new _entityParser2.default(_html5NamedCharRefs2.default), options);
+  return tokenizer.tokenize(input);
+}
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/simple-html-tokenizer/tokenizer.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/simple-html-tokenizer/tokenizer.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _eventedTokenizer = __webpack_require__(/*! ./evented-tokenizer */ "./node_modules/linkifyjs/lib/simple-html-tokenizer/evented-tokenizer.js");
+
+var _eventedTokenizer2 = _interopRequireDefault(_eventedTokenizer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function Tokenizer(entityParser, options) {
+  this.token = null;
+  this.startLine = 1;
+  this.startColumn = 0;
+  this.options = options || {};
+  this.tokenizer = new _eventedTokenizer2.default(this, entityParser);
+}
+
+Tokenizer.prototype = {
+  tokenize: function tokenize(input) {
+    this.tokens = [];
+    this.tokenizer.tokenize(input);
+    return this.tokens;
+  },
+
+  tokenizePart: function tokenizePart(input) {
+    this.tokens = [];
+    this.tokenizer.tokenizePart(input);
+    return this.tokens;
+  },
+
+  tokenizeEOF: function tokenizeEOF() {
+    this.tokens = [];
+    this.tokenizer.tokenizeEOF();
+    return this.tokens[0];
+  },
+
+  reset: function reset() {
+    this.token = null;
+    this.startLine = 1;
+    this.startColumn = 0;
+  },
+
+  addLocInfo: function addLocInfo() {
+    if (this.options.loc) {
+      this.token.loc = {
+        start: {
+          line: this.startLine,
+          column: this.startColumn
+        },
+        end: {
+          line: this.tokenizer.line,
+          column: this.tokenizer.column
+        }
+      };
+    }
+    this.startLine = this.tokenizer.line;
+    this.startColumn = this.tokenizer.column;
+  },
+
+  // Data
+
+  beginData: function beginData() {
+    this.token = {
+      type: 'Chars',
+      chars: ''
+    };
+    this.tokens.push(this.token);
+  },
+
+  appendToData: function appendToData(char) {
+    this.token.chars += char;
+  },
+
+  finishData: function finishData() {
+    this.addLocInfo();
+  },
+
+  // Comment
+
+  beginComment: function beginComment() {
+    this.token = {
+      type: 'Comment',
+      chars: ''
+    };
+    this.tokens.push(this.token);
+  },
+
+  appendToCommentData: function appendToCommentData(char) {
+    this.token.chars += char;
+  },
+
+  finishComment: function finishComment() {
+    this.addLocInfo();
+  },
+
+  // Tags - basic
+
+  beginStartTag: function beginStartTag() {
+    this.token = {
+      type: 'StartTag',
+      tagName: '',
+      attributes: [],
+      selfClosing: false
+    };
+    this.tokens.push(this.token);
+  },
+
+  beginEndTag: function beginEndTag() {
+    this.token = {
+      type: 'EndTag',
+      tagName: ''
+    };
+    this.tokens.push(this.token);
+  },
+
+  finishTag: function finishTag() {
+    this.addLocInfo();
+  },
+
+  markTagAsSelfClosing: function markTagAsSelfClosing() {
+    this.token.selfClosing = true;
+  },
+
+  // Tags - name
+
+  appendToTagName: function appendToTagName(char) {
+    this.token.tagName += char;
+  },
+
+  // Tags - attributes
+
+  beginAttribute: function beginAttribute() {
+    this._currentAttribute = ["", "", null];
+    this.token.attributes.push(this._currentAttribute);
+  },
+
+  appendToAttributeName: function appendToAttributeName(char) {
+    this._currentAttribute[0] += char;
+  },
+
+  beginAttributeValue: function beginAttributeValue(isQuoted) {
+    this._currentAttribute[2] = isQuoted;
+  },
+
+  appendToAttributeValue: function appendToAttributeValue(char) {
+    this._currentAttribute[1] = this._currentAttribute[1] || "";
+    this._currentAttribute[1] += char;
+  },
+
+  finishAttributeValue: function finishAttributeValue() {}
+};
+
+exports.default = Tokenizer;
+
+/***/ }),
+
+/***/ "./node_modules/linkifyjs/lib/simple-html-tokenizer/utils.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/linkifyjs/lib/simple-html-tokenizer/utils.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.isSpace = isSpace;
+exports.isAlpha = isAlpha;
+exports.preprocessInput = preprocessInput;
+var WSP = /[\t\n\f ]/;
+var ALPHA = /[A-Za-z]/;
+var CRLF = /\r\n?/g;
+
+function isSpace(char) {
+  return WSP.test(char);
+}
+
+function isAlpha(char) {
+  return ALPHA.test(char);
+}
+
+function preprocessInput(input) {
+  return input.replace(CRLF, "\n");
+}
+
+/***/ }),
+
 /***/ "./node_modules/lodash/lodash.js":
 /*!***************************************!*\
   !*** ./node_modules/lodash/lodash.js ***!
@@ -88295,6 +90894,771 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/util/node_modules/inherits/inherits_browser.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/util/node_modules/inherits/inherits_browser.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/util/support/isBufferBrowser.js":
+/*!******************************************************!*\
+  !*** ./node_modules/util/support/isBufferBrowser.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function isBuffer(arg) {
+  return arg && typeof arg === 'object'
+    && typeof arg.copy === 'function'
+    && typeof arg.fill === 'function'
+    && typeof arg.readUInt8 === 'function';
+}
+
+/***/ }),
+
+/***/ "./node_modules/util/util.js":
+/*!***********************************!*\
+  !*** ./node_modules/util/util.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors ||
+  function getOwnPropertyDescriptors(obj) {
+    var keys = Object.keys(obj);
+    var descriptors = {};
+    for (var i = 0; i < keys.length; i++) {
+      descriptors[keys[i]] = Object.getOwnPropertyDescriptor(obj, keys[i]);
+    }
+    return descriptors;
+  };
+
+var formatRegExp = /%[sdj%]/g;
+exports.format = function(f) {
+  if (!isString(f)) {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(inspect(arguments[i]));
+    }
+    return objects.join(' ');
+  }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j':
+        try {
+          return JSON.stringify(args[i++]);
+        } catch (_) {
+          return '[Circular]';
+        }
+      default:
+        return x;
+    }
+  });
+  for (var x = args[i]; i < len; x = args[++i]) {
+    if (isNull(x) || !isObject(x)) {
+      str += ' ' + x;
+    } else {
+      str += ' ' + inspect(x);
+    }
+  }
+  return str;
+};
+
+
+// Mark that a method should not be used.
+// Returns a modified function which warns once by default.
+// If --no-deprecation is set, then it is a no-op.
+exports.deprecate = function(fn, msg) {
+  if (typeof process !== 'undefined' && process.noDeprecation === true) {
+    return fn;
+  }
+
+  // Allow for deprecating things in the process of starting up.
+  if (typeof process === 'undefined') {
+    return function() {
+      return exports.deprecate(fn, msg).apply(this, arguments);
+    };
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (process.throwDeprecation) {
+        throw new Error(msg);
+      } else if (process.traceDeprecation) {
+        console.trace(msg);
+      } else {
+        console.error(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+};
+
+
+var debugs = {};
+var debugEnviron;
+exports.debuglog = function(set) {
+  if (isUndefined(debugEnviron))
+    debugEnviron = process.env.NODE_DEBUG || '';
+  set = set.toUpperCase();
+  if (!debugs[set]) {
+    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+      var pid = process.pid;
+      debugs[set] = function() {
+        var msg = exports.format.apply(exports, arguments);
+        console.error('%s %d: %s', set, pid, msg);
+      };
+    } else {
+      debugs[set] = function() {};
+    }
+  }
+  return debugs[set];
+};
+
+
+/**
+ * Echos the value of a value. Trys to print the value out
+ * in the best way possible given the different types.
+ *
+ * @param {Object} obj The object to print out.
+ * @param {Object} opts Optional options object that alters the output.
+ */
+/* legacy: obj, showHidden, depth, colors*/
+function inspect(obj, opts) {
+  // default options
+  var ctx = {
+    seen: [],
+    stylize: stylizeNoColor
+  };
+  // legacy...
+  if (arguments.length >= 3) ctx.depth = arguments[2];
+  if (arguments.length >= 4) ctx.colors = arguments[3];
+  if (isBoolean(opts)) {
+    // legacy...
+    ctx.showHidden = opts;
+  } else if (opts) {
+    // got an "options" object
+    exports._extend(ctx, opts);
+  }
+  // set default options
+  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+  if (isUndefined(ctx.depth)) ctx.depth = 2;
+  if (isUndefined(ctx.colors)) ctx.colors = false;
+  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+  if (ctx.colors) ctx.stylize = stylizeWithColor;
+  return formatValue(ctx, obj, ctx.depth);
+}
+exports.inspect = inspect;
+
+
+// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+inspect.colors = {
+  'bold' : [1, 22],
+  'italic' : [3, 23],
+  'underline' : [4, 24],
+  'inverse' : [7, 27],
+  'white' : [37, 39],
+  'grey' : [90, 39],
+  'black' : [30, 39],
+  'blue' : [34, 39],
+  'cyan' : [36, 39],
+  'green' : [32, 39],
+  'magenta' : [35, 39],
+  'red' : [31, 39],
+  'yellow' : [33, 39]
+};
+
+// Don't use 'blue' not visible on cmd.exe
+inspect.styles = {
+  'special': 'cyan',
+  'number': 'yellow',
+  'boolean': 'yellow',
+  'undefined': 'grey',
+  'null': 'bold',
+  'string': 'green',
+  'date': 'magenta',
+  // "name": intentionally not styling
+  'regexp': 'red'
+};
+
+
+function stylizeWithColor(str, styleType) {
+  var style = inspect.styles[styleType];
+
+  if (style) {
+    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+           '\u001b[' + inspect.colors[style][1] + 'm';
+  } else {
+    return str;
+  }
+}
+
+
+function stylizeNoColor(str, styleType) {
+  return str;
+}
+
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(val, idx) {
+    hash[val] = true;
+  });
+
+  return hash;
+}
+
+
+function formatValue(ctx, value, recurseTimes) {
+  // Provide a hook for user-specified inspect functions.
+  // Check that value is an object with an inspect function on it
+  if (ctx.customInspect &&
+      value &&
+      isFunction(value.inspect) &&
+      // Filter out the util module, it's inspect function is special
+      value.inspect !== exports.inspect &&
+      // Also filter out any prototype objects using the circular check.
+      !(value.constructor && value.constructor.prototype === value)) {
+    var ret = value.inspect(recurseTimes, ctx);
+    if (!isString(ret)) {
+      ret = formatValue(ctx, ret, recurseTimes);
+    }
+    return ret;
+  }
+
+  // Primitive types cannot have properties
+  var primitive = formatPrimitive(ctx, value);
+  if (primitive) {
+    return primitive;
+  }
+
+  // Look up the keys of the object.
+  var keys = Object.keys(value);
+  var visibleKeys = arrayToHash(keys);
+
+  if (ctx.showHidden) {
+    keys = Object.getOwnPropertyNames(value);
+  }
+
+  // IE doesn't make error fields non-enumerable
+  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  if (isError(value)
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    return formatError(value);
+  }
+
+  // Some type of object without properties can be shortcutted.
+  if (keys.length === 0) {
+    if (isFunction(value)) {
+      var name = value.name ? ': ' + value.name : '';
+      return ctx.stylize('[Function' + name + ']', 'special');
+    }
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    }
+    if (isDate(value)) {
+      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+    }
+    if (isError(value)) {
+      return formatError(value);
+    }
+  }
+
+  var base = '', array = false, braces = ['{', '}'];
+
+  // Make Array say that they are Array
+  if (isArray(value)) {
+    array = true;
+    braces = ['[', ']'];
+  }
+
+  // Make functions say that they are functions
+  if (isFunction(value)) {
+    var n = value.name ? ': ' + value.name : '';
+    base = ' [Function' + n + ']';
+  }
+
+  // Make RegExps say that they are RegExps
+  if (isRegExp(value)) {
+    base = ' ' + RegExp.prototype.toString.call(value);
+  }
+
+  // Make dates with properties first say the date
+  if (isDate(value)) {
+    base = ' ' + Date.prototype.toUTCString.call(value);
+  }
+
+  // Make error with message first say the error
+  if (isError(value)) {
+    base = ' ' + formatError(value);
+  }
+
+  if (keys.length === 0 && (!array || value.length == 0)) {
+    return braces[0] + base + braces[1];
+  }
+
+  if (recurseTimes < 0) {
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    } else {
+      return ctx.stylize('[Object]', 'special');
+    }
+  }
+
+  ctx.seen.push(value);
+
+  var output;
+  if (array) {
+    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else {
+    output = keys.map(function(key) {
+      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+    });
+  }
+
+  ctx.seen.pop();
+
+  return reduceToSingleString(output, base, braces);
+}
+
+
+function formatPrimitive(ctx, value) {
+  if (isUndefined(value))
+    return ctx.stylize('undefined', 'undefined');
+  if (isString(value)) {
+    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+                                             .replace(/'/g, "\\'")
+                                             .replace(/\\"/g, '"') + '\'';
+    return ctx.stylize(simple, 'string');
+  }
+  if (isNumber(value))
+    return ctx.stylize('' + value, 'number');
+  if (isBoolean(value))
+    return ctx.stylize('' + value, 'boolean');
+  // For some reason typeof null is "object", so special case here.
+  if (isNull(value))
+    return ctx.stylize('null', 'null');
+}
+
+
+function formatError(value) {
+  return '[' + Error.prototype.toString.call(value) + ']';
+}
+
+
+function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+  var output = [];
+  for (var i = 0, l = value.length; i < l; ++i) {
+    if (hasOwnProperty(value, String(i))) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          String(i), true));
+    } else {
+      output.push('');
+    }
+  }
+  keys.forEach(function(key) {
+    if (!key.match(/^\d+$/)) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          key, true));
+    }
+  });
+  return output;
+}
+
+
+function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+  var name, str, desc;
+  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  if (desc.get) {
+    if (desc.set) {
+      str = ctx.stylize('[Getter/Setter]', 'special');
+    } else {
+      str = ctx.stylize('[Getter]', 'special');
+    }
+  } else {
+    if (desc.set) {
+      str = ctx.stylize('[Setter]', 'special');
+    }
+  }
+  if (!hasOwnProperty(visibleKeys, key)) {
+    name = '[' + key + ']';
+  }
+  if (!str) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
+      if (isNull(recurseTimes)) {
+        str = formatValue(ctx, desc.value, null);
+      } else {
+        str = formatValue(ctx, desc.value, recurseTimes - 1);
+      }
+      if (str.indexOf('\n') > -1) {
+        if (array) {
+          str = str.split('\n').map(function(line) {
+            return '  ' + line;
+          }).join('\n').substr(2);
+        } else {
+          str = '\n' + str.split('\n').map(function(line) {
+            return '   ' + line;
+          }).join('\n');
+        }
+      }
+    } else {
+      str = ctx.stylize('[Circular]', 'special');
+    }
+  }
+  if (isUndefined(name)) {
+    if (array && key.match(/^\d+$/)) {
+      return str;
+    }
+    name = JSON.stringify('' + key);
+    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+      name = name.substr(1, name.length - 2);
+      name = ctx.stylize(name, 'name');
+    } else {
+      name = name.replace(/'/g, "\\'")
+                 .replace(/\\"/g, '"')
+                 .replace(/(^"|"$)/g, "'");
+      name = ctx.stylize(name, 'string');
+    }
+  }
+
+  return name + ': ' + str;
+}
+
+
+function reduceToSingleString(output, base, braces) {
+  var numLinesEst = 0;
+  var length = output.reduce(function(prev, cur) {
+    numLinesEst++;
+    if (cur.indexOf('\n') >= 0) numLinesEst++;
+    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+  }, 0);
+
+  if (length > 60) {
+    return braces[0] +
+           (base === '' ? '' : base + '\n ') +
+           ' ' +
+           output.join(',\n  ') +
+           ' ' +
+           braces[1];
+  }
+
+  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+}
+
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray(ar) {
+  return Array.isArray(ar);
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = __webpack_require__(/*! ./support/isBuffer */ "./node_modules/util/support/isBufferBrowser.js");
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+
+function pad(n) {
+  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+}
+
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+              'Oct', 'Nov', 'Dec'];
+
+// 26 Feb 16:19:34
+function timestamp() {
+  var d = new Date();
+  var time = [pad(d.getHours()),
+              pad(d.getMinutes()),
+              pad(d.getSeconds())].join(':');
+  return [d.getDate(), months[d.getMonth()], time].join(' ');
+}
+
+
+// log is just a thin wrapper to console.log that prepends a timestamp
+exports.log = function() {
+  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+};
+
+
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * The Function.prototype.inherits from lang.js rewritten as a standalone
+ * function (not on Function.prototype). NOTE: If this file is to be loaded
+ * during bootstrapping this function needs to be rewritten using some native
+ * functions as prototype setup using normal JavaScript does not work as
+ * expected during bootstrapping (see mirror.js in r114903).
+ *
+ * @param {function} ctor Constructor function which needs to inherit the
+ *     prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+exports.inherits = __webpack_require__(/*! inherits */ "./node_modules/util/node_modules/inherits/inherits_browser.js");
+
+exports._extend = function(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || !isObject(add)) return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+};
+
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+var kCustomPromisifiedSymbol = typeof Symbol !== 'undefined' ? Symbol('util.promisify.custom') : undefined;
+
+exports.promisify = function promisify(original) {
+  if (typeof original !== 'function')
+    throw new TypeError('The "original" argument must be of type Function');
+
+  if (kCustomPromisifiedSymbol && original[kCustomPromisifiedSymbol]) {
+    var fn = original[kCustomPromisifiedSymbol];
+    if (typeof fn !== 'function') {
+      throw new TypeError('The "util.promisify.custom" argument must be of type Function');
+    }
+    Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+      value: fn, enumerable: false, writable: false, configurable: true
+    });
+    return fn;
+  }
+
+  function fn() {
+    var promiseResolve, promiseReject;
+    var promise = new Promise(function (resolve, reject) {
+      promiseResolve = resolve;
+      promiseReject = reject;
+    });
+
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    args.push(function (err, value) {
+      if (err) {
+        promiseReject(err);
+      } else {
+        promiseResolve(value);
+      }
+    });
+
+    try {
+      original.apply(this, args);
+    } catch (err) {
+      promiseReject(err);
+    }
+
+    return promise;
+  }
+
+  Object.setPrototypeOf(fn, Object.getPrototypeOf(original));
+
+  if (kCustomPromisifiedSymbol) Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+    value: fn, enumerable: false, writable: false, configurable: true
+  });
+  return Object.defineProperties(
+    fn,
+    getOwnPropertyDescriptors(original)
+  );
+}
+
+exports.promisify.custom = kCustomPromisifiedSymbol
+
+function callbackifyOnRejected(reason, cb) {
+  // `!reason` guard inspired by bluebird (Ref: https://goo.gl/t5IS6M).
+  // Because `null` is a special error value in callbacks which means "no error
+  // occurred", we error-wrap so the callback consumer can distinguish between
+  // "the promise rejected with null" or "the promise fulfilled with undefined".
+  if (!reason) {
+    var newReason = new Error('Promise was rejected with a falsy value');
+    newReason.reason = reason;
+    reason = newReason;
+  }
+  return cb(reason);
+}
+
+function callbackify(original) {
+  if (typeof original !== 'function') {
+    throw new TypeError('The "original" argument must be of type Function');
+  }
+
+  // We DO NOT return the promise as it gives the user a false sense that
+  // the promise is actually somehow related to the callback's execution
+  // and that the callback throwing will reject the promise.
+  function callbackified() {
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+
+    var maybeCb = args.pop();
+    if (typeof maybeCb !== 'function') {
+      throw new TypeError('The last argument must be of type Function');
+    }
+    var self = this;
+    var cb = function() {
+      return maybeCb.apply(self, arguments);
+    };
+    // In true node style we process the callback on `nextTick` with all the
+    // implications (stack, `uncaughtException`, `async_hooks`)
+    original.apply(this, args)
+      .then(function(ret) { process.nextTick(cb, null, ret) },
+            function(rej) { process.nextTick(callbackifyOnRejected, rej, cb) });
+  }
+
+  Object.setPrototypeOf(callbackified, Object.getPrototypeOf(original));
+  Object.defineProperties(callbackified,
+                          getOwnPropertyDescriptors(original));
+  return callbackified;
+}
+exports.callbackify = callbackify;
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
 /***/ "./node_modules/vue-functional-data-merge/dist/lib.esm.js":
 /*!****************************************************************!*\
   !*** ./node_modules/vue-functional-data-merge/dist/lib.esm.js ***!
@@ -88307,6 +91671,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mergeData", function() { return a; });
 var e=function(){return(e=Object.assign||function(e){for(var t,r=1,s=arguments.length;r<s;r++)for(var a in t=arguments[r])Object.prototype.hasOwnProperty.call(t,a)&&(e[a]=t[a]);return e}).apply(this,arguments)},t={kebab:/-(\w)/g,styleProp:/:(.*)/,styleList:/;(?![^(]*\))/g};function r(e,t){return t?t.toUpperCase():""}function s(e){for(var s,a={},c=0,o=e.split(t.styleList);c<o.length;c++){var n=o[c].split(t.styleProp),i=n[0],l=n[1];(i=i.trim())&&("string"==typeof l&&(l=l.trim()),a[(s=i,s.replace(t.kebab,r))]=l)}return a}function a(){for(var t,r,a={},c=arguments.length;c--;)for(var o=0,n=Object.keys(arguments[c]);o<n.length;o++)switch(t=n[o]){case"class":case"style":case"directives":if(Array.isArray(a[t])||(a[t]=[]),"style"===t){var i=void 0;i=Array.isArray(arguments[c].style)?arguments[c].style:[arguments[c].style];for(var l=0;l<i.length;l++){var y=i[l];"string"==typeof y&&(i[l]=s(y))}arguments[c].style=i}a[t]=a[t].concat(arguments[c][t]);break;case"staticClass":if(!arguments[c][t])break;void 0===a[t]&&(a[t]=""),a[t]&&(a[t]+=" "),a[t]+=arguments[c][t].trim();break;case"on":case"nativeOn":a[t]||(a[t]={});for(var p=0,f=Object.keys(arguments[c][t]||{});p<f.length;p++)r=f[p],a[t][r]?a[t][r]=[].concat(a[t][r],arguments[c][t][r]):a[t][r]=arguments[c][t][r];break;case"attrs":case"props":case"domProps":case"scopedSlots":case"staticStyle":case"hook":case"transition":a[t]||(a[t]={}),a[t]=e({},arguments[c][t],a[t]);break;case"slot":case"key":case"ref":case"tag":case"show":case"keepAlive":default:a[t]||(a[t]=arguments[c][t])}return a}
 //# sourceMappingURL=lib.esm.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-linkify/dist/vue-linkify.min.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/vue-linkify/dist/vue-linkify.min.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof='function'==typeof Symbol&&'symbol'==typeof Symbol.iterator?function(obj){return typeof obj}:function(obj){return obj&&'function'==typeof Symbol&&obj.constructor===Symbol&&obj!==Symbol.prototype?'symbol':typeof obj};/*global define*/var _html=__webpack_require__(/*! linkifyjs/html */ "./node_modules/linkifyjs/html.js"),_html2=_interopRequireDefault(_html);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj}}(function(){function a(b,c){b.innerHTML=(0,_html2.default)(b.innerHTML,c.value)}'object'==( false?undefined:_typeof(exports))?module.exports=a: true?!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function(){return a}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):undefined})();
 
 
 /***/ }),
@@ -91018,7 +94396,10 @@ var render = function() {
                                         ":\n                "
                                     ),
                                     _c("datepicker", {
-                                      attrs: { format: _vm.date_format },
+                                      attrs: {
+                                        "use-utc": true,
+                                        format: _vm.date_format
+                                      },
                                       model: {
                                         value:
                                           _vm.case_to_show[0].c_incident_date,
@@ -91574,13 +94955,39 @@ var render = function() {
                                     ]
                                   ),
                                   _vm._v(" "),
-                                  !_vm.editing && item.i_type == 1
+                                  !_vm.editing &&
+                                  item.i_type == 1 &&
+                                  !_vm.validURL(item.i_content)
                                     ? _c(
                                         "div",
                                         {
                                           staticClass: "form-group text-break",
                                           staticStyle: {
                                             "white-space": "pre-line"
+                                          }
+                                        },
+                                        [_vm._v(_vm._s(item.i_content))]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  !_vm.editing &&
+                                  item.i_type == 1 &&
+                                  _vm.validURL(item.i_content)
+                                    ? _c(
+                                        "div",
+                                        {
+                                          directives: [
+                                            {
+                                              name: "linkified",
+                                              rawName: "v-linkified"
+                                            }
+                                          ],
+                                          staticClass: "form-group text-break",
+                                          staticStyle: {
+                                            "white-space": "pre-line"
+                                          },
+                                          domProps: {
+                                            innerHTML: _vm._s(item.i_content)
                                           }
                                         },
                                         [_vm._v(_vm._s(item.i_content))]
@@ -91892,7 +95299,10 @@ var render = function() {
                           [
                             _vm._v("\n                From:\n                "),
                             _c("datepicker", {
-                              attrs: { format: _vm.date_format },
+                              attrs: {
+                                "use-utc": true,
+                                format: _vm.date_format
+                              },
                               model: {
                                 value: _vm.incident_date_start,
                                 callback: function($$v) {
@@ -91903,7 +95313,10 @@ var render = function() {
                             }),
                             _vm._v("To:\n                "),
                             _c("datepicker", {
-                              attrs: { format: _vm.date_format },
+                              attrs: {
+                                "use-utc": true,
+                                format: _vm.date_format
+                              },
                               model: {
                                 value: _vm.incident_date_end,
                                 callback: function($$v) {
@@ -91935,66 +95348,71 @@ var render = function() {
                         )
                       : _vm._e(),
                     _vm._v(" "),
-                    case_parameter.csp_name != "Incident date"
-                      ? _c(
-                          "select",
-                          {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.selected_options[index],
-                                expression: "selected_options[index]"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { id: case_parameter.csp_id },
-                            on: {
-                              change: [
-                                function($event) {
-                                  var $$selectedVal = Array.prototype.filter
-                                    .call($event.target.options, function(o) {
-                                      return o.selected
-                                    })
-                                    .map(function(o) {
-                                      var val =
-                                        "_value" in o ? o._value : o.value
-                                      return val
-                                    })
-                                  _vm.$set(
-                                    _vm.selected_options,
-                                    index,
-                                    $event.target.multiple
-                                      ? $$selectedVal
-                                      : $$selectedVal[0]
-                                  )
-                                },
-                                function($event) {
-                                  return _vm.selected(case_parameter.csp_id)
+                    _c("div", { attrs: { id: "Frame" } }, [
+                      case_parameter.csp_name != "Incident date"
+                        ? _c(
+                            "select",
+                            {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.selected_options[index],
+                                  expression: "selected_options[index]"
                                 }
-                              ]
-                            }
-                          },
-                          [
-                            _c("option"),
-                            _vm._v(" "),
-                            _vm._l(
-                              _vm.filteredOptions(case_parameter.csp_id),
-                              function(option) {
-                                return _c(
-                                  "option",
-                                  {
-                                    key: option.oid,
-                                    domProps: { value: option.oid }
+                              ],
+                              staticClass: "form-control",
+                              attrs: { id: case_parameter.csp_id },
+                              on: {
+                                change: [
+                                  function($event) {
+                                    var $$selectedVal = Array.prototype.filter
+                                      .call($event.target.options, function(o) {
+                                        return o.selected
+                                      })
+                                      .map(function(o) {
+                                        var val =
+                                          "_value" in o ? o._value : o.value
+                                        return val
+                                      })
+                                    _vm.$set(
+                                      _vm.selected_options,
+                                      index,
+                                      $event.target.multiple
+                                        ? $$selectedVal
+                                        : $$selectedVal[0]
+                                    )
                                   },
-                                  [_vm._v(_vm._s(option.o_content))]
-                                )
+                                  function($event) {
+                                    _vm.selected(case_parameter.csp_id),
+                                      _vm.filterCases()
+                                  }
+                                ]
                               }
-                            )
-                          ],
-                          2
-                        )
-                      : _vm._e()
+                            },
+                            [
+                              _c("option", { attrs: { label: "None" } }, [
+                                _vm._v("None")
+                              ]),
+                              _vm._v(" "),
+                              _vm._l(
+                                _vm.filteredOptions(case_parameter.csp_id),
+                                function(option) {
+                                  return _c(
+                                    "option",
+                                    {
+                                      key: option.oid,
+                                      domProps: { value: option.oid }
+                                    },
+                                    [_vm._v(_vm._s(option.o_content))]
+                                  )
+                                }
+                              )
+                            ],
+                            2
+                          )
+                        : _vm._e()
+                    ])
                   ])
                 ])
               ])
@@ -92002,7 +95420,24 @@ var render = function() {
           })
         ],
         2
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          attrs: { type: "button" },
+          on: {
+            click: function($event) {
+              return _vm.clearFilter()
+            }
+          }
+        },
+        [_vm._v("Clear")]
       )
+    ]),
+    _vm._v(" "),
+    _c("h4", { staticClass: "mt-5" }, [
+      _vm._v("Search results for: " + _vm._s(_vm.search_for))
     ]),
     _vm._v(" "),
     _c(
@@ -92014,7 +95449,7 @@ var render = function() {
               _c(
                 "div",
                 { staticClass: "row mt-1 pt-2 pl-2", attrs: { id: "cases" } },
-                _vm._l(_vm.filterCases, function(case_study) {
+                _vm._l(_vm.search, function(case_study) {
                   return _c(
                     "div",
                     { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
@@ -111651,6 +115086,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bootstrap_vue_dist_bootstrap_vue_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bootstrap_vue_dist_bootstrap_vue_css__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var bootstrap_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap-vue */ "./node_modules/bootstrap-vue/esm/index.js");
 /* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
+/* harmony import */ var vue_linkify__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-linkify */ "./node_modules/vue-linkify/dist/vue-linkify.min.js");
+/* harmony import */ var vue_linkify__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vue_linkify__WEBPACK_IMPORTED_MODULE_3__);
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -111662,10 +115099,13 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 
 
+
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 window.bootbox = __webpack_require__(/*! bootbox */ "./node_modules/bootbox/bootbox.all.js");
 Vue.use(bootstrap_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
 Vue.use(vuejs_datepicker__WEBPACK_IMPORTED_MODULE_2__["default"]);
+Vue.directive('linkified', vue_linkify__WEBPACK_IMPORTED_MODULE_3___default.a); //Vue.use(linkify);
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -111714,7 +115154,7 @@ var app = new Vue({
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
+/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -111747,11 +115187,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: process.env.MIX_PUSHER_APP_KEY,
-  cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+  key: "785da5d6e7b9677c9162",
+  cluster: "us2",
   encrypted: true
 });
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -113026,8 +116465,13 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/garc/Desktop/RISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/garc/Desktop/RISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+<<<<<<< HEAD
+__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
+=======
+__webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+>>>>>>> 74c5fa67ebdd8ead562f7cf9dfdfdd02734766a7
 
 
 /***/ })

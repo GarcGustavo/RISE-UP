@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Case_Study;
 use App\Models\Item;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Item as ItemResource;
 
 class ItemController extends Controller
@@ -141,6 +142,9 @@ class ItemController extends Controller
     {
 
         if(($request->i_type == 2) && ($request->hasFile('image'))){
+            $validator = Validator::make($request->all(), [
+                'image' => 'max:1024',
+            ]);
             $content = time().'-'.$request->file('image')->getClientOriginalExtension();
             $request->file('image')->move(public_path('images'), $content);
         }
