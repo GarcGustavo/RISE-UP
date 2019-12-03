@@ -246,7 +246,10 @@ class CaseController extends Controller
     {
         $c_thumbnail = $request->c_thumbnail;
         if($request->hasFile('image')){
-            $c_thumbnail = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $validator = Validator::make($request->all(), [
+                'image' => 'max:1024',
+            ]);
+            $c_thumbnail = time().'-'.$request->file('image')->getClientOriginalExtension();
             $request->file('image')->move(public_path('images'), $c_thumbnail);
         }
         $cid = $request->cid;

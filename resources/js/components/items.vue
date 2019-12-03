@@ -160,7 +160,11 @@
                   style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
                 >
                   {{case_parameter.csp_name}}:
-                  <datepicker v-model="case_to_show[0].c_incident_date" :use-utc="true" :format="date_format"></datepicker>
+                  <datepicker
+                    v-model="case_to_show[0].c_incident_date"
+                    :use-utc="true"
+                    :format="date_format"
+                  ></datepicker>
                 </button>
               </div>
               <div class="dropdown" v-if="(case_parameter.csp_name != 'Incident date')">
@@ -328,7 +332,14 @@
                       </div>
                       <div
                         class="form-group text-break"
-                        v-if="!editing && (item.i_type == 1)"
+                        v-if="!editing && (item.i_type == 1) && !validURL(item.i_content)"
+                        style="white-space: pre-line;"
+                      >{{item.i_content}}</div>
+                      <div
+                        class="form-group text-break"
+                        v-if="!editing && (item.i_type == 1) && validURL(item.i_content)"
+                        v-html="item.i_content"
+                        v-linkified
                         style="white-space: pre-line;"
                       >{{item.i_content}}</div>
                       <div
@@ -355,10 +366,12 @@
 <script>
 import draggable from "vuedraggable";
 import datepicker from "vuejs-datepicker";
+import linkify from "vue-linkify";
 export default {
   //name: 'app',
   components: {
     draggable,
+    linkify,
     datepicker
   },
   events: {},
@@ -447,7 +460,7 @@ export default {
         this.items.forEach(element => {
           this.items[element] = e.items[element];
         });
-        console.log("hell from channel");
+        //console.log("hell from channel");
       }
     );
     // .here(users => {
@@ -916,6 +929,18 @@ export default {
     onSelectOption(selected_op, index) {
       this.case_parameters[index].o_content = selected_op.o_content;
       this.case_parameters[index].opt_selected = selected_op.oid;
+    },
+    validURL(str) {
+      var pattern = new RegExp(
+        "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+          "(\\#[-a-z\\d_]*)?$",
+        "i"
+      ); // fragment locator
+      return !!pattern.test(str);
     },
     //Upload image to a specific item, index is used to track files being uploaded
     uploadImage(e, item, index) {
