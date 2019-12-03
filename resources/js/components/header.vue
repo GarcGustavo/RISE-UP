@@ -2,7 +2,7 @@
   <!-- Navigation -->
   <div>
     <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" :href="'/home?uid='+uid">
         <img
           class="img-fluid rounded"
           style="width:70px;height:45px;margin-right:10px"
