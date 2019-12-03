@@ -141,7 +141,7 @@ class ItemController extends Controller
     {
 
         if(($request->i_type == 2) && ($request->hasFile('image'))){
-            $content = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $content = time().'-'.$request->file('image')->getClientOriginalExtension();
             $request->file('image')->move(public_path('images'), $content);
         }
         else{
