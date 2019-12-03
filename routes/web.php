@@ -140,7 +140,7 @@ Route::delete('case/remove', 'CaseController@destroy');
 Route::get('/items', 'ItemController@index');
 
 //List case items
-Route::get('/case/{id}/items','ItemController@getCaseItems');
+Route::get('/case/items','ItemController@getCaseItems');
 
 //Add items to a case
 Route::post('/item/add', 'ItemController@addCaseItem');

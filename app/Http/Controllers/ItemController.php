@@ -17,9 +17,9 @@ class ItemController extends Controller
      * @return \Illuminate\Http\Response
      * @return \App\Http\Resources\item
      */
-    public function getCaseItems($id)
+    public function getCaseItems(Request $request)
     {
-        $cid = $id;
+        $cid = $request->input('cid');
         $caseItems = Item:: orderBy('Item.order')
         ->where('Item.i_case', $cid)
         ->select('Item.*')

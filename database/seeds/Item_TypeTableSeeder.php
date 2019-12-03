@@ -12,7 +12,8 @@ class Item_TypeTableSeeder extends Seeder
     public function run()
     {
         $item_types = [['itt_id'=>1, 'itt_name'=>'text'],
-        ['itt_id'=>2, 'itt_name'=>'images']
+        ['itt_id'=>2, 'itt_name'=>'images'],
+        ['itt_id'=>3, 'itt_name'=>'links']
     ];
 
         App\Models\item_type::insert($item_types);
