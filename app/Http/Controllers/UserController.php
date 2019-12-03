@@ -75,7 +75,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateUsersEditing(Request $request, $id)
+    public function updateUsersEditing(Request $request)
     {
         $uid = $request -> input('uid');
         $current_edit_cid = $request -> input('current_edit_cid');

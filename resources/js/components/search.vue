@@ -30,8 +30,8 @@
                 <a class="text-center text-break">{{case_parameter.csp_name}}</a>
                 <div v-if="(case_parameter.csp_name == 'Incident date')">
                   From:
-                  <datepicker v-model="incident_date_start" :format="date_format"></datepicker>To:
-                  <datepicker v-model="incident_date_end" :format="date_format"></datepicker>
+                  <datepicker v-model="incident_date_start" :use-utc="true" :format="date_format"></datepicker>To:
+                  <datepicker v-model="incident_date_end" :use-utc="true" :format="date_format"></datepicker>
                   <div
                     v-if="incident_date_start > incident_date_end"
                     class="text-center text-break"

@@ -160,7 +160,7 @@
                   style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
                 >
                   {{case_parameter.csp_name}}:
-                  <datepicker v-model="case_to_show[0].c_incident_date" :format="date_format"></datepicker>
+                  <datepicker v-model="case_to_show[0].c_incident_date" :use-utc="true" :format="date_format"></datepicker>
                 </button>
               </div>
               <div class="dropdown" v-if="(case_parameter.csp_name != 'Incident date')">
@@ -352,7 +352,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import draggable from "vuedraggable";
 import datepicker from "vuejs-datepicker";
@@ -670,8 +669,12 @@ export default {
       form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
       form_data.append("c_status", this.case_to_show[0].c_status);
       form_data.append("c_date", this.case_to_show[0].c_date);
-      form_data.append("c_incident_date", this.new_date.toUTCString());
-      console.log(this.new_date.toUTCString());
+      if (this.new_date instanceof Date) {
+        form_data.append("c_incident_date", this.new_date.toUTCString());
+      } else {
+        form_data.append("c_incident_date", this.new_date);
+      }
+      //console.log(this.new_date.toUTCString());
       form_data.append("c_owner", this.case_to_show[0].c_owner);
       form_data.append("c_group", this.case_to_show[0].c_group);
 
