@@ -103,8 +103,7 @@
           </span>
           <div class="dropdown-menu dropdown-menu-right">
             <div class="profile-usertitle">
-              <!--<div class="profile-usertitle-name">{{user.first_name}} {{user.last_name}}</div> -->
-              <div class="profile-usertitle-name">Melvin J Malave</div>
+              <div class="profile-usertitle-name">{{user_name}}</div>
               <div class="profile-usertitle-role">
                 <a v-if="isAdmin">Admin</a>
                 <a v-if="isViewer">Viewer</a>
@@ -117,7 +116,7 @@
             <a :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
             <a :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
             <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">Logout</a>
+            <a href="/shibboleth-logout2" class="dropdown-item">Logout</a>
           </div>
         </li>
       </ul>
@@ -141,11 +140,12 @@ export default {
   data() {
     return {
       user: "",
+      user_name: "",
 
       errors: [],
 
-      uid: 10,
-      isAdmin: true, //change to false when integration is complete
+      uid: "",
+      isAdmin: false, //change to false when integration is complete
       isViewer: false,
       isCollaborator: false,
       disable_header_search: false,
@@ -168,11 +168,11 @@ export default {
       if (this.q != null) {
         this.disable_header_search = true;
       }
-      /*
+
       fetch("/user?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
-          this.user = res;
+          this.user = res.data[0];
           if (this.user.u_role == 4) {
             this.isAdmin = true;
           } else if (this.user.u_role == 3) {
@@ -181,8 +181,9 @@ export default {
             this.isViewer = true;
           }
           this.uid = this.user.uid;
+          this.user_name = this.user.first_name +' '+this.user.last_name;
         });
-        */
+
     },
 
     /**

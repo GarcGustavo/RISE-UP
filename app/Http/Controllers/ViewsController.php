@@ -9,6 +9,31 @@ use App\Models\case_study;
 
 class ViewsController extends Controller
 {
+    public function landingPage()
+    {
+        return view('landing-page');
+    }
+
+    public function login()
+    {
+        return view('login');
+    }
+
+    public function profileCreation()
+    {
+        return view('profile-creation');
+    }
+
+    public function terms()
+    {
+        return view('terms');
+    }
+
+    public function home()
+    {
+        return view('home');
+    }
+
     public function about()
     {
         return view('about');

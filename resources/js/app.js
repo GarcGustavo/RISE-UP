@@ -17,6 +17,7 @@ window.bootbox = require('bootbox');
 Vue.use(BootstrapVue);
 Vue.use(Datepicker);
 
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -34,7 +35,11 @@ Vue.component('action-table-dbox', require('./components/dialogue-boxes/action-t
 Vue.component('case-create-dbox', require('./components/dialogue-boxes/case-create-dbox.vue').default);
 //web pages
 Vue.component('iren-header', require('./components/header.vue').default);
+Vue.component('iren-header3', require('./components/header3.vue').default);
 Vue.component('iren-footer', require('./components/footer.vue').default);
+Vue.component('iren-landing', require('./components/landing.vue').default);
+Vue.component('iren-login', require('./components/login.vue').default);
+Vue.component('iren-profile-creation', require('./components/profile-creation.vue').default);
 Vue.component('iren-help', require('./components/help.vue').default);
 Vue.component('iren-about', require('./components/about.vue').default);
 Vue.component('iren-group', require('./components/group.vue').default);
