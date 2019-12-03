@@ -229,6 +229,7 @@ calling parent method to create case study*/
     sendCaseStudyData() {
       //yyyy-mm-dd
       this.date = new Date().toJSON().slice(0, 10); //current date
+      
 
       //append data to new case study
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id

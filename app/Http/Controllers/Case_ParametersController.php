@@ -44,7 +44,7 @@ class Case_ParametersController extends Controller
         ->join('Option', 'Case_Parameters.opt_selected', '=', 'Option.oid')
         ->select('Case_Parameters.cid','Case_Parameters.opt_selected', 'Case_Parameters.csp_id', 'CS_Parameter.csp_name', 'Option.o_content')
         ->get();
-        
+
         return Case_ParametersResource::collection($caseParams);
     }
 
@@ -153,7 +153,7 @@ class Case_ParametersController extends Controller
             array_push($case_parameters, [
             'cid' => $request->input('cid'),
             'csp_id' => $value['csp_id'],
-            'opt_selected' => 1,]);
+            'opt_selected' => null,]);
         }
 
         $inserted = Case_Parameters::insert($case_parameters);

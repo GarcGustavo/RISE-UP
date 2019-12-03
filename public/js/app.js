@@ -5457,10 +5457,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
    */
   data: function data() {
     return {
-      selected_param: [],
       date_format: "yyyy-MM-dd",
       incident_date_start: new Date(),
       incident_date_end: new Date(),
+      selected_options: [],
       case_parameters: [],
       all_cases_parameters: [],
       parameter_options: [],
@@ -5468,6 +5468,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       selected_options_id: [],
       list_cases: [],
       filtered_cases: [],
+      selected_param: "",
       empty: true
     };
   },
@@ -5488,7 +5489,21 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     filterCases: function filterCases() {
       var _this = this;
 
-      this.filtered_cases = []; //These for loops get the case studies on which one or more parameters apply individually
+      this.filtered_cases = [];
+      /*
+      for (let a = 0; a < this.parameters.length; a++) {
+        this.options = this.parameters[a].getElementsByTagName("option");
+         for (let b = 0; b < this.options.length; b++) {
+          //  console.log(this.options[b].value);
+          for (let c = 0; c < this.selected_options.length; c++) {
+            if (this.options[b].value == this.selected_options[c]) {
+              this.selected_params.push(this.parameters[a].getAttribute('id'));
+            }
+          }
+        }
+      }
+      */
+      //These for loops get the case studies on which one or more parameters apply individually
       //That is if user selects to filter by location and damage type, the algorithm will
       //fetch all case studies with either one or both of the parameter's selected option.
 
@@ -5497,7 +5512,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       for (var j = 0; j < this.all_cases_parameters.length; j++) {
         for (var c = 0; c < this.case_parameters.length; c++) {
-          if (this.all_cases_parameters[j].opt_selected == this.selected_param[c]) {
+          if (this.all_cases_parameters[j].opt_selected == this.selected_options[c] && this.selected_param == this.all_cases_parameters[j].csp_id) {
             this.case_studies_with_selected_option.push(this.all_cases_parameters[j]);
           }
         }
@@ -5505,7 +5520,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 
       this.count = 0;
-      this.selected_param.forEach(function (element) {
+      this.selected_options.forEach(function (element) {
         if (isNaN(element[_this.i])) {
           _this.count = _this.count + 1;
         }
@@ -5551,14 +5566,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
 
-      if (!this.case_studies_with_selected_option.length && this.selected_param.length) {
+      if (!this.case_studies_with_selected_option.length && this.selected_options.length) {
         return [];
       } //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
 
 
-      if (!this.case_studies_with_selected_option.length && !this.selected_param.length) {
+      if (!this.case_studies_with_selected_option.length && !this.selected_options.length) {
         return this.list_cases;
       }
 
@@ -5566,6 +5581,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     }
   },
   methods: {
+    selected: function selected(id) {
+      this.selected_param = id;
+    },
+
     /**
      * @description fetch all system parameters(filters)
      */
@@ -5633,8 +5652,21 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @returns array of formated dates
      */
     formatDate: function formatDate(date) {
-      //console.log(date.toISOString().slice(0, 10));
       return date.toISOString().slice(0, 10);
+    },
+
+    /**
+     * @description compares date range to incident date of cases in list
+     * @returns array of filtered cases by date
+     */
+    filterDate: function filterDate(date_start, date_end) {
+      var filtered_list = [];
+      this.list_cases.forEach(function (element) {
+        if (formatDate(date_start) < element.c_incident_date && formatDate(date_end) > element.c_incident_date) {
+          filtered_list.push(element);
+        }
+      });
+      return filtered_list;
     }
   }
 });
@@ -90066,7 +90098,7 @@ var render = function() {
                     attrs: {
                       "data-toggle": "tooltip",
                       "data-placement": "bottom",
-                      title: "Help",
+                      title: "Collaborator",
                       href: "#"
                     }
                   },
@@ -91863,7 +91895,7 @@ var render = function() {
                                 expression: "incident_date_start"
                               }
                             }),
-                            _vm._v("\n                To:\n                "),
+                            _vm._v("To:\n                "),
                             _c("datepicker", {
                               attrs: { format: _vm.date_format },
                               model: {
@@ -91905,41 +91937,40 @@ var render = function() {
                               {
                                 name: "model",
                                 rawName: "v-model",
-                                value: _vm.selected_param[index],
-                                expression: "selected_param[index]"
+                                value: _vm.selected_options[index],
+                                expression: "selected_options[index]"
                               }
                             ],
                             staticClass: "form-control",
-                            attrs: { id: index },
+                            attrs: { id: case_parameter.csp_id },
                             on: {
-                              click: function($event) {
-                                _vm.case_param = case_parameter.cid
-                              },
-                              change: function($event) {
-                                var $$selectedVal = Array.prototype.filter
-                                  .call($event.target.options, function(o) {
-                                    return o.selected
-                                  })
-                                  .map(function(o) {
-                                    var val = "_value" in o ? o._value : o.value
-                                    return val
-                                  })
-                                _vm.$set(
-                                  _vm.selected_param,
-                                  index,
-                                  $event.target.multiple
-                                    ? $$selectedVal
-                                    : $$selectedVal[0]
-                                )
-                              }
+                              change: [
+                                function($event) {
+                                  var $$selectedVal = Array.prototype.filter
+                                    .call($event.target.options, function(o) {
+                                      return o.selected
+                                    })
+                                    .map(function(o) {
+                                      var val =
+                                        "_value" in o ? o._value : o.value
+                                      return val
+                                    })
+                                  _vm.$set(
+                                    _vm.selected_options,
+                                    index,
+                                    $event.target.multiple
+                                      ? $$selectedVal
+                                      : $$selectedVal[0]
+                                  )
+                                },
+                                function($event) {
+                                  return _vm.selected(case_parameter.csp_id)
+                                }
+                              ]
                             }
                           },
                           [
-                            _c(
-                              "option",
-                              { attrs: { selected: "selected", disabled: "" } },
-                              [_vm._v(_vm._s(case_parameter.csp_name))]
-                            ),
+                            _c("option"),
                             _vm._v(" "),
                             _vm._l(
                               _vm.filteredOptions(case_parameter.csp_id),

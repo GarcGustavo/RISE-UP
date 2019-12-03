@@ -678,6 +678,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
             this.appendDefaultParameters(case_study.cid); //default case study parameters
             //this.fetchCases(); //update case study list
             //this.resetErrors();
+
           } else {
             this.errors = res.errors;
           }

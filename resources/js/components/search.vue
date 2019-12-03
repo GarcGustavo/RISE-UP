@@ -10,7 +10,7 @@
           placeholder="search"
           aria-label="Search"
           aria-describedby="basic-addon2"
-        />
+        >
         <div class="input-group-append">
           <button class="btn btn-primary border-0 btn-sm" type="submit">
             <i class="material-icons">search</i>
@@ -30,8 +30,7 @@
                 <a class="text-center text-break">{{case_parameter.csp_name}}</a>
                 <div v-if="(case_parameter.csp_name == 'Incident date')">
                   From:
-                  <datepicker v-model="incident_date_start" :format="date_format"></datepicker>
-                  To:
+                  <datepicker v-model="incident_date_start" :format="date_format"></datepicker>To:
                   <datepicker v-model="incident_date_end" :format="date_format"></datepicker>
                   <div
                     v-if="incident_date_start > incident_date_end"
@@ -45,11 +44,12 @@
                 <select
                   v-if="case_parameter.csp_name != 'Incident date'"
                   class="form-control"
-                  v-model="selected_param[index]"
-                  @click="case_param=case_parameter.cid"
-                  :id="index"
+                  v-model="selected_options[index]"
+                  @change="selected(case_parameter.csp_id)"
+                  :id="case_parameter.csp_id"
                 >
-                  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>
+                  <!-- <option selected="selected" disabled>{{case_parameter.csp_name}}</option> -->
+                  <option></option>
                   <option
                     v-for="option in filteredOptions(case_parameter.csp_id)"
                     :key="option.oid"
@@ -75,7 +75,7 @@
                 onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
                 class="card-img-top"
                 alt="..."
-              />
+              >
               <!-- <i class="material-icons pt-2" style="font-size: 125px">image</i> -->
               <div class="card-body">
                 <h5 class="card-title">
@@ -125,11 +125,11 @@ export default {
    */
   data() {
     return {
-      selected_param: [],
       date_format: "yyyy-MM-dd",
       incident_date_start: new Date(),
       incident_date_end: new Date(),
 
+      selected_options: [],
       case_parameters: [],
       all_cases_parameters: [],
       parameter_options: [],
@@ -137,6 +137,7 @@ export default {
       selected_options_id: [],
       list_cases: [],
       filtered_cases: [],
+      selected_param: "",
 
       empty: true
     };
@@ -158,6 +159,21 @@ export default {
     filterCases() {
       this.filtered_cases = [];
 
+      /*
+      for (let a = 0; a < this.parameters.length; a++) {
+        this.options = this.parameters[a].getElementsByTagName("option");
+
+        for (let b = 0; b < this.options.length; b++) {
+          //  console.log(this.options[b].value);
+          for (let c = 0; c < this.selected_options.length; c++) {
+            if (this.options[b].value == this.selected_options[c]) {
+              this.selected_params.push(this.parameters[a].getAttribute('id'));
+            }
+          }
+        }
+      }
+*/
+
       //These for loops get the case studies on which one or more parameters apply individually
       //That is if user selects to filter by location and damage type, the algorithm will
       //fetch all case studies with either one or both of the parameter's selected option.
@@ -166,7 +182,9 @@ export default {
       for (let j = 0; j < this.all_cases_parameters.length; j++) {
         for (let c = 0; c < this.case_parameters.length; c++) {
           if (
-            this.all_cases_parameters[j].opt_selected == this.selected_param[c]
+            this.all_cases_parameters[j].opt_selected ==
+              this.selected_options[c] &&
+            this.selected_param == this.all_cases_parameters[j].csp_id
           ) {
             this.case_studies_with_selected_option.push(
               this.all_cases_parameters[j]
@@ -176,7 +194,7 @@ export default {
       }
       //get count of selected parameters
       this.count = 0;
-      this.selected_param.forEach(element => {
+      this.selected_options.forEach(element => {
         if (isNaN(element[this.i])) {
           this.count = this.count + 1;
         }
@@ -225,7 +243,7 @@ export default {
       //if no case was found and a filter has been selected
       if (
         !this.case_studies_with_selected_option.length &&
-        this.selected_param.length
+        this.selected_options.length
       ) {
         return [];
       }
@@ -234,7 +252,7 @@ export default {
       //return search items
       if (
         !this.case_studies_with_selected_option.length &&
-        !this.selected_param.length
+        !this.selected_options.length
       ) {
         return this.list_cases;
       }
@@ -243,6 +261,10 @@ export default {
   },
 
   methods: {
+    selected(id) {
+      this.selected_param = id;
+    },
+
     /**
      * @description fetch all system parameters(filters)
      */
@@ -303,10 +325,13 @@ export default {
      * @description compares date range to incident date of cases in list
      * @returns array of filtered cases by date
      */
-    filterDate(date_start, date_end, cases_list) {
+    filterDate(date_start, date_end) {
       var filtered_list = [];
-      cases_list.forEach(element => {
-        if(formatDate(date_start)<element.c_incident_date && formatDate(date_end)>element.c_incident_date){
+      this.list_cases.forEach(element => {
+        if (
+          formatDate(date_start) < element.c_incident_date &&
+          formatDate(date_end) > element.c_incident_date
+        ) {
           filtered_list.push(element);
         }
       });

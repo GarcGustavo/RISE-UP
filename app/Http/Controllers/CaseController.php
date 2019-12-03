@@ -137,7 +137,7 @@ class CaseController extends Controller
         $case_study->c_thumbnail = $request->input('c_thumbnail');
         $case_study->c_status = $request->input('c_status');
         $case_study->c_date = $request->input('c_date');
-        $case_study->c_date = $request->input('c_incident_date');
+        $case_study->c_incident_date = $request->input('c_incident_date');
         $case_study->c_owner = $request->input('c_owner');
         $case_study->c_group = $request->input('c_group');
         //process request
