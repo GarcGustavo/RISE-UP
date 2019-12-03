@@ -259,6 +259,7 @@ export default {
       }
       //Eliminate duplicates
       this.filtered_cases = [...new Set(this.filtered_cases)];
+      console.log(this.filtered_cases);
 
       //if no case was found and a filter has been selected
       if (
