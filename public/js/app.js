@@ -4532,6 +4532,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       date_format: "yyyy-MM-dd",
       new_date: new Date(),
       editing: false,
+      uploadPercentage: 0,
       showModal: false,
       typing: false,
       action: "",
@@ -5080,6 +5081,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Submit new data to database
     onSubmit: function onSubmit(items) {
+      var _this12 = this;
+
       this.editing = false;
 
       for (var index in this.preview) {
@@ -5088,9 +5091,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.previewThumbnail = false;
       this.new_date = this.case_to_show[0].c_incident_date;
-      this.updateParams();
-      this.updateItems(items);
-      this.updateCase(); //this.updateParameter();
+      this.$nextTick(function () {
+        _this12.updateParams();
+
+        _this12.updateItems(items);
+
+        _this12.updateCase();
+      }); //this.updateParameter();
     },
     //Update selected group for case study
     onSelectGroup: function onSelectGroup(selected_gid) {
@@ -5121,7 +5128,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Upload image to a specific item, index is used to track files being uploaded
     uploadImage: function uploadImage(e, item, index) {
-      var _this12 = this;
+      var _this13 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -5130,14 +5137,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.files[0]);
 
       reader.onload = function (e) {
-        _this12.images[index] = e.target.result;
-        _this12.image_names[index] = _this12.files[0];
-        _this12.preview[index] = true;
+        _this13.images[index] = e.target.result;
+        _this13.image_names[index] = _this13.files[0];
+        _this13.preview[index] = true;
       };
     },
     //Seperate image uploader for thumbnail since it is a seperate file stream
     uploadThumbnail: function uploadThumbnail(e) {
-      var _this13 = this;
+      var _this14 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -5147,9 +5154,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.thumbnail_files[0]);
 
       reader.onload = function (e) {
-        _this13.thumbnail_preview = e.target.result;
-        _this13.thumbnail_name = _this13.thumbnail_files[0];
-        _this13.previewThumbnail = true;
+        _this14.thumbnail_preview = e.target.result;
+        _this14.thumbnail_name = _this14.thumbnail_files[0];
+        _this14.previewThumbnail = true;
       };
     }
   }
@@ -44214,7 +44221,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\r\n/*\r\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\r\n then adding custom css styles with the following css selectors:\r\n\r\n.pagination - Pagination component container (ul element)\r\n.pagination li - All list items in the pagination component\r\n.pagination li a - All pagination links including first, last, previous and next\r\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\r\n.pagination li.first - The 'First' pagination element\r\n.pagination li.last - The 'Last' pagination element\r\n.pagination li.previous - The 'Previous' pagination element\r\n.pagination li.next - The 'Next' pagination element\r\n*/\r\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
 
 // exports
 
@@ -93677,7 +93684,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\r\n    ")]),
+      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\n    ")]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -93718,7 +93725,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -93735,7 +93742,7 @@ var staticRenderFns = [
               [
                 _c("h5", { staticClass: "mb-0" }, [
                   _c("a", [
-                    _vm._v("Collapsible Group Item #2\r\n                    ")
+                    _vm._v("Collapsible Group Item #2\n                    ")
                   ])
                 ])
               ]
@@ -93753,7 +93760,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -93786,7 +93793,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -116394,8 +116401,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

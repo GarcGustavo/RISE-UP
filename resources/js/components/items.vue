@@ -380,6 +380,7 @@ export default {
       date_format: "yyyy-MM-dd",
       new_date: new Date(),
       editing: false,
+      uploadPercentage: 0,
       showModal: false,
       typing: false,
       action: "",
@@ -908,10 +909,12 @@ export default {
       }
       this.previewThumbnail = false;
       this.new_date = this.case_to_show[0].c_incident_date;
+
+      this.$nextTick(() => {
       this.updateParams();
       this.updateItems(items);
       this.updateCase();
-
+      });
       //this.updateParameter();
     },
     //Update selected group for case study
