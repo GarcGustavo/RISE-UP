@@ -4629,6 +4629,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }, 1000);
     },
+    //Get items belonging to a case
     fetchCaseItems: function fetchCaseItems() {
       var _this3 = this;
 
@@ -4636,7 +4637,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.cid = Number(this.path.get("cid")); //get cid
 
-      fetch("/case/" + this.cid + "/items").then(function (res) {
+      fetch("/case/items?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
         _this3.items = res.data;
@@ -4645,6 +4646,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch total items to add/delete items without conflict
     fetchItems: function fetchItems() {
       var _this4 = this;
 
@@ -4658,6 +4660,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch case details
     fetchCase: function fetchCase() {
       var _this5 = this;
 
@@ -4682,6 +4685,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch user details
     fetchUser: function fetchUser(uid) {
       var _this6 = this;
 
@@ -4693,6 +4697,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Fetch owner groups
     fetchUserGroups: function fetchUserGroups() {
       var _this7 = this;
 
@@ -4712,6 +4717,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(res.data);
       });
     },
+    //Fetch users actively editing current cid
     fetchUsersEditing: function fetchUsersEditing(cid) {
       var _this8 = this;
 
@@ -4723,7 +4729,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
-    //TODO
+    //Update list of active users editing current cid
     updateUsersEditing: function updateUsersEditing(user_editing_id) {
       if (this.editing) {
         this.updated_user_edit = {
@@ -4750,8 +4756,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
-      this.fetchUsersEditing(this.cid);
+      this.fetchUsersEditing(this.cid); //Fetch users once updated
     },
+    //Fetch case group details if a group is set, if not set as independent
     fetchGroup: function fetchGroup(gid) {
       var _this9 = this;
 
@@ -4771,6 +4778,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         };
       }
     },
+    //Fetch case parameters via cid
     fetchCaseParameters: function fetchCaseParameters() {
       var _this10 = this;
 
@@ -4784,6 +4792,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       this.fetchParameterOptions();
     },
+    //Fetch options for each parameter in case to populate dropdown
     fetchParameterOptions: function fetchParameterOptions() {
       var _this11 = this;
 
@@ -4796,11 +4805,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return console.log(err);
       });
     },
+    //Filter options via parameter to populate appropriate dropdown
     filteredOptions: function filteredOptions(parameter) {
       return this.parameter_options.filter(function (option) {
         return option.o_parameter == parameter;
       });
     },
+    //Update parameter of case to reflect selected options
     updateParameter: function updateParameter(updated_param) {
       this.updated_parameter = {
         cid: this.cid,
@@ -4823,13 +4834,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.error("Error: ", err);
       });
     },
+    //Loop through all parameters and update them appropriately
     updateParams: function updateParams() {
       for (var param in this.case_parameters) {
         this.updated_param = this.case_parameters[param];
         this.updateParameter(this.updated_param);
-      } //this.fetchCaseParameters();
-
+      }
     },
+    //Update case details (thumbnail, description, title, dates, group, and status)
     updateCase: function updateCase() {
       this.cid = this.case_to_show[0].cid;
       var form_data = new FormData();
@@ -4864,18 +4876,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["catch"](function (err) {
         console.error("Error: ", err);
       });
-      this.fetchCase();
+      this.fetchCase(); //Fetch case again after update
     },
+    //Update items content
     updateItem: function updateItem(item_to_update, index) {
-      this.path = new URLSearchParams(window.location.search); //get url parameters
-
-      this.cid = Number(this.path.get("cid")); //get cid
-
-      var form_data = new FormData();
+      //Request must use form data to upload files
+      var form_data = new FormData(); //check preview images/filestream to ensure file exists
 
       if (this.files && this.images[index]) {
         form_data.append("image", this.image_names[index]);
-      }
+      } //Append item details
+
 
       form_data.append("i_case", item_to_update.i_case);
       form_data.append("i_type", item_to_update.i_type);
@@ -4900,20 +4911,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.error("Error: ", err);
       });
     },
+    //Iterate through items and update them appropriately
     updateItems: function updateItems(items) {
       for (var item in this.items) {
         this.items[item].order = item;
         this.updateItem(this.items[item], item);
-      }
+      } //Fetch updated items
+
 
       this.fetchItems();
       this.fetchCaseItems();
     },
+    //Add new item to case
     addItem: function addItem(new_item, item_type) {
-      this.path = new URLSearchParams(window.location.search); //get url parameters
-
-      this.cid = Number(this.path.get("cid")); //get cid
-
+      //Initialize item content
       var item_name = "New Text";
       var item_content = "Add content here!";
 
@@ -4927,8 +4938,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.new_item.i_case = this.cid;
       this.new_item.i_type = item_type;
       this.new_item.order = "1";
-      this.new_item.i_name = item_name;
-      console.log(new_item);
+      this.new_item.i_name = item_name; //console.log(new_item);
+
       fetch("/item/add", {
         method: "post",
         headers: new Headers({
@@ -4956,9 +4967,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         i_name: ""
       };
     },
+    //Remove item from case
     removeItem: function removeItem(item_to_remove) {
-      console.log(item_to_remove.iid);
-
+      //console.log(item_to_remove.iid);
+      //Confirm item to be deleted
       if (confirm("Do you want to delete this item permanently?")) {
         fetch("/item/remove?iid=" + Number(item_to_remove.iid), {
           method: "delete",
@@ -4975,12 +4987,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         })["catch"](function (err) {
           console.error("Error: ", err);
         });
-      }
+      } //Fetch updated items
+
 
       this.fetchCaseItems();
       this.fetchItems();
     },
+    //Delete case study permanently
     deleteCaseStudy: function deleteCaseStudy() {
+      //Confirm deletion
       if (confirm("Do you want to delete this case study permanently?")) {
         //send request
         fetch("/case/remove", {
@@ -5000,46 +5015,51 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }
     },
-    //TODO
-    languageToggle: function languageToggle() {},
+    //When a user edits a content field this method updates users editing and item content
     onEdit: function onEdit() {
       this.editing = true;
-      this.fetchUserGroups();
+      this.fetchUserGroups(); //update list of editors
 
       for (var user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
-      }
+      } //update case parameters
+
 
       for (var option in this.case_parameters) {
         this.selected_options_content[option] = this.case_parameters[option].o_content;
         this.selected_options_id[option] = this.case_parameters[option].opt_selected;
       }
     },
+    //Resets content and throws away any edits not submitted to database
     onCancel: function onCancel() {
+      //Resets variables that may have been changed by an editor
       this.gid = this.initial_gid;
       this.editing = false;
-      this.previewThumbnail = false;
+      this.previewThumbnail = false; //Reset uploaded images and their previews
 
       for (var index in this.preview) {
         this.preview[index] = false;
-      }
+      } //Reload data from database
+
 
       this.fetchGroup(this.gid);
       this.fetchItems();
       this.fetchCaseItems();
       this.fetchCase();
       this.fetchCaseParameters();
-      this.fetchParameterOptions();
+      this.fetchParameterOptions(); //Update editors list
 
       for (var user in this.users) {
         this.updateUsersEditing(this.users[user].uid);
-      }
+      } //Reset parameter options
+
 
       for (var option in this.selected_options_content) {
         this.case_parameters[option].o_content = this.selected_options_content[option];
         this.case_parameters[option].opt_selected = this.selected_options_id[option];
       }
     },
+    //Submit new data to database
     onSubmit: function onSubmit(items) {
       this.editing = false;
 
@@ -5053,6 +5073,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.updateItems(items);
       this.updateCase(); //this.updateParameter();
     },
+    //Update selected group for case study
     onSelectGroup: function onSelectGroup(selected_gid) {
       if (!selected_gid) {
         this.independent = true;
@@ -5064,10 +5085,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.case_to_show[0].c_group = this.gid;
       this.fetchGroup(this.gid);
     },
+    //Update parameter option selected
     onSelectOption: function onSelectOption(selected_op, index) {
       this.case_parameters[index].o_content = selected_op.o_content;
       this.case_parameters[index].opt_selected = selected_op.oid;
     },
+    //Upload image to a specific item, index is used to track files being uploaded
     uploadImage: function uploadImage(e, item, index) {
       var _this12 = this;
 
@@ -5083,6 +5106,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this12.preview[index] = true;
       };
     },
+    //Seperate image uploader for thumbnail since it is a seperate file stream
     uploadThumbnail: function uploadThumbnail(e) {
       var _this13 = this;
 
@@ -5320,6 +5344,8 @@ var default_styles = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datepicker */ "./node_modules/vuejs-datepicker/dist/vuejs-datepicker.esm.js");
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! util */ "./node_modules/util/util.js");
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_1__);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -5429,6 +5455,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 
+
 /**
  * write a component's description
  */
@@ -5458,8 +5485,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   data: function data() {
     return {
       date_format: "yyyy-MM-dd",
-      incident_date_start: new Date(),
-      incident_date_end: new Date(),
+      incident_date_start: "",
+      incident_date_end: "",
       selected_options: [],
       case_parameters: [],
       all_cases_parameters: [],
@@ -5489,21 +5516,21 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     filterCases: function filterCases() {
       var _this = this;
 
-      this.filtered_cases = [];
-      /*
-      for (let a = 0; a < this.parameters.length; a++) {
-        this.options = this.parameters[a].getElementsByTagName("option");
-         for (let b = 0; b < this.options.length; b++) {
-          //  console.log(this.options[b].value);
-          for (let c = 0; c < this.selected_options.length; c++) {
-            if (this.options[b].value == this.selected_options[c]) {
-              this.selected_params.push(this.parameters[a].getAttribute('id'));
-            }
-          }
+      // this.cases_by_date = filterDate(this.incident_date_start, this.incident_date_end);
+      this.filtered_cases = []; //Selected_option None equals to "", convert to Null so it matches values on database
+
+      for (var a = 0; a < this.selected_options.length; a++) {
+        if (this.selected_options[a] == "") {
+          this.selected_options[a] = null;
         }
-      }
-      */
-      //These for loops get the case studies on which one or more parameters apply individually
+      } //selected_option returns empty values on none selected filters
+      //Remove undefined empty values
+
+
+      this.data = this.selected_options.filter(function (element) {
+        return element !== undefined;
+      });
+      this.selected_options_filtered = this.data; //These for loops get the case studies on which one or more parameters apply individually
       //That is if user selects to filter by location and damage type, the algorithm will
       //fetch all case studies with either one or both of the parameter's selected option.
 
@@ -5511,21 +5538,21 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       //look for case studies(cid) where selected option = selected param
 
       for (var j = 0; j < this.all_cases_parameters.length; j++) {
-        for (var c = 0; c < this.case_parameters.length; c++) {
-          if (this.all_cases_parameters[j].opt_selected == this.selected_options[c] && this.selected_param == this.all_cases_parameters[j].csp_id) {
+        for (var c = 0; c < this.selected_options_filtered.length; c++) {
+          if (this.all_cases_parameters[j].opt_selected == this.selected_options_filtered[c] && this.selected_param == this.all_cases_parameters[j].csp_id) {
             this.case_studies_with_selected_option.push(this.all_cases_parameters[j]);
           }
         }
-      } //get count of selected parameters
+      } //  console.log(this.selected_options_filtered);
+      // console.log(this.case_studies_with_selected_option);
+      //get count of selected parameters
 
 
       this.count = 0;
-      this.selected_options.forEach(function (element) {
-        if (isNaN(element[_this.i])) {
+      this.selected_options_filtered.forEach(function (element) {
+        if (!element || Object(util__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(element)) {
           _this.count = _this.count + 1;
         }
-
-        _this.i++;
       });
       /*change array to elements that contain only the id's of the case studies*/
 
@@ -5549,9 +5576,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           cid: i,
           count: this.temp[i]
         });
-      }
+      } //filter those cid's from the list of case studies with parameters(list_cases)
 
-      console.log(this.case_study_with_id_count); //filter those cid's from the list of case studies with parameters(list_cases)
 
       for (var _i = 0; _i < this.case_study_with_id_count.length; _i++) {
         for (var k = 0; k < this.list_cases.length; k++) {
@@ -5566,17 +5592,21 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
 
-      if (!this.case_studies_with_selected_option.length && this.selected_options.length) {
+      if (!this.case_studies_with_selected_option.length && this.selected_options_filtered.length) {
         return [];
       } //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
 
 
-      if (!this.case_studies_with_selected_option.length && !this.selected_options.length) {
-        return this.list_cases;
-      }
+      if (!this.case_studies_with_selected_option.length && !this.selected_options_filtered.length) {
+        //filter is dates have been selected
+        this.list_cases_temp = this.filterDate(this.incident_date_start, this.incident_date_end, this.list_cases);
+        return this.list_cases_temp;
+      } //filter if dates have been selecte
 
+
+      this.filtered_cases = this.filterDate(this.incident_date_start, this.incident_date_end, this.filtered_cases);
       return this.filtered_cases;
     }
   },
@@ -5652,27 +5682,30 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @returns array of formated dates
      */
     formatDate: function formatDate(date) {
-      return date.toISOString().slice(0, 10);
+      if (date) {
+        return date.toISOString().slice(0, 10);
+      }
     },
 
     /**
      * @description compares date range to incident date of cases in list
      * @returns array of filtered cases by date
      */
-<<<<<<< HEAD
-    filterDate: function filterDate(date_start, date_end) {
-      var filtered_list = [];
-      this.list_cases.forEach(function (element) {
-=======
     filterDate: function filterDate(date_start, date_end, cases_list) {
+      var _this5 = this;
+
       var filtered_list = [];
-      cases_list.forEach(function (element) {
->>>>>>> 237bd045aee1fdf304491cd8e37a3f54cf01cbcb
-        if (formatDate(date_start) < element.c_incident_date && formatDate(date_end) > element.c_incident_date) {
-          filtered_list.push(element);
-        }
-      });
-      return filtered_list;
+
+      if (date_start && date_end) {
+        cases_list.forEach(function (element) {
+          if (_this5.formatDate(date_start) <= element.c_incident_date && _this5.formatDate(date_end) >= element.c_incident_date) {
+            filtered_list.push(element);
+          }
+        });
+        return filtered_list;
+      }
+
+      return cases_list;
     }
   }
 });
@@ -88295,6 +88328,771 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/util/node_modules/inherits/inherits_browser.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/util/node_modules/inherits/inherits_browser.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/util/support/isBufferBrowser.js":
+/*!******************************************************!*\
+  !*** ./node_modules/util/support/isBufferBrowser.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function isBuffer(arg) {
+  return arg && typeof arg === 'object'
+    && typeof arg.copy === 'function'
+    && typeof arg.fill === 'function'
+    && typeof arg.readUInt8 === 'function';
+}
+
+/***/ }),
+
+/***/ "./node_modules/util/util.js":
+/*!***********************************!*\
+  !*** ./node_modules/util/util.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors ||
+  function getOwnPropertyDescriptors(obj) {
+    var keys = Object.keys(obj);
+    var descriptors = {};
+    for (var i = 0; i < keys.length; i++) {
+      descriptors[keys[i]] = Object.getOwnPropertyDescriptor(obj, keys[i]);
+    }
+    return descriptors;
+  };
+
+var formatRegExp = /%[sdj%]/g;
+exports.format = function(f) {
+  if (!isString(f)) {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(inspect(arguments[i]));
+    }
+    return objects.join(' ');
+  }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j':
+        try {
+          return JSON.stringify(args[i++]);
+        } catch (_) {
+          return '[Circular]';
+        }
+      default:
+        return x;
+    }
+  });
+  for (var x = args[i]; i < len; x = args[++i]) {
+    if (isNull(x) || !isObject(x)) {
+      str += ' ' + x;
+    } else {
+      str += ' ' + inspect(x);
+    }
+  }
+  return str;
+};
+
+
+// Mark that a method should not be used.
+// Returns a modified function which warns once by default.
+// If --no-deprecation is set, then it is a no-op.
+exports.deprecate = function(fn, msg) {
+  if (typeof process !== 'undefined' && process.noDeprecation === true) {
+    return fn;
+  }
+
+  // Allow for deprecating things in the process of starting up.
+  if (typeof process === 'undefined') {
+    return function() {
+      return exports.deprecate(fn, msg).apply(this, arguments);
+    };
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (process.throwDeprecation) {
+        throw new Error(msg);
+      } else if (process.traceDeprecation) {
+        console.trace(msg);
+      } else {
+        console.error(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+};
+
+
+var debugs = {};
+var debugEnviron;
+exports.debuglog = function(set) {
+  if (isUndefined(debugEnviron))
+    debugEnviron = process.env.NODE_DEBUG || '';
+  set = set.toUpperCase();
+  if (!debugs[set]) {
+    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+      var pid = process.pid;
+      debugs[set] = function() {
+        var msg = exports.format.apply(exports, arguments);
+        console.error('%s %d: %s', set, pid, msg);
+      };
+    } else {
+      debugs[set] = function() {};
+    }
+  }
+  return debugs[set];
+};
+
+
+/**
+ * Echos the value of a value. Trys to print the value out
+ * in the best way possible given the different types.
+ *
+ * @param {Object} obj The object to print out.
+ * @param {Object} opts Optional options object that alters the output.
+ */
+/* legacy: obj, showHidden, depth, colors*/
+function inspect(obj, opts) {
+  // default options
+  var ctx = {
+    seen: [],
+    stylize: stylizeNoColor
+  };
+  // legacy...
+  if (arguments.length >= 3) ctx.depth = arguments[2];
+  if (arguments.length >= 4) ctx.colors = arguments[3];
+  if (isBoolean(opts)) {
+    // legacy...
+    ctx.showHidden = opts;
+  } else if (opts) {
+    // got an "options" object
+    exports._extend(ctx, opts);
+  }
+  // set default options
+  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+  if (isUndefined(ctx.depth)) ctx.depth = 2;
+  if (isUndefined(ctx.colors)) ctx.colors = false;
+  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+  if (ctx.colors) ctx.stylize = stylizeWithColor;
+  return formatValue(ctx, obj, ctx.depth);
+}
+exports.inspect = inspect;
+
+
+// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+inspect.colors = {
+  'bold' : [1, 22],
+  'italic' : [3, 23],
+  'underline' : [4, 24],
+  'inverse' : [7, 27],
+  'white' : [37, 39],
+  'grey' : [90, 39],
+  'black' : [30, 39],
+  'blue' : [34, 39],
+  'cyan' : [36, 39],
+  'green' : [32, 39],
+  'magenta' : [35, 39],
+  'red' : [31, 39],
+  'yellow' : [33, 39]
+};
+
+// Don't use 'blue' not visible on cmd.exe
+inspect.styles = {
+  'special': 'cyan',
+  'number': 'yellow',
+  'boolean': 'yellow',
+  'undefined': 'grey',
+  'null': 'bold',
+  'string': 'green',
+  'date': 'magenta',
+  // "name": intentionally not styling
+  'regexp': 'red'
+};
+
+
+function stylizeWithColor(str, styleType) {
+  var style = inspect.styles[styleType];
+
+  if (style) {
+    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+           '\u001b[' + inspect.colors[style][1] + 'm';
+  } else {
+    return str;
+  }
+}
+
+
+function stylizeNoColor(str, styleType) {
+  return str;
+}
+
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(val, idx) {
+    hash[val] = true;
+  });
+
+  return hash;
+}
+
+
+function formatValue(ctx, value, recurseTimes) {
+  // Provide a hook for user-specified inspect functions.
+  // Check that value is an object with an inspect function on it
+  if (ctx.customInspect &&
+      value &&
+      isFunction(value.inspect) &&
+      // Filter out the util module, it's inspect function is special
+      value.inspect !== exports.inspect &&
+      // Also filter out any prototype objects using the circular check.
+      !(value.constructor && value.constructor.prototype === value)) {
+    var ret = value.inspect(recurseTimes, ctx);
+    if (!isString(ret)) {
+      ret = formatValue(ctx, ret, recurseTimes);
+    }
+    return ret;
+  }
+
+  // Primitive types cannot have properties
+  var primitive = formatPrimitive(ctx, value);
+  if (primitive) {
+    return primitive;
+  }
+
+  // Look up the keys of the object.
+  var keys = Object.keys(value);
+  var visibleKeys = arrayToHash(keys);
+
+  if (ctx.showHidden) {
+    keys = Object.getOwnPropertyNames(value);
+  }
+
+  // IE doesn't make error fields non-enumerable
+  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  if (isError(value)
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    return formatError(value);
+  }
+
+  // Some type of object without properties can be shortcutted.
+  if (keys.length === 0) {
+    if (isFunction(value)) {
+      var name = value.name ? ': ' + value.name : '';
+      return ctx.stylize('[Function' + name + ']', 'special');
+    }
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    }
+    if (isDate(value)) {
+      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+    }
+    if (isError(value)) {
+      return formatError(value);
+    }
+  }
+
+  var base = '', array = false, braces = ['{', '}'];
+
+  // Make Array say that they are Array
+  if (isArray(value)) {
+    array = true;
+    braces = ['[', ']'];
+  }
+
+  // Make functions say that they are functions
+  if (isFunction(value)) {
+    var n = value.name ? ': ' + value.name : '';
+    base = ' [Function' + n + ']';
+  }
+
+  // Make RegExps say that they are RegExps
+  if (isRegExp(value)) {
+    base = ' ' + RegExp.prototype.toString.call(value);
+  }
+
+  // Make dates with properties first say the date
+  if (isDate(value)) {
+    base = ' ' + Date.prototype.toUTCString.call(value);
+  }
+
+  // Make error with message first say the error
+  if (isError(value)) {
+    base = ' ' + formatError(value);
+  }
+
+  if (keys.length === 0 && (!array || value.length == 0)) {
+    return braces[0] + base + braces[1];
+  }
+
+  if (recurseTimes < 0) {
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    } else {
+      return ctx.stylize('[Object]', 'special');
+    }
+  }
+
+  ctx.seen.push(value);
+
+  var output;
+  if (array) {
+    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else {
+    output = keys.map(function(key) {
+      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+    });
+  }
+
+  ctx.seen.pop();
+
+  return reduceToSingleString(output, base, braces);
+}
+
+
+function formatPrimitive(ctx, value) {
+  if (isUndefined(value))
+    return ctx.stylize('undefined', 'undefined');
+  if (isString(value)) {
+    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+                                             .replace(/'/g, "\\'")
+                                             .replace(/\\"/g, '"') + '\'';
+    return ctx.stylize(simple, 'string');
+  }
+  if (isNumber(value))
+    return ctx.stylize('' + value, 'number');
+  if (isBoolean(value))
+    return ctx.stylize('' + value, 'boolean');
+  // For some reason typeof null is "object", so special case here.
+  if (isNull(value))
+    return ctx.stylize('null', 'null');
+}
+
+
+function formatError(value) {
+  return '[' + Error.prototype.toString.call(value) + ']';
+}
+
+
+function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+  var output = [];
+  for (var i = 0, l = value.length; i < l; ++i) {
+    if (hasOwnProperty(value, String(i))) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          String(i), true));
+    } else {
+      output.push('');
+    }
+  }
+  keys.forEach(function(key) {
+    if (!key.match(/^\d+$/)) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          key, true));
+    }
+  });
+  return output;
+}
+
+
+function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+  var name, str, desc;
+  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  if (desc.get) {
+    if (desc.set) {
+      str = ctx.stylize('[Getter/Setter]', 'special');
+    } else {
+      str = ctx.stylize('[Getter]', 'special');
+    }
+  } else {
+    if (desc.set) {
+      str = ctx.stylize('[Setter]', 'special');
+    }
+  }
+  if (!hasOwnProperty(visibleKeys, key)) {
+    name = '[' + key + ']';
+  }
+  if (!str) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
+      if (isNull(recurseTimes)) {
+        str = formatValue(ctx, desc.value, null);
+      } else {
+        str = formatValue(ctx, desc.value, recurseTimes - 1);
+      }
+      if (str.indexOf('\n') > -1) {
+        if (array) {
+          str = str.split('\n').map(function(line) {
+            return '  ' + line;
+          }).join('\n').substr(2);
+        } else {
+          str = '\n' + str.split('\n').map(function(line) {
+            return '   ' + line;
+          }).join('\n');
+        }
+      }
+    } else {
+      str = ctx.stylize('[Circular]', 'special');
+    }
+  }
+  if (isUndefined(name)) {
+    if (array && key.match(/^\d+$/)) {
+      return str;
+    }
+    name = JSON.stringify('' + key);
+    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+      name = name.substr(1, name.length - 2);
+      name = ctx.stylize(name, 'name');
+    } else {
+      name = name.replace(/'/g, "\\'")
+                 .replace(/\\"/g, '"')
+                 .replace(/(^"|"$)/g, "'");
+      name = ctx.stylize(name, 'string');
+    }
+  }
+
+  return name + ': ' + str;
+}
+
+
+function reduceToSingleString(output, base, braces) {
+  var numLinesEst = 0;
+  var length = output.reduce(function(prev, cur) {
+    numLinesEst++;
+    if (cur.indexOf('\n') >= 0) numLinesEst++;
+    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+  }, 0);
+
+  if (length > 60) {
+    return braces[0] +
+           (base === '' ? '' : base + '\n ') +
+           ' ' +
+           output.join(',\n  ') +
+           ' ' +
+           braces[1];
+  }
+
+  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+}
+
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray(ar) {
+  return Array.isArray(ar);
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = __webpack_require__(/*! ./support/isBuffer */ "./node_modules/util/support/isBufferBrowser.js");
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+
+function pad(n) {
+  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+}
+
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+              'Oct', 'Nov', 'Dec'];
+
+// 26 Feb 16:19:34
+function timestamp() {
+  var d = new Date();
+  var time = [pad(d.getHours()),
+              pad(d.getMinutes()),
+              pad(d.getSeconds())].join(':');
+  return [d.getDate(), months[d.getMonth()], time].join(' ');
+}
+
+
+// log is just a thin wrapper to console.log that prepends a timestamp
+exports.log = function() {
+  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+};
+
+
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * The Function.prototype.inherits from lang.js rewritten as a standalone
+ * function (not on Function.prototype). NOTE: If this file is to be loaded
+ * during bootstrapping this function needs to be rewritten using some native
+ * functions as prototype setup using normal JavaScript does not work as
+ * expected during bootstrapping (see mirror.js in r114903).
+ *
+ * @param {function} ctor Constructor function which needs to inherit the
+ *     prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+exports.inherits = __webpack_require__(/*! inherits */ "./node_modules/util/node_modules/inherits/inherits_browser.js");
+
+exports._extend = function(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || !isObject(add)) return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+};
+
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+var kCustomPromisifiedSymbol = typeof Symbol !== 'undefined' ? Symbol('util.promisify.custom') : undefined;
+
+exports.promisify = function promisify(original) {
+  if (typeof original !== 'function')
+    throw new TypeError('The "original" argument must be of type Function');
+
+  if (kCustomPromisifiedSymbol && original[kCustomPromisifiedSymbol]) {
+    var fn = original[kCustomPromisifiedSymbol];
+    if (typeof fn !== 'function') {
+      throw new TypeError('The "util.promisify.custom" argument must be of type Function');
+    }
+    Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+      value: fn, enumerable: false, writable: false, configurable: true
+    });
+    return fn;
+  }
+
+  function fn() {
+    var promiseResolve, promiseReject;
+    var promise = new Promise(function (resolve, reject) {
+      promiseResolve = resolve;
+      promiseReject = reject;
+    });
+
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    args.push(function (err, value) {
+      if (err) {
+        promiseReject(err);
+      } else {
+        promiseResolve(value);
+      }
+    });
+
+    try {
+      original.apply(this, args);
+    } catch (err) {
+      promiseReject(err);
+    }
+
+    return promise;
+  }
+
+  Object.setPrototypeOf(fn, Object.getPrototypeOf(original));
+
+  if (kCustomPromisifiedSymbol) Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+    value: fn, enumerable: false, writable: false, configurable: true
+  });
+  return Object.defineProperties(
+    fn,
+    getOwnPropertyDescriptors(original)
+  );
+}
+
+exports.promisify.custom = kCustomPromisifiedSymbol
+
+function callbackifyOnRejected(reason, cb) {
+  // `!reason` guard inspired by bluebird (Ref: https://goo.gl/t5IS6M).
+  // Because `null` is a special error value in callbacks which means "no error
+  // occurred", we error-wrap so the callback consumer can distinguish between
+  // "the promise rejected with null" or "the promise fulfilled with undefined".
+  if (!reason) {
+    var newReason = new Error('Promise was rejected with a falsy value');
+    newReason.reason = reason;
+    reason = newReason;
+  }
+  return cb(reason);
+}
+
+function callbackify(original) {
+  if (typeof original !== 'function') {
+    throw new TypeError('The "original" argument must be of type Function');
+  }
+
+  // We DO NOT return the promise as it gives the user a false sense that
+  // the promise is actually somehow related to the callback's execution
+  // and that the callback throwing will reject the promise.
+  function callbackified() {
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+
+    var maybeCb = args.pop();
+    if (typeof maybeCb !== 'function') {
+      throw new TypeError('The last argument must be of type Function');
+    }
+    var self = this;
+    var cb = function() {
+      return maybeCb.apply(self, arguments);
+    };
+    // In true node style we process the callback on `nextTick` with all the
+    // implications (stack, `uncaughtException`, `async_hooks`)
+    original.apply(this, args)
+      .then(function(ret) { process.nextTick(cb, null, ret) },
+            function(rej) { process.nextTick(callbackifyOnRejected, rej, cb) });
+  }
+
+  Object.setPrototypeOf(callbackified, Object.getPrototypeOf(original));
+  Object.defineProperties(callbackified,
+                          getOwnPropertyDescriptors(original));
+  return callbackified;
+}
+exports.callbackify = callbackify;
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
 /***/ "./node_modules/vue-functional-data-merge/dist/lib.esm.js":
 /*!****************************************************************!*\
   !*** ./node_modules/vue-functional-data-merge/dist/lib.esm.js ***!
@@ -91976,7 +92774,9 @@ var render = function() {
                             }
                           },
                           [
-                            _c("option"),
+                            _c("option", { attrs: { value: "" } }, [
+                              _vm._v("None")
+                            ]),
                             _vm._v(" "),
                             _vm._l(
                               _vm.filteredOptions(case_parameter.csp_id),
@@ -111714,7 +112514,7 @@ var app = new Vue({
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
+/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -111747,11 +112547,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: process.env.MIX_PUSHER_APP_KEY,
-  cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+  key: "785da5d6e7b9677c9162",
+  cluster: "us2",
   encrypted: true
 });
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -113026,8 +113825,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/garc/Desktop/RISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/garc/Desktop/RISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

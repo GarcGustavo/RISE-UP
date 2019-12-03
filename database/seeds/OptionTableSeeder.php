@@ -47,7 +47,6 @@ class OptionTableSeeder extends Seeder
        ['o_content'=>'Spanish','o_parameter'=>4],
 
         //options for location
-     
         ['o_content'=>'Dorado, PR','o_parameter'=>5],
         ['o_content'=>'Mayaguez, PR','o_parameter'=>5],
         ['o_content'=>'Fajardo, PR','o_parameter'=>5],

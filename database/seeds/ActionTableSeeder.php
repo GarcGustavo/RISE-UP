@@ -13,18 +13,18 @@ class ActionTableSeeder extends Seeder
     {
         //
 		//factory(App\Models\action::class, 25)->create();
-		
-		DB::table('action')->insert([
+
+		DB::table('Action')->insert([
 			'a_date'=> now(),
 			'a_user'=> 8,
 			'a_type'=>  1,
 		]);
 
-		DB::table('action')->insert([
+		DB::table('Action')->insert([
 			'a_date'=> now(),
 			'a_user'=> 12,
 			'a_type'=>  2,
 		]);
-		
+
     }
 }

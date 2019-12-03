@@ -49,7 +49,7 @@
                   :id="case_parameter.csp_id"
                 >
                   <!-- <option selected="selected" disabled>{{case_parameter.csp_name}}</option> -->
-                  <option></option>
+                  <option value>None</option>
                   <option
                     v-for="option in filteredOptions(case_parameter.csp_id)"
                     :key="option.oid"
@@ -100,6 +100,7 @@
 
 <script>
 import datepicker from "vuejs-datepicker";
+import { isNumber } from "util";
 /**
  * write a component's description
  */
@@ -126,8 +127,8 @@ export default {
   data() {
     return {
       date_format: "yyyy-MM-dd",
-      incident_date_start: new Date(),
-      incident_date_end: new Date(),
+      incident_date_start: "",
+      incident_date_end: "",
 
       selected_options: [],
       case_parameters: [],
@@ -157,22 +158,23 @@ export default {
      * @returns list of cases in accordance to search.
      */
     filterCases() {
+      // this.cases_by_date = filterDate(this.incident_date_start, this.incident_date_end);
+
       this.filtered_cases = [];
 
-      /*
-      for (let a = 0; a < this.parameters.length; a++) {
-        this.options = this.parameters[a].getElementsByTagName("option");
-
-        for (let b = 0; b < this.options.length; b++) {
-          //  console.log(this.options[b].value);
-          for (let c = 0; c < this.selected_options.length; c++) {
-            if (this.options[b].value == this.selected_options[c]) {
-              this.selected_params.push(this.parameters[a].getAttribute('id'));
-            }
-          }
+      //Selected_option None equals to "", convert to Null so it matches values on database
+      for (let a = 0; a < this.selected_options.length; a++) {
+        if (this.selected_options[a] == "") {
+          this.selected_options[a] = null;
         }
       }
-*/
+      //selected_option returns empty values on none selected filters
+      //Remove undefined empty values
+      this.data = this.selected_options.filter(function(element) {
+        return element !== undefined;
+      });
+
+      this.selected_options_filtered = this.data;
 
       //These for loops get the case studies on which one or more parameters apply individually
       //That is if user selects to filter by location and damage type, the algorithm will
@@ -180,10 +182,10 @@ export default {
       this.case_studies_with_selected_option = []; //temp var for case studies
       //look for case studies(cid) where selected option = selected param
       for (let j = 0; j < this.all_cases_parameters.length; j++) {
-        for (let c = 0; c < this.case_parameters.length; c++) {
+        for (let c = 0; c < this.selected_options_filtered.length; c++) {
           if (
             this.all_cases_parameters[j].opt_selected ==
-              this.selected_options[c] &&
+              this.selected_options_filtered[c] &&
             this.selected_param == this.all_cases_parameters[j].csp_id
           ) {
             this.case_studies_with_selected_option.push(
@@ -192,16 +194,22 @@ export default {
           }
         }
       }
+
+      //  console.log(this.selected_options_filtered);
+      // console.log(this.case_studies_with_selected_option);
+
       //get count of selected parameters
       this.count = 0;
-      this.selected_options.forEach(element => {
-        if (isNaN(element[this.i])) {
+
+      this.selected_options_filtered.forEach(element => {
+        if (!element || isNumber(element)) {
           this.count = this.count + 1;
         }
-        this.i++;
       });
+
       /*change array to elements that contain only the id's of the case studies*/
       this.ids = [];
+
       this.case_studies_with_selected_option.forEach(element => {
         this.ids.push(element.cid);
       });
@@ -214,7 +222,6 @@ export default {
       this.case_studies_with_selected_option.forEach(function(i) {
         vm.temp[i] = (vm.temp[i] || 0) + 1;
       });
-
       this.case_study_with_id_count = [];
       //create array containing count of each case study id
       for (let i in this.temp) {
@@ -223,7 +230,7 @@ export default {
           count: this.temp[i]
         });
       }
-      console.log(this.case_study_with_id_count);
+
       //filter those cid's from the list of case studies with parameters(list_cases)
       for (let i = 0; i < this.case_study_with_id_count.length; i++) {
         for (let k = 0; k < this.list_cases.length; k++) {
@@ -243,7 +250,7 @@ export default {
       //if no case was found and a filter has been selected
       if (
         !this.case_studies_with_selected_option.length &&
-        this.selected_options.length
+        this.selected_options_filtered.length
       ) {
         return [];
       }
@@ -252,10 +259,23 @@ export default {
       //return search items
       if (
         !this.case_studies_with_selected_option.length &&
-        !this.selected_options.length
+        !this.selected_options_filtered.length
       ) {
-        return this.list_cases;
+        //filter is dates have been selected
+        this.list_cases_temp = this.filterDate(
+          this.incident_date_start,
+          this.incident_date_end,
+          this.list_cases
+        );
+        return this.list_cases_temp;
       }
+      //filter if dates have been selecte
+      this.filtered_cases = this.filterDate(
+        this.incident_date_start,
+        this.incident_date_end,
+        this.filtered_cases
+      );
+
       return this.filtered_cases;
     }
   },
@@ -319,23 +339,29 @@ export default {
      * @returns array of formated dates
      */
     formatDate(date) {
-      return date.toISOString().slice(0, 10);
+      if (date) {
+        return date.toISOString().slice(0, 10);
+      }
     },
     /**
      * @description compares date range to incident date of cases in list
      * @returns array of filtered cases by date
      */
-    filterDate(date_start, date_end) {
+    filterDate(date_start, date_end, cases_list) {
       var filtered_list = [];
-      this.list_cases.forEach(element => {
-        if (
-          formatDate(date_start) < element.c_incident_date &&
-          formatDate(date_end) > element.c_incident_date
-        ) {
-          filtered_list.push(element);
-        }
-      });
-      return filtered_list;
+
+      if (date_start && date_end) {
+        cases_list.forEach(element => {
+          if (
+            this.formatDate(date_start) <= element.c_incident_date &&
+            this.formatDate(date_end) >= element.c_incident_date
+          ) {
+            filtered_list.push(element);
+          }
+        });
+        return filtered_list;
+      }
+      return cases_list;
     }
   }
 };
