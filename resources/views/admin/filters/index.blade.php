@@ -19,9 +19,11 @@
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fas fa-table"></i>
+                    @if( ! $category->is_default )   
                         @include('admin.filters.removeCategoryForm')
-                        @include('admin.filters.addCategoryForm')
-						@include('admin.filters.editCategoryForm')
+					    @include('admin.filters.editCategoryForm')
+                    @endif
+                    @include('admin.filters.addCategoryForm')
                 </div>
                 <div class="card-body mt-5">
                     <ul class="list-group">
