@@ -5459,6 +5459,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
 
 
 /**
@@ -5492,6 +5494,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       date_format: "yyyy-MM-dd",
       incident_date_start: "",
       incident_date_end: "",
+      search: "",
+      selected_param: "",
       selected_options: [],
       case_parameters: [],
       all_cases_parameters: [],
@@ -5500,7 +5504,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       selected_options_id: [],
       list_cases: [],
       filtered_cases: [],
-      selected_param: "",
+      test: [],
+      initial_load: true,
       empty: true
     };
   },
@@ -5509,11 +5514,13 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
    * @description
    */
   created: function created() {
+    this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
-    this.fetchAllCasesParameters();
+    this.fetchAllCasesParameters(); // this.filterCases();
   },
-  computed: {
+  computed: {},
+  methods: {
     /**
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
@@ -5521,18 +5528,19 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     filterCases: function filterCases() {
       var _this = this;
 
-      // this.cases_by_date = filterDate(this.incident_date_start, this.incident_date_end);
-      this.filtered_cases = []; //Selected_option None equals to "", convert to Null so it matches values on database
+      this.filtered_cases = []; //create new array of selected options to manipulate data set without changing original array
+
+      this.selected_options_temp = this.selected_options.slice(); //Selected_option None equals to "", convert to Null so it matches values on database
 
       for (var a = 0; a < this.selected_options.length; a++) {
-        if (this.selected_options[a] == "") {
-          this.selected_options[a] = null;
+        if (this.selected_options[a] == "" || this.selected_options[a] == "None") {
+          this.selected_options_temp[a] = null;
         }
       } //selected_option returns empty values on none selected filters
       //Remove undefined empty values
 
 
-      this.data = this.selected_options.filter(function (element) {
+      this.data = this.selected_options_temp.filter(function (element) {
         return element !== undefined;
       });
       this.selected_options_filtered = this.data; //These for loops get the case studies on which one or more parameters apply individually
@@ -5548,9 +5556,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.case_studies_with_selected_option.push(this.all_cases_parameters[j]);
           }
         }
-      } //  console.log(this.selected_options_filtered);
-      // console.log(this.case_studies_with_selected_option);
-      //get count of selected parameters
+      } //get count of selected parameters
 
 
       this.count = 0;
@@ -5598,7 +5604,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
 
       if (!this.case_studies_with_selected_option.length && this.selected_options_filtered.length) {
-        return [];
+        //return [];
+        this.test = [];
       } //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
@@ -5606,34 +5613,63 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       if (!this.case_studies_with_selected_option.length && !this.selected_options_filtered.length) {
         //filter is dates have been selected
-        this.list_cases_temp = this.filterDate(this.incident_date_start, this.incident_date_end, this.list_cases);
-        return this.list_cases_temp;
-      } //filter if dates have been selecte
+        this.list_cases_temp = this.filterDate(this.incident_date_start, this.incident_date_end, this.list_cases); // return this.list_cases_temp;
+
+        this.test = this.list_cases_temp;
+      } //filter if dates have been selected
 
 
       this.filtered_cases = this.filterDate(this.incident_date_start, this.incident_date_end, this.filtered_cases);
-      return this.filtered_cases;
-    }
-  },
-  methods: {
+      this.test = this.filtered_cases; //return this.filtered_cases;
+    },
+    forceRerender: function forceRerender() {
+      var _this2 = this;
+
+      // Remove my-component from the DOM
+      this.refresh = false;
+      this.$nextTick(function () {
+        // Add the component back in
+        _this2.refresh = true;
+      });
+    },
+    getSearch: function getSearch() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.search = this.urlParams.get("q"); //get search
+    },
+
+    /**
+     * @description get selected case parameter
+     */
     selected: function selected(id) {
       this.selected_param = id;
+    },
+    clear: function clear() {
+      // this.clear = false;
+      this.parameters = document.getElementsByTagName("select");
+
+      for (var i = 0; i < this.parameters.length; i++) {
+        this.parameters[i].selectedIndex = 0;
+      }
+
+      this.test = this.list_cases;
     },
 
     /**
      * @description fetch all system parameters(filters)
      */
     fetchParameters: function fetchParameters() {
-      var _this2 = this;
+      var _this3 = this;
 
       fetch("/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this2.case_parameters = res.data;
+        _this3.case_parameters = res.data;
 
-        if (_this2.cases) {
-          _this2.list_cases = Object.values(_this2.cases);
-          _this2.empty = false;
+        if (_this3.cases) {
+          _this3.list_cases = Object.values(_this3.cases);
+          _this3.test = _this3.list_cases;
+          _this3.empty = false;
         }
       })["catch"](function (err) {
         return console.log(err);
@@ -5645,12 +5681,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch all parameters options
      */
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this3 = this;
+      var _this4 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.parameter_options = res.data;
+        _this4.parameter_options = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -5660,12 +5696,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch the parameters all case studies have correspondingly
      */
     fetchAllCasesParameters: function fetchAllCasesParameters() {
-      var _this4 = this;
+      var _this5 = this;
 
       fetch("/cs-parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.all_cases_parameters = res.data;
+        _this5.all_cases_parameters = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -5697,13 +5733,13 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @returns array of filtered cases by date
      */
     filterDate: function filterDate(date_start, date_end, cases_list) {
-      var _this5 = this;
+      var _this6 = this;
 
       var filtered_list = [];
 
       if (date_start && date_end) {
         cases_list.forEach(function (element) {
-          if (_this5.formatDate(date_start) <= element.c_incident_date && _this5.formatDate(date_end) >= element.c_incident_date) {
+          if (_this6.formatDate(date_start) <= element.c_incident_date && _this6.formatDate(date_end) >= element.c_incident_date) {
             filtered_list.push(element);
           }
         });
@@ -44190,7 +44226,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\r\n/*\r\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\r\n then adding custom css styles with the following css selectors:\r\n\r\n.pagination - Pagination component container (ul element)\r\n.pagination li - All list items in the pagination component\r\n.pagination li a - All pagination links including first, last, previous and next\r\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\r\n.pagination li.first - The 'First' pagination element\r\n.pagination li.last - The 'Last' pagination element\r\n.pagination li.previous - The 'Previous' pagination element\r\n.pagination li.next - The 'Next' pagination element\r\n*/\r\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*\nTo use custom styles disable the default styles by adding the property :disableDefaultStyles=\"true\" to the <jw-pagination> component,\n then adding custom css styles with the following css selectors:\n\n.pagination - Pagination component container (ul element)\n.pagination li - All list items in the pagination component\n.pagination li a - All pagination links including first, last, previous and next\n.pagination li.page-number - All page numbers (1, 2, 3 etc) pagination elements\n.pagination li.first - The 'First' pagination element\n.pagination li.last - The 'Last' pagination element\n.pagination li.previous - The 'Previous' pagination element\n.pagination li.next - The 'Next' pagination element\n*/\n", ""]);
 
 // exports
 
@@ -91153,7 +91189,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "body mb-5 mt-5" }, [
-      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\r\n    ")]),
+      _c("h1", { staticClass: "mb-3" }, [_vm._v("FAQ\n    ")]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -91194,7 +91230,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -91211,7 +91247,7 @@ var staticRenderFns = [
               [
                 _c("h5", { staticClass: "mb-0" }, [
                   _c("a", [
-                    _vm._v("Collapsible Group Item #2\r\n                    ")
+                    _vm._v("Collapsible Group Item #2\n                    ")
                   ])
                 ])
               ]
@@ -91229,7 +91265,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -91262,7 +91298,7 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
-                    "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+                    "\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\n                    labore sustainable VHS.\n                "
                   )
                 ])
               ]
@@ -92698,7 +92734,10 @@ var render = function() {
                           [
                             _vm._v("\n                From:\n                "),
                             _c("datepicker", {
-                              attrs: { format: _vm.date_format },
+                              attrs: {
+                                "use-utc": true,
+                                format: _vm.date_format
+                              },
                               model: {
                                 value: _vm.incident_date_start,
                                 callback: function($$v) {
@@ -92709,7 +92748,10 @@ var render = function() {
                             }),
                             _vm._v("To:\n                "),
                             _c("datepicker", {
-                              attrs: { format: _vm.date_format },
+                              attrs: {
+                                "use-utc": true,
+                                format: _vm.date_format
+                              },
                               model: {
                                 value: _vm.incident_date_end,
                                 callback: function($$v) {
@@ -92776,13 +92818,24 @@ var render = function() {
                                   )
                                 },
                                 function($event) {
-                                  return _vm.selected(case_parameter.csp_id)
+                                  _vm.selected(case_parameter.csp_id),
+                                    _vm.filterCases()
                                 }
                               ]
                             }
                           },
                           [
-                            _c("option", { attrs: { value: "" } }, [
+                            _c("option", {
+                              staticStyle: { display: "none" },
+                              attrs: {
+                                selected: "",
+                                disabled: "",
+                                hidden: "",
+                                value: ""
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("option", { attrs: { label: "None" } }, [
                               _vm._v("None")
                             ]),
                             _vm._v(" "),
@@ -92810,7 +92863,23 @@ var render = function() {
           })
         ],
         2
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          on: {
+            click: function($event) {
+              return _vm.clear()
+            }
+          }
+        },
+        [_vm._v("Clear")]
       )
+    ]),
+    _vm._v(" "),
+    _c("h4", { staticClass: "mt-5" }, [
+      _vm._v("Search results for: " + _vm._s(_vm.search))
     ]),
     _vm._v(" "),
     _c(
@@ -92822,7 +92891,7 @@ var render = function() {
               _c(
                 "div",
                 { staticClass: "row mt-1 pt-2 pl-2", attrs: { id: "cases" } },
-                _vm._l(_vm.filterCases, function(case_study) {
+                _vm._l(_vm.test, function(case_study) {
                   return _c(
                     "div",
                     { key: case_study.cid, staticClass: "col-lg-6 mb-4" },
@@ -113833,8 +113902,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
