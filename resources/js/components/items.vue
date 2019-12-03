@@ -915,6 +915,7 @@ export default {
       this.updateItems(items);
       this.updateCase();
       });
+      window.location.reload();
       //this.updateParameter();
     },
     //Update selected group for case study

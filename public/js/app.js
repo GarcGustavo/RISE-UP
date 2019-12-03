@@ -5097,7 +5097,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this12.updateItems(items);
 
         _this12.updateCase();
-      }); //this.updateParameter();
+      });
+      window.location.reload(); //this.updateParameter();
     },
     //Update selected group for case study
     onSelectGroup: function onSelectGroup(selected_gid) {
