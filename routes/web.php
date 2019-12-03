@@ -62,10 +62,10 @@ Route::get('/users', 'UserController@index');
 Route::post('/user/create', 'UserController@store');
 
 //List users editing cid
-Route::get('/user/edit/{id}', 'UserController@showUsersEditing');
+Route::get('/user/edit', 'UserController@showUsersEditing');
 
 //Update users editing cid
-Route::post('/user/{id}/edit', 'UserController@updateUsersEditing');
+Route::post('/user/edit', 'UserController@updateUsersEditing');
 
 
 /********GROUPS*********/
@@ -130,7 +130,7 @@ Route::get('/case/group/show', 'CaseController@showGroupCases');
 Route::get('/case/user/show', 'CaseController@showAllUserCases');
 
 //Show case study groups
-Route::get('/case/group/{id}', 'CaseController@show_case_group');
+Route::get('/case/group', 'CaseController@show_case_group');
 
 //Create a case study
 //Software requirement 2.33. The web application will allow Collaborators to create a new independent case
@@ -152,16 +152,16 @@ Route::delete('case/remove', 'CaseController@destroy');
 Route::get('/items', 'ItemController@index');
 
 //List case items
-Route::get('/case/{id}/items','ItemController@getCaseItems');
+Route::get('/case/items','ItemController@getCaseItems');
 
 //Add items to a case
 Route::post('/item/add', 'ItemController@addCaseItem');
 
 //Update item in a case
-Route::post('/item/{id}/update', 'ItemController@update');
+Route::post('/item/update', 'ItemController@update');
 
 //Delete item
-Route::delete('/item/{id}/remove', 'ItemController@removeItem');
+Route::delete('/item/remove', 'ItemController@removeItem');
 
 
 /********CASE PARAMETERS*********/
@@ -176,14 +176,14 @@ Route::get('/parameter/options','CS_ParameterController@getParameterOptions');
 Route::get('/cs-parameters', 'Case_ParametersController@getParameters');
 
 //List case parameters of a case study
-Route::get('/case/{id}/parameters','Case_ParametersController@getCaseParameters');
+Route::get('/case/parameters','Case_ParametersController@getCaseParameters');
 
 //List case parameter selected options
 Route::get('/case/{id}/options','Case_ParametersController@getCaseSelectedOptions');
 
 
 //Update title/description in a case
-Route::post('/case/{id}/update', 'CaseController@updateCaseDetails');
+Route::post('/case/update', 'CaseController@updateCaseDetails');
 
 //Update parameters in a case
 Route::post('/parameter/update', 'Case_ParametersController@updateCaseParameters');

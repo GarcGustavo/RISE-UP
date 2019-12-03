@@ -16,6 +16,7 @@ class CreateCsParameterTable extends Migration
         Schema::create('CS_Parameter', function (Blueprint $table) {
             $table->bigIncrements('csp_id');
             $table->string('csp_name', 255);
+            $table->boolean('is_default')->default(false);
         });
     }
 

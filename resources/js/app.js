@@ -9,6 +9,7 @@ require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
 import Datepicker from 'vuejs-datepicker';
+import linkify  from 'vue-linkify';
 
 window.Vue = require('vue');
 
@@ -16,6 +17,8 @@ window.bootbox = require('bootbox');
 
 Vue.use(BootstrapVue);
 Vue.use(Datepicker);
+Vue.directive('linkified', linkify)
+//Vue.use(linkify);
 
 
 /**

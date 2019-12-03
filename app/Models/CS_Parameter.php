@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Database\Eloquent\Collection cases
  * @property \Illuminate\Database\Eloquent\Collection options
  * @property string csp_name
+ * @property boolean is_default
  */
 class cs_parameter extends Model
 {
@@ -27,7 +28,8 @@ class cs_parameter extends Model
     public $timestamps = false;
 
     public $fillable = [
-        'csp_name'
+        'csp_name',
+        'is_default'
     ];
 
     /**
@@ -37,7 +39,8 @@ class cs_parameter extends Model
      */
     protected $casts = [
         'csp_id' => 'integer',
-        'csp_name' => 'string'
+        'csp_name' => 'string', 
+        'is_default' => 'boolean'
     ];
 
     /**
@@ -46,7 +49,8 @@ class cs_parameter extends Model
      * @var array
      */
     public static $rules = [
-        'csp_name' => 'required'
+        'csp_name' => 'required',
+        'is_default' => 'required'
     ];
 
     /**

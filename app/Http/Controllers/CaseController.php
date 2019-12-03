@@ -68,9 +68,9 @@ class CaseController extends Controller
         * @param  \Illuminate\Http\Request  $request
         * @return \App\Http\Resources\Group
         */
-    public function show_case_group($id)
+    public function show_case_group(Request $request)
     {
-        $gid = $id;
+        $gid = $request->input('gid');;
 
         $cases = Case_Study::where('Case.c_group', $gid)->get();
         $case_group = Group::
@@ -137,7 +137,7 @@ class CaseController extends Controller
         $case_study->c_thumbnail = $request->input('c_thumbnail');
         $case_study->c_status = $request->input('c_status');
         $case_study->c_date = $request->input('c_date');
-        $case_study->c_date = $request->input('c_incident_date');
+        $case_study->c_incident_date = $request->input('c_incident_date');
         $case_study->c_owner = $request->input('c_owner');
         $case_study->c_group = $request->input('c_group');
         //process request
@@ -242,11 +242,14 @@ class CaseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateCaseDetails(Request $request, $id)
+    public function updateCaseDetails(Request $request)
     {
         $c_thumbnail = $request->c_thumbnail;
         if($request->hasFile('image')){
-            $c_thumbnail = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $validator = Validator::make($request->all(), [
+                'image' => 'max:1024',
+            ]);
+            $c_thumbnail = time().'-'.$request->file('image')->getClientOriginalExtension();
             $request->file('image')->move(public_path('images'), $c_thumbnail);
         }
         $cid = $request->cid;

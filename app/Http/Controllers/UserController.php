@@ -90,9 +90,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function showUsersEditing($id)
+    public function showUsersEditing(Request $request)
     {
-        $cid = $id;
+        $cid = $request -> input('cid');
         $user = User::where('User.current_edit_cid', $cid)->get();
         return UserResource::collection($user);
     }
@@ -103,9 +103,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateUsersEditing(Request $request, $id)
+    public function updateUsersEditing(Request $request)
     {
-        $uid = $id;
+        $uid = $request -> input('uid');
         $current_edit_cid = $request -> input('current_edit_cid');
         User::where(['uid' => $uid])->update(['current_edit_cid' => $current_edit_cid]);
         return response()->json(['message'=>'Updated user editing successfully']);
