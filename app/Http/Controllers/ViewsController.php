@@ -143,7 +143,7 @@ class ViewsController extends Controller
             ->where('i_type', '=', 1)->where('i_content', 'LIKE', '%'.$q.'%')
             ->select('Case.*')->get()->sortByDesc('cid');
 
-        $case_study = $case_study_without_content->concat($case_study_with_content)->sortByDesc('cid');
+        $case_study = $case_study_without_content->concat($case_study_with_content)->unique()->sortByDesc('cid');
         if ($validate->fails()) {
             return view('search')
             ->withErrors($validate);

@@ -5635,7 +5635,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       } //Eliminate duplicates
 
 
-      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
+      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases));
+      console.log(this.filtered_cases); //if no case was found and a filter has been selected
 
       if (!this.case_studies_with_selected_option.length && this.selected_options_filtered.length) {
         //return [];
@@ -116465,13 +116466,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-<<<<<<< HEAD
-__webpack_require__(/*! /home/melvin/IReN/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/melvin/IReN/resources/sass/app.scss */"./resources/sass/app.scss");
-=======
 __webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
 module.exports = __webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
->>>>>>> 74c5fa67ebdd8ead562f7cf9dfdfdd02734766a7
 
 
 /***/ })
