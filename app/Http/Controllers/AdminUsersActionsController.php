@@ -38,6 +38,10 @@ class AdminUsersActionsController extends Controller
         return view('admin.users-actions.index', ['users' => $users]);
     }
 
+
+
+
+
     //public function show
     //Selects recent actions for a particular user
     public function show($id){
@@ -57,4 +61,62 @@ class AdminUsersActionsController extends Controller
         return view('admin.users-actions.show', ['users' => $users, 'actions' => $actions]);
 
     }
+
+
+
+
+
+
+
+
+
+        //public function store
+        public function store(){
+            $validatedData = request()->validate([
+                'a_user' => ['required', 'numeric'],
+                'a_type' => ['required', 'numeric'],
+                'a_date' => ['required', 'date'],
+            ]);
+    
+            $action = new action();
+            //dd($option);
+            $action->a_user = $validatedData['a_user'];
+            $action->a_type = $validatedData['a_type'];
+            $action->a_date = $validatedData['a_date'];
+            //dd($option);
+            $action->save();
+            
+            //return redirect('/admin/filters');
+        }
+
+
+        //public function destroy
+        public function destroy($id){
+            $action = action::find($id);
+            //dd($option);
+            $action->delete();
+
+            //return redirect('/admin/filters');
+        }
+    
+        
+	    //public function update
+        public function update($id){
+            $validatedData = request()->validate([
+                'a_user' => ['required', 'numeric'],
+                'a_type' => ['required', 'numeric'],
+                'a_date' => ['required', 'date'],
+            ]);
+
+            $action = action::find($id);
+            //dd($option);
+            $action->a_user = $validatedData['a_user'];
+            $action->a_type = $validatedData['a_type'];
+            $action->a_date = $validatedData['a_date'];
+            //dd($option);
+            $action->save();
+
+            //return redirect('/admin/filters');
+        }
+
 }

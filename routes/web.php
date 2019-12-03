@@ -224,6 +224,10 @@ Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('a
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
 
+Route::post('/admin/users-actions', 'AdminUsersActionsController@store');
+Route::put('/admin/users-actions/{id}', 'AdminUsersActionsController@update');
+Route::delete('/admin/users-actions/{id}', 'AdminUsersActionsController@destroy');
+
 
 //Presents group name, the group owner, the latest action, and creation date for each group.
 //Software Requirement 2.61. The web application will allow an Admin to view the groups of the system.
@@ -236,6 +240,11 @@ Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups')
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/groups-actions/{id}', 'AdminGroupsActionsController@show');
 
+/*
+Route::post('/admin/groups-actions', 'AdminGroupsActionsController@store');
+Route::put('/admin/groups-actions/{id}', 'AdminGroupsActionsController@update');
+Route::delete('/admin/groups-actions/{id}', 'AdminGroupsActionsController@destroy');
+*/
 
 //List filters
 //Software Requirement 2.63  The web application will allow an Admin to view a list of search filters for case studies.
