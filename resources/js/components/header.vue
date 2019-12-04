@@ -172,6 +172,7 @@ export default {
       fetch("/user?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
+           // console.log(res);
           this.user = res.data[0];
           if (this.user.u_role == 4) {
             this.isAdmin = true;

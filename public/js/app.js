@@ -3905,6 +3905,7 @@ __webpack_require__.r(__webpack_exports__);
       fetch("/user?uid=" + this.curr_user).then(function (res) {
         return res.json();
       }).then(function (res) {
+        // console.log(res);
         _this.user = res.data[0];
 
         if (_this.user.u_role == 4) {
@@ -5829,7 +5830,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     this.fetchParameterOptions();
     this.fetchAllCasesParameters(); // this.filterCases();
   },
-  computed: {},
+  watch: {
+    incident_date_start: function incident_date_start() {
+      this.filterCases();
+    },
+    incident_date_end: function incident_date_end() {
+      this.filterCases();
+    }
+  },
   methods: {
     /**
      * @description filters cases by dropdown selection.
@@ -5911,8 +5919,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       } //Eliminate duplicates
 
 
-      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases));
-      console.log(this.filtered_cases); //if no case was found and a filter has been selected
+      this.filtered_cases = _toConsumableArray(new Set(this.filtered_cases)); //if no case was found and a filter has been selected
 
       if (!this.case_studies_with_selected_option.length && this.selected_options_filtered.length) {
         //return [];
@@ -5924,24 +5931,20 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       if (!this.case_studies_with_selected_option.length && !this.selected_options_filtered.length) {
         //filter is dates have been selected
-        this.list_cases_temp = this.filterDate(this.incident_date_start, this.incident_date_end, this.list_cases); // return this.list_cases_temp;
+        this.list_cases_temp = this.filterDate(this.incident_date_start, this.incident_date_end, this.list_cases);
+        this.search = this.list_cases_temp; // return this.list_cases_temp;
 
-        this.search = this.list_cases_temp;
+        this.$nextTick(function () {
+          this.search = this.list_cases_temp; // true - update variable
+        });
+        this.$nextTick(function () {
+          this.search = this.list_cases_temp; // true - render to DOM
+        });
       } //filter if dates have been selected
 
 
       this.filtered_cases = this.filterDate(this.incident_date_start, this.incident_date_end, this.filtered_cases);
       this.search = this.filtered_cases; //return this.filtered_cases;
-    },
-    forceRerender: function forceRerender() {
-      var _this2 = this;
-
-      // Remove my-component from the DOM
-      this.refresh = false;
-      this.$nextTick(function () {
-        // Add the component back in
-        _this2.refresh = true;
-      });
     },
     getSearch: function getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
@@ -5975,17 +5978,17 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch all system parameters(filters)
      */
     fetchParameters: function fetchParameters() {
-      var _this3 = this;
+      var _this2 = this;
 
       fetch("/parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.case_parameters = res.data;
+        _this2.case_parameters = res.data;
 
-        if (_this3.cases) {
-          _this3.list_cases = Object.values(_this3.cases);
-          _this3.search = _this3.list_cases;
-          _this3.empty = false;
+        if (_this2.cases) {
+          _this2.list_cases = Object.values(_this2.cases);
+          _this2.search = _this2.list_cases;
+          _this2.empty = false;
         }
       })["catch"](function (err) {
         return console.log(err);
@@ -5997,12 +6000,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch all parameters options
      */
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this4 = this;
+      var _this3 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.parameter_options = res.data;
+        _this3.parameter_options = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -6012,12 +6015,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @description fetch the parameters all case studies have correspondingly
      */
     fetchAllCasesParameters: function fetchAllCasesParameters() {
-      var _this5 = this;
+      var _this4 = this;
 
       fetch("/cs-parameters").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this5.all_cases_parameters = res.data;
+        _this4.all_cases_parameters = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -6049,13 +6052,13 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
      * @returns array of filtered cases by date
      */
     filterDate: function filterDate(date_start, date_end, cases_list) {
-      var _this6 = this;
+      var _this5 = this;
 
       var filtered_list = [];
 
       if (date_start && date_end) {
         cases_list.forEach(function (element) {
-          if (_this6.formatDate(date_start) <= element.c_incident_date && _this6.formatDate(date_end) >= element.c_incident_date) {
+          if (_this5.formatDate(date_start) <= element.c_incident_date && _this5.formatDate(date_end) >= element.c_incident_date) {
             filtered_list.push(element);
           }
         });
@@ -117793,8 +117796,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/melvin/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/melvin/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

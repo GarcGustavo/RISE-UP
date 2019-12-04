@@ -162,11 +162,18 @@ export default {
     // this.filterCases();
   },
 
-  computed: {},
+  watch: {
+    incident_date_start: function() {
+      this.filterCases();
+    },
+    incident_date_end: function() {
+      this.filterCases();
+    }
+  },
 
   methods: {
     /**
-     * @description filters cases by dropdown selection.
+     * @description filters cases by dropdown and date selection.
      * @returns list of cases in accordance to search.
      */
     filterCases() {
@@ -259,7 +266,6 @@ export default {
       }
       //Eliminate duplicates
       this.filtered_cases = [...new Set(this.filtered_cases)];
-      console.log(this.filtered_cases);
 
       //if no case was found and a filter has been selected
       if (
@@ -283,11 +289,16 @@ export default {
           this.incident_date_end,
           this.list_cases
         );
-        // return this.list_cases_temp;
 
         this.search = this.list_cases_temp;
+        // return this.list_cases_temp;
+        this.$nextTick(function() {
+          this.search = this.list_cases_temp; // true - update variable
+        });
+        this.$nextTick(function() {
+          this.search = this.list_cases_temp; // true - render to DOM
+        });
       }
-
       //filter if dates have been selected
       this.filtered_cases = this.filterDate(
         this.incident_date_start,
@@ -295,18 +306,13 @@ export default {
         this.filtered_cases
       );
       this.search = this.filtered_cases;
+
       //return this.filtered_cases;
     },
 
-    forceRerender() {
-      // Remove my-component from the DOM
-      this.refresh = false;
-      this.$nextTick(() => {
-        // Add the component back in
-        this.refresh = true;
-      });
-    },
-
+    /**
+     * @description get text of what the user is searching for
+     */
     getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.search_for = this.urlParams.get("q"); //get search
@@ -319,12 +325,15 @@ export default {
       this.selected_param = id;
     },
 
+    /**
+     * @description clear all filters
+     */
     clearFilter() {
       // this.clear = false;
       this.parameters = document.getElementsByTagName("select");
-      this.incident_date_start="";
-      this.incident_date_end="";
-      this.selected_options=[];
+      this.incident_date_start = "";
+      this.incident_date_end = "";
+      this.selected_options = [];
       this.search = this.list_cases;
       this.$nextTick(function() {
         this.search = this.list_cases; // true
@@ -332,7 +341,6 @@ export default {
         for (let i = 0; i < this.parameters.length; i++) {
           this.parameters[i].selectedIndex = -1;
         }
-
       });
     },
 
