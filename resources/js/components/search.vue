@@ -162,14 +162,21 @@ export default {
     // this.filterCases();
   },
 
-  computed: {},
+  watch: {
+    incident_date_start: function() {
+      this.filterCases();
+    },
+    incident_date_end: function() {
+      this.filterCases();
+    }
+  },
 
   methods: {
     /**
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
-    filterCases() {
+    async filterCases() {
       this.filtered_cases = [];
 
       //create new array of selected options to manipulate data set without changing original array
@@ -259,7 +266,6 @@ export default {
       }
       //Eliminate duplicates
       this.filtered_cases = [...new Set(this.filtered_cases)];
-      console.log(this.filtered_cases);
 
       //if no case was found and a filter has been selected
       if (
@@ -283,11 +289,16 @@ export default {
           this.incident_date_end,
           this.list_cases
         );
-        // return this.list_cases_temp;
 
         this.search = this.list_cases_temp;
+        // return this.list_cases_temp;
+        this.$nextTick(function() {
+          this.search = this.list_cases_temp; // true - update variable
+        });
+        this.$nextTick(function() {
+          this.search = this.list_cases_temp; // true - render to DOM
+        });
       }
-
       //filter if dates have been selected
       this.filtered_cases = this.filterDate(
         this.incident_date_start,
@@ -295,6 +306,7 @@ export default {
         this.filtered_cases
       );
       this.search = this.filtered_cases;
+
       //return this.filtered_cases;
     },
 
@@ -322,9 +334,9 @@ export default {
     clearFilter() {
       // this.clear = false;
       this.parameters = document.getElementsByTagName("select");
-      this.incident_date_start="";
-      this.incident_date_end="";
-      this.selected_options=[];
+      this.incident_date_start = "";
+      this.incident_date_end = "";
+      this.selected_options = [];
       this.search = this.list_cases;
       this.$nextTick(function() {
         this.search = this.list_cases; // true
@@ -332,7 +344,6 @@ export default {
         for (let i = 0; i < this.parameters.length; i++) {
           this.parameters[i].selectedIndex = -1;
         }
-
       });
     },
 
