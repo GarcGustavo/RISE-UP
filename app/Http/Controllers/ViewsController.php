@@ -44,6 +44,11 @@ class ViewsController extends Controller
         return view('help');
     }
 
+    public function profile()
+    {
+        return view('profile');
+    }
+
     public function group(Request $request)
     {
         //renaming attributes

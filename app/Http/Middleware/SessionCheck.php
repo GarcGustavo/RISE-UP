@@ -15,10 +15,13 @@ class SessionCheck
      */
     public function handle($request, Closure $next)
     {
-        if (!$request->session()->exists('user')) {
-            // user value cannot be found in session
-            return redirect('/');
+        if ($request->session()->exists('user')) {
+            if($request->session()->get('user') == $request->input('uid') || $request->session()->get('user') == 'temporary'){
+                return $next($request);
+            }
         }
-        return $next($request);
+        // user value cannot be found in session
+        return redirect('/');
+
     }
 }
