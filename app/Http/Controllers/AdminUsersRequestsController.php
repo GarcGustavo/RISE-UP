@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\DB;
 class AdminUsersRequestsController extends Controller
 {
     //public function index
-    public function index(){
+    public function index(Request $request){
+
+        $id = $request->input('id');;
 
         //Creates the list of users to be sent to the view
         //A join is made with the 'user' and 'role' table in order to provide

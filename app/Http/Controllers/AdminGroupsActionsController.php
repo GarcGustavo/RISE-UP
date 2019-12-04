@@ -10,10 +10,11 @@ class AdminGroupsActionsController extends Controller
 {
     //public function show
     //Presents recent actions for a particular group
-    public function show($id){
+    public function show(Request $request){
+        $gid = $request->input('id');;
         $groups = DB::table('Group')
             ->select('g_name')
-            ->where('gid', '=', $id)
+            ->where('gid', '=', $gid)
             ->get();
 
         $actions = DB::table('Group')
@@ -22,7 +23,7 @@ class AdminGroupsActionsController extends Controller
             ->join('User', 'User.uid', '=', 'User_Groups.uid')
             ->join('Action_Type', 'Action_Type.act_id', '=', 'Action.a_type')
             ->select('Group.*',  'Action.a_date', 'Action_Type.act_name', 'User.first_name', 'User.last_name')
-            ->where('Group.gid', '=', $id)
+            ->where('Group.gid', '=', $gid)
             ->orderBy('Action.a_date', 'desc')
             ->get();
 

@@ -40,17 +40,18 @@ class AdminUsersActionsController extends Controller
 
     //public function show
     //Selects recent actions for a particular user
-    public function show($id){
+    public function show(Request $request){
+        $uid = $request->input('id');;
         $users = DB::table('user')
             ->select('first_name', 'last_name')
-            ->where('uid', '=', $id)
+            ->where('uid', '=', $uid)
             ->get();
 
         $actions = DB::table('user')
             ->join('action', 'action.a_user', '=', 'user.uid')
             ->join('action_type', 'action.a_type', '=', 'action_type.act_id')
             ->select('user.*',  'action.a_date', 'action_type.act_name')
-            ->where('user.uid', '=', $id)
+            ->where('user.uid', '=', $uid)
             ->orderBy('action.a_date', 'desc')
             ->get();
 

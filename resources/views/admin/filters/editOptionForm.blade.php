@@ -1,4 +1,4 @@
-<form action="/admin/filter-option/{{$option->oid}}" method="post">
+<form action="/admin/filter-option?id={{$option->oid}}" method="post">
 	@method('PUT')
 	@csrf
     <button type="submit" class="btn btn-dark m-2">Edit this filter</button>

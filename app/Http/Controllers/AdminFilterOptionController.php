@@ -25,7 +25,8 @@ class AdminFilterOptionController extends Controller
     }
 
     //public function destroy
-    public function destroy($id){
+    public function destroy(Request $request){
+        $id = $request->input('id');;
         $option = option::find($id);
         //dd($option);
         $option->delete();
@@ -33,7 +34,8 @@ class AdminFilterOptionController extends Controller
     }
 	
 	//public function update
-    public function update($id){
+    public function update(Request $request){
+        $id = $request->input('id');;
         $validatedData = request()->validate([
             'o_parameter' => ['required', 'numeric'],
             'o_content' => ['required', 'string'],

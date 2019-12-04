@@ -10,18 +10,19 @@ use Illuminate\Support\Facades\DB;
 class AdminUserController extends Controller
 {
     //public function edit
-    public function edit($id){
-
+    public function edit(Request $request){
+        $uid = $request->input('id');;
         $users = DB::table('User')
             ->select('User.*')
-            ->where('uid', '=', $id)
+            ->where('uid', '=', $uid)
             ->get();
         return view('admin.user.edit', ['users' => $users]);
     }
 
 
     //public function update
-    public function update($uid){
+    public function update(Request $request){
+        $uid = $request->input('id');;
         $validatedData = request()->validate([
             'u_role' => ['required'],
             'u_expiration_date' => ['required'],

@@ -24,7 +24,8 @@ class AdminFilterCategoryController extends Controller
 
 
     //public function destroy
-    public function destroy($id){
+    public function destroy(Request $request){
+        $id = $request->input('id');;
         $cs_parameter = cs_parameter::find($id);
         //dd($option);
         $cs_parameter->delete();
@@ -33,7 +34,8 @@ class AdminFilterCategoryController extends Controller
 
 	
 	//public function update
-    public function update($id){
+    public function update(Request $request){
+        $id = $request->input('id');;
         $validatedData = request()->validate([
             'csp_name' => ['required', 'string'],
         ]);

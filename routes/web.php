@@ -201,14 +201,14 @@ Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name(
 //Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
 //Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
 //Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::get('/admin/user/{id}/edit', 'AdminUserController@edit');
+Route::get('/admin/user/edit', 'AdminUserController@edit');
 
 
 //Admin approve the user requests, and edits a User
 //Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
 //Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
 //Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::put('/admin/user/{id}', 'AdminUserController@update');
+Route::put('/admin/user/edit', 'AdminUserController@update');
 
 
 //Presents latest action for each user
@@ -217,12 +217,11 @@ Route::put('/admin/user/{id}', 'AdminUserController@update');
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('admin.users-actions');
 
-
 //Presents recent actions for a particular user
 //Software Requirement 2.59. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show');
+Route::get('/admin/user-actions', 'AdminUsersActionsController@show');
 
 
 //Presents group name, the group owner, the latest action, and creation date for each group.
@@ -234,7 +233,7 @@ Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups')
 //Software Requirement 2.59. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/groups-actions/{id}', 'AdminGroupsActionsController@show');
+Route::get('/admin/groups-actions', 'AdminGroupsActionsController@show');
 
 
 //List filters
@@ -256,20 +255,20 @@ Route::post('/admin/filter-category', 'AdminFilterCategoryController@store');
 
 //Edit filter 
 //User Requirement: (2.70)  The web application will allow an Admin to modify search filter they have created for case studies
-Route::put('/admin/filter-option/{id}', 'AdminFilterOptionController@update');
+Route::put('/admin/filter-option', 'AdminFilterOptionController@update');
 
 //Edit filter category
 //User Requirement: (2.71)  The web application will allow an Admin to modify search filter categories they have created for case studies
-Route::put('/admin/filter-category/{id}', 'AdminFilterCategoryController@update');
+Route::put('/admin/filter-category', 'AdminFilterCategoryController@update');
 
 
 //Remove filter
 //Software Requirement: 2.72.  The web application will allow an Admin to remove search filters they have created for case studies
-Route::delete('/admin/filter-option/{id}', 'AdminFilterOptionController@destroy');
+Route::delete('/admin/filter-option', 'AdminFilterOptionController@destroy');
 
 //Remove filter category
 //Software Requirement: 2.73.  The web application will allow an Admin to remove search filter categories they have created for case studies
-Route::delete('/admin/filter-category/{id}', 'AdminFilterCategoryController@destroy');
+Route::delete('/admin/filter-category', 'AdminFilterCategoryController@destroy');
 
 
 
