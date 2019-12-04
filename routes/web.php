@@ -210,6 +210,8 @@ Route::get('/admin/user/{id}/edit', 'AdminUserController@edit');
 //Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
 Route::put('/admin/user/{id}', 'AdminUserController@update');
 
+Route::put('/admin/user/roleUpgradeReq/{id}', 'AdminUserController@roleUpgradeReq');
+
 
 //Presents latest action for each user
 //User Requirement 2.59. The web application will allow an Admin to view the recent activity of users
