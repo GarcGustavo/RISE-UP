@@ -182,6 +182,7 @@ export default {
             this.isViewer = true;
           }
           this.uid = this.user.uid;
+          console.log(this.uid);
           this.user_name = this.user.first_name +' '+this.user.last_name;
         });
 

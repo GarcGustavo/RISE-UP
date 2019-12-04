@@ -84,7 +84,7 @@
               <div class="card-body">
                 <h5 class="card-title">
                   <a
-                    :href="'/case/body?cid='+case_study.cid"
+                    :href="'/case/body?cid='+case_study.cid+'&uid='+uid"
                     class="stretched-link"
                   >{{case_study.c_title}}</a>
                 </h5>
@@ -119,6 +119,9 @@ export default {
       default: function() {
         return [];
       }
+    },
+    uid:{
+      type:Number
     }
   },
   components: {

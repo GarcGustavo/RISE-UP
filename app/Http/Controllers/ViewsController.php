@@ -160,8 +160,7 @@ class ViewsController extends Controller
         $validate =Validator::make($request->all(), [
             'q' => 'required|not_in:+'
         ]);
-
-
+        
         $q = $request->input('q');
         $case_study_without_content = case_study::where('c_title', 'LIKE', '%'.$q.'%')->orWhere('c_description', 'LIKE', '%'.$q.'%')->get();
         $case_study_with_content = case_study::join('Item', 'Item.i_case', '=', 'Case.cid')
@@ -173,6 +172,6 @@ class ViewsController extends Controller
             return view('search')
             ->withErrors($validate);
         }
-        return view('search', ['case_study' => $case_study]);
+        return view('search', ['case_study' => $case_study);
     }
 }

@@ -3917,6 +3917,7 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         _this.uid = _this.user.uid;
+        console.log(_this.uid);
         _this.user_name = _this.user.first_name + ' ' + _this.user.last_name;
       });
     },
@@ -5789,6 +5790,9 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       "default": function _default() {
         return [];
       }
+    },
+    uid: {
+      type: Number
     }
   },
   components: {
@@ -5840,7 +5844,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   },
   methods: {
     /**
-     * @description filters cases by dropdown selection.
+     * @description filters cases by dropdown and date selection.
      * @returns list of cases in accordance to search.
      */
     filterCases: function filterCases() {
@@ -5946,6 +5950,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.filtered_cases = this.filterDate(this.incident_date_start, this.incident_date_end, this.filtered_cases);
       this.search = this.filtered_cases; //return this.filtered_cases;
     },
+
+    /**
+     * @description get text of what the user is searching for
+     */
     getSearch: function getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
@@ -5958,6 +5966,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     selected: function selected(id) {
       this.selected_param = id;
     },
+
+    /**
+     * @description clear all filters
+     */
     clearFilter: function clearFilter() {
       // this.clear = false;
       this.parameters = document.getElementsByTagName("select");
@@ -96369,7 +96381,11 @@ var render = function() {
                               {
                                 staticClass: "stretched-link",
                                 attrs: {
-                                  href: "/case/body?cid=" + case_study.cid
+                                  href:
+                                    "/case/body?cid=" +
+                                    case_study.cid +
+                                    "&uid=" +
+                                    _vm.uid
                                 }
                               },
                               [_vm._v(_vm._s(case_study.c_title))]
@@ -97027,7 +97043,13 @@ var render = function() {
                           "b-link",
                           {
                             staticClass: "p-2",
-                            attrs: { href: "/case/body?cid=" + data.item.cid }
+                            attrs: {
+                              href:
+                                "/case/body?cid=" +
+                                data.item.cid +
+                                "&uid=" +
+                                _vm.curr_user
+                            }
                           },
                           [_vm._v(_vm._s(data.item.c_title))]
                         )
@@ -97189,7 +97211,13 @@ var render = function() {
                           "b-link",
                           {
                             staticClass: "p-2",
-                            attrs: { href: "/case/body?cid=" + data.item.cid }
+                            attrs: {
+                              href:
+                                "/case/body?cid=" +
+                                data.item.cid +
+                                "&uid=" +
+                                _vm.curr_user
+                            }
                           },
                           [_vm._v(_vm._s(data.item.c_title))]
                         )
@@ -117796,8 +117824,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/melvin/RISE-UP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/melvin/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/garc/Desktop/newnewRISEUP/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -227,7 +227,7 @@
           <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
+              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -305,7 +305,7 @@
           <!-- title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
+              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user">{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
