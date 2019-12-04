@@ -119,9 +119,6 @@ export default {
       default: function() {
         return [];
       }
-    },
-    uid:{
-      type:Number
     }
   },
   components: {
@@ -133,6 +130,7 @@ export default {
    */
   data() {
     return {
+      uid: "",
       date_format: "yyyy-MM-dd",
       incident_date_start: "",
       incident_date_end: "",
@@ -158,6 +156,7 @@ export default {
    * @description
    */
   created() {
+    this.getUser()
     this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
@@ -175,6 +174,10 @@ export default {
   },
 
   methods: {
+     getUser() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.uid = Number(this.urlParams.get("uid")); //get user id
+    },
     /**
      * @description filters cases by dropdown and date selection.
      * @returns list of cases in accordance to search.
