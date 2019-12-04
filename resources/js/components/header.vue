@@ -75,7 +75,7 @@
             data-toggle="tooltip"
             data-placement="bottom"
             title="Help"
-            href="/help"
+            :href="'/help?uid='+uid"
           >Help</a>
         </li>
         <li class="nav-item">
@@ -84,7 +84,7 @@
             data-toggle="tooltip"
             data-placement="bottom"
             title="About"
-            href="/about"
+            :href="'/about?uid='+uid"
           >About</a>
         </li>
 
@@ -111,10 +111,10 @@
               </div>
             </div>
             <div class="dropdown-divider"></div>
-            <a v-if="isAdmin" href="/admin/users-requests" class="dropdown-item">Dashboard</a>
-            <a href="#" class="dropdown-item">Profile</a>
-            <a :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
-            <a :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
+            <a v-if="isAdmin" :href="'/admin/users-requests?uid='+uid" class="dropdown-item">Dashboard</a>
+            <a :href="'/user/profile?uid='+uid" class="dropdown-item">Profile</a>
+            <a v-if="isCollaborator" :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
+            <a v-if="isCollaborator" :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
             <div class="dropdown-divider"></div>
             <a href="/shibboleth-logout2" class="dropdown-item">Logout</a>
           </div>

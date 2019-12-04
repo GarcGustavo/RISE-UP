@@ -144,6 +144,12 @@ class UserController extends Controller
         $user = User::where(['email' => $email])->get();
 
         if(sizeOf($user) == 0){
+            if ($request->session()->exists('user')) {
+                // Session anomaly
+                $request->session()->forget('user');
+            }
+            // Store the session data
+            $request->session()->put('user', 'temporary');
             return redirect('/profile-creation?email='.$email);
         }
         else{

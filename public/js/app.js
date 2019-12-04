@@ -5591,6 +5591,854 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/profile.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * this component is used to display the cases of a user
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+  /**
+   * @description declaration of global variables
+   * @returns array of all variables
+   */
+  data: function data() {
+    return {
+      curr_user: "",
+      //current user id
+      action: "",
+      //action the user is executing
+      acted_on: "",
+      //on what is the action being exected
+      search: "",
+      //table search string
+      user_cases: [],
+      // cases of the user
+      cases_user_is_owner: [],
+      //list of cases the user has created
+      user_cases_by_group: [],
+      //list of cases of the groups the user belongs to(member)
+      selected_cases: [],
+      // the cases the user selects
+      cases_to_remove: [],
+      // the cases to remove, sent to controller
+      page_of_cases: [],
+      //cases to show on table page
+      page_content_tab1: [],
+      //cases to send to paginator
+      page_content_tab2: [],
+      errors: [],
+      case_study: {
+        cid: "",
+        c_title: ""
+      },
+      //case attributes
+      fields: [//sortable column used in b-table and index column style definition
+      {
+        index: {
+          thStyle: {
+            width: "120px"
+          }
+        }
+      }, {
+        key: "c_title",
+        label: "Title",
+        "class": "text-center",
+        thStyle: {
+          paddingLeft: "30px"
+        }
+      }],
+      curr_tab: 1,
+      //current opened tab DEFAULT
+      entries_per_table_page_tab1: 4,
+      //table entries
+      entries_per_table_page_tab2: 4,
+      //table entries
+      sorting_tab1: -1,
+      //sorting order, 1 is descending, -1 is ascending
+      sorting_tab2: -1,
+      //sorting order, 1 is descending, -1 is ascending
+      sort_order_tab1_icon: 0,
+      //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
+      sort_order_tab2_icon: 0,
+      //determines sorting icon to show - 0 sort is off, 1 is down arrow, -1 is up arrow
+      reload_paginator: false,
+      //used to update paginator
+      is_selected: false,
+      //has user made selection
+      all_selected: false,
+      //has the option to select all case studies been checked
+      gname_box_show: false,
+      //boolean to append group name input to dialogue box when creating a group
+      initial_load: true,
+      //load initial table tab content when page loads
+      show_dialogue: false //opens/closes case create dbox
+
+    };
+  },
+
+  /**
+   * @description gets all users cases to populate case table when the page is loaded
+   */
+  created: function created() {
+    this.fetchCases();
+  },
+  computed: {
+    /**
+     * @description filters cases by title search. Method is called per each key press
+     * @returns list of cases in accordance to search.
+     */
+    filterCases: function filterCases() {
+      var _this = this;
+
+      if (this.curr_tab == 1) {
+        if (this.page_content_tab1.length == 0) {
+          return [];
+        } else {
+          if (this.page_content_tab2.length == 0) {
+            return [];
+          }
+        }
+      } //search fiter
+
+
+      return this.page_of_cases.filter(function (page_of_cases) {
+        return page_of_cases.c_title.toLowerCase().includes(_this.search.toLowerCase());
+      });
+    }
+  },
+  methods: {
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include but are
+    not limited to :Sorting, updating paginator and content,
+    validation, and resetting variables
+    
+        /**
+         * @description - refreshes the paginator
+         */
+    updatePaginator: function updatePaginator() {
+      var _this2 = this;
+
+      // Remove paginator from the DOM
+      this.reload_paginator = false;
+      this.$nextTick().then(function () {
+        // Add the paginator back in
+        _this2.reload_paginator = true;
+      });
+    },
+
+    /**
+     * @description Sorts the content of the current opened tab
+     */
+    sortArr: function sortArr() {
+      var _this3 = this;
+
+      if (this.curr_tab == 1) {
+        //current tab content will be filtered content
+        this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
+          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this3.sorting_tab1 : -_this3.sorting_tab1;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab1_icon = this.sorting_tab1;
+      } else {
+        //curr tab is 2
+        //current tab content will be filtered content
+        this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
+          return a.c_title.toLowerCase() < b.c_title.toLowerCase() ? _this3.sorting_tab2 : -_this3.sorting_tab2;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab2_icon = this.sorting_tab2;
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description sets sorting direction for current tab and call sorting method
+     */
+    sortItems: function sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1; //  this.enable_sorting_tab1 = true;
+      } else {
+        //curr tab is 2
+        this.sorting_tab2 *= -1; //   this.enable_sorting_tab2 = true;
+      }
+
+      this.sortArr(); //call sorting algorithm
+    },
+
+    /**
+     * @description resets all sort variables and icon's state
+     */
+    unSort: function unSort() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 = -1;
+        this.sort_order_tab1_icon = 0;
+        this.page_content_tab1 = this.cases_user_is_owner; //original content
+      } else {
+        this.sorting_tab2 = -1;
+        this.sort_order_tab2_icon = 0;
+        this.page_content_tab2 = this.user_cases_by_group; //original content
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description  checks all checkboxes when user selects "select all" option
+     */
+    checkAll: function checkAll() {
+      this.selected_cases = [];
+
+      if (!this.all_selected) {
+        //push all case studies to array
+        for (var i in this.cases_user_is_owner) {
+          this.selected_cases.push(this.cases_user_is_owner[i].cid);
+        }
+      }
+    },
+
+    /**
+     * @description if checkbox is checked again uncheck all selections
+     */
+    select: function select() {
+      this.all_selected = false;
+    },
+
+    /**
+     * @description - lists the set of cases of the current table page
+     * @param  {Array} page_of_cases - contains a list of set of cases sent by the paginator
+     *
+     */
+    onChangePage: function onChangePage(page_of_cases) {
+      // update page of Cases
+      this.page_of_cases = page_of_cases;
+    },
+
+    /**
+     * @description sets the number of cases to show in a page
+     * @param {Number} entry - variable containing the number of entries per page
+     */
+    selectEntries: function selectEntries(entry) {
+      if (this.curr_tab == 1) {
+        this.entries_per_table_page_tab1 = entry;
+      } else {
+        this.entries_per_table_page_tab2 = entry;
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description unchecks any selection of cases the user has made
+     */
+    uncheck: function uncheck() {
+      this.selected_cases = [];
+
+      for (var i in this.selected_cases) {
+        this.selected_cases.push(this.selected_cases[i].cid);
+      }
+    },
+
+    /**
+     * @description reset errors
+     */
+    resetErrors: function resetErrors() {
+      this.errors = [];
+    },
+
+    /**
+     * @description verifies if user has made a selection of a case study to remove
+     * if selection is made call the remove case method to proceed with removal.
+     */
+    isCaseSelected: function isCaseSelected() {
+      if (this.selected_cases.length == 0) {
+        this.is_selected = false; //alert box
+
+        this.dialogue = bootbox.alert({
+          title: "Remove",
+          message: "Please select case study(s) to remove",
+          backdrop: true,
+          className: "text-center"
+        }); //alert box CSS styling
+
+        this.dialogue.find(".modal-content").css({
+          height: "250px",
+          "font-size": "18px",
+          "text-align": "center"
+        });
+        this.dialogue.find(".modal-body").css({
+          "padding-top": "40px"
+        }); //if selection made remove selected groups
+      } else {
+        this.is_selected = true;
+        this.removeCases();
+      }
+    },
+
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to the
+     global variables as needed to be used.
+    
+        /**
+         * @description gets all the cases of the current user
+         * Sends request to the case controller
+         */
+    fetchCases: function fetchCases() {
+      var _this4 = this;
+
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id - numeric conversion for filter user
+
+      fetch("/case/user/show?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this4.user_cases = res.data; //filter cases where user is owner
+
+        _this4.cases_user_is_owner = _this4.user_cases.filter(function (x) {
+          return x.c_owner == _this4.curr_user;
+        }); //filter cases that the user has through group relation
+
+        _this4.user_cases_by_group = _this4.user_cases.filter(function (x) {
+          return x.c_owner !== _this4.curr_user;
+        }); //content varies according to tab
+
+        _this4.page_content_tab1 = _this4.cases_user_is_owner;
+        _this4.page_content_tab2 = _this4.user_cases_by_group;
+
+        _this4.select(); //unselect all
+
+
+        _this4.uncheck(); //uncheck
+
+
+        _this4.updatePaginator(); //refresh with updated list of cases
+
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description outputs to the caseController a JSON request to create case study
+     * @param {Array} case_study - array of case study data to create a case study -
+     * data is sent by the case_create_dbox dialogue
+     */
+    createCaseStudy: function createCaseStudy(case_study) {
+      var _this5 = this;
+
+      fetch("/case/create", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(case_study)
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          //hide action table dbox
+          _this5.show_dialogue = false; //remove component's backdrop
+
+          $("body").removeClass("modal-open");
+          $(".modal-backdrop").remove(); //alert box
+
+          _this5.dialogue = bootbox.alert({
+            title: "Create",
+            message: "Case study has been created!",
+            backdrop: true,
+            className: "text-center"
+          }); //alert box CSS styling
+
+          _this5.dialogue.find(".modal-content").css({
+            height: "250px",
+            "font-size": "18px",
+            "text-align": "center"
+          });
+
+          _this5.dialogue.find(".modal-body").css({
+            "padding-top": "40px"
+          });
+
+          _this5.appendDefaultParameters(case_study.cid); //default case study parameters
+          //this.fetchCases(); //update case study list
+          //this.resetErrors();
+
+        } else {
+          _this5.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description add null default parameters to case study.
+     * Sends request to Case parameters controller
+     */
+    appendDefaultParameters: function appendDefaultParameters(cid) {
+      var _this6 = this;
+
+      fetch("/parameter/create/defaults", {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          cid: cid
+        })
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+
+        if (!res.errors) {
+          _this6.fetchCases(); //update case study list
+
+
+          _this6.resetErrors(); //reset errors
+
+        } else {
+          _this6.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description removes any selected user cases by making a delete request to caseController.
+     * Sends request to the case controller
+     */
+    removeCases: function removeCases() {
+      var curr = this; //confirmation dialogue box
+
+      this.dialogue = bootbox.confirm({
+        title: "Remove",
+        message: "Do you want to remove selected case study(s)?",
+        buttons: {
+          confirm: {
+            label: "No",
+            //inverted roles, switched bootbox default order
+            className: "btn btn-secondary"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        },
+        //Callback function with user's input
+        callback: function callback(result) {
+          if (!result) {
+            //if yes
+            for (var i in curr.selected_cases) {
+              curr.cases_to_remove.push({
+                //push selected case study id's as cid attributes
+                cid: curr.selected_cases[i]
+              });
+            } //send request
+
+
+            fetch("/case/remove", {
+              method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
+              headers: new Headers({
+                "Content-Type": "application/json",
+                "Access-Control-Origin": "*",
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+              }),
+              body: JSON.stringify(curr.cases_to_remove)
+            }).then(function (res) {
+              return res.json();
+            }).then(function (res) {
+              console.log(res);
+              curr.fetchCases(); //update case study list
+
+              curr.cases_to_remove = []; //reset variable
+            })["catch"](function (err) {
+              console.error("Error: ", err);
+            });
+          } //end if
+
+        } //end callback
+
+      }); //end alert
+      //alert box CSS styling
+
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({
+        "padding-top": "40px"
+      });
+    }
+    /*#endregion*/
+
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=script&lang=js&":
 /*!*****************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/search.vue?vue&type=script&lang=js& ***!
@@ -5784,7 +6632,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   },
   methods: {
     /**
-     * @description filters cases by dropdown selection.
+     * @description filters cases by dropdown and date selection.
      * @returns list of cases in accordance to search.
      */
     filterCases: function filterCases() {
@@ -5890,6 +6738,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.filtered_cases = this.filterDate(this.incident_date_start, this.incident_date_end, this.filtered_cases);
       this.search = this.filtered_cases; //return this.filtered_cases;
     },
+
+    /**
+     * @description get text of what the user is searching for
+     */
     getSearch: function getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
 
@@ -5902,6 +6754,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     selected: function selected(id) {
       this.selected_param = id;
     },
+
+    /**
+     * @description clear all filters
+     */
     clearFilter: function clearFilter() {
       // this.clear = false;
       this.parameters = document.getElementsByTagName("select");
@@ -44433,6 +45289,25 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, ".scrollable-menu[data-v-475f3ef6] {\n  height: auto;\n  max-height: 200px;\n  overflow-x: hidden;\n}\n\n/* Set max height for content containers */\n#items[data-v-475f3ef6] {\n  max-height: 1000px;\n  margin: 25px;\n  margin-left: 0px;\n  overflow-y: auto;\n}\n#toc[data-v-475f3ef6] {\n  max-height: 475px;\n  overflow-y: auto;\n}\nimg[data-v-475f3ef6] {\n  width: 50%;\n  margin: auto;\n  display: block;\n  margin-bottom: 10px;\n}\n\n/* remove case cards borders */\nli[data-v-475f3ef6] {\n  border: none;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-475f3ef6] {\n  float: right;\n  margin: 10px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-475f3ef6]:hover {\n  color: blue;\n}\n\n/* icon initial color */\na[data-v-475f3ef6] {\n  color: black;\n}\n\n/* position create case study button */\n#cases_header a[data-v-475f3ef6] {\n  float: right;\n  font-size: 18px;\n  margin-top: 10px;\n}\n#toc_container[data-v-475f3ef6] {\n  background: #f9f9f9 none repeat scroll 0 0;\n  border: 1px solid #aaa;\n  display: table;\n  font-size: 95%;\n  margin-bottom: 1em;\n  padding: 20px;\n  width: auto;\n}\n.mt-0[data-v-475f3ef6] {\n  margin-top: 100px;\n  padding: 10px;\n  text-align: left;\n}\n.toc_title[data-v-475f3ef6] {\n  font-weight: 700;\n  text-align: center;\n}\n#toc_container li[data-v-475f3ef6],\n#toc_container ul[data-v-475f3ef6],\n#toc_container ul li[data-v-475f3ef6] {\n  list-style: outside none none !important;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "/* align table to center */\ntable[data-v-7eab0eae] {\n  margin-left: auto;\n  margin-right: auto;\n  text-align: center;\n}\n\n/* control column display format for and content size\n*Block is display to make whole row selectable\n*/\ntable tr td a[data-v-7eab0eae] {\n  display: block;\n  font-size: 18px;\n}\n\n/*pointer on headers*/\nth[data-v-7eab0eae] {\n  cursor: pointer;\n}\n\n/* This is for row content style and alignment */\ntd a[data-v-7eab0eae] {\n  text-align: center;\n  margin: auto;\n  vertical-align: middle;\n  color: black;\n  text-decoration: none;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  max-width: 775px;\n}\n\n/* align vertically to center checkbox */\ntable tr td .check-box[data-v-7eab0eae] {\n  padding-top: 20px;\n}\n\n/* checkbox column width */\n#row-order[data-v-7eab0eae] {\n  width: 15%;\n}\n\n/* check box and label styling */\ninput[type=checkbox] + label[data-v-7eab0eae] {\n  font-size: 18px;\n  height: 18px;\n  width: 18px;\n  display: inline-block;\n  padding: 0 0 0 0px;\n}\n\n/* change checkbox size */\ninput[type=checkbox][data-v-7eab0eae] {\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n\n/* paginate component position in body */\n.pagination[data-v-7eab0eae] {\n  float: right;\n}\n#paginate[data-v-7eab0eae] {\n  width: 500px;\n  padding-top: 12px;\n  padding-right: 10px;\n  float: right;\n}\n\n/* add/remove icons position in relation to header */\nh1 i[data-v-7eab0eae] {\n  float: right;\n  margin: 10px;\n  margin-top: 20px;\n}\n\n/* change icon background when hovered */\nh1 i[data-v-7eab0eae]:hover,\nh1 a[data-v-7eab0eae]:hover {\n  color: #428bca;\n}\n\n/* icon initial color */\na[data-v-7eab0eae] {\n  color: black;\n}\n\n/*move remove icon to right */\n#remove_icon[data-v-7eab0eae] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#remove_icon a[data-v-7eab0eae] {\n  font-size: 18px;\n  margin-left: 15px;\n}\n\n/*move create icon to right */\n#create_icon[data-v-7eab0eae] {\n  float: right;\n}\n\n/*remove label font size, and margin in relation to icon*/\n#create_icon a[data-v-7eab0eae] {\n  font-size: 18px;\n}\n\n/*entries container padding in relation to table */\n#container .btn-group[data-v-7eab0eae] {\n  padding-top: 12px;\n  width: 100px;\n}\n\n/*tabs header text color*/\n#tabs a[data-v-7eab0eae] {\n  color: #428bca;\n  font-weight: 500;\n}\n\n/*search label style*/\n.input-group label[data-v-7eab0eae] {\n  font-size: 18px;\n  padding: 0 0 0 0px;\n  margin: 5px;\n  margin-right: 10px;\n}\n\n/*page headers and tables margin*/\n#tabs[data-v-7eab0eae] {\n  margin-top: -25px;\n}\n\n/*entries and search bar container positioning*/\n#entries_search[data-v-7eab0eae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: -45px;\n}\n\n/*entries and search bar elements position rules*/\n#entries_search .btn-group[data-v-7eab0eae] {\n  display: inline-block;\n  padding-top: 33px;\n}\n\n/*entries positioning*/\n#entries_search .btn-group button[data-v-7eab0eae] {\n  background-color: #428bca;\n  margin-left: 60px;\n  margin-top: -60px;\n}\n\n/*search bar positioning*/\n#entries_search .input-group[data-v-7eab0eae] {\n  margin-top: 25px;\n  margin-left: 650px;\n}", ""]);
 
 // exports
 
@@ -90531,6 +91406,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true&":
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/search.vue?vue&type=style&index=0&id=4d55b89a&lang=scss&scoped=true& ***!
@@ -93972,12 +94877,40 @@ var render = function() {
               : _vm._e()
           ]),
           _vm._v(" "),
-          _vm._m(2),
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  "data-toggle": "tooltip",
+                  "data-placement": "bottom",
+                  title: "Help",
+                  href: "/help?uid=" + _vm.uid
+                }
+              },
+              [_vm._v("Help")]
+            )
+          ]),
           _vm._v(" "),
-          _vm._m(3),
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  "data-toggle": "tooltip",
+                  "data-placement": "bottom",
+                  title: "About",
+                  href: "/about?uid=" + _vm.uid
+                }
+              },
+              [_vm._v("About")]
+            )
+          ]),
           _vm._v(" "),
           _c("li", { staticClass: "nav-item dropdown" }, [
-            _vm._m(4),
+            _vm._m(2),
             _vm._v(" "),
             _c("div", { staticClass: "dropdown-menu dropdown-menu-right" }, [
               _c("div", { staticClass: "profile-usertitle" }, [
@@ -94003,33 +94936,42 @@ var render = function() {
                     "a",
                     {
                       staticClass: "dropdown-item",
-                      attrs: { href: "/admin/users-requests" }
+                      attrs: { href: "/admin/users-requests?uid=" + _vm.uid }
                     },
                     [_vm._v("Dashboard")]
                   )
                 : _vm._e(),
               _vm._v(" "),
-              _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-                _vm._v("Profile")
-              ]),
-              _vm._v(" "),
               _c(
                 "a",
                 {
                   staticClass: "dropdown-item",
-                  attrs: { href: "/user/cases?uid=" + _vm.uid }
+                  attrs: { href: "/user/profile?uid=" + _vm.uid }
                 },
-                [_vm._v("Cases")]
+                [_vm._v("Profile")]
               ),
               _vm._v(" "),
-              _c(
-                "a",
-                {
-                  staticClass: "dropdown-item",
-                  attrs: { href: "/user/groups?uid=" + _vm.uid }
-                },
-                [_vm._v("Groups")]
-              ),
+              _vm.isCollaborator
+                ? _c(
+                    "a",
+                    {
+                      staticClass: "dropdown-item",
+                      attrs: { href: "/user/cases?uid=" + _vm.uid }
+                    },
+                    [_vm._v("Cases")]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.isCollaborator
+                ? _c(
+                    "a",
+                    {
+                      staticClass: "dropdown-item",
+                      attrs: { href: "/user/groups?uid=" + _vm.uid }
+                    },
+                    [_vm._v("Groups")]
+                  )
+                : _vm._e(),
               _vm._v(" "),
               _c("div", { staticClass: "dropdown-divider" }),
               _vm._v(" "),
@@ -94099,46 +95041,6 @@ var staticRenderFns = [
           attrs: { type: "submit" }
         },
         [_c("i", { staticClass: "material-icons" }, [_vm._v("search")])]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: {
-            "data-toggle": "tooltip",
-            "data-placement": "bottom",
-            title: "Help",
-            href: "/help"
-          }
-        },
-        [_vm._v("Help")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: {
-            "data-toggle": "tooltip",
-            "data-placement": "bottom",
-            title: "About",
-            href: "/about"
-          }
-        },
-        [_vm._v("About")]
       )
     ])
   },
@@ -96078,6 +96980,815 @@ var staticRenderFns = [
         { staticClass: "btn btn-primary", attrs: { type: "submit" } },
         [_vm._v("Submit")]
       )
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=template&id=7eab0eae&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/profile.vue?vue&type=template&id=7eab0eae&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "body mb-5 mt-5" }, [
+    _c("h1", { staticClass: "mb-3" }, [
+      _c("div", [
+        _c(
+          "a",
+          {
+            attrs: {
+              href: "#",
+              "data-toggle": "tooltip",
+              "data-placement": "bottom",
+              title: "Click icon to delete a case study"
+            },
+            on: {
+              click: function($event) {
+                $event.preventDefault()
+                ;(_vm.action = "Remove"),
+                  (_vm.acted_on = "case study(s)"),
+                  _vm.isCaseSelected()
+              }
+            }
+          },
+          [_vm._m(0)]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "span",
+          {
+            attrs: {
+              "data-toggle": "modal",
+              "data-target": "#case_create_dbox"
+            }
+          },
+          [
+            _c(
+              "a",
+              {
+                attrs: {
+                  href: "#",
+                  "data-toggle": "tooltip",
+                  "data-placement": "bottom",
+                  title: "Click icon to create a case study"
+                },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    ;(_vm.action = "Create"),
+                      (_vm.acted_on = "case study"),
+                      (_vm.show_dialogue = true)
+                  }
+                }
+              },
+              [_vm._m(1)]
+            )
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c("p", [_vm._v("Profile")])
+    ]),
+    _vm._v(" "),
+    _vm.action == "Create" && _vm.show_dialogue
+      ? _c(
+          "div",
+          [
+            _c("case-create-dbox", {
+              attrs: {
+                action: _vm.action,
+                acted_on: _vm.acted_on,
+                errors: _vm.errors
+              },
+              on: {
+                close: _vm.resetErrors,
+                createCaseStudy: _vm.createCaseStudy
+              }
+            })
+          ],
+          1
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    _c("div", { staticClass: "container", attrs: { id: "tabs" } }, [
+      _c("ul", { staticClass: "nav nav-tabs", attrs: { role: "tablist" } }, [
+        _c("li", { staticClass: "nav-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "nav-link active",
+              attrs: {
+                id: "tab1",
+                "data-toggle": "tab",
+                "data-placement": "bottom",
+                title: "Case studies i created",
+                href: "#owned_cases",
+                role: "tab"
+              },
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  _vm.curr_tab = 1
+                }
+              }
+            },
+            [_vm._v("Case studies i created")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "nav-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "nav-link",
+              attrs: {
+                id: "tab2",
+                "data-toggle": "tab",
+                "data-placement": "bottom",
+                title: "Case studies from groups i belong to",
+                href: "#group_cases",
+                role: "tab"
+              },
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  _vm.curr_tab = 2
+                }
+              }
+            },
+            [_vm._v("Case studies by groups")]
+          )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "container", attrs: { id: "entries_search" } }, [
+      _vm.curr_tab == 1
+        ? _c("div", [
+            _c("div", { staticClass: "btn-group" }, [
+              _c("label", { attrs: { id: "entries_label" } }, [
+                _vm._v("Entries:")
+              ]),
+              _vm._v(" "),
+              _c("span", { attrs: { "data-toggle": "dropdown" } }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary btn-sm dropdown-toggle",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Select number of items to show per table page",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [_vm._v(_vm._s(_vm.entries_per_table_page_tab1))]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(4)
+                      }
+                    }
+                  },
+                  [_vm._v("4")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(8)
+                      }
+                    }
+                  },
+                  [_vm._v("8")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(16)
+                      }
+                    }
+                  },
+                  [_vm._v("16")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(32)
+                      }
+                    }
+                  },
+                  [_vm._v("32")]
+                )
+              ])
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.curr_tab == 2
+        ? _c("div", [
+            _c("div", { staticClass: "btn-group" }, [
+              _c("label", { attrs: { id: "entries_label" } }, [
+                _vm._v("Entries:")
+              ]),
+              _vm._v(" "),
+              _c("span", { attrs: { "data-toggle": "dropdown" } }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary btn-sm dropdown-toggle",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "tooltip",
+                      "data-placement": "bottom",
+                      title: "Select number of items to show per table page",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [_vm._v(_vm._s(_vm.entries_per_table_page_tab2))]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(4)
+                      }
+                    }
+                  },
+                  [_vm._v("4")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(8)
+                      }
+                    }
+                  },
+                  [_vm._v("8")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(16)
+                      }
+                    }
+                  },
+                  [_vm._v("16")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.selectEntries(32)
+                      }
+                    }
+                  },
+                  [_vm._v("32")]
+                )
+              ])
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _c("div", { staticClass: "input-group" }, [
+        _c("label", [_vm._v("Search")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group-append search" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.search,
+                expression: "search"
+              }
+            ],
+            staticClass: "form-control input-sm",
+            attrs: {
+              type: "text",
+              maxlength: "32",
+              placeholder: "Case title.."
+            },
+            domProps: { value: _vm.search },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.search = $event.target.value
+              }
+            }
+          })
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "tab-content" }, [
+      _c(
+        "div",
+        {
+          staticClass: "tab-pane active",
+          attrs: { id: "owned_cases", role: "tabpanel" }
+        },
+        [
+          _c("b-table", {
+            attrs: {
+              "sticky-header": "600px",
+              "head-variant": "light",
+              hover: "",
+              items: _vm.filterCases,
+              fields: _vm.fields
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "head(index)",
+                fn: function() {
+                  return [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.all_selected,
+                          expression: "all_selected"
+                        }
+                      ],
+                      attrs: { type: "checkbox" },
+                      domProps: {
+                        checked: Array.isArray(_vm.all_selected)
+                          ? _vm._i(_vm.all_selected, null) > -1
+                          : _vm.all_selected
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.checkAll()
+                        },
+                        change: function($event) {
+                          var $$a = _vm.all_selected,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 && (_vm.all_selected = $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                (_vm.all_selected = $$a
+                                  .slice(0, $$i)
+                                  .concat($$a.slice($$i + 1)))
+                            }
+                          } else {
+                            _vm.all_selected = $$c
+                          }
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to unsort table"
+                        },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.unSort()
+                          }
+                        }
+                      },
+                      [_vm._v("Select All")]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "head(c_title)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to sort table"
+                        },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.sortItems()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n            Title\n            "),
+                        _vm._v(" "),
+                        _vm.sort_order_tab1_icon == 0
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab1_icon == -1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-up",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab1_icon == 1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-down",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e()
+                      ]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "cell(index)",
+                fn: function(data) {
+                  return [
+                    _c("div", { staticClass: "p-2 pl-4" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.selected_cases,
+                            expression: "selected_cases"
+                          }
+                        ],
+                        staticClass: "checkbox",
+                        attrs: { type: "checkbox", id: "checkbox" },
+                        domProps: {
+                          value: data.item.cid,
+                          checked: Array.isArray(_vm.selected_cases)
+                            ? _vm._i(_vm.selected_cases, data.item.cid) > -1
+                            : _vm.selected_cases
+                        },
+                        on: {
+                          click: function($event) {
+                            return _vm.select()
+                          },
+                          change: function($event) {
+                            var $$a = _vm.selected_cases,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = data.item.cid,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 &&
+                                  (_vm.selected_cases = $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  (_vm.selected_cases = $$a
+                                    .slice(0, $$i)
+                                    .concat($$a.slice($$i + 1)))
+                              }
+                            } else {
+                              _vm.selected_cases = $$c
+                            }
+                          }
+                        }
+                      }),
+                      _vm._v(
+                        "\n            " +
+                          _vm._s(data.index + 1) +
+                          "\n          "
+                      )
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "cell(c_title)",
+                fn: function(data) {
+                  return [
+                    _c(
+                      "div",
+                      [
+                        _c(
+                          "b-link",
+                          {
+                            staticClass: "p-2",
+                            attrs: { href: "/case/body?cid=" + data.item.cid }
+                          },
+                          [_vm._v(_vm._s(data.item.c_title))]
+                        )
+                      ],
+                      1
+                    )
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _vm.reload_paginator && _vm.curr_tab == 1
+            ? _c(
+                "div",
+                { attrs: { id: "paginate" } },
+                [
+                  _c("paginator", {
+                    ref: "paginate",
+                    staticClass: "pagination",
+                    staticStyle: { display: "inline-block" },
+                    attrs: {
+                      items: _vm.page_content_tab1,
+                      page_size: _vm.entries_per_table_page_tab1
+                    },
+                    on: { changePage: _vm.onChangePage }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "tab-pane",
+          attrs: { id: "group_cases", role: "tabpanel" }
+        },
+        [
+          _c("b-table", {
+            attrs: {
+              "sticky-header": "600px",
+              "head-variant": "light",
+              hover: "",
+              items: _vm.filterCases,
+              fields: _vm.fields
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "head(index)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to unsort table"
+                        },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.unSort()
+                          }
+                        }
+                      },
+                      [_vm._v("Index")]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "head(c_title)",
+                fn: function() {
+                  return [
+                    _c(
+                      "a",
+                      {
+                        staticStyle: { display: "block" },
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "tooltip",
+                          "data-placement": "bottom",
+                          title: "Click to sort table"
+                        },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.sortItems()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n            Title\n            "),
+                        _vm._v(" "),
+                        _vm.sort_order_tab2_icon == 0
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab2_icon == -1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-up",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.sort_order_tab2_icon == 1
+                          ? _c("i", {
+                              staticClass: "fa fa-fw fa-sort-down",
+                              staticStyle: {
+                                color: "grey",
+                                float: "right",
+                                "padding-top": "4px"
+                              }
+                            })
+                          : _vm._e()
+                      ]
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "cell(index)",
+                fn: function(data) {
+                  return [
+                    _c("div", { staticClass: "p-2" }, [
+                      _vm._v(_vm._s(data.index + 1))
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "cell(c_title)",
+                fn: function(data) {
+                  return [
+                    _c(
+                      "div",
+                      [
+                        _c(
+                          "b-link",
+                          {
+                            staticClass: "p-2",
+                            attrs: { href: "/case/body?cid=" + data.item.cid }
+                          },
+                          [_vm._v(_vm._s(data.item.c_title))]
+                        )
+                      ],
+                      1
+                    )
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _vm.reload_paginator && _vm.curr_tab == 2
+            ? _c(
+                "div",
+                { attrs: { id: "paginate" } },
+                [
+                  _c("paginator", {
+                    ref: "paginate2",
+                    staticClass: "pagination",
+                    staticStyle: { display: "inline-block" },
+                    attrs: {
+                      items: _vm.page_content_tab2,
+                      page_size: _vm.entries_per_table_page_tab2
+                    },
+                    on: { changePage: _vm.onChangePage }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
+        ],
+        1
+      )
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { attrs: { id: "remove_icon" } }, [
+      _c("a", [_vm._v("Remove")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [
+        _vm._v("remove_circle_outline")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { attrs: { id: "create_icon" } }, [
+      _c("a", [_vm._v("Create")]),
+      _vm._v(" "),
+      _c("i", { staticClass: "material-icons" }, [_vm._v("add_circle_outline")])
     ])
   }
 ]
@@ -116086,6 +117797,7 @@ Vue.component('iren-footer', __webpack_require__(/*! ./components/footer.vue */ 
 Vue.component('iren-landing', __webpack_require__(/*! ./components/landing.vue */ "./resources/js/components/landing.vue")["default"]);
 Vue.component('iren-login', __webpack_require__(/*! ./components/login.vue */ "./resources/js/components/login.vue")["default"]);
 Vue.component('iren-profile-creation', __webpack_require__(/*! ./components/profile-creation.vue */ "./resources/js/components/profile-creation.vue")["default"]);
+Vue.component('iren-profile', __webpack_require__(/*! ./components/profile.vue */ "./resources/js/components/profile.vue")["default"]);
 Vue.component('iren-help', __webpack_require__(/*! ./components/help.vue */ "./resources/js/components/help.vue")["default"]);
 Vue.component('iren-about', __webpack_require__(/*! ./components/about.vue */ "./resources/js/components/about.vue")["default"]);
 Vue.component('iren-group', __webpack_require__(/*! ./components/group.vue */ "./resources/js/components/group.vue")["default"]);
@@ -117461,6 +119173,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/profile.vue":
+/*!*********************************************!*\
+  !*** ./resources/js/components/profile.vue ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _profile_vue_vue_type_template_id_7eab0eae_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./profile.vue?vue&type=template&id=7eab0eae&scoped=true& */ "./resources/js/components/profile.vue?vue&type=template&id=7eab0eae&scoped=true&");
+/* harmony import */ var _profile_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./profile.vue?vue&type=script&lang=js& */ "./resources/js/components/profile.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _profile_vue_vue_type_style_index_0_id_7eab0eae_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true& */ "./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _profile_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _profile_vue_vue_type_template_id_7eab0eae_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _profile_vue_vue_type_template_id_7eab0eae_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "7eab0eae",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/profile.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/profile.vue?vue&type=script&lang=js&":
+/*!**********************************************************************!*\
+  !*** ./resources/js/components/profile.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./profile.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true&":
+/*!*******************************************************************************************************!*\
+  !*** ./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true& ***!
+  \*******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_style_index_0_id_7eab0eae_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=style&index=0&id=7eab0eae&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_style_index_0_id_7eab0eae_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_style_index_0_id_7eab0eae_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_style_index_0_id_7eab0eae_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_style_index_0_id_7eab0eae_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_style_index_0_id_7eab0eae_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/profile.vue?vue&type=template&id=7eab0eae&scoped=true&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/profile.vue?vue&type=template&id=7eab0eae&scoped=true& ***!
+  \****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_template_id_7eab0eae_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./profile.vue?vue&type=template&id=7eab0eae&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/profile.vue?vue&type=template&id=7eab0eae&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_template_id_7eab0eae_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_profile_vue_vue_type_template_id_7eab0eae_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/search.vue":
 /*!********************************************!*\
   !*** ./resources/js/components/search.vue ***!
@@ -117740,8 +119539,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/melvin/RISE-UP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/melvin/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/elnoisnorat/Desktop/RISE-UP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/elnoisnorat/Desktop/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

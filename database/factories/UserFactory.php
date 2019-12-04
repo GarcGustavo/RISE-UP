@@ -35,7 +35,7 @@ $factory->define(user::class, function (Faker $faker) {
         'u_role_upgrade_request' => $faker->numberBetween($min=0, $max=1),
         'u_ban_status' => $faker->numberBetween($min=0,$max=1),
         'current_edit_cid' =>null,
-        'u_role' => $faker->numberBetween($min=1,$max=4)
+        'u_role' => $faker->numberBetween($min=1,$max=3)
 
 
     ];
