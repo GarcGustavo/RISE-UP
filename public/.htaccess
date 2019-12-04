@@ -17,5 +17,9 @@
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
+
+# Added to ignore requests to Shibboleth.sso
+    RewriteCond %{REQUEST_FILENAME} !Shibboleth.*
+
     RewriteRule ^ index.php [L]
 </IfModule>
