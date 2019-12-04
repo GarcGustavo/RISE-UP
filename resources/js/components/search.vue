@@ -176,7 +176,7 @@ export default {
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
-     filterCases() {
+    filterCases() {
       this.filtered_cases = [];
 
       //create new array of selected options to manipulate data set without changing original array
@@ -310,7 +310,9 @@ export default {
       //return this.filtered_cases;
     },
 
-
+    /**
+     * @description get text of what the user is searching for
+     */
     getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.search_for = this.urlParams.get("q"); //get search
@@ -323,6 +325,9 @@ export default {
       this.selected_param = id;
     },
 
+    /**
+     * @description clear all filters  
+     */
     clearFilter() {
       // this.clear = false;
       this.parameters = document.getElementsByTagName("select");
