@@ -113,8 +113,8 @@
             <div class="dropdown-divider"></div>
             <a v-if="isAdmin" :href="'/admin/users-requests?uid='+uid" class="dropdown-item">Dashboard</a>
             <a :href="'/user/profile?uid='+uid" class="dropdown-item">Profile</a>
-            <a v-if="isCollaborator" :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
-            <a v-if="isCollaborator" :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
+            <a v-if="isCollaborator || isAdmin" :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
+            <a v-if="isCollaborator || isAdmin" :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
             <div class="dropdown-divider"></div>
             <a href="/shibboleth-logout2" class="dropdown-item">Logout</a>
           </div>
