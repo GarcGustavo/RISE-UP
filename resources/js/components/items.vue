@@ -93,7 +93,7 @@
           :key="index"
         >
           <!-- Thumbnail -->
-          <div :key="previewThumbnail">
+          <div :key="preview_thumbnail">
             <input
               enctype="multipart/form-data"
               type="file"
@@ -104,13 +104,13 @@
             />
             <img
               style="margin-top: 10px; max-width: 250px; max-height: 250px;"
-              v-if="editing && !previewThumbnail"
+              v-if="editing && !preview_thumbnail"
               :src="'../images/' + case_study.c_thumbnail"
               onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
             />
             <img
               style="margin-top: 10px; max-width: 250px; max-height: 250px;"
-              v-if="editing && previewThumbnail"
+              v-if="editing && preview_thumbnail"
               :src="thumbnail_preview"
               onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
             />
@@ -208,7 +208,7 @@
               class="btn btn-primary btn-sm mb-2"
               style="background: #c0c0c0; border-color: #c0c0c0; color: black; margin: 10px"
               v-on:click="onEdit()"
-              v-if="!this.editing"
+              v-if="!this.editing && this.permission_to_edit"
             >Edit</button>
             <button
               class="btn btn-primary btn-sm mb-2"
@@ -378,24 +378,51 @@ export default {
   events: {},
   data() {
     return {
+      //Date variables and formatting
       date_format: "yyyy-MM-dd",
       new_date: new Date(),
+      //Booleans for keeping track of editor states
       editing: false,
       loading: false,
-      showModal: false,
       typing: false,
-      action: "",
-      actor: "",
+      independent: false,
+      preview_thumbnail: false,
+      is_admin: false,
+      is_collab: false,
+      is_viewer: false,
+      permission_to_edit: false,
+      //Initializing global variables
+      curr_user_uid:"",
+      curr_user:"",
+      urlParams:"",
       owner: "",
       total_items: "",
-      images: [],
-      image_names: [],
       thumbnail_name: "",
       thumbnail_preview: "",
+      cid: "",
+      initial_gid: "",
+      initial_date: "",
+      gid: "",
+      uid: "",
+      //Initializing global arrays
+      images: [],
+      image_names: [],
       thumbnail_files: [],
-      independent: false,
-      previewThumbnail: false,
       preview: [],
+      users: [],
+      usersEditing: [],
+      items: [],
+      case_parameters: [],
+      parameter_options: [],
+      selected_options_content: [],
+      selected_options_id: [],
+      case_to_show: [],
+      users: [],
+      groups: [],
+      all_groups: [],
+      //Empty data containers for reused temp variables
+      user: { uid: "", first_name: "", last_name: "", u_role: "" },
+      group: { g_name: "", g_owner: "" },
       case_study: {
         cid: "",
         c_title: "",
@@ -406,26 +433,6 @@ export default {
         c_owner: "",
         c_group: ""
       },
-      users: [],
-      usersEditing: [],
-      items: [],
-      all_items: [],
-      case_parameters: [],
-      parameter_options: [],
-      selected_options_content: [],
-      selected_options_id: [],
-      ready: false,
-      cid: "",
-      initial_gid: "",
-      initial_date: "",
-      gid: "",
-      case_to_show: [],
-      users: [],
-      user: { uid: "", first_name: "", last_name: "" },
-      groups: [],
-      all_groups: [],
-      group: { g_name: "", g_owner: "" },
-      uid: "",
       item: {
         iid: "",
         i_content: "",
@@ -445,20 +452,26 @@ export default {
     };
   },
   created() {
+
     this.preview[0] = false;
+
+    //Initializing item data
     this.fetchItems();
     this.fetchCaseItems();
-    this.fetchCase();
 
+    //Initializing case study data
+    this.fetchCase();
     this.fetchCaseParameters();
-    //this.fetchSelectedOptions(this.cid);
     this.fetchUsersEditing(this.cid);
-    
     this.fetchUserGroups();
+
+    //Verifying user permissions
+    this.getUser();
+    this.verifyUserAccess(this.curr_user_uid);
   },
 
   mounted() {
-    Echo.join(`case.${this.case_to_show.cid}`).listenForWhisper(
+    Echo.join(`case.${this.cid}`).listenForWhisper(
       "editing",
       e => {
         this.case_to_show.c_title = e.title;
@@ -488,7 +501,7 @@ export default {
   },
   methods: {
     editingCase() {
-      let channel = Echo.join(`case.${this.case_to_show.cid}`);
+      let channel = Echo.join(`case.${this.cid}`);
 
       console.log("hello from editing case");
       //show changes after 1s
@@ -498,6 +511,45 @@ export default {
           items: this.items
         });
       }, 1000);
+    },
+    getUser() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user_uid = Number(this.urlParams.get("uid")); //get user id
+      fetch("/user?uid=" + this.curr_user_uid)
+        .then(res => res.json())
+        .then(res => {
+          this.curr_user = res.data[0];
+          if (this.curr_user.u_role == 4) {
+            this.is_admin = true;
+          } else if (this.curr_user.u_role == 3) {
+            this.is_collab = true;
+          } else {
+            this.is_viewer = true;
+          }
+        });
+    },
+    //Fetch current user groups
+    verifyUserAccess(uid) {
+      var curr_user_groups = [];
+
+      //Admin or owner automatically has permission to edit
+      if(this.is_admin || (this.curr_user_uid == this.owner)){
+        this.permission_to_edit = true;
+      }
+
+      //Fetching current user groups to verify group editor permissions
+      fetch("/group/show?uid=" + this.curr_user)
+      .then(res => res.json())
+      .then(res => {
+        curr_user_groups = res.data;
+      })
+      .catch(err => console.log(res.data));
+
+      curr_user_groups.forEach(element => {
+        if(curr_user_groups[element].gid ==  this.gid){
+          this.permission_to_edit = true;
+        }
+      });
     },
     //Get items belonging to a case
     fetchCaseItems() {
@@ -516,8 +568,8 @@ export default {
       fetch("/items")
         .then(res => res.json())
         .then(res => {
-          this.all_items = res.data;
-          this.total_items = this.all_items.length + 1;
+          //this.all_items = res.data;
+          this.total_items = res.data.length + 1;
           //console.log(res.data);
         })
         .catch(err => console.log(err));
@@ -775,7 +827,7 @@ export default {
         item_name = "New Image";
         item_content = "new_item.jpg";
       }
-      this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
+      this.new_item.iid = this.total_items;
       this.new_item.i_content = item_content;
       this.new_item.i_case = this.cid;
       this.new_item.i_type = item_type;
@@ -884,7 +936,7 @@ export default {
       //Resets variables that may have been changed by an editor
       this.gid = this.initial_gid;
       this.editing = false;
-      this.previewThumbnail = false;
+      this.preview_thumbnail = false;
       //Reset uploaded images and their previews
       for (let index in this.preview) {
         this.preview[index] = false;
@@ -918,7 +970,7 @@ export default {
       for (let index in this.preview) {
         this.preview[index] = false;
       }
-      this.previewThumbnail = false;
+      this.preview_thumbnail = false;
       this.new_date = this.case_to_show[0].c_incident_date;
 
       this.$nextTick(() => {
@@ -987,7 +1039,7 @@ export default {
         this.$nextTick(() => {
         this.thumbnail_preview = e.target.result;
         this.thumbnail_name = this.thumbnail_files[0];
-        this.previewThumbnail = true;
+        this.preview_thumbnail = true;
         });
       };
     }

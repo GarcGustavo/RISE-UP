@@ -4584,56 +4584,63 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var _ref;
 
     return _ref = {
+      //Date variables and formatting
       date_format: "yyyy-MM-dd",
       new_date: new Date(),
+      //Booleans for keeping track of editor states
       editing: false,
       loading: false,
-      showModal: false,
       typing: false,
-      action: "",
-      actor: "",
+      independent: false,
+      preview_thumbnail: false,
+      is_admin: false,
+      is_collab: false,
+      is_viewer: false,
+      permission_to_edit: false,
+      //Initializing global variables
+      curr_user_uid: "",
+      curr_user: "",
+      urlParams: "",
       owner: "",
       total_items: "",
-      images: [],
-      image_names: [],
       thumbnail_name: "",
       thumbnail_preview: "",
-      thumbnail_files: [],
-      independent: false,
-      previewThumbnail: false,
-      preview: [],
-      case_study: {
-        cid: "",
-        c_title: "",
-        c_description: "",
-        c_thumbnail: "",
-        c_status: "",
-        c_date: "",
-        c_owner: "",
-        c_group: ""
-      },
-      users: [],
-      usersEditing: [],
-      items: [],
-      all_items: [],
-      case_parameters: [],
-      parameter_options: [],
-      selected_options_content: [],
-      selected_options_id: [],
-      ready: false,
       cid: "",
       initial_gid: "",
       initial_date: "",
       gid: "",
+      uid: "",
+      //Initializing global arrays
+      images: [],
+      image_names: [],
+      thumbnail_files: [],
+      preview: [],
+      users: [],
+      usersEditing: [],
+      items: [],
+      case_parameters: [],
+      parameter_options: [],
+      selected_options_content: [],
+      selected_options_id: [],
       case_to_show: []
-    }, _defineProperty(_ref, "users", []), _defineProperty(_ref, "user", {
+    }, _defineProperty(_ref, "users", []), _defineProperty(_ref, "groups", []), _defineProperty(_ref, "all_groups", []), _defineProperty(_ref, "user", {
       uid: "",
       first_name: "",
-      last_name: ""
-    }), _defineProperty(_ref, "groups", []), _defineProperty(_ref, "all_groups", []), _defineProperty(_ref, "group", {
+      last_name: "",
+      u_role: ""
+    }), _defineProperty(_ref, "group", {
       g_name: "",
       g_owner: ""
-    }), _defineProperty(_ref, "uid", ""), _defineProperty(_ref, "item", {
+    }), _defineProperty(_ref, "case_study", {
+      cid: "",
+      c_title: "",
+      c_description: "",
+      c_thumbnail: "",
+      c_status: "",
+      c_date: "",
+      c_owner: "",
+      c_group: ""
+    }), _defineProperty(_ref, "item", {
       iid: "",
       i_content: "",
       i_case: "",
@@ -4650,19 +4657,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }), _ref;
   },
   created: function created() {
-    this.preview[0] = false;
-    this.fetchItems();
-    this.fetchCaseItems();
-    this.fetchCase();
-    this.fetchCaseParameters(); //this.fetchSelectedOptions(this.cid);
+    this.preview[0] = false; //Initializing item data
 
+    this.fetchItems();
+    this.fetchCaseItems(); //Initializing case study data
+
+    this.fetchCase();
+    this.fetchCaseParameters();
     this.fetchUsersEditing(this.cid);
-    this.fetchUserGroups();
+    this.fetchUserGroups(); //Verifying user permissions
+
+    this.getUser();
+    this.verifyUserAccess(this.curr_user_uid);
   },
   mounted: function mounted() {
     var _this = this;
 
-    Echo.join("case.".concat(this.case_to_show.cid)).listenForWhisper("editing", function (e) {
+    Echo.join("case.".concat(this.cid)).listenForWhisper("editing", function (e) {
       _this.case_to_show.c_title = e.title;
 
       _this.items.forEach(function (element) {
@@ -4690,7 +4701,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     editingCase: function editingCase() {
       var _this2 = this;
 
-      var channel = Echo.join("case.".concat(this.case_to_show.cid));
+      var channel = Echo.join("case.".concat(this.cid));
       console.log("hello from editing case"); //show changes after 1s
 
       setTimeout(function () {
@@ -4700,9 +4711,54 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }, 1000);
     },
+    getUser: function getUser() {
+      var _this3 = this;
+
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.curr_user_uid = Number(this.urlParams.get("uid")); //get user id
+
+      fetch("/user?uid=" + this.curr_user_uid).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this3.curr_user = res.data[0];
+
+        if (_this3.curr_user.u_role == 4) {
+          _this3.is_admin = true;
+        } else if (_this3.curr_user.u_role == 3) {
+          _this3.is_collab = true;
+        } else {
+          _this3.is_viewer = true;
+        }
+      });
+    },
+    //Fetch current user groups
+    verifyUserAccess: function verifyUserAccess(uid) {
+      var _this4 = this;
+
+      var curr_user_groups = []; //Admin or owner automatically has permission to edit
+
+      if (this.is_admin || this.curr_user_uid == this.owner) {
+        this.permission_to_edit = true;
+      } //Fetching current user groups to verify group editor permissions
+
+
+      fetch("/group/show?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        curr_user_groups = res.data;
+      })["catch"](function (err) {
+        return console.log(res.data);
+      });
+      curr_user_groups.forEach(function (element) {
+        if (curr_user_groups[element].gid == _this4.gid) {
+          _this4.permission_to_edit = true;
+        }
+      });
+    },
     //Get items belonging to a case
     fetchCaseItems: function fetchCaseItems() {
-      var _this3 = this;
+      var _this5 = this;
 
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
@@ -4711,27 +4767,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       fetch("/case/items?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this3.items = res.data; //console.log(res.data);
+        _this5.items = res.data; //console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     //Fetch total items to add/delete items without conflict
     fetchItems: function fetchItems() {
-      var _this4 = this;
+      var _this6 = this;
 
       fetch("/items").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this4.all_items = res.data;
-        _this4.total_items = _this4.all_items.length + 1; //console.log(res.data);
+        //this.all_items = res.data;
+        _this6.total_items = res.data.length + 1; //console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     //Fetch case details
     fetchCase: function fetchCase() {
-      var _this5 = this;
+      var _this7 = this;
 
       this.path = new URLSearchParams(window.location.search); //get url parameters
 
@@ -4740,16 +4796,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       fetch("/case?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this5.case_to_show = res.data;
-        _this5.uid = Number(_this5.case_to_show[0].c_owner);
-        _this5.owner = Number(_this5.case_to_show[0].c_owner);
-        _this5.gid = Number(_this5.case_to_show[0].c_group);
-        _this5.initial_date = _this5.case_to_show[0].c_incident_date;
-        _this5.initial_gid = _this5.gid;
+        _this7.case_to_show = res.data;
+        _this7.uid = Number(_this7.case_to_show[0].c_owner);
+        _this7.owner = Number(_this7.case_to_show[0].c_owner);
+        _this7.gid = Number(_this7.case_to_show[0].c_group);
+        _this7.initial_date = _this7.case_to_show[0].c_incident_date;
+        _this7.initial_gid = _this7.gid;
 
-        _this5.fetchUser(_this5.owner);
+        _this7.fetchUser(_this7.owner);
 
-        _this5.fetchGroup(_this5.gid); //console.log(res.data);
+        _this7.fetchGroup(_this7.gid); //console.log(res.data);
 
       })["catch"](function (err) {
         return console.log(err);
@@ -4757,26 +4813,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Fetch user details
     fetchUser: function fetchUser(uid) {
-      var _this6 = this;
+      var _this8 = this;
 
       fetch("/user?uid=" + this.uid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this6.users = res.data;
+        _this8.users = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
     },
     //Fetch owner groups
     fetchUserGroups: function fetchUserGroups() {
-      var _this7 = this;
+      var _this9 = this;
 
       fetch("/group/show?uid=" + this.owner).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this7.all_groups = res.data;
+        _this9.all_groups = res.data;
 
-        _this7.all_groups.unshift({
+        _this9.all_groups.unshift({
           gid: 0,
           g_name: "No Group",
           g_owner: null
@@ -4788,12 +4844,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Fetch users actively editing current cid
     fetchUsersEditing: function fetchUsersEditing(cid) {
-      var _this8 = this;
+      var _this10 = this;
 
       fetch("/user/edit?cid=" + cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this8.usersEditing = res.data;
+        _this10.usersEditing = res.data;
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -4829,13 +4885,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Fetch case group details if a group is set, if not set as independent
     fetchGroup: function fetchGroup(gid) {
-      var _this9 = this;
+      var _this11 = this;
 
       if (this.gid != 0) {
         fetch("/case/group?gid=" + this.gid).then(function (res) {
           return res.json();
         }).then(function (res) {
-          _this9.groups = res.data;
+          _this11.groups = res.data;
         })["catch"](function (err) {
           return console.log(err);
         });
@@ -4849,12 +4905,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Fetch case parameters via cid
     fetchCaseParameters: function fetchCaseParameters() {
-      var _this10 = this;
+      var _this12 = this;
 
       fetch("/case/parameters?cid=" + this.cid).then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this10.case_parameters = res.data; //console.log(res.data);
+        _this12.case_parameters = res.data; //console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -4862,12 +4918,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Fetch options for each parameter in case to populate dropdown
     fetchParameterOptions: function fetchParameterOptions() {
-      var _this11 = this;
+      var _this13 = this;
 
       fetch("/parameter/options").then(function (res) {
         return res.json();
       }).then(function (res) {
-        _this11.parameter_options = res.data; //console.log(res.data);
+        _this13.parameter_options = res.data; //console.log(res.data);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -5011,7 +5067,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         item_content = "new_item.jpg";
       }
 
-      this.new_item.iid = Number(this.all_items[this.all_items.length]) + 1;
+      this.new_item.iid = this.total_items;
       this.new_item.i_content = item_content;
       this.new_item.i_case = this.cid;
       this.new_item.i_type = item_type;
@@ -5113,7 +5169,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //Resets variables that may have been changed by an editor
       this.gid = this.initial_gid;
       this.editing = false;
-      this.previewThumbnail = false; //Reset uploaded images and their previews
+      this.preview_thumbnail = false; //Reset uploaded images and their previews
 
       for (var index in this.preview) {
         this.preview[index] = false;
@@ -5139,7 +5195,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Submit new data to database
     onSubmit: function onSubmit(items) {
-      var _this12 = this;
+      var _this14 = this;
 
       this.editing = false;
 
@@ -5147,14 +5203,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.preview[index] = false;
       }
 
-      this.previewThumbnail = false;
+      this.preview_thumbnail = false;
       this.new_date = this.case_to_show[0].c_incident_date;
       this.$nextTick(function () {
-        _this12.updateParams();
+        _this14.updateParams();
 
-        _this12.updateItems(items);
+        _this14.updateItems(items);
 
-        _this12.updateCase();
+        _this14.updateCase();
       });
       window.location.reload(); //this.updateParameter();
     },
@@ -5187,7 +5243,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     //Upload image to a specific item, index is used to track files being uploaded
     uploadImage: function uploadImage(e, item, index) {
-      var _this13 = this;
+      var _this15 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -5196,16 +5252,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.files[0]);
 
       reader.onload = function (e) {
-        _this13.$nextTick(function () {
-          _this13.images[index] = e.target.result;
-          _this13.image_names[index] = _this13.files[0];
-          _this13.preview[index] = true;
+        _this15.$nextTick(function () {
+          _this15.images[index] = e.target.result;
+          _this15.image_names[index] = _this15.files[0];
+          _this15.preview[index] = true;
         });
       };
     },
     //Seperate image uploader for thumbnail since it is a seperate file stream
     uploadThumbnail: function uploadThumbnail(e) {
-      var _this14 = this;
+      var _this16 = this;
 
       //This reads an image from a data url stored in the item
       //var image = new Image();
@@ -5215,10 +5271,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       reader.readAsDataURL(this.thumbnail_files[0]);
 
       reader.onload = function (e) {
-        _this14.$nextTick(function () {
-          _this14.thumbnail_preview = e.target.result;
-          _this14.thumbnail_name = _this14.thumbnail_files[0];
-          _this14.previewThumbnail = true;
+        _this16.$nextTick(function () {
+          _this16.thumbnail_preview = e.target.result;
+          _this16.thumbnail_name = _this16.thumbnail_files[0];
+          _this16.preview_thumbnail = true;
         });
       };
     }
@@ -94720,7 +94776,7 @@ var render = function() {
                   staticStyle: { "margin-top": "10px", "margin-right": "10px" }
                 },
                 [
-                  _c("div", { key: _vm.previewThumbnail }, [
+                  _c("div", { key: _vm.preview_thumbnail }, [
                     _vm.editing
                       ? _c("input", {
                           attrs: {
@@ -94737,7 +94793,7 @@ var render = function() {
                         })
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm.editing && !_vm.previewThumbnail
+                    _vm.editing && !_vm.preview_thumbnail
                       ? _c("img", {
                           staticStyle: {
                             "margin-top": "10px",
@@ -94752,7 +94808,7 @@ var render = function() {
                         })
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm.editing && _vm.previewThumbnail
+                    _vm.editing && _vm.preview_thumbnail
                       ? _c("img", {
                           staticStyle: {
                             "margin-top": "10px",
@@ -95075,7 +95131,7 @@ var render = function() {
                   staticStyle: { background: "white" }
                 },
                 [
-                  !this.editing
+                  !this.editing && this.permission_to_edit
                     ? _c(
                         "button",
                         {
