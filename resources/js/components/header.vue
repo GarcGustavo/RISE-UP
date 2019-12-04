@@ -8,7 +8,7 @@
           style="width:70px;height:45px;margin-right:10px"
           src="../../../public/images/iren_logo.png"
           alt
-        >
+        />
         Interdisciplinary Research Network
       </a>
 
@@ -24,8 +24,14 @@
 
       <!-- Search bar -->
 
-      <form action="/search" class="navbar-form navbar-right ml-auto mt-2 mr-5 search">
+      <form
+        :action="'/search?uid='+uid"
+        method="POST"
+        class="navbar-form navbar-right ml-auto mt-2 mr-5 search"
+      >
         <div v-if="!disable_header_search" class="input-group mb-3">
+            <input type="hidden" :value="csrfToken" name="_token" />
+            <!-- <input type="hidden" :value="uid" name="uid" /> -->
           <input
             type="text"
             name="q"
@@ -33,7 +39,7 @@
             placeholder="search"
             aria-label="Search"
             aria-describedby="basic-addon2"
-          >
+          />
           <div class="input-group-append">
             <button class="btn btn-primary border-0 btn-sm" type="submit">
               <i class="material-icons">search</i>
@@ -59,9 +65,9 @@
               title="Create case study"
             >Collaborate</a>
           </span>
-        <!-- else -->
-           <a
-           v-if="isViewer"
+          <!-- else -->
+          <a
+            v-if="isViewer"
             class="nav-link"
             data-toggle="tooltip"
             data-placement="bottom"
@@ -111,10 +117,22 @@
               </div>
             </div>
             <div class="dropdown-divider"></div>
-            <a v-if="isAdmin" :href="'/admin/users-requests?uid='+uid" class="dropdown-item">Dashboard</a>
+            <a
+              v-if="isAdmin"
+              :href="'/admin/users-requests?uid='+uid"
+              class="dropdown-item"
+            >Dashboard</a>
             <a :href="'/user/profile?uid='+uid" class="dropdown-item">Profile</a>
-            <a v-if="isCollaborator" :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
-            <a v-if="isCollaborator" :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
+            <a
+              v-if="isCollaborator || isAdmin"
+              :href="'/user/cases?uid='+uid"
+              class="dropdown-item"
+            >Cases</a>
+            <a
+              v-if="isCollaborator || isAdmin"
+              :href="'/user/groups?uid='+uid"
+              class="dropdown-item"
+            >Groups</a>
             <div class="dropdown-divider"></div>
             <a href="/shibboleth-logout2" class="dropdown-item">Logout</a>
           </div>
@@ -139,6 +157,7 @@
 export default {
   data() {
     return {
+      csrfToken: null,
       user: "",
       user_name: "",
 
@@ -154,7 +173,10 @@ export default {
   },
 
   created() {
-    this.getUser();
+    this.getUser(),
+      (this.csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+      ).content);
   },
   methods: {
     resetErrors() {
@@ -172,7 +194,7 @@ export default {
       fetch("/user?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
-           // console.log(res);
+          // console.log(res);
           this.user = res.data[0];
           if (this.user.u_role == 4) {
             this.isAdmin = true;
@@ -183,9 +205,8 @@ export default {
           }
           this.uid = this.user.uid;
           console.log(this.uid);
-          this.user_name = this.user.first_name +' '+this.user.last_name;
+          this.user_name = this.user.first_name + " " + this.user.last_name;
         });
-
     },
 
     /**

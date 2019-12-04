@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Laravel\Socialite\Facades\Socialite;
 
 class LandingController extends Controller
 {
@@ -35,5 +36,27 @@ class LandingController extends Controller
     {
         $choices = ['0' => 'Login with UPR/UPRM account'];
         return response()->json(['choices' => $choices]);
+    }
+
+    /**
+     * Redirect the user to the Google authentication page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToProvider()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Obtain the user information from Google.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleProviderCallback()
+    {
+        $user = Socialite::driver('google')->user();
+        return response()->json(['choices' => $user]);
+        // $user->token;
     }
 }

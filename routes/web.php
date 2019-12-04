@@ -39,18 +39,20 @@ Route::get('/user/cases', 'ViewsController@userCases')->middleware('sessionCheck
 //Software requirement 2.2.3.4 - case study page
 Route::get('/case/body', 'ViewsController@showCaseBody')->middleware('sessionCheck');
 
-Route::any('/search','ViewsController@search')->middleware('sessionCheck');
+Route::post('/search','ViewsController@search')->middleware('sessionCheck');
 
 /*********Landing**********/
 
 //Get login choices
 Route::get('/landing/login-choices', 'LandingController@getLoginChoices');
 //Redirect to UPRM IDP page to login
-Route::post('/shibboleth-login', 'LandingController@login');
+Route::post('/shibboleth-login', 'LandingController@redirectToProvider');
 //Request logout to UPRM IDP
 Route::get('/shibboleth-logout2', 'LandingController@logout');
 //Redirect to UPRM IDP page
 Route::post('/user/login', 'UserController@findToLogin');
+//Redirect to UPRM IDP page
+Route::get('/user/verify', 'LandingController@handleProviderCallback');
 
 /********USERS*********/
 

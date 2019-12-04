@@ -20,6 +20,7 @@ class SessionCheck
                 return $next($request);
             }
         }
+        $request->session()->flush();
         // user value cannot be found in session
         return redirect('/');
 

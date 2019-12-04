@@ -165,6 +165,37 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function verify(Request $request)
+    {
+        $email = $request->input('email');
+        $user = User::where(['email' => $email])->get();
+
+        if (sizeOf($user) == 0) {
+            if ($request->session()->exists('user')) {
+                // Session anomaly
+                $request->session()->forget('user');
+            }
+            // Store the session data
+            $request->session()->put('user', 'temporary');
+            return redirect('/profile-creation?email=' . $email);
+        } else {
+            if ($request->session()->exists('user')) {
+                // Session anomaly
+                $request->session()->forget('user');
+            }
+            // Store the session data
+            $request->session()->put('user', $user['0']["uid"]);
+
+            return redirect('/home?uid=' . $user['0']["uid"]);
+        }
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
