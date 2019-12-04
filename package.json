@@ -39,6 +39,7 @@
         "vue-loading-spinner": "^1.0.11",
         "vue-sortable": "^0.1.3",
         "vuejs-datepicker": "^1.6.2",
+        "vuejs-loading-plugin": "^1.0.51",
         "webpack": "^4.41.2"
     }
 }

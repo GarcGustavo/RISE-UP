@@ -166,6 +166,7 @@ export default {
         c_thumbnail: "",
         c_status: "",
         c_date: "",
+        c_incident_date:"",
         c_owner: "",
         c_group: ""
       },
@@ -238,6 +239,7 @@ calling parent method to create case study*/
       this.case_study.c_thumbnail = null;
       this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
+      this.case_study.c_incident_date = this.date;
       this.case_study.c_owner = this.curr_user;
       this.case_study.c_group = this.curr_group;
 
@@ -251,6 +253,7 @@ calling parent method to create case study*/
         c_thumbnail: "",
         c_status: "",
         c_date: "",
+        c_incident_date:"",
         c_owner: "",
         c_group: ""
       };

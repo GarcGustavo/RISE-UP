@@ -367,6 +367,7 @@
 import draggable from "vuedraggable";
 import datepicker from "vuejs-datepicker";
 import linkify from "vue-linkify";
+import { asyncLoading } from 'vuejs-loading-plugin';
 export default {
   //name: 'app',
   components: {
@@ -380,11 +381,12 @@ export default {
       date_format: "yyyy-MM-dd",
       new_date: new Date(),
       editing: false,
-      uploadPercentage: 0,
+      loading: false,
       showModal: false,
       typing: false,
       action: "",
       actor: "",
+      owner: "",
       total_items: "",
       images: [],
       image_names: [],
@@ -415,6 +417,7 @@ export default {
       ready: false,
       cid: "",
       initial_gid: "",
+      initial_date: "",
       gid: "",
       case_to_show: [],
       users: [],
@@ -450,6 +453,7 @@ export default {
     this.fetchCaseParameters();
     //this.fetchSelectedOptions(this.cid);
     this.fetchUsersEditing(this.cid);
+    
     this.fetchUserGroups();
   },
 
@@ -527,11 +531,13 @@ export default {
         .then(res => {
           this.case_to_show = res.data;
           this.uid = Number(this.case_to_show[0].c_owner);
+          this.owner = Number(this.case_to_show[0].c_owner);
           this.gid = Number(this.case_to_show[0].c_group);
+          this.initial_date = this.case_to_show[0].c_incident_date;
           this.initial_gid = this.gid;
-          this.fetchUser(this.uid);
+          this.fetchUser(this.owner);
           this.fetchGroup(this.gid);
-          console.log(res.data);
+          //console.log(res.data);
         })
         .catch(err => console.log(err));
     },
@@ -546,7 +552,7 @@ export default {
     },
     //Fetch owner groups
     fetchUserGroups() {
-      fetch("/group/show?uid=" + this.case_to_show[0].c_owner)
+      fetch("/group/show?uid=" + this.owner)
         .then(res => res.json())
         .then(res => {
           this.all_groups = res.data;
@@ -555,7 +561,7 @@ export default {
             g_name: "No Group",
             g_owner: null
           });
-          console.log(res.data);
+          //console.log(res.data);
         })
         .catch(err => console.log(res.data));
     },
@@ -617,7 +623,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
-          console.log(res.data);
+          //console.log(res.data);
         })
         .catch(err => console.log(err));
       this.fetchParameterOptions();
@@ -628,7 +634,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.parameter_options = res.data;
-          console.log(res.data);
+          //console.log(res.data);
         })
         .catch(err => console.log(err));
     },
@@ -727,7 +733,9 @@ export default {
       form_data.append("i_name", item_to_update.i_name);
       form_data.append("i_content", item_to_update.i_content);
       //console.log(form_data.get('i_content'));
-      fetch("/item/update?iid=" + item_to_update.iid, {
+      this.$loading(true)
+      const login = new Promise( (resolve, reject) => {
+        fetch("/item/update?iid=" + item_to_update.iid, {
         method: "post",
         headers: new Headers({
           //"Content-Type": "multipart/form-data",
@@ -744,6 +752,9 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
+        });
+      this.$loading(false);
+      asyncLoading(login).then().catch()
     },
     //Iterate through items and update them appropriately
     updateItems(items) {
@@ -955,10 +966,13 @@ export default {
 
       reader.readAsDataURL(this.files[0]);
       reader.onload = e => {
+        this.$nextTick(() => {
         this.images[index] = e.target.result;
         this.image_names[index] = this.files[0];
         this.preview[index] = true;
+        });
       };
+      
     },
     //Seperate image uploader for thumbnail since it is a seperate file stream
     uploadThumbnail(e) {
@@ -970,9 +984,11 @@ export default {
 
       reader.readAsDataURL(this.thumbnail_files[0]);
       reader.onload = e => {
+        this.$nextTick(() => {
         this.thumbnail_preview = e.target.result;
         this.thumbnail_name = this.thumbnail_files[0];
         this.previewThumbnail = true;
+        });
       };
     }
   }
