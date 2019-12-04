@@ -9,7 +9,7 @@ require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
 import Datepicker from 'vuejs-datepicker';
-import linkify  from 'vue-linkify';
+import linkify from 'vue-linkify';
 import VueLoading from 'vuejs-loading-plugin'
 
 window.Vue = require('vue');
@@ -20,7 +20,7 @@ Vue.use(VueLoading);
 Vue.use(BootstrapVue);
 Vue.use(Datepicker);
 Vue.directive('linkified', linkify)
-//Vue.use(linkify);
+    //Vue.use(linkify);
 
 
 /**
@@ -45,6 +45,7 @@ Vue.component('iren-footer', require('./components/footer.vue').default);
 Vue.component('iren-landing', require('./components/landing.vue').default);
 Vue.component('iren-login', require('./components/login.vue').default);
 Vue.component('iren-profile-creation', require('./components/profile-creation.vue').default);
+Vue.component('iren-profile', require('./components/profile.vue').default);
 Vue.component('iren-help', require('./components/help.vue').default);
 Vue.component('iren-about', require('./components/about.vue').default);
 Vue.component('iren-group', require('./components/group.vue').default);
