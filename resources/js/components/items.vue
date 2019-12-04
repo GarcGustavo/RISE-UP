@@ -507,7 +507,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           this.items = res.data;
-          console.log(res.data);
+          //console.log(res.data);
         })
         .catch(err => console.log(err));
     },
