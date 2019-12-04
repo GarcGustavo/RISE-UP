@@ -176,7 +176,7 @@ export default {
      * @description filters cases by dropdown selection.
      * @returns list of cases in accordance to search.
      */
-    async filterCases() {
+     filterCases() {
       this.filtered_cases = [];
 
       //create new array of selected options to manipulate data set without changing original array
@@ -310,14 +310,6 @@ export default {
       //return this.filtered_cases;
     },
 
-    forceRerender() {
-      // Remove my-component from the DOM
-      this.refresh = false;
-      this.$nextTick(() => {
-        // Add the component back in
-        this.refresh = true;
-      });
-    },
 
     getSearch() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
