@@ -518,7 +518,7 @@ export default {
         .then(res => {
           this.all_items = res.data;
           this.total_items = this.all_items.length + 1;
-          console.log(res.data);
+          //console.log(res.data);
         })
         .catch(err => console.log(err));
     },
