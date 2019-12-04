@@ -5,13 +5,11 @@
  */
 //import JwPagination from 'jw-vue-pagination';
 
-
 require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
 import Datepicker from 'vuejs-datepicker';
 import linkify  from 'vue-linkify';
-
 
 window.Vue = require('vue');
 
@@ -21,6 +19,7 @@ Vue.use(BootstrapVue);
 Vue.use(Datepicker);
 Vue.directive('linkified', linkify)
 //Vue.use(linkify);
+
 
 /**
  * The following block of code may be used to automatically register your
@@ -39,7 +38,11 @@ Vue.component('action-table-dbox', require('./components/dialogue-boxes/action-t
 Vue.component('case-create-dbox', require('./components/dialogue-boxes/case-create-dbox.vue').default);
 //web pages
 Vue.component('iren-header', require('./components/header.vue').default);
+Vue.component('iren-header3', require('./components/header3.vue').default);
 Vue.component('iren-footer', require('./components/footer.vue').default);
+Vue.component('iren-landing', require('./components/landing.vue').default);
+Vue.component('iren-login', require('./components/login.vue').default);
+Vue.component('iren-profile-creation', require('./components/profile-creation.vue').default);
 Vue.component('iren-help', require('./components/help.vue').default);
 Vue.component('iren-about', require('./components/about.vue').default);
 Vue.component('iren-group', require('./components/group.vue').default);

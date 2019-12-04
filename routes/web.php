@@ -12,24 +12,22 @@
 |
 */
 
-Route::get('/', function () {
-    return view('layout.layout');
-});
-
-Route::get('/Home', function () {
-    return view('home');
-});
-
-Auth::routes();
-
-
-
 /********VIEWS*********/
 
+//Software requirement 2.2.2.1 - landing page
+Route::get('/', 'ViewsController@landingPage');
+//Profile creation page
+Route::get('/login', 'ViewsController@login');
+//Profile creation page
+Route::get('/profile-creation', 'ViewsController@profileCreation');
+//Home page
+Route::get('/home', 'ViewsController@home')->middleware('sessionCheck');
+//Software requirement  - terms page
+Route::get('/terms', 'ViewsController@terms');
 //Software requirement 2.2.2.2 - about page
-Route::get('/about', 'ViewsController@about');
+Route::get('/about', 'ViewsController@about')->middleware('sessionCheck');;
 //Software requirement 2.2.2.3 - help page
-Route::get('/help', 'ViewsController@help');
+Route::get('/help', 'ViewsController@help')->middleware('sessionCheck');;
 //Software requirement 2.2.3.3 - group page
 Route::get('/group', 'ViewsController@group');
 //Software requirement 2.2.3.2 - page that displays a user's groups
@@ -41,6 +39,17 @@ Route::get('/case/body', 'ViewsController@showCaseBody');
 
 Route::any('/search','ViewsController@search');
 
+/*********Landing**********/
+
+//Get login choices
+Route::get('/landing/login-choices', 'LandingController@getLoginChoices');
+//Redirect to UPRM IDP page to login
+Route::post('/shibboleth-login', 'LandingController@login');
+//Request logout to UPRM IDP
+Route::get('/shibboleth-logout2', 'LandingController@logout');
+//Redirect to UPRM IDP page
+Route::post('/user/login', 'UserController@findToLogin');
+
 /********USERS*********/
 
 //List specific user
@@ -48,6 +57,9 @@ Route::get('/user', 'UserController@show');
 
 //List all system users
 Route::get('/users', 'UserController@index');
+
+//Creating a new users
+Route::post('/user/create', 'UserController@store');
 
 //List users editing cid
 Route::get('/user/edit', 'UserController@showUsersEditing');
@@ -235,7 +247,7 @@ Route::post('/admin/filter-option', 'AdminFilterOptionController@store');
 //Software Requirement: 2.74.  The web application will allow an Admin to remove search filters they have created for case studies
 Route::delete('/admin/filter-option/{id}', 'AdminFilterOptionController@destroy');
 
-//Edit filter 
+//Edit filter
 //User Requirement: (2.xx)  The web application will allow an Admin to modify search filter they have created for case studies
 Route::put('/admin/filter-option/{id}', 'AdminFilterOptionController@update');
 

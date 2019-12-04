@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Http\Resources\User as UserResource;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -15,19 +18,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = Group::withTrashed()->get();
 
-        return UserResource::collection($users);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if ($users) {
+            return GroupResource::collection($users);
+        } else {
+            return response()->json(['errors' => 'Error fetching all registered users - Origin: User controller']);
+        }
     }
 
     /**
@@ -38,21 +35,52 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $request->isMethod('put') ? User::findOrFail($request->uid): new User;
+        //rename attributes
+        $attributes = array(
+            'first' => 'first name',
+            'last' => 'last name',
+            'contact_email'  => 'contact email',
+            'organization'  => 'organization',
+            'terms' => 'Terms and Conditions'
+        );
+        //valiadate attributes of record
+        $validator = Validator::make($request->all(), [
+            'first' => 'bail|required|max:32',
+            'last' => 'bail|required|max:32',
+            'contact_email' => 'bail|required|email',
+            'organization' => 'bail|required',
+            'terms' => 'bail|required',
+        ]);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+        //create group
+        $user = new User;
+        $user->first_name = $request->input('first');
+        $user->last_name = $request->input('last');
+        $user->email = $request->input('email');
+        $user->contact_email = $request->input('contact_email');
+        $user->u_expiration_date = "2020-1-10";
+        $user->u_creation_date = Carbon::now()->format('Y-m-d');
+        $user->u_ban_status = 0;
+        $user->current_edit_cid = null;
+        $user->u_role = 1;
+        $user->u_role_upgrade_request = 0;
 
-        $user->uid = $request -> input('uid');
-        $user->first_name = $request -> input('first_name');
-        $user->last_name = $request -> input('last_name');
-        $user->email = $request -> input('email');
-        $user->contact_email = $request -> input('contact_email');
-        $user->u_creation_date = $request -> input('u_creation_date');
-        $user->u_ban_status = $request -> input('u_ban_status');
-        $user->current_edit_cid = $request -> input('current_edit_cid');
-        $user->u_role = $request -> input('u_role');
-        $user->delete_at = null;
-
+        //process request
         if ($user->save()) {
-            return new UserResource($user);
+            if ($request->session()->exists('user')) {
+                // Session anomaly
+                $request->session()->forget('user');
+            }
+            // Store the session data
+            $request->session()->put('user', $user["uid"]);
+            $request->session()->flash('message', 'Profile has been created!');
+            return redirect('/home?uid='.$user["uid"]);
+        } else {
+            return abort(404);
         }
     }
 
@@ -98,6 +126,36 @@ class UserController extends Controller
         ->get();
 
         return UserResource::collection($user);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function findToLogin(Request $request)
+    {
+        $validatedData = $request->validate([
+            '_token' => "bail|required",
+            'email' => "required|email",
+        ]);
+        $email = $request->input('email');
+        $user = User::where(['email' => $email])->get();
+
+        if(sizeOf($user) == 0){
+            return redirect('/profile-creation?email='.$email);
+        }
+        else{
+            if ($request->session()->exists('user')) {
+                // Session anomaly
+                $request->session()->forget('user');
+            }
+            // Store the session data
+            $request->session()->put('user', $user['0']["uid"]);
+
+            return redirect('/home?uid='.$user['0']["uid"]);
+        }
     }
 
     /**
