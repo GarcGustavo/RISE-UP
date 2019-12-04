@@ -173,7 +173,7 @@ export default {
 
   methods: {
     /**
-     * @description filters cases by dropdown selection.
+     * @description filters cases by dropdown and date selection.
      * @returns list of cases in accordance to search.
      */
     filterCases() {
@@ -326,7 +326,7 @@ export default {
     },
 
     /**
-     * @description clear all filters  
+     * @description clear all filters
      */
     clearFilter() {
       // this.clear = false;
