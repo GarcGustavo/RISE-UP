@@ -166,7 +166,7 @@
           <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
             <div class="card-body">
               <h5 class="card-title">
-                <a :href="'/case/body?cid='+case_study.cid">{{case_study.c_title}}</a>
+                <a :href="'/case/body?cid='+case_study.cid+'&uid='+curr_user">{{case_study.c_title}}</a>
               </h5>
               <h6 class="card-subtitle mb-2 text-muted">{{case_study.c_date}}</h6>
               <p class="card-text">{{case_study.c_description}}</p>
@@ -227,11 +227,9 @@ export default {
     this.fetchCases();
   },
   methods: {
-
-/*#region Auxilary methods - These methods provide operational
+    /*#region Auxilary methods - These methods provide operational
 functionalities to to the web page. Operations include:
-Setting user priveleges, editing title, and resetting variables
-
+Setting user priveleges, editing title, and resetting variables*/
 
     /**
      * @description determine user priveleges in group
@@ -311,21 +309,20 @@ Setting user priveleges, editing title, and resetting variables
       this.errors = [];
     },
 
-/*#endregion*/
+    /*#endregion*/
 
-
-/*#region Query methods - These methods provide the content of
+    /*#region Query methods - These methods provide the content of
 the web page by requesting the data through route calls. The routes
 passes the request to a specified predefined controller who processes
 said request via Laravel's eloquent ORM. The data is appended to the
-global variables as needed to be used.
+global variables as needed to be used.*/
 
     /**
      * @description get all of system's users when adding a user to group.
      *
      */
     fetchUsers() {
-      fetch("/users")
+      fetch("/users?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.users_to_add = res.data; //to send to action_table_dbox when adding users
@@ -347,7 +344,9 @@ global variables as needed to be used.
      * @description gets all of the current group's users
      */
     fetchMembers() {
-      fetch("/user-groups/show?gid=" + this.curr_group)
+      fetch(
+        "/user-groups/show?gid=" + this.curr_group + "&uid=" + this.curr_user
+      )
         .then(res => res.json())
         .then(res => {
           this.users_to_remove = res.data; //populates action_table_dbox when removing a member from group
@@ -366,7 +365,9 @@ global variables as needed to be used.
      * @description gets all of the case studies of the current group
      */
     fetchCases() {
-      fetch("/case/group/show?gid=" + this.curr_group)
+      fetch(
+        "/case/group/show?gid=" + this.curr_group + "&uid=" + this.curr_user
+      )
         .then(res => res.json())
         .then(res => {
           this.group_cases = res.data;
@@ -382,7 +383,7 @@ global variables as needed to be used.
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = Number(this.urlParams.get("uid")); //get user id
       this.curr_group = this.urlParams.get("gid"); //get group id
-      fetch("/group/info?gid=" + this.curr_group)
+      fetch("/group/info?gid=" + this.curr_group + "&uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           if (!res.errors) {
@@ -399,7 +400,7 @@ global variables as needed to be used.
      * @description outputs to the groupController a JSON request to rename group
      */
     changeGroupName() {
-      fetch("/group/rename", {
+      fetch("/group/rename?uid=" + this.curr_user, {
         method: "put",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -450,7 +451,7 @@ global variables as needed to be used.
      * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
      */
     addUsers(users_to_add) {
-      fetch("/user-groups/add", {
+      fetch("/user-groups/add?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -461,7 +462,7 @@ global variables as needed to be used.
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body: JSON.stringify({data:users_to_add})
       })
         .then(res => res.json())
         .then(res => {
@@ -525,7 +526,7 @@ global variables as needed to be used.
           if (!result) {
             //if yes
             //send request
-            fetch("/user-groups/remove", {
+            fetch("/user-groups/remove?uid=" + curr.curr_user, {
               method: "delete",
               //Add json content type application to indicate the media type of the resource.
               //Add access control action response that tells the browser to allow code
@@ -536,7 +537,7 @@ global variables as needed to be used.
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.remove)
+              body: JSON.stringify({data:curr.remove})
             })
               .then(res => res.json())
               .then(res => {
@@ -573,7 +574,7 @@ global variables as needed to be used.
      * @param {Array} case_study - array of case study data to create a case study - data is sent by the case_create_dbox dialogue
      */
     createCaseStudy(case_study) {
-      fetch("/case/create", {
+      fetch("/case/create?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -615,7 +616,7 @@ global variables as needed to be used.
             this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
 
             this.appendDefaultParameters(case_study.cid); //default case study parameters
-           // this.fetchCases(); //update case study list
+            // this.fetchCases(); //update case study list
             //this.resetErrors(); //reset error variable
           } else {
             this.errors = res.errors;
@@ -630,7 +631,7 @@ global variables as needed to be used.
      * @description add null default parameters to Case study
      */
     appendDefaultParameters(cid) {
-      fetch("/parameter/create/defaults", {
+      fetch("/parameter/create/defaults?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -648,7 +649,7 @@ global variables as needed to be used.
           console.log(res);
 
           if (!res.errors) {
-            this.fetchCases() //update list
+            this.fetchCases(); //update list
             this.resetErrors(); //reset all prior errors
           } else {
             this.errors = res.errors;
@@ -658,7 +659,7 @@ global variables as needed to be used.
           console.error("Error: ", err);
         });
     }
-/*#endregion*/
+    /*#endregion*/
   }
 };
 </script>

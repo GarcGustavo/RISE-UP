@@ -166,6 +166,7 @@ export default {
         c_thumbnail: "",
         c_status: "",
         c_date: "",
+        c_incident_date:"",
         c_owner: "",
         c_group: ""
       },
@@ -229,7 +230,7 @@ calling parent method to create case study*/
     sendCaseStudyData() {
       //yyyy-mm-dd
       this.date = new Date().toJSON().slice(0, 10); //current date
-      
+
 
       //append data to new case study
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
@@ -238,6 +239,7 @@ calling parent method to create case study*/
       this.case_study.c_thumbnail = null;
       this.case_study.c_status = "active";
       this.case_study.c_date = this.date;
+      this.case_study.c_incident_date = this.date;
       this.case_study.c_owner = this.curr_user;
       this.case_study.c_group = this.curr_group;
 
@@ -251,6 +253,7 @@ calling parent method to create case study*/
         c_thumbnail: "",
         c_status: "",
         c_date: "",
+        c_incident_date:"",
         c_owner: "",
         c_group: ""
       };
@@ -267,10 +270,14 @@ The data is appended to the global variables as needed to be used.*/
      * This method is used to determined the id of a newly created case study
      */
     totalCases() {
-      fetch("/cases")
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = this.urlParams.get("uid"); //get user id
+      fetch("/cases?uid="+this.curr_user)
         .then(res => res.json())
         .then(res => {
+
           this.all_cases = res.data;
+
         })
         .catch(err => console.log(err));
     },

@@ -9,6 +9,31 @@ use App\Models\case_study;
 
 class ViewsController extends Controller
 {
+    public function landingPage()
+    {
+        return view('landing-page');
+    }
+
+    public function login()
+    {
+        return view('login');
+    }
+
+    public function profileCreation()
+    {
+        return view('profile-creation');
+    }
+
+    public function terms()
+    {
+        return view('terms');
+    }
+
+    public function home()
+    {
+        return view('home');
+    }
+
     public function about()
     {
         return view('about');
@@ -17,6 +42,11 @@ class ViewsController extends Controller
     public function help()
     {
         return view('help');
+    }
+
+    public function profile()
+    {
+        return view('profile');
     }
 
     public function group(Request $request)
@@ -136,14 +166,13 @@ class ViewsController extends Controller
             'q' => 'required|not_in:+'
         ]);
 
-
         $q = $request->input('q');
         $case_study_without_content = case_study::where('c_title', 'LIKE', '%'.$q.'%')->orWhere('c_description', 'LIKE', '%'.$q.'%')->get();
         $case_study_with_content = case_study::join('Item', 'Item.i_case', '=', 'Case.cid')
             ->where('i_type', '=', 1)->where('i_content', 'LIKE', '%'.$q.'%')
             ->select('Case.*')->get()->sortByDesc('cid');
 
-        $case_study = $case_study_without_content->concat($case_study_with_content)->sortByDesc('cid');
+        $case_study = $case_study_without_content->concat($case_study_with_content)->unique()->sortByDesc('cid');
         if ($validate->fails()) {
             return view('search')
             ->withErrors($validate);

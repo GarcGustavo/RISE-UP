@@ -141,15 +141,27 @@
       </div>
 
       <!-- search bar -->
-      <div class="input-group">
+      <div v-if="curr_tab==1" class="input-group">
         <label>Search</label>
         <div class="input-group-append search">
           <input
             type="text"
             class="form-control input-sm"
             maxlength="32"
-            v-model="search"
-            placeholder="Case title.."
+            v-model="search_tab1"
+            placeholder="Group name.."
+          >
+        </div>
+      </div>
+      <div v-if="curr_tab==2" class="input-group">
+        <label>Search</label>
+        <div class="input-group-append search">
+          <input
+            type="text"
+            class="form-control input-sm"
+            maxlength="32"
+            v-model="search_tab2"
+            placeholder="Group name.."
           >
         </div>
       </div>
@@ -162,7 +174,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterCases"
+          :items="filterCases_tab1"
           :fields="fields"
         >
           <!--table headers -->
@@ -227,7 +239,10 @@
           <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
+              <b-link
+                class="p-2"
+                :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user"
+              >{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -251,7 +266,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterCases"
+          :items="filterCases_tab2"
           :fields="fields"
         >
           <!-- table headers -->
@@ -305,7 +320,10 @@
           <!-- title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid">{{data.item.c_title}}</b-link>
+              <b-link
+                class="p-2"
+                :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user"
+              >{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -342,7 +360,8 @@ export default {
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
-      search: "", //table search string
+      search_tab1: "", //table search string
+      search_tab2:"",
 
       user_cases: [], // cases of the user
       cases_user_is_owner: [], //list of cases the user has created
@@ -396,30 +415,40 @@ export default {
      * @description filters cases by title search. Method is called per each key press
      * @returns list of cases in accordance to search.
      */
-    filterCases() {
+
+    filterCases_tab1() {
       if (this.curr_tab == 1) {
         if (this.page_content_tab1.length == 0) {
           return [];
-        } else {
-          if (this.page_content_tab2.length == 0) {
-            return [];
-          }
         }
-      } //search fiter
+      } //search filter
+
       return this.page_of_cases.filter(page_of_cases => {
         return page_of_cases.c_title
           .toLowerCase()
-          .includes(this.search.toLowerCase());
+          .includes(this.search_tab1.toLowerCase());
+      });
+    },
+    filterCases_tab2() {
+      if (this.curr_tab == 2) {
+        if (this.page_content_tab2.length == 0) {
+          return [];
+        }
+      } //search filter
+
+      return this.page_of_cases.filter(page_of_cases => {
+        return page_of_cases.c_title
+          .toLowerCase()
+          .includes(this.search_tab2.toLowerCase());
       });
     }
   },
 
   methods: {
-
-/*#region Auxilary methods - These methods provide operational
+    /*#region Auxilary methods - These methods provide operational
 functionalities to to the web page. Operations include but are
 not limited to :Sorting, updating paginator and content,
-validation, and resetting variables
+validation, and resetting variables*/
 
     /**
      * @description - refreshes the paginator
@@ -589,14 +618,13 @@ validation, and resetting variables
       }
     },
 
-/*#endregion*/
+    /*#endregion*/
 
-
-/*#region Query methods - These methods provide the content of
+    /*#region Query methods - These methods provide the content of
 the web page by requesting the data through route calls. The routes
 passes the request to a specified predefined controller who processes
 said request via Laravel's eloquent ORM. The data is appended to the
- global variables as needed to be used.
+ global variables as needed to be used.*/
 
     /**
      * @description gets all the cases of the current user
@@ -636,7 +664,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
      * data is sent by the case_create_dbox dialogue
      */
     createCaseStudy(case_study) {
-      fetch("/case/create", {
+      fetch("/case/create?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -678,7 +706,6 @@ said request via Laravel's eloquent ORM. The data is appended to the
             this.appendDefaultParameters(case_study.cid); //default case study parameters
             //this.fetchCases(); //update case study list
             //this.resetErrors();
-
           } else {
             this.errors = res.errors;
           }
@@ -693,7 +720,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
      * Sends request to Case parameters controller
      */
     appendDefaultParameters(cid) {
-      fetch("/parameter/create/defaults", {
+      fetch("/parameter/create/defaults?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -755,7 +782,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
               });
             }
             //send request
-            fetch("/case/remove", {
+            fetch("/case/remove?uid=" + curr.curr_user, {
               method: "delete",
               //Add json content type application to indicate the media type of the resource.
               //Add access control action response that tells the browser to allow code
@@ -766,7 +793,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.cases_to_remove)
+              body: JSON.stringify({ data: curr.cases_to_remove })
             })
               .then(res => res.json())
               .then(res => {
@@ -791,7 +818,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
       });
       this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
-/*#endregion*/
+    /*#endregion*/
   }
 };
 </script>

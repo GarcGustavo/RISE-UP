@@ -1,8 +1,14 @@
 <template>
   <div>
     <!--search bar -->
-    <form action="/search" class="navbar-form ml-auto mr-auto pt-5 mt-2 mr-5 search">
+    <form
+       v-on:submit="search_form()"
+      id="search_form"
+      method="POST"
+      class="navbar-form ml-auto mr-auto pt-5 mt-2 mr-5 search"
+    >
       <div class="input-group mb-3">
+        <input type="hidden" :value="csrfToken" name="_token">
         <input
           type="text"
           name="q"
@@ -41,33 +47,37 @@
                     Starting date must be equal to or lower than end date.
                   </div>
                 </div>
-                <select
-                  v-if="case_parameter.csp_name != 'Incident date'"
-                  class="form-control"
-                  v-model="selected_options[index]"
-                  @change="selected(case_parameter.csp_id)"
-                  :id="case_parameter.csp_id"
-                >
-                  <!-- <option selected="selected" disabled>{{case_parameter.csp_name}}</option> -->
-                  <option value>None</option>
-                  <option
-                    v-for="option in filteredOptions(case_parameter.csp_id)"
-                    :key="option.oid"
-                    :value="option.oid"
-                  >{{option.o_content}}</option>
-                </select>
+                <div id="Frame">
+                  <select
+                    v-if="case_parameter.csp_name != 'Incident date'"
+                    class="form-control"
+                    v-model="selected_options[index]"
+                    @change="selected(case_parameter.csp_id), filterCases()"
+                    :id="case_parameter.csp_id"
+                  >
+                    <!--  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>-->
+                    <!--  <option selected disabled hidden  value></option> -->
+                    <option label="None">None</option>
+                    <option
+                      v-for="option in filteredOptions(case_parameter.csp_id)"
+                      :key="option.oid"
+                      :value="option.oid"
+                    >{{option.o_content}}</option>
+                  </select>
+                </div>
               </button>
             </div>
           </div>
         </div>
       </div>
+      <button type="button" @click="clearFilter()">Clear</button>
     </div>
-
+    <h4 class="mt-5">Search results for: {{search_for}}</h4>
     <!-- case studies search -->
     <div class="card p-3 shadow" style="margin-top:20px;">
       <div v-if="!empty">
         <div class="row mt-1 pt-2 pl-2" id="cases">
-          <div class="col-lg-6 mb-4" v-for="case_study in filterCases" :key="case_study.cid">
+          <div class="col-lg-6 mb-4" v-for="case_study in search" :key="case_study.cid">
             <div class="card h-100 text-center">
               <img
                 :src="'../images/'+ case_study.c_thumbnail"
@@ -80,7 +90,7 @@
               <div class="card-body">
                 <h5 class="card-title">
                   <a
-                    :href="'/case/body?cid='+case_study.cid"
+                    :href="'/case/body?cid='+case_study.cid+'&uid='+uid"
                     class="stretched-link"
                   >{{case_study.c_title}}</a>
                 </h5>
@@ -126,51 +136,83 @@ export default {
    */
   data() {
     return {
-      date_format: "yyyy-MM-dd",
-      incident_date_start: "",
-      incident_date_end: "",
+      csrfToken: null,
 
-      selected_options: [],
-      case_parameters: [],
-      all_cases_parameters: [],
-      parameter_options: [],
-      selected_options_content: [],
-      selected_options_id: [],
-      list_cases: [],
-      filtered_cases: [],
-      selected_param: "",
+      uid: "", //user id
+      date_format: "yyyy-MM-dd", //date formatting for datepicker
+      incident_date_start: "", //range for datepicker
+      incident_date_end: "", //range for datepicker
+      search_for: "", //contains the string the user is searching for
+      selected_param: "", //id of selected/changed parameter
 
-      empty: true
+      selected_options: [], //contains id's of the selected options of all parameters
+      case_parameters: [], //contains all registered parameters
+      all_cases_parameters: [] /*contains entries of Case_Parameters table - holds
+                                relation of case studies with their corresponding parameters options selections*/,
+      parameter_options: [], //contains all options for parameters
+      list_cases: [], //contains search results
+      filtered_cases: [], //Filter cases
+      search: [], //variable used in for loop to present searched study cases
+
+      empty: true //if search is empty present "No case studies found "
     };
   },
   /**
    * @description
    */
   created() {
+    this.getUser();
+    this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
     this.fetchAllCasesParameters();
+    // this.filterCases();
   },
 
-  computed: {
+  mounted() {
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
+  },
+
+  watch: {
+    incident_date_start: function() {
+      this.filterCases();
+    },
+    incident_date_end: function() {
+      this.filterCases();
+    }
+  },
+
+  methods: {
+    /*#region Auxilary methods - These methods provide operational
+functionalities to to the web page. Operations include:
+Setting user priveleges, editing title, and resetting variables*/
+
+    getUser() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.uid = Number(this.urlParams.get("uid")); //get user id
+    },
     /**
-     * @description filters cases by dropdown selection.
+     * @description filters cases by dropdown and date selection.
      * @returns list of cases in accordance to search.
      */
     filterCases() {
-      // this.cases_by_date = filterDate(this.incident_date_start, this.incident_date_end);
-
       this.filtered_cases = [];
+
+      //create new array of selected options to manipulate data set without changing original array
+      this.selected_options_temp = this.selected_options.slice();
 
       //Selected_option None equals to "", convert to Null so it matches values on database
       for (let a = 0; a < this.selected_options.length; a++) {
-        if (this.selected_options[a] == "") {
-          this.selected_options[a] = null;
+        if (
+          this.selected_options[a] == "" ||
+          this.selected_options[a] == "None"
+        ) {
+          this.selected_options_temp[a] = null;
         }
       }
       //selected_option returns empty values on none selected filters
       //Remove undefined empty values
-      this.data = this.selected_options.filter(function(element) {
+      this.data = this.selected_options_temp.filter(function(element) {
         return element !== undefined;
       });
 
@@ -194,9 +236,6 @@ export default {
           }
         }
       }
-
-      //  console.log(this.selected_options_filtered);
-      // console.log(this.case_studies_with_selected_option);
 
       //get count of selected parameters
       this.count = 0;
@@ -252,11 +291,13 @@ export default {
         !this.case_studies_with_selected_option.length &&
         this.selected_options_filtered.length
       ) {
-        return [];
+        //return [];
+        this.search = [];
       }
       //if no case was found and a filter hasn't been selected
       //This is when page loads and user has not made any changes
       //return search items
+
       if (
         !this.case_studies_with_selected_option.length &&
         !this.selected_options_filtered.length
@@ -267,65 +308,63 @@ export default {
           this.incident_date_end,
           this.list_cases
         );
-        return this.list_cases_temp;
+
+        this.search = this.list_cases_temp;
+        // return this.list_cases_temp;
+        this.$nextTick(function() {
+          this.search = this.list_cases_temp; // true - update variable
+        });
+        this.$nextTick(function() {
+          this.search = this.list_cases_temp; // true - render to DOM
+        });
       }
-      //filter if dates have been selecte
+      //filter if dates have been selected
       this.filtered_cases = this.filterDate(
         this.incident_date_start,
         this.incident_date_end,
         this.filtered_cases
       );
+      this.search = this.filtered_cases;
 
-      return this.filtered_cases;
-    }
-  },
+      //return this.filtered_cases;
+    },
 
-  methods: {
+    /**
+     * @description get text of what the user is searching for
+     */
+    getSearch() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.search_for = this.urlParams.get("q"); //get search
+    },
+
+    /**
+     * @description get selected case parameter
+     */
     selected(id) {
       this.selected_param = id;
     },
 
     /**
-     * @description fetch all system parameters(filters)
+     * @description clear all filters
      */
-    fetchParameters() {
-      fetch("/parameters")
-        .then(res => res.json())
-        .then(res => {
-          this.case_parameters = res.data;
+    clearFilter() {
+      // this.clear = false;
+      this.parameters = document.getElementsByTagName("select");
+      this.incident_date_start = "";
+      this.incident_date_end = "";
+      this.selected_options = [];
+      this.search = this.list_cases;
+      this.$nextTick(function() {
+        this.search = this.list_cases; // true
 
-          if (this.cases) {
-            this.list_cases = Object.values(this.cases);
-            this.empty = false;
-          }
-        })
-        .catch(err => console.log(err));
-      this.fetchParameterOptions();
+        for (let i = 0; i < this.parameters.length; i++) {
+          this.parameters[i].selectedIndex = -1;
+        }
+      });
     },
+
     /**
-     * @description fetch all parameters options
-     */
-    fetchParameterOptions() {
-      fetch("/parameter/options")
-        .then(res => res.json())
-        .then(res => {
-          this.parameter_options = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-    /**
-     * @description fetch the parameters all case studies have correspondingly
-     */
-    fetchAllCasesParameters() {
-      fetch("/cs-parameters")
-        .then(res => res.json())
-        .then(res => {
-          this.all_cases_parameters = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-    /**
-     * @description filterss the options in parameter_options with their corresponding parameter
+     * @description filters the options in parameter_options with their corresponding parameter
      * @param {any} parameter system parameter
      * @returns {any} options for that parameter
      */
@@ -362,7 +401,64 @@ export default {
         return filtered_list;
       }
       return cases_list;
+    },
+
+
+    search_form(){
+    var action_src = "/search?uid="+this.uid+"&q=" + document.getElementsByName("q")[0].value;
+    var search_form = document.getElementById('search_form');
+    search_form.action = action_src;
+    //return csrf_token();
+     },
+
+    /*//#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+the web page by requesting the data through route calls. The routes
+passes the request to a specified predefined controller who processes
+said request via Laravel's eloquent ORM. The data is appended to the
+global variables as needed to be used.*/
+    /**
+     * @description fetch all system parameters(filters)
+     */
+    fetchParameters() {
+      fetch("/parameters?uid=" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.case_parameters = res.data;
+
+          if (this.cases) {
+            this.list_cases = Object.values(this.cases);
+            this.search = this.list_cases;
+            this.empty = false;
+          }
+        })
+        .catch(err => console.log(err));
+      this.fetchParameterOptions();
+    },
+    /**
+     * @description fetch all parameters options
+     */
+    fetchParameterOptions() {
+      fetch("/parameter/options?=uid" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.parameter_options = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+    /**
+     * @description fetch the parameters all case studies have correspondingly
+     */
+    fetchAllCasesParameters() {
+      fetch("/cs-parameters?uid=" + this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.all_cases_parameters = res.data;
+        })
+        .catch(err => console.log(err));
     }
+    /*#endregion*/
   }
 };
 </script>

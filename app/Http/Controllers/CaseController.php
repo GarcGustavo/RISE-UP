@@ -12,6 +12,7 @@ use App\Models\Group;
 use App\Http\Resources\Case_Study as Case_StudyResource;
 use App\Http\Resources\Group as GroupResource;
 use Carbon\Carbon;
+use DB;
 
 class CaseController extends Controller
 {
@@ -24,7 +25,7 @@ class CaseController extends Controller
     {
         $cases = case_study::withTrashed()->get();
 
-        if ($cases) {
+       if ($cases) {
             return Case_StudyResource::collection($cases);
         } else {
             return response()->json(['errors'=>'Error fetching all registered case studies - Origin: Case controller']);
@@ -142,6 +143,13 @@ class CaseController extends Controller
         $case_study->c_group = $request->input('c_group');
         //process request
         if ($case_study->save()) {
+
+            DB::table('Action')->insert([
+                'a_date'=> now(),
+                'a_user'=>  $case_study->c_owner,
+                'a_type'=>  1,
+            ]);
+
             return response()->json(['message'=>'Case study has been created']);
         } else {
             return response()->json(['errors'=>'Error creating case study - Origin: Case controller']);
@@ -246,7 +254,10 @@ class CaseController extends Controller
     {
         $c_thumbnail = $request->c_thumbnail;
         if($request->hasFile('image')){
-            $c_thumbnail = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $validator = Validator::make($request->all(), [
+                'image' => 'max:1024',
+            ]);
+            $c_thumbnail = time().'-'.$request->file('image')->getClientOriginalExtension();
             $request->file('image')->move(public_path('images'), $c_thumbnail);
         }
         $cid = $request->cid;
@@ -282,6 +293,12 @@ class CaseController extends Controller
             Case_Study::where(['cid' => $cid])->update(['c_incident_date' => Carbon::parse($c_incident_date)->toDateTimeString()]);
         }
 
+        $uid = $request->input('uid');
+        DB::table('Action')->insert([
+            'a_date'=> now(),
+            'a_user'=>  $uid,
+            'a_type'=>  2,
+        ]);
         return response()->json(['message'=>'Updated case successfully']);
     }
 
@@ -293,7 +310,7 @@ class CaseController extends Controller
     public function destroy(Request $request)
     {
         //data array
-        $data = [ 'data' => $request->all() ];
+        $data = [ 'data' => $request->input('data') ];
 
         //renaming attributes
         $attributes = array(
@@ -310,15 +327,29 @@ class CaseController extends Controller
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
         //process request
-        $to_delete = $request->all();
+        $to_delete = $request->input('data');
         $cids_to_delete = array_map(function ($item) {
             return $item['cid'];
         }, $to_delete);
 
+
+        //uid data is the same
+        $uid = $request->input('uid');
+
         $disabled = case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
         $deleted = case_study::whereIn('cid', $cids_to_delete)->delete();
 
+
         if ($disabled && $deleted) {
+
+            foreach($cids_to_delete as $cid){
+            DB::table('Action')->insert([
+                'a_date'=> now(),
+                'a_user'=>  $uid,
+                'a_type'=>  3,
+            ]);
+            }
+
             return response()->json(['message'=>'Case(s) has been removed']);
         } else {
             return response()->json(['errors'=>'Error deleting case study - Origin: Case controller']);

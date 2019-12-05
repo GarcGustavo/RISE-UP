@@ -351,7 +351,7 @@ users and create groups.*/
       for (let i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
-          uid: this.selected_users[i],
+          uid: this.selected_users[i], //not uid so no conflicts are made with middleware
           gid: this.gid
         });
       }
@@ -462,7 +462,7 @@ as needed to be used.*/
       this.uid = this.urlParams.get("uid"); //get user id
       this.gid = this.urlParams.get("gid"); //get group id
 
-      fetch("/groups")
+      fetch("/groups?uid="+this.uid)
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;

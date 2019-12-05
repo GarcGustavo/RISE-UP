@@ -11,6 +11,6 @@
 |
 */
 
-Broadcast::channel('App.User.{uid}', function ($user, $uid) {
-    return (int) $user->uid === (int) $uid;
+Broadcast::channel('App.Case.{cid}', function ($case, $cid) {
+    return (int) $case->cid === (int) $cid;
 });
