@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\DB;
 class AdminUsersRequestsController extends Controller
 {
     //public function index
-    public function index(){
+    public function index(Request $request){
+
+        $uid = $request->input('uid');;
 
         //Creates the list of users to be sent to the view
         //A join is made with the 'user' and 'role' table in order to provide
@@ -37,6 +39,6 @@ class AdminUsersRequestsController extends Controller
 			->where('u_role', 2)
             ->get();
 
-        return view('admin.users-requests.index', ['users' => $users, 'requests' => $requests]);
+        return view('admin.users-requests.index', ['users' => $users, 'requests' => $requests, 'uid' => $uid]);
     }
 }

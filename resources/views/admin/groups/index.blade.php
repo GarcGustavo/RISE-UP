@@ -48,7 +48,7 @@
 										<td> {{ \Carbon\Carbon::parse($group->g_creation_date)->format('d F Y')}} </td>
 										<td> {{$group->act_name}} </td>
 										<td> {{ \Carbon\Carbon::parse($group->recent_action_date)->format('d F Y')}}</td>
-										<td class="font-weight-bold"> <a href="/admin/groups-actions/{{$group->gid }}">View</a> </td>
+										<td class="font-weight-bold"> <a href="/admin/groups-actions?id={{$group->gid }}&uid={{$uid}}">View</a> </td>
 									</tr>							
 								@endif
                             @empty

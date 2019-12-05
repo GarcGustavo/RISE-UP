@@ -1,0 +1,83 @@
+234 3273
+orden alf listas (funcionalidad)
+
+tengo bug en grupos y actions (o maybe not test it with live data)
+
+read reqs                     ============================================================================================DONE
+
+defaults filters  ... 			==============================================sin vue sinfont awesome=====================DONE
+envia los filtros separados al view ... 
+haz la logica en el controller               
+
+modify filter - hazlo con vue - usa fontawesome ==============================sin vue sinfont awesome=====================DONE
+
+? en requests   -  {{nav}}
+
+quien setea mi data?  actions y requests (el profile?)    (3 rutas) :   AdminU
+quien consume el ban (el profile?)
+
+documentar y comentar
+print ER 
+	-missing case parameter fk from opt selected to oid option
+	-missing action fk from a_user to uid user (is to g owner instead)
+	-missing group fk from gowner to uid user
+print tus requisitos de admin : matchealos con protocolo a ver q todo este bien 
+							  : print and match web route file
+							  : print updated ER
+
+
+rubrica hh 3
+
+
+correct hh2 feedback
+	toggle menu ponle el nombre sugerido y hazlo con vue
+	remove <td> grid when empty and saying no users.
+	font awesome
+	adjust what is recent on action index and group index ...........................................................(my extra)
+
+
+
+
+
+seed non random action data 
+    -missing seeded action data.
+    -the 3 defined actions cannot be completed by Visitors or Viewers
+    but only by users with u_role==3 and u_role==4, collaborators and admins
+	-si action esta vacio ... 
+	como se ve action? 
+	como se ve Groups?    ... ============================================================================================DONE
+	
+	one action per user per day  =========================================================================================DONE
+	
+	one action per group per day   (maybe that why not showing group 1 1nd 10) ===========================================DONE
+	
+	show groups even when no one on the group have actions ===============================================================DONE
+	
+	
+	Show members that belong to a group on group index .............................................................(my extra)
+
+	
+
+
+
+
+
+
+		
+On delete cascade de categories ==========================================================================================DONE
+
+Todo tiene logica para 1 visitor 2 viewer 3 collaborator 4 admin
+
+
+
+expiration date > creation date
+
+anti explosions like view admin user edit 
+
+
+========================================================
+
+
+the case parameters are defining really fucking weird RANDOM data handle deal to do ...
+
+... search

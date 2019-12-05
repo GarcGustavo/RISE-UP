@@ -1,0 +1,17 @@
+
+================ pal grupo =============================
+Quien y donde se hacen los request to Collaborate?
+    -la forma en RISE-UP\resources\views\admin\user\edit.blade.php
+    elimina el request cuando el admin da Save, 
+    haya sido aceptado o no el request. 
+	
+Quien o donde se setean los case parameters?
+
+Los filters options q setie para Incident Type les conviene ? a quien no?
+
+
+
+================ pal mi =============================
+
+q carajo le pasa a ... database factory Action Factory ?
+	tuve q setear action harcodeas en Action Table Seeder y coorerlo desde database seeds DatabaseSeeder

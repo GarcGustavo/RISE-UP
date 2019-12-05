@@ -1,4 +1,4 @@
-<form action="/admin/filter-option" method="post">
+<form action="/admin/filter-option?uid={{$uid}}" method="post">
 
     @csrf
     <button type="submit" class="btn btn-dark m-2">Add Filter</button>

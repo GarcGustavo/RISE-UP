@@ -1,4 +1,4 @@
-<form action="/admin/filter-category" method="post">
+<form action="/admin/filter-category?uid={{$uid}}" method="post">
     @csrf
     <div class="d-flex flex-row">
         <button type="submit" class="btn btn-dark m-2">Add Category</button>

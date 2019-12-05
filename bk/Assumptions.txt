@@ -1,0 +1,22 @@
+
+Assumptions:
+
+1  The view: RISE-UP\resources\views\admin\users-requests\index.blade.php
+assumes the database Role table stores the role in the following order
+	1 Visitor
+    2 Viewer 
+    3 Collaborator
+    4 Admin
+This view only defines links for users with u_role == 2 and u_role == 3
+
+The controller : RISE-UP\app\Http\Controllers\AdminUsersRequestsController.php
+also assumes that those users that can make a request are Viewers (with u_role == 2)
+
+
+
+2  The view: RISE-UP\resources\views\admin\user\edit.blade.php
+assumes the database Role table stores the role in the following order
+	1 Visitor
+    2 Viewer 
+    3 Collaborator
+    4 Admin

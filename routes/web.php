@@ -208,92 +208,104 @@ Route::post('/parameter/update', 'Case_ParametersController@updateCaseParameters
 //Create default parameters in a case
 Route::post('/parameter/create/defaults', 'Case_ParametersController@createDefaultParameters');//->middleware('sessionCheck');
 
+
+/********ADMIN DASHBOARD*********/
+
 //Admin board
-//Software Requirement 2.60. The web application will allow an Admin to view the “Admin Dashboard” page
+//Software Requirement 2.58. The web application will allow an Admin to view the “Admin Dashboard” page
 
 
 //Provides the admin with a list of users.
-//Software Requirement 2.62 on Software Requirement Specifications Documents
+//Software Requirement 2.60 on Software Requirement Specifications Documents
 Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name('admin.users-requests')->middleware('sessionCheck');
 
 
 //Provides the admin with a list of users
 //requesting their role to be upgraded from Viewer to Collaborator.
-//Software Requirement 2.64 on Software Requirement Specifications Documents
+//Software Requirement 2.62 on Software Requirement Specifications Documents
 //Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name('admin.users-requests')->middleware('sessionCheck');
 
 
+
+
+
 //Presents latest action for each user
-//User Requirement 2.61. The web application will allow an Admin to view the recent activity of users
+//User Requirement 2.59. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('admin.users-actions')->middleware('sessionCheck');
 
-
 //Presents recent actions for a particular user
-//Software Requirement 2.61. The web application will allow an Admin to view the recent activity of users
+//Software Requirement 2.59. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/users-actions/{id}', 'AdminUsersActionsController@show')->middleware('sessionCheck');
+Route::get('/admin/user-actions', 'AdminUsersActionsController@show')->middleware('sessionCheck');
 
 
 //Presents group name, the group owner, the latest action, and creation date for each group.
-//Software Requirement 2.63. The web application will allow an Admin to view the groups of the system.
+//Software Requirement 2.61. The web application will allow an Admin to view the groups of the system.
 Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups')->middleware('sessionCheck');
 
 
 //Presents recent actions for a particular group
-//Software Requirement 2.61. The web application will allow an Admin to view the recent activity of users
+//Software Requirement 2.59. The web application will allow an Admin to view the recent activity of users
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
-Route::get('/admin/groups-actions/{id}', 'AdminGroupsActionsController@show')->middleware('sessionCheck');
+Route::get('/admin/groups-actions', 'AdminGroupsActionsController@show')->middleware('sessionCheck');
 
 
 //List filters
-//Software Requirement 2.65  The web application will allow an Admin to view a list of search filters for case studies.
-//Software Requirement 2.67  The web application will allow an Admin to view a list of search filter categories for case studies.
+//Software Requirement 2.63  The web application will allow an Admin to view a list of search filters for case studies.
+//Software Requirement 2.65  The web application will allow an Admin to view a list of search filter categories for case studies.
+//Software Requirement 2.64  The web application will allow an Admin to view a list of default search filters for case studies.
+//Software Requirement 2.66  The web application will allow an Admin to view a list of default search filter categories for case studies.
 Route::get('/admin/filters', 'AdminFiltersController@index')->name('admin.filters')->middleware('sessionCheck');
 
 
 //Add new filter
-//User Requirement: 2.70.  The web application will allow an Admin to add new filters to the list of search filters for case studies.
+//User Requirement: 2.68.  The web application will allow an Admin to add new filters to the list of search filters for case studies.
 Route::post('/admin/filter-option', 'AdminFilterOptionController@store')->middleware('sessionCheck');
+
+//Add new filter category
+//Software Requirement: 2.69.  The web application will allow an Admin to add new categories to the list of search filters for case studies.
+Route::post('/admin/filter-category', 'AdminFilterCategoryController@store')->middleware('sessionCheck');;
+
+
+//Edit filter 
+//User Requirement: (2.70)  The web application will allow an Admin to modify search filter they have created for case studies
+Route::put('/admin/filter-option', 'AdminFilterOptionController@update')->middleware('sessionCheck');;
+
+//Edit filter category
+//User Requirement: (2.71)  The web application will allow an Admin to modify search filter categories they have created for case studies
+Route::put('/admin/filter-category', 'AdminFilterCategoryController@update')->middleware('sessionCheck');;
 
 
 //Remove filter
-//Software Requirement: 2.74.  The web application will allow an Admin to remove search filters they have created for case studies
-Route::delete('/admin/filter-option/{id}', 'AdminFilterOptionController@destroy')->middleware('sessionCheck');
-
-//Edit filter
-//User Requirement: (2.xx)  The web application will allow an Admin to modify search filter they have created for case studies
-Route::put('/admin/filter-option/{id}', 'AdminFilterOptionController@update')->middleware('sessionCheck');
-
-//Add new filter category
-//Software Requirement: 2.71.  The web application will allow an Admin to add new categories to the list of search filters for case studies.
-Route::post('/admin/filter-category', 'AdminFilterCategoryController@store')->middleware('sessionCheck');
-
+//Software Requirement: 2.72.  The web application will allow an Admin to remove search filters they have created for case studies
+Route::delete('/admin/filter-option', 'AdminFilterOptionController@destroy')->middleware('sessionCheck');;
 
 //Remove filter category
-//Software Requirement: 2.75.  The web application will allow an Admin to remove search filter categories they have created for case studies
-Route::delete('/admin/filter-category/{id}', 'AdminFilterCategoryController@destroy')->middleware('sessionCheck');
+//Software Requirement: 2.73.  The web application will allow an Admin to remove search filter categories they have created for case studies
+Route::delete('/admin/filter-category', 'AdminFilterCategoryController@destroy')->middleware('sessionCheck');;
 
 
-//Edit filter category
-//User Requirement: (2.xx)  The web application will allow an Admin to modify search filter categories they have created for case studies
-Route::put('/admin/filter-category/{id}', 'AdminFilterCategoryController@update')->middleware('sessionCheck');
 
 
-//Admin Edits a User
-//Software Requirement 2.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
-//Software Requirement 2.76. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
-//Software Requirement 2.77. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::get('/admin/user/{id}/edit', 'AdminUserController@edit')->middleware('sessionCheck');
+
+
+
+
 
 
 //Admin Edits a User
-//Software Requirement 2.69. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
-//Software Requirement 2.76. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
-//Software Requirement 2.77. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::put('/admin/user/{id}', 'AdminUserController@update')->middleware('sessionCheck');
+//Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
+//Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
+//Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
+Route::get('/admin/user/edit', 'AdminUserController@edit')->middleware('sessionCheck');
 
 
+//Admin Edits a User
+//Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
+//Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
+//Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
+Route::put('/admin/user/edit', 'AdminUserController@update')->middleware('sessionCheck');

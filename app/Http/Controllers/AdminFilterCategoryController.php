@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class AdminFilterCategoryController extends Controller
 {
     //public function store
-    public function store(){
+    public function store(Request $request){
         $validatedData = request()->validate([
             'csp_name' => ['required', 'string'],
         ]);
@@ -19,21 +19,27 @@ class AdminFilterCategoryController extends Controller
         $cs_parameter->csp_name = $validatedData['csp_name'];
         //dd($user);
         $cs_parameter->save();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }
 
 
     //public function destroy
-    public function destroy($id){
+    public function destroy(Request $request){
+        $id = $request->input('id');;
         $cs_parameter = cs_parameter::find($id);
         //dd($option);
         $cs_parameter->delete();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }
 
 	
 	//public function update
-    public function update($id){
+    public function update(Request $request){
+        $id = $request->input('id');;
         $validatedData = request()->validate([
             'csp_name' => ['required', 'string'],
         ]);
@@ -43,6 +49,8 @@ class AdminFilterCategoryController extends Controller
         $cs_parameter->csp_name = $validatedData['csp_name'];
         //dd($user);
         $cs_parameter->save();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }	
 }
