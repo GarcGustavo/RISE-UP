@@ -144,10 +144,10 @@ export default {
       parameter_options: [], //contains all options for parameters
       list_cases: [], //contains search results
       filtered_cases: [], //Filter cases
-      search: [], //Variable used in for loop to present searched study cases
+      search: [], //variable used in for loop to present searched study cases
 
 
-      empty: true //If search is empty present "No case studies found "
+      empty: true //if search is empty present "No case studies found "
     };
   },
   /**

@@ -341,7 +341,7 @@ class CaseController extends Controller
 
 
         if ($disabled && $deleted) {
-            /*
+            
             foreach($cids_to_delete as $cid){
             DB::table('Action')->insert([
                 'a_date'=> now(),
@@ -349,7 +349,7 @@ class CaseController extends Controller
                 'a_type'=>  3,
             ]);
             }
-            */
+
             return response()->json(['message'=>'Case(s) has been removed']);
         } else {
             return response()->json(['errors'=>'Error deleting case study - Origin: Case controller']);
