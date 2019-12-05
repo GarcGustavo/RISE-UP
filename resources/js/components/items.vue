@@ -367,7 +367,7 @@
 import draggable from "vuedraggable";
 import datepicker from "vuejs-datepicker";
 import linkify from "vue-linkify";
-import { asyncLoading } from 'vuejs-loading-plugin';
+import { asyncLoading } from "vuejs-loading-plugin";
 export default {
   //name: 'app',
   components: {
@@ -392,9 +392,9 @@ export default {
       is_viewer: false,
       permission_to_edit: false,
       //Initializing global variables
-      curr_user_uid:"",
-      curr_user:"",
-      urlParams:"",
+      curr_user_uid: "",
+      curr_user: "",
+      urlParams: "",
       owner: "",
       total_items: "",
       thumbnail_name: "",
@@ -452,9 +452,9 @@ export default {
     };
   },
   created() {
-
     this.preview[0] = false;
-
+    this.getUser();
+    this.verifyUserAccess(this.curr_user_uid);
     //Initializing item data
     this.fetchItems();
     this.fetchCaseItems();
@@ -466,21 +466,19 @@ export default {
     this.fetchUserGroups();
 
     //Verifying user permissions
-    this.getUser();
-    this.verifyUserAccess(this.curr_user_uid);
   },
 
   mounted() {
-    Echo.join(`case.${this.cid}`).listenForWhisper(
-      "editing",
-      e => {
-        this.case_to_show.c_title = e.title;
-        this.items.forEach(element => {
-          this.items[element] = e.items[element];
-        });
-        //console.log("hell from channel");
-      }
-    );
+    // Echo.join(`case.${this.cid}`).listenForWhisper(
+    //   "editing",
+    //   e => {
+    //     this.case_to_show.c_title = e.title;
+    //     this.items.forEach(element => {
+    //       this.items[element] = e.items[element];
+    //     });
+    //     //console.log("hell from channel");
+    //   }
+    // );
     // .here(users => {
     //   this.usersEditing = users;
     // })
@@ -492,7 +490,6 @@ export default {
     // })
     // .listenForWhisper("saved", e => {
     //   //this.case_study.c_status = e.status;
-
     //   // clear is status after 1s
     //   setTimeout(() => {
     //     //this.case_study.c_status = "";
@@ -501,16 +498,15 @@ export default {
   },
   methods: {
     editingCase() {
-      let channel = Echo.join(`case.${this.cid}`);
-
-      console.log("hello from editing case");
+      //let channel = Echo.join(`case.${this.cid}`);
+      //console.log("hello from editing case");
       //show changes after 1s
-      setTimeout(() => {
-        channel.whisper("editing", {
-          title: this.case_to_show.c_title,
-          items: this.items
-        });
-      }, 1000);
+      // setTimeout(() => {
+      //   channel.whisper("editing", {
+      //     title: this.case_to_show.c_title,
+      //     items: this.items
+      //   });
+      // }, 1000);
     },
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
@@ -533,20 +529,20 @@ export default {
       var curr_user_groups = [];
 
       //Admin or owner automatically has permission to edit
-      if(this.is_admin || (this.curr_user_uid == this.owner)){
+      if (this.is_admin || this.curr_user_uid == this.owner) {
         this.permission_to_edit = true;
       }
 
       //Fetching current user groups to verify group editor permissions
       fetch("/group/show?uid=" + this.curr_user)
-      .then(res => res.json())
-      .then(res => {
-        curr_user_groups = res.data;
-      })
-      .catch(err => console.log(res.data));
+        .then(res => res.json())
+        .then(res => {
+          curr_user_groups = res.data;
+        })
+        .catch(err => console.log(res.data));
 
       curr_user_groups.forEach(element => {
-        if(curr_user_groups[element].gid ==  this.gid){
+        if (curr_user_groups[element].gid == this.gid) {
           this.permission_to_edit = true;
         }
       });
@@ -568,9 +564,11 @@ export default {
       fetch("/items?uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
-          //this.all_items = res.data;
-          this.total_items = res.data.length + 1;
-          //console.log(res.data);
+          var all_items = res.data;
+          this.total_items = all_items.length + 1;
+          //console.log(text);
+          //console.log(this.curr_user_uid);
+          console.log(res.data);
         })
         .catch(err => console.log(err));
     },
@@ -785,28 +783,36 @@ export default {
       form_data.append("i_name", item_to_update.i_name);
       form_data.append("i_content", item_to_update.i_content);
       //console.log(form_data.get('i_content'));
-      this.$loading(true)
-      const login = new Promise( (resolve, reject) => {
-        fetch("/item/update?iid=" + item_to_update.iid + "&uid=" + this.curr_user_uid, {
-        method: "post",
-        headers: new Headers({
-          //"Content-Type": "multipart/form-data",
-          "Access-Control-Origin": "*",
-          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-        }),
-        //body: JSON.stringify(this.updated_item)
-        body: form_data
-      })
-        .then(res => res.text())
-        .then(text => {
-          console.log(text);
-        })
-        .catch(err => {
-          console.error("Error: ", err);
-        });
-        });
+      this.$loading(true);
+      const login = new Promise((resolve, reject) => {
+        fetch(
+          "/item/update?iid=" +
+            item_to_update.iid +
+            "&uid=" +
+            this.curr_user_uid,
+          {
+            method: "post",
+            headers: new Headers({
+              //"Content-Type": "multipart/form-data",
+              "Access-Control-Origin": "*",
+              "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+            }),
+            //body: JSON.stringify(this.updated_item)
+            body: form_data
+          }
+        )
+          .then(res => res.text())
+          .then(text => {
+            console.log(text);
+          })
+          .catch(err => {
+            console.error("Error: ", err);
+          });
+      });
       this.$loading(false);
-      asyncLoading(login).then().catch()
+      asyncLoading(login)
+        .then()
+        .catch();
     },
     //Iterate through items and update them appropriately
     updateItems(items) {
@@ -869,15 +875,21 @@ export default {
 
       //Confirm item to be deleted
       if (confirm("Do you want to delete this item permanently?")) {
-        fetch("/item/remove?iid=" + Number(item_to_remove.iid) + "&uid=" + this.curr_user_uid, {
-          method: "delete",
-          headers: new Headers({
-            "Content-Type": "application/json",
-            "Access-Control-Origin": "*",
-            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-          }),
-          body: JSON.stringify(item_to_remove)
-        })
+        fetch(
+          "/item/remove?iid=" +
+            Number(item_to_remove.iid) +
+            "&uid=" +
+            this.curr_user_uid,
+          {
+            method: "delete",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              "Access-Control-Origin": "*",
+              "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+            }),
+            body: JSON.stringify(item_to_remove)
+          }
+        )
           .then(res => res.text())
           .then(text => {
             console.log(text);
@@ -974,9 +986,9 @@ export default {
       this.new_date = this.case_to_show[0].c_incident_date;
 
       this.$nextTick(() => {
-      this.updateParams();
-      this.updateItems(items);
-      this.updateCase();
+        this.updateParams();
+        this.updateItems(items);
+        this.updateCase();
       });
       window.location.reload();
       //this.updateParameter();
@@ -1019,12 +1031,11 @@ export default {
       reader.readAsDataURL(this.files[0]);
       reader.onload = e => {
         this.$nextTick(() => {
-        this.images[index] = e.target.result;
-        this.image_names[index] = this.files[0];
-        this.preview[index] = true;
+          this.images[index] = e.target.result;
+          this.image_names[index] = this.files[0];
+          this.preview[index] = true;
         });
       };
-      
     },
     //Seperate image uploader for thumbnail since it is a seperate file stream
     uploadThumbnail(e) {
@@ -1037,9 +1048,9 @@ export default {
       reader.readAsDataURL(this.thumbnail_files[0]);
       reader.onload = e => {
         this.$nextTick(() => {
-        this.thumbnail_preview = e.target.result;
-        this.thumbnail_name = this.thumbnail_files[0];
-        this.preview_thumbnail = true;
+          this.thumbnail_preview = e.target.result;
+          this.thumbnail_name = this.thumbnail_files[0];
+          this.preview_thumbnail = true;
         });
       };
     }
