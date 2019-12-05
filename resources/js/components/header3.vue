@@ -2,15 +2,60 @@
   <!-- Navigation -->
   <div>
     <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
-      <a class="navbar-brand" href="/">
+      <a class="navbar-brand" :href="'/home?uid='+uid">
         <img
           class="img-fluid rounded"
           style="width:70px;height:45px;margin-right:10px"
           src="../../../public/images/iren_logo.png"
           alt
-        >
+        />
         Interdisciplinary Research Network
       </a>
+
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Nav options -->
+      <ul class="navbar-nav mr-3">
+        <li class="nav-item">
+          <span
+            v-if="isAdmin || isCollaborator"
+            data-toggle="modal"
+            data-target="#case_create_dbox"
+          >
+          </span>
+          <!-- else -->
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Help"
+            :href="'/help?uid='+uid"
+          >Help</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="About"
+            :href="'/about?uid='+uid"
+          >About</a>
+        </li>
+
+        <!-- User menu -->
+        <li class="nav-item dropdown">
+        </li>
+      </ul>
     </nav>
   </div>
 </template>
@@ -19,12 +64,11 @@
 export default {
   data() {
     return {
-      errors: [],
+      errors: []
     };
   },
 
-  created() {
-  },
+  created() {},
   methods: {
     resetErrors() {
       this.errors = [];
@@ -72,7 +116,4 @@ export default {
 .navbar-custom .nav-item:hover .nav-link {
   color: #ffffff;
 }
-
-
-
 </style>

@@ -56,6 +56,7 @@ Vue.component('case_study', require('./components/case_study.vue').default);
 Vue.component('iren-search', require('./components/search.vue').default);
 Vue.component('home', require('./components/home.vue').default);
 Vue.component('items', require('./components/items.vue').default);
+Vue.component('iren-terms', require('./components/terms.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
