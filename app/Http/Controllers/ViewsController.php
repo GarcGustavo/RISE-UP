@@ -177,6 +177,7 @@ class ViewsController extends Controller
             return view('search')
             ->withErrors($validate);
         }
+        //return response()->json([$request->all()]);
         return view('search', ['case_study' => $case_study]);
     }
 }
