@@ -59,7 +59,7 @@
                 href="#"
                 v-for="(group, index) in this.all_groups"
                 :key="index"
-                v-on:click="onSelectGroup(group.gid)"
+                v-on:click.prevent="onSelectGroup(group.gid)"
               >{{index + 1}}: {{group.g_name}}</option>
             </div>
           </div>
@@ -181,7 +181,7 @@
                     href="#"
                     v-for="(option, sd) in filteredOptions(case_parameter.csp_id)"
                     :key="sd"
-                    v-on:click="onSelectOption(option, index)"
+                    v-on:click.prevent="onSelectOption(option, index)"
                     style="width:250px"
                   >{{sd + 1}}: {{option.o_content}}</a>
                 </div>
