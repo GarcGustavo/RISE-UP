@@ -1,5 +1,5 @@
 <template>
-  <div class="body mb-5 mt-5 border shadow" style="background: #c0c0c0;">
+  <div class="body mb-5 mt-5 border shadow" style="background: #e6e6e6;">
     <div class="container-fluid">
       <div class="row" style="margin: 50px;">
         <div class="col-md-12 col-md-offset-6 border shadow" style="background: white;">
@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="row" style="margin: 50px; background: white;">
-        <!-- Case Description and Thumbnail -->
+        <!-- Case Description -->
         <div class="col-md-8">
           <h4 class="card-title border-0" style="margin: 10px;">Description:</h4>
           <div class="card-body">
@@ -103,20 +103,20 @@
               id="file-input"
             />
             <img
-              style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+              style="margin-top: 10px; max-width: 350px; max-height: 250px;"
               v-if="editing && !preview_thumbnail"
               :src="'../images/' + case_study.c_thumbnail"
               onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
             />
             <img
-              style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+              style="margin-top: 10px; max-width: 350px; max-height: 250px;"
               v-if="editing && preview_thumbnail"
               :src="thumbnail_preview"
               onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
             />
           </div>
           <img
-            style="margin-top: 10px; max-width: 250px; max-height: 250px;"
+            style="margin-top: 10px; max-width: 350px; max-height: 250px;"
             v-if="!editing"
             :src="'../images/' + case_study.c_thumbnail"
             onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
@@ -160,11 +160,7 @@
                   style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
                 >
                   {{case_parameter.csp_name}}:
-                  <datepicker
-                    v-model="new_date"
-                    :use-utc="true"
-                    :format="date_format"
-                  ></datepicker>
+                  <datepicker v-model="new_date" :use-utc="true" :format="date_format"></datepicker>
                 </button>
               </div>
               <div class="dropdown" v-if="(case_parameter.csp_name != 'Incident date')">
@@ -193,8 +189,8 @@
       <div class="row">
         <div class="col-md-2" style="margin-left: 25px;">
           <!-- Table of Contents -->
-          <h4 class="card text-center card-title" style="background: white;">Table of Contents</h4>
           <div class="row mt-2 card mb-5" id="toc">
+          <h4 class="card text-center card-title" style="background: white;">Table of Contents</h4>
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
@@ -203,6 +199,7 @@
               </ul>
             </div>
           </div>
+
           <div class="col-sm-12 card" style="background: white;" v-if="this.permission_to_edit">
             <button
               class="btn btn-primary btn-sm mb-2"
@@ -264,7 +261,7 @@
             >
               <div
                 class="col-md"
-                style="margin: 25px; margin-left: 0px;"
+                style="margin: 25px; margin-left: 0px; padding-top:40px;"
                 v-for="(item,index) in items"
                 :key="index"
                 :id="'item' + index"
@@ -468,32 +465,32 @@ export default {
   },
 
   mounted() {
-    Echo.join(`Case.${this.cid}`).listenForWhisper(
-      "editing",
-      e => {
+    Echo.join(`Case.${this.cid}`)
+      .listenForWhisper("editing", e => {
         this.case_to_show.c_title = e.title;
         this.items.forEach(element => {
           this.items[element] = e.items[element];
         });
         console.log("hello from channel");
-      }
-    )
-    .here(users => {
-      this.usersEditing = users;
-    })
-    .joining(user => {
-      this.usersEditing.push(this.curr_user_uid);
-    })
-    .leaving(user => {
-      this.usersEditing = this.usersEditing.filter(u => u != this.curr_user_uid);
-    })
-    .listenForWhisper("saved", e => {
-      //this.case_study.c_status = e.status;
-      // clear is status after 1s
-      setTimeout(() => {
-        //this.case_study.c_status = "";
-      }, 1000);
-    });
+      })
+      .here(users => {
+        this.usersEditing = users;
+      })
+      .joining(user => {
+        this.usersEditing.push(this.curr_user_uid);
+      })
+      .leaving(user => {
+        this.usersEditing = this.usersEditing.filter(
+          u => u != this.curr_user_uid
+        );
+      })
+      .listenForWhisper("saved", e => {
+        //this.case_study.c_status = e.status;
+        // clear is status after 1s
+        setTimeout(() => {
+          //this.case_study.c_status = "";
+        }, 1000);
+      });
   },
   methods: {
     editingCase() {
@@ -1079,7 +1076,7 @@ export default {
 }
 //image display
 img {
-  width: 50%;
+  width: 70%;
   margin: auto;
   display: block;
   margin-bottom: 10px;

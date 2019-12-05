@@ -7,11 +7,11 @@ $factory->define(case_study::class, function (Faker $faker) {
     return [
         'c_title' => $faker->word,
         'c_description' => $faker->text($maxNbChars = 255),
-        'c_thumbnail' => $faker->word,
+        'c_thumbnail' => $faker->imageUrl($width = 500, $height = 500),
         'c_status' => $faker->word,
         'c_date' => $faker->date,
-        'c_owner' => $faker->numberBetween($min=1, $max=25),
-       //'c_owner' => $faker->numberBetween($min=1, $max=3),
+        'c_incident_date' => $faker->date,
+        'c_owner' => $faker->numberBetween($min=1, $max=10),
         'c_group' => $faker->numberBetween($min=1, $max=10)
     ];
 });
