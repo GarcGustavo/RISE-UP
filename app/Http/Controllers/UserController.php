@@ -85,6 +85,40 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     * Verify if current user trying to login exist of not,
+     * if not redirect to profile creation
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function verify(Request $request)
+    {
+        //Get parameter value email, which is user email from Google Api
+        $email = $request->input('e');
+
+        //Verify if user's email exist in IReN
+        $user = User::where(['email' => $email])->get();
+
+        if (sizeOf($user) == 0) {
+            //User dont exist in IReN
+            return redirect('/profile-creation?email=' . $email);
+        } else {
+            //Forget info in temporary session with key 'user'
+            $request->session()->forget('user');
+            if ($user['0']["u_ban_status"] == 0) {
+                // Store the users id in session data with key 'user', its used to verify user
+                $request->session()->put('user', $user['0']["uid"]);
+
+                return redirect('/home?uid=' . $user['0']["uid"]);
+            } else {
+                //The user is banned
+                $error = 'The account associated with the email ' . $user['0']["email"] . ' has been banned.';
+                return redirect('/?error='.$error);
+            }
+        }
+    }
+
+    /**
      * Return users currently editing specified cid
      *
      * @param  int  $id
@@ -126,73 +160,6 @@ class UserController extends Controller
         ->get();
 
         return UserResource::collection($user);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function findToLogin(Request $request)
-    {
-        $validatedData = $request->validate([
-            '_token' => "bail|required",
-            'email' => "required|email",
-        ]);
-        $email = $request->input('email');
-        $user = User::where(['email' => $email])->get();
-
-        if(sizeOf($user) == 0){
-            if ($request->session()->exists('user')) {
-                // Session anomaly
-                $request->session()->forget('user');
-            }
-            // Store the session data
-            $request->session()->put('user', 'temporary');
-            return redirect('/profile-creation?email='.$email);
-        }
-        else{
-            if ($request->session()->exists('user')) {
-                // Session anomaly
-                $request->session()->forget('user');
-            }
-            // Store the session data
-            $request->session()->put('user', $user['0']["uid"]);
-
-            return redirect('/home?uid='.$user['0']["uid"]);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function verify(Request $request)
-    {
-        $email = $request->input('email');
-        $user = User::where(['email' => $email])->get();
-
-        if (sizeOf($user) == 0) {
-            if ($request->session()->exists('user')) {
-                // Session anomaly
-                $request->session()->forget('user');
-            }
-            // Store the session data
-            $request->session()->put('user', 'temporary');
-            return redirect('/profile-creation?email=' . $email);
-        } else {
-            if ($request->session()->exists('user')) {
-                // Session anomaly
-                $request->session()->forget('user');
-            }
-            // Store the session data
-            $request->session()->put('user', $user['0']["uid"]);
-
-            return redirect('/home?uid=' . $user['0']["uid"]);
-        }
     }
 
     /**

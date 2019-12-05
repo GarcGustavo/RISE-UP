@@ -1,7 +1,7 @@
 <template>
   <div class="body mb-xl-5 mt-xl-5">
     <div class="row justify-content-center">
-      <form id="loginForm" action="/shibboleth-login" method="POST">
+      <form id="loginForm" action="/landing/oauth-login" method="POST">
         <div class="form-group form-control-lg">
           <input type="hidden" :value="csrfToken" name="_token" />
           <select v-model="choice" name="choice">
@@ -14,6 +14,9 @@
           <button type="submit" class="btn btn-primary">Login</button>
         </div>
       </form>
+    </div>
+    <div v-if="error" class="alert alert-danger mt-3">
+        <p>{{error}}</p>
     </div>
   </div>
 </template>
@@ -29,15 +32,16 @@ export default {
     return {
       choices: [],
       choice: "Select a login choice",
-      csrfToken: null
+      csrfToken: null,
+      error: ''
     };
   },
 
   mounted() {
-    this.loadLoginChoices(),
-      (this.csrfToken = document.querySelector(
-        'meta[name="csrf-token"]'
-      ).content);
+    this.loadLoginChoices()
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
+    this.urlParams = new URLSearchParams(window.location.search)
+    this.error = this.urlParams.get("error")
   },
 
   methods: {

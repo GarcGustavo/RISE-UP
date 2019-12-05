@@ -134,7 +134,7 @@
               class="dropdown-item"
             >Groups</a>
             <div class="dropdown-divider"></div>
-            <a href="/shibboleth-logout2" class="dropdown-item">Logout</a>
+            <a href="/landing/logout" class="dropdown-item">Logout</a>
           </div>
         </li>
       </ul>
