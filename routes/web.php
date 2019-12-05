@@ -45,14 +45,16 @@ Route::post('/search','ViewsController@search')->middleware('sessionCheck');
 
 //Get login choices
 Route::get('/landing/login-choices', 'LandingController@getLoginChoices');
-//Redirect to UPRM IDP page to login
-Route::post('/shibboleth-login', 'LandingController@redirectToProvider');
+
+//Redirect to Google OAuth API to UPRM IDP page to login
+Route::post('/landing/oauth-login', 'LandingController@redirectToProvider');
+
+//Redirect to IReN page
+Route::get('/landing/oauth-authenticated', 'LandingController@handleProviderCallback');
+
 //Request logout to UPRM IDP
-Route::get('/shibboleth-logout2', 'LandingController@logout');
-//Redirect to UPRM IDP page
-Route::post('/user/login', 'UserController@findToLogin');
-//Redirect to UPRM IDP page
-Route::get('/user/verify', 'LandingController@handleProviderCallback');
+Route::get('/landing/logout', 'LandingController@logout');
+
 
 /********USERS*********/
 
@@ -61,6 +63,9 @@ Route::get('/user', 'UserController@show')->middleware('sessionCheck');
 
 //List all system users
 Route::get('/users', 'UserController@index')->middleware('sessionCheck');
+
+//Redirect to UPRM IDP page
+Route::get('/user/verify', 'UserController@verify');
 
 //Creating a new users
 Route::post('/user/create', 'UserController@store')->middleware('sessionCheck');

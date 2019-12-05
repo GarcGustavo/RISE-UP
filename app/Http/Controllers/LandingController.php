@@ -7,7 +7,9 @@ use Laravel\Socialite\Facades\Socialite;
 
 class LandingController extends Controller
 {
-    //
+    /**
+     *
+     */
     function login(Request $r)
     {
         $validatedData = $r->validate([
@@ -24,14 +26,20 @@ class LandingController extends Controller
         }
     }
 
-    //
+    /**
+     *
+     */
     function logout(Request $r)
     {
+        //Clear of info in session
         $r->session()->flush();
+
         return redirect('/');
     }
 
-    //
+    /**
+     *
+     */
     public function getLoginChoices()
     {
         $choices = ['0' => 'Login with UPR/UPRM account'];
@@ -53,10 +61,27 @@ class LandingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function handleProviderCallback()
+    public function handleProviderCallback(Request $request)
     {
+        //Get Socialite obeject user with google api info
         $user = Socialite::driver('google')->user();
-        return response()->json(['choices' => $user]);
-        // $user->token;
+
+        //Verify if a key 'user' exist in current session it is used to verify user
+        if ($request->session()->exists('user')) {
+            //Forget info in session with key 'user'
+            $request->session()->forget('user');
+        }
+
+        //Get user info from object and decode with json
+        $u = $user->user;
+        $u = json_encode($u);
+
+        //Store temporay value in session with key 'user' to verify user in login progress
+        $request->session()->put('user', 'temporary');
+        //Store google api user's info in session with key 'u'
+        $request->session()->put('u', $u);
+
+        return redirect('/user/verify?e='.$user->getEmail());
+
     }
 }
