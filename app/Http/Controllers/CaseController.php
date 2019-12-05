@@ -9,9 +9,11 @@ use App\Models\case_study;
 use App\Models\User_Groups;
 use App\Models\Case_Parameters;
 use App\Models\Group;
+use App\Models\Action;
 use App\Http\Resources\Case_Study as Case_StudyResource;
 use App\Http\Resources\Group as GroupResource;
 use Carbon\Carbon;
+use DB;
 
 class CaseController extends Controller
 {
@@ -24,7 +26,7 @@ class CaseController extends Controller
     {
         $cases = case_study::withTrashed()->get();
 
-        if ($cases) {
+       if ($cases) {
             return Case_StudyResource::collection($cases);
         } else {
             return response()->json(['errors'=>'Error fetching all registered case studies - Origin: Case controller']);
@@ -142,6 +144,13 @@ class CaseController extends Controller
         $case_study->c_group = $request->input('c_group');
         //process request
         if ($case_study->save()) {
+
+            DB::table('Action')->insert([
+                'a_date'=> now(),
+                'a_user'=>  $case_study->c_owner,
+                'a_type'=>  1,
+            ]);
+
             return response()->json(['message'=>'Case study has been created']);
         } else {
             return response()->json(['errors'=>'Error creating case study - Origin: Case controller']);
@@ -318,10 +327,24 @@ class CaseController extends Controller
             return $item['cid'];
         }, $to_delete);
 
+        $uid_deleting = array_map(function ($item) {
+            return $item['uid'];
+        }, $to_delete);
+        //uid data is the same
+       // $uid = $uid_deleting[0];
+
         $disabled = case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
         $deleted = case_study::whereIn('cid', $cids_to_delete)->delete();
 
+
         if ($disabled && $deleted) {
+            /*
+            DB::table('Action')->insert([
+                'a_date'=> now(),
+                'a_user'=>  $uid,
+                'a_type'=>  3,
+            ]);
+            */ 
             return response()->json(['message'=>'Case(s) has been removed']);
         } else {
             return response()->json(['errors'=>'Error deleting case study - Origin: Case controller']);

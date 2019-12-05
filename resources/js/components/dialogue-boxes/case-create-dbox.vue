@@ -230,7 +230,7 @@ calling parent method to create case study*/
     sendCaseStudyData() {
       //yyyy-mm-dd
       this.date = new Date().toJSON().slice(0, 10); //current date
-      
+
 
       //append data to new case study
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
@@ -273,7 +273,10 @@ The data is appended to the global variables as needed to be used.*/
       fetch("/cases")
         .then(res => res.json())
         .then(res => {
+
           this.all_cases = res.data;
+        console.log(this.all_cases);
+
         })
         .catch(err => console.log(err));
     },

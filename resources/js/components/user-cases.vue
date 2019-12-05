@@ -750,6 +750,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
             //if yes
             for (let i in curr.selected_cases) {
               curr.cases_to_remove.push({
+                uid: curr.curr_user,
                 //push selected case study id's as cid attributes
                 cid: curr.selected_cases[i]
               });

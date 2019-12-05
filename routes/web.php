@@ -120,7 +120,7 @@ Route::delete('/user-groups/remove', 'User_GroupsController@destroy')->middlewar
 Route::get('/case', 'CaseController@show')->middleware('sessionCheck');
 
 //List all system case studies
-Route::get('/cases', 'CaseController@index')->middleware('sessionCheck');
+Route::get('/cases', 'CaseController@index');//->middleware('sessionCheck');
 
 //List cases of a group
 //Software requirement 2.38. The web application will allow Collaborators to view their group members, and
@@ -139,12 +139,12 @@ Route::get('/case/group', 'CaseController@show_case_group')->middleware('session
 //study by providing a case name, and description.
 //Software requirement 2.34. The web application will allow Collaborators to create a new case study in a
 //group they belong to by providing a case name, and description.
-Route::post('/case/create', 'CaseController@store')->middleware('sessionCheck');
+Route::post('/case/create', 'CaseController@store');//->middleware('sessionCheck');
 
 //Delete case study
 //Software Requirement 2.53. The web application will allow Collaborators to delete a case study that they have
 //created.
-Route::delete('case/remove', 'CaseController@destroy')->middleware('sessionCheck');
+Route::delete('case/remove', 'CaseController@destroy');//->middleware('sessionCheck');
 
 
 
@@ -191,7 +191,7 @@ Route::post('/case/update', 'CaseController@updateCaseDetails')->middleware('ses
 Route::post('/parameter/update', 'Case_ParametersController@updateCaseParameters')->middleware('sessionCheck');
 
 //Create default parameters in a case
-Route::post('/parameter/create/defaults', 'Case_ParametersController@createDefaultParameters')->middleware('sessionCheck');
+Route::post('/parameter/create/defaults', 'Case_ParametersController@createDefaultParameters');//->middleware('sessionCheck');
 
 //Admin board
 //Software Requirement 2.60. The web application will allow an Admin to view the “Admin Dashboard” page
