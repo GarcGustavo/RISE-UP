@@ -310,7 +310,7 @@ class CaseController extends Controller
     public function destroy(Request $request)
     {
         //data array
-        $data = [ 'data' => $request->all() ];
+        $data = [ 'data' => $request->input('data') ];
 
         //renaming attributes
         $attributes = array(
@@ -327,7 +327,7 @@ class CaseController extends Controller
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
         //process request
-        $to_delete = $request->all();
+        $to_delete = $request->input('data');
         $cids_to_delete = array_map(function ($item) {
             return $item['cid'];
         }, $to_delete);
@@ -341,7 +341,7 @@ class CaseController extends Controller
 
 
         if ($disabled && $deleted) {
-            
+
             foreach($cids_to_delete as $cid){
             DB::table('Action')->insert([
                 'a_date'=> now(),

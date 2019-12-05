@@ -84,7 +84,7 @@ class LandingController extends Controller
     public function handleProviderCallback(Request $request)
     {
         //Get Socialite obeject user with google api info
-        $user = Socialite::driver('google')->user();
+        $user = Socialite::driver('google')->stateless()->user();
 
         //Verify if a key 'user' exist in current session it is used to verify user
         if ($request->session()->exists('user')) {

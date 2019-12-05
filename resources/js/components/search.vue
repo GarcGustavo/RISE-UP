@@ -1,8 +1,14 @@
 <template>
   <div>
     <!--search bar -->
-    <form action="/search" class="navbar-form ml-auto mr-auto pt-5 mt-2 mr-5 search">
+    <form
+       v-on:submit="search_form()"
+      id="search_form"
+      method="POST"
+      class="navbar-form ml-auto mr-auto pt-5 mt-2 mr-5 search"
+    >
       <div class="input-group mb-3">
+        <input type="hidden" :value="csrfToken" name="_token">
         <input
           type="text"
           name="q"
@@ -130,6 +136,8 @@ export default {
    */
   data() {
     return {
+      csrfToken: null,
+
       uid: "", //user id
       date_format: "yyyy-MM-dd", //date formatting for datepicker
       incident_date_start: "", //range for datepicker
@@ -139,13 +147,12 @@ export default {
 
       selected_options: [], //contains id's of the selected options of all parameters
       case_parameters: [], //contains all registered parameters
-      all_cases_parameters: [],/*contains entries of Case_Parameters table - holds
-                                relation of case studies with their corresponding parameters options selections*/
+      all_cases_parameters: [] /*contains entries of Case_Parameters table - holds
+                                relation of case studies with their corresponding parameters options selections*/,
       parameter_options: [], //contains all options for parameters
       list_cases: [], //contains search results
       filtered_cases: [], //Filter cases
       search: [], //variable used in for loop to present searched study cases
-
 
       empty: true //if search is empty present "No case studies found "
     };
@@ -154,12 +161,16 @@ export default {
    * @description
    */
   created() {
-    this.getUser()
+    this.getUser();
     this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
     this.fetchAllCasesParameters();
     // this.filterCases();
+  },
+
+  mounted() {
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
   },
 
   watch: {
@@ -172,12 +183,11 @@ export default {
   },
 
   methods: {
-
-/*#region Auxilary methods - These methods provide operational
+    /*#region Auxilary methods - These methods provide operational
 functionalities to to the web page. Operations include:
 Setting user priveleges, editing title, and resetting variables*/
 
-     getUser() {
+    getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.uid = Number(this.urlParams.get("uid")); //get user id
     },
@@ -393,9 +403,17 @@ Setting user priveleges, editing title, and resetting variables*/
       return cases_list;
     },
 
+
+    search_form(){
+    var action_src = "/search?uid="+this.uid+"&q=" + document.getElementsByName("q")[0].value;
+    var search_form = document.getElementById('search_form');
+    search_form.action = action_src;
+    //return csrf_token();
+     },
+
     /*//#endregion*/
 
- /*#region Query methods - These methods provide the content of
+    /*#region Query methods - These methods provide the content of
 the web page by requesting the data through route calls. The routes
 passes the request to a specified predefined controller who processes
 said request via Laravel's eloquent ORM. The data is appended to the
@@ -404,7 +422,7 @@ global variables as needed to be used.*/
      * @description fetch all system parameters(filters)
      */
     fetchParameters() {
-      fetch("/parameters?uid="+this.uid)
+      fetch("/parameters?uid=" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
@@ -422,7 +440,7 @@ global variables as needed to be used.*/
      * @description fetch all parameters options
      */
     fetchParameterOptions() {
-      fetch("/parameter/options?=uid"+this.uid)
+      fetch("/parameter/options?=uid" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.parameter_options = res.data;
@@ -433,13 +451,13 @@ global variables as needed to be used.*/
      * @description fetch the parameters all case studies have correspondingly
      */
     fetchAllCasesParameters() {
-      fetch("/cs-parameters?uid="+this.uid)
+      fetch("/cs-parameters?uid=" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.all_cases_parameters = res.data;
         })
         .catch(err => console.log(err));
-    },
+    }
     /*#endregion*/
   }
 };

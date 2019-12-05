@@ -166,7 +166,7 @@
           <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
             <div class="card-body">
               <h5 class="card-title">
-                <a :href="'/case/body?cid='+case_study.cid">{{case_study.c_title}}</a>
+                <a :href="'/case/body?cid='+case_study.cid+'&uid='+curr_user">{{case_study.c_title}}</a>
               </h5>
               <h6 class="card-subtitle mb-2 text-muted">{{case_study.c_date}}</h6>
               <p class="card-text">{{case_study.c_description}}</p>
@@ -462,7 +462,7 @@ global variables as needed to be used.*/
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body: JSON.stringify({data:users_to_add})
       })
         .then(res => res.json())
         .then(res => {
@@ -537,7 +537,7 @@ global variables as needed to be used.*/
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.remove)
+              body: JSON.stringify({data:curr.remove})
             })
               .then(res => res.json())
               .then(res => {

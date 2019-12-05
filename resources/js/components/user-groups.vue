@@ -144,14 +144,26 @@
       </div>
 
       <!-- search bar -->
-      <div class="input-group">
+      <div v-if="curr_tab==1" class="input-group">
         <label>Search</label>
         <div class="input-group-append search">
           <input
             type="text"
             class="form-control input-sm"
             maxlength="32"
-            v-model="search"
+            v-model="search_tab1"
+            placeholder="Group name.."
+          >
+        </div>
+      </div>
+      <div v-if="curr_tab==2" class="input-group">
+        <label>Search</label>
+        <div class="input-group-append search">
+          <input
+            type="text"
+            class="form-control input-sm"
+            maxlength="32"
+            v-model="search_tab2"
             placeholder="Group name.."
           >
         </div>
@@ -165,7 +177,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterGroups"
+          :items="filterGroups_tab1"
           :fields="fields"
         >
           <!--table headers -->
@@ -255,7 +267,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterGroups"
+          :items="filterGroups_tab2"
           :fields="fields"
         >
           <!--table headers -->
@@ -318,6 +330,7 @@
         </b-table>
 
         <!--paginator-->
+
         <div id="paginate" v-if="reload_paginator && curr_tab==2">
           <paginator
             ref="paginate2"
@@ -348,7 +361,8 @@ export default {
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
-      search: "", //search table string
+      search_tab1: "", //search table string
+      search_tab2: "",
       path: "", //URL
       sort_icon_dir: "", //sorting direction for icon
 
@@ -411,20 +425,31 @@ export default {
      * @description filters groups by name search. Method is called per each key press
      * @returns list of users in accordance to search.
      */
-    filterGroups() {
+
+    filterGroups_tab1() {
       if (this.curr_tab == 1) {
         if (this.page_content_tab1.length == 0) {
           return [];
-        } else {
-          if (this.page_content_tab2.length == 0) {
-            return [];
-          }
         }
       } //search filter
+
       return this.page_of_groups.filter(page_of_groups => {
         return page_of_groups.g_name
           .toLowerCase()
-          .includes(this.search.toLowerCase());
+          .includes(this.search_tab1.toLowerCase());
+      });
+    },
+    filterGroups_tab2() {
+      if (this.curr_tab == 2) {
+        if (this.page_content_tab2.length == 0) {
+          return [];
+        }
+      } //search filter
+
+      return this.page_of_groups.filter(page_of_groups => {
+        return page_of_groups.g_name
+          .toLowerCase()
+          .includes(this.search_tab2.toLowerCase());
       });
     }
   },
@@ -618,6 +643,7 @@ the global variables as needed to be used.
       fetch("/users?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
+          //console.log(res);
           this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
           this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner
@@ -652,7 +678,7 @@ the global variables as needed to be used.
           //window content varies according to tab
           this.page_content_tab1 = this.groups_user_is_owner;
           this.page_content_tab2 = this.groups_user_is_member;
-
+          this.curr_tab = 1;
           this.select(); //deselect all
           this.uncheck(); //uncheck any selected items
           this.updatePaginator(); //refresh with updated group list
@@ -735,7 +761,7 @@ the global variables as needed to be used.
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body: JSON.stringify({ data: users_to_add })
       })
         .then(res => res.json())
         .then(res => {
@@ -776,7 +802,7 @@ the global variables as needed to be used.
               });
             }
             //send request
-            fetch("/group/remove?uid=" + this.curr_user, {
+            fetch("/group/remove?uid=" + curr.curr_user, {
               method: "delete",
               //Add json content type application to indicate the media type of the resource.
               //Add access control action response that tells the browser to allow code
@@ -787,11 +813,11 @@ the global variables as needed to be used.
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.groups_to_remove)
+              body: JSON.stringify({ data: curr.groups_to_remove })
             })
-              .then(res => res.json())
-              .then(res => {
-                console.log(res);
+              .then(res => res.text())
+              .then(text => {
+                console.log(text);
 
                 curr.fetchGroups(); //update group list
 

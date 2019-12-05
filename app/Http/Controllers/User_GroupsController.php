@@ -21,15 +21,15 @@ class User_GroupsController extends Controller
         //store groups id's
         $gids= array_map(function ($item) {
             return $item['gid'];
-        }, $request->all());
+        }, $request->input('data'));
 
         //store user id's
         $uids = array_map(function ($item) {
             return $item['uid'];
-        }, $request->all());
+        }, $request->input('data'));
 
         //data array
-        $data_arr = [ 'data' => $request->all() ];
+        $data_arr = [ 'data' => $request->input('data') ];
 
         //renaming attributes for messages
         $attributes = array(
@@ -63,7 +63,7 @@ class User_GroupsController extends Controller
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
         //if validated add records
-        $data = $request->all();
+        $data = $request->input('data');
         $user_group = [];
         foreach ($data as $key=>$value) {
             array_push($user_group, [
@@ -132,14 +132,14 @@ class User_GroupsController extends Controller
         //store group id's
         $gids= array_map(function ($item) {
             return $item['gid'];
-        }, $request->all());
+        }, $request->input('data'));
         //store user id's
         $uids = array_map(function ($item) {
             return $item['uid'];
-        }, $request->all());
+        }, $request->input('data'));
 
         //data array
-        $data = [ 'data' => $request->all() ];
+        $data = [ 'data' => $request->input('data') ];
 
         //renaming attributes for messages
         $attributes = array(

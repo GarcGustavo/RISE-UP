@@ -351,7 +351,7 @@ users and create groups.*/
       for (let i in this.selected_users) {
         //populate array with selected users
         this.users_to_add_remove.push({
-          uid: this.selected_users[i],
+          uid: this.selected_users[i], //not uid so no conflicts are made with middleware
           gid: this.gid
         });
       }

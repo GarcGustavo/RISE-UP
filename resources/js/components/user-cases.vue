@@ -141,15 +141,27 @@
       </div>
 
       <!-- search bar -->
-      <div class="input-group">
+      <div v-if="curr_tab==1" class="input-group">
         <label>Search</label>
         <div class="input-group-append search">
           <input
             type="text"
             class="form-control input-sm"
             maxlength="32"
-            v-model="search"
-            placeholder="Case title.."
+            v-model="search_tab1"
+            placeholder="Group name.."
+          >
+        </div>
+      </div>
+      <div v-if="curr_tab==2" class="input-group">
+        <label>Search</label>
+        <div class="input-group-append search">
+          <input
+            type="text"
+            class="form-control input-sm"
+            maxlength="32"
+            v-model="search_tab2"
+            placeholder="Group name.."
           >
         </div>
       </div>
@@ -162,7 +174,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterCases"
+          :items="filterCases_tab1"
           :fields="fields"
         >
           <!--table headers -->
@@ -254,7 +266,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterCases"
+          :items="filterCases_tab2"
           :fields="fields"
         >
           <!-- table headers -->
@@ -348,7 +360,8 @@ export default {
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
-      search: "", //table search string
+      search_tab1: "", //table search string
+      search_tab2:"",
 
       user_cases: [], // cases of the user
       cases_user_is_owner: [], //list of cases the user has created
@@ -402,20 +415,31 @@ export default {
      * @description filters cases by title search. Method is called per each key press
      * @returns list of cases in accordance to search.
      */
-    filterCases() {
+
+    filterCases_tab1() {
       if (this.curr_tab == 1) {
         if (this.page_content_tab1.length == 0) {
           return [];
-        } else {
-          if (this.page_content_tab2.length == 0) {
-            return [];
-          }
         }
-      } //search fiter
+      } //search filter
+
       return this.page_of_cases.filter(page_of_cases => {
         return page_of_cases.c_title
           .toLowerCase()
-          .includes(this.search.toLowerCase());
+          .includes(this.search_tab1.toLowerCase());
+      });
+    },
+    filterCases_tab2() {
+      if (this.curr_tab == 2) {
+        if (this.page_content_tab2.length == 0) {
+          return [];
+        }
+      } //search filter
+
+      return this.page_of_cases.filter(page_of_cases => {
+        return page_of_cases.c_title
+          .toLowerCase()
+          .includes(this.search_tab2.toLowerCase());
       });
     }
   },
@@ -769,7 +793,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.cases_to_remove)
+              body: JSON.stringify({ data: curr.cases_to_remove })
             })
               .then(res => res.json())
               .then(res => {
