@@ -555,7 +555,7 @@ export default {
     fetchCaseItems() {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      fetch("/case/items?cid=" + this.cid)
+      fetch("/case/items?cid=" + this.cid + "&uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
           this.items = res.data;
@@ -565,7 +565,7 @@ export default {
     },
     //Fetch total items to add/delete items without conflict
     fetchItems() {
-      fetch("/items")
+      fetch("/items?uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
           //this.all_items = res.data;
@@ -578,7 +578,7 @@ export default {
     fetchCase() {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      fetch("/case?cid=" + this.cid)
+      fetch("/case?cid=" + this.cid + "&uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
           this.case_to_show = res.data;
@@ -619,7 +619,7 @@ export default {
     },
     //Fetch users actively editing current cid
     fetchUsersEditing(cid) {
-      fetch("/user/edit?cid=" + cid)
+      fetch("/user/edit?cid=" + cid + "&uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
           this.usersEditing = res.data;
@@ -658,7 +658,7 @@ export default {
     //Fetch case group details if a group is set, if not set as independent
     fetchGroup(gid) {
       if (this.gid != 0) {
-        fetch("/case/group?gid=" + this.gid)
+        fetch("/case/group?gid=" + this.gid + "&uid=" + this.curr_user_uid)
           .then(res => res.json())
           .then(res => {
             this.groups = res.data;
@@ -671,7 +671,7 @@ export default {
     },
     //Fetch case parameters via cid
     fetchCaseParameters() {
-      fetch("/case/parameters?cid=" + this.cid)
+      fetch("/case/parameters?cid=" + this.cid + "&uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
@@ -682,7 +682,7 @@ export default {
     },
     //Fetch options for each parameter in case to populate dropdown
     fetchParameterOptions() {
-      fetch("/parameter/options")
+      fetch("/parameter/options" + "?uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
           this.parameter_options = res.data;
@@ -703,7 +703,7 @@ export default {
         csp_id: updated_param.csp_id,
         opt_selected: updated_param.opt_selected
       };
-      fetch("/parameter/update", {
+      fetch("/parameter/update" + "?uid=" + this.curr_user_uid, {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -750,7 +750,7 @@ export default {
       form_data.append("c_owner", this.case_to_show[0].c_owner);
       form_data.append("c_group", this.case_to_show[0].c_group);
 
-      fetch("/case/update", {
+      fetch("/case/update" + "?uid=" + this.curr_user_uid, {
         method: "post",
         headers: new Headers({
           //"Content-Type": "application/json",
@@ -787,7 +787,7 @@ export default {
       //console.log(form_data.get('i_content'));
       this.$loading(true)
       const login = new Promise( (resolve, reject) => {
-        fetch("/item/update?iid=" + item_to_update.iid, {
+        fetch("/item/update?iid=" + item_to_update.iid + "&uid=" + this.curr_user_uid, {
         method: "post",
         headers: new Headers({
           //"Content-Type": "multipart/form-data",
@@ -834,7 +834,7 @@ export default {
       this.new_item.order = "1";
       this.new_item.i_name = item_name;
       //console.log(new_item);
-      fetch("/item/add", {
+      fetch("/item/add" + "?uid=" + this.curr_user_uid, {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -869,7 +869,7 @@ export default {
 
       //Confirm item to be deleted
       if (confirm("Do you want to delete this item permanently?")) {
-        fetch("/item/remove?iid=" + Number(item_to_remove.iid), {
+        fetch("/item/remove?iid=" + Number(item_to_remove.iid) + "&uid=" + this.curr_user_uid, {
           method: "delete",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -895,7 +895,7 @@ export default {
       //Confirm deletion
       if (confirm("Do you want to delete this case study permanently?")) {
         //send request
-        fetch("/case/remove", {
+        fetch("/case/remove" + "?uid=" + this.curr_user_uid, {
           method: "delete",
           headers: new Headers({
             "Content-Type": "application/json",
@@ -952,7 +952,7 @@ export default {
 
       //Update editors list
       for (let user in this.users) {
-        this.updateUsersEditing(this.users[user].uid);
+        this.updateUsersEditing(this.curr_user_uid);
       }
       //Reset parameter options
       for (let option in this.selected_options_content) {
