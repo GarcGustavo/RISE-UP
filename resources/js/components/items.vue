@@ -203,12 +203,12 @@
               </ul>
             </div>
           </div>
-          <div class="col-sm-12 card" style="background: white;">
+          <div class="col-sm-12 card" style="background: white;" v-if="this.permission_to_edit">
             <button
               class="btn btn-primary btn-sm mb-2"
               style="background: #c0c0c0; border-color: #c0c0c0; color: black; margin: 10px"
               v-on:click="onEdit()"
-              v-if="!this.editing && this.permission_to_edit"
+              v-if="!this.editing"
             >Edit</button>
             <button
               class="btn btn-primary btn-sm mb-2"
