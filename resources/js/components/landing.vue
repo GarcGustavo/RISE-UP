@@ -3,7 +3,7 @@
     <div class="row justify-content-center">
       <form id="loginForm" action="/landing/oauth-login" method="POST">
         <div class="form-group form-control-lg">
-          <input type="hidden" :value="csrfToken" name="_token" />
+          <input type="hidden" :value="csrfToken2" name="_token" />
           <select v-model="choice" name="choice">
             <option></option>
             <option v-for="c in choices" :key="c" :value="c">{{c}}</option>
@@ -16,7 +16,7 @@
       </form>
     </div>
     <div v-if="error" class="alert alert-danger mt-3">
-        <p>{{error}}</p>
+      <p>{{error}}</p>
     </div>
   </div>
 </template>
@@ -30,18 +30,20 @@
 export default {
   data() {
     return {
+      csrfToken2: null,
       choices: [],
       choice: "Select a login choice",
-      csrfToken: null,
-      error: ''
+      error: ""
     };
   },
 
   mounted() {
-    this.loadLoginChoices()
-    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
-    this.urlParams = new URLSearchParams(window.location.search)
-    this.error = this.urlParams.get("error")
+    this.loadLoginChoices(),
+      (this.csrfToken2 = document.querySelector(
+        'meta[name="csrf-token"]'
+      ).content);
+    this.urlParams = new URLSearchParams(window.location.search);
+    this.error = this.urlParams.get("error");
   },
 
   methods: {

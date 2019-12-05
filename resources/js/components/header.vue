@@ -32,7 +32,6 @@
         >
           <div v-if="!disable_header_search" class="input-group mb-3">
             <input type="hidden" :value="csrfToken" name="_token" />
-            <!-- <input type="hidden" :value="uid" name="uid" /> -->
             <input
               type="text"
               name="q"
@@ -219,11 +218,9 @@ export default {
     };
   },
 
-  created() {
-    this.getUser(),
-      (this.csrfToken = document.querySelector(
-        'meta[name="csrf-token"]'
-      ).content);
+  mounted() {
+    this.getUser()
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
   },
   methods: {
     resetErrors() {
