@@ -40,7 +40,6 @@ Vue.component('action-table-dbox', require('./components/dialogue-boxes/action-t
 Vue.component('case-create-dbox', require('./components/dialogue-boxes/case-create-dbox.vue').default);
 //web pages
 Vue.component('iren-header', require('./components/header.vue').default);
-Vue.component('iren-header3', require('./components/header3.vue').default);
 Vue.component('iren-footer', require('./components/footer.vue').default);
 Vue.component('iren-landing', require('./components/landing.vue').default);
 Vue.component('iren-login', require('./components/login.vue').default);

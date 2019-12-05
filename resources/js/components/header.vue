@@ -182,7 +182,7 @@
               data-toggle="tooltip"
               data-placement="bottom"
               title="Help"
-              :href="'/help?uid='+uid"
+              href="/help"
             >Help</a>
           </li>
           <li class="nav-item">
@@ -191,7 +191,7 @@
               data-toggle="tooltip"
               data-placement="bottom"
               title="About"
-              :href="'/about?uid='+uid"
+              href="/about"
             >About</a>
           </li>
         </ul>
