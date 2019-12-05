@@ -1,154 +1,201 @@
 <template>
   <!-- Navigation -->
   <div>
-    <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
-      <a class="navbar-brand" :href="'/home?uid='+uid">
-        <img
-          class="img-fluid rounded"
-          style="width:70px;height:45px;margin-right:10px"
-          src="../../../public/images/iren_logo.png"
-          alt
-        />
-        Interdisciplinary Research Network
-      </a>
+    <div v-if="uid">
+      <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
+        <a class="navbar-brand" :href="'/home?uid='+uid">
+          <img
+            class="img-fluid rounded"
+            style="width:70px;height:45px;margin-right:10px"
+            src="../../../public/images/iren_logo.png"
+            alt
+          />
+          Interdisciplinary Research Network
+        </a>
 
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <!-- Search bar -->
+        <!-- Search bar -->
 
-      <form
-        :action="'/search?uid='+uid"
-        method="POST"
-        class="navbar-form navbar-right ml-auto mt-2 mr-5 search"
-      >
-        <div v-if="!disable_header_search" class="input-group mb-3">
+        <form
+          :action="'/search?uid='+uid"
+          method="POST"
+          class="navbar-form navbar-right ml-auto mt-2 mr-5 search"
+        >
+          <div v-if="!disable_header_search" class="input-group mb-3">
             <input type="hidden" :value="csrfToken" name="_token" />
             <!-- <input type="hidden" :value="uid" name="uid" /> -->
-          <input
-            type="text"
-            name="q"
-            class="form-control"
-            placeholder="search"
-            aria-label="Search"
-            aria-describedby="basic-addon2"
-          />
-          <div class="input-group-append">
-            <button class="btn btn-primary border-0 btn-sm" type="submit">
-              <i class="material-icons">search</i>
-            </button>
+            <input
+              type="text"
+              name="q"
+              class="form-control"
+              placeholder="search"
+              aria-label="Search"
+              aria-describedby="basic-addon2"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-primary border-0 btn-sm" type="submit">
+                <i class="material-icons">search</i>
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      <!-- Nav options -->
-      <ul class="navbar-nav mr-3">
-        <li class="nav-item">
-          <span
-            v-if="isAdmin || isCollaborator"
-            data-toggle="modal"
-            data-target="#case_create_dbox"
-          >
+        <!-- Nav options -->
+        <ul class="navbar-nav mr-3">
+          <li class="nav-item">
+            <span
+              v-if="isAdmin || isCollaborator"
+              data-toggle="modal"
+              data-target="#case_create_dbox"
+            >
+              <a
+                class="nav-link"
+                data-toggle="tooltip"
+                @click.prevent="show_dialogue=true"
+                href="#case_create_dbox"
+                data-placement="bottom"
+                title="Create case study"
+              >Collaborate</a>
+            </span>
+            <!-- else -->
+            <a
+              v-if="isViewer"
+              class="nav-link"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Collaborator"
+              href="#"
+            >Collaborator</a>
+          </li>
+          <li class="nav-item">
             <a
               class="nav-link"
               data-toggle="tooltip"
-              @click.prevent="show_dialogue=true"
-              href="#case_create_dbox"
               data-placement="bottom"
-              title="Create case study"
-            >Collaborate</a>
-          </span>
-          <!-- else -->
-          <a
-            v-if="isViewer"
-            class="nav-link"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Collaborator"
-            href="#"
-          >Collaborator</a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Help"
-            :href="'/help?uid='+uid"
-          >Help</a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="About"
-            :href="'/about?uid='+uid"
-          >About</a>
-        </li>
-
-        <!-- User menu -->
-        <li class="nav-item dropdown">
-          <span data-toggle="dropdown">
+              title="Help"
+              :href="'/help?uid='+uid"
+            >Help</a>
+          </li>
+          <li class="nav-item">
             <a
-              href="#"
-              class="nav-link dropdown-toggle"
+              class="nav-link"
               data-toggle="tooltip"
               data-placement="bottom"
-              title="Profile"
-            >
-              <i class="material-icons" style="font-size: 25px">person</i>
-            </a>
-          </span>
-          <div class="dropdown-menu dropdown-menu-right">
-            <div class="profile-usertitle">
-              <div class="profile-usertitle-name">{{user_name}}</div>
-              <div class="profile-usertitle-role">
-                <a v-if="isAdmin">Admin</a>
-                <a v-if="isViewer">Viewer</a>
-                <a v-if="isCollaborator">Collaborator</a>
-              </div>
-            </div>
-            <div class="dropdown-divider"></div>
-            <a
-              v-if="isAdmin"
-              :href="'/admin/users-requests?uid='+uid"
-              class="dropdown-item"
-            >Dashboard</a>
-            <a :href="'/user/profile?uid='+uid" class="dropdown-item">Profile</a>
-            <a
-              v-if="isCollaborator || isAdmin"
-              :href="'/user/cases?uid='+uid"
-              class="dropdown-item"
-            >Cases</a>
-            <a
-              v-if="isCollaborator || isAdmin"
-              :href="'/user/groups?uid='+uid"
-              class="dropdown-item"
-            >Groups</a>
-            <div class="dropdown-divider"></div>
-            <a href="/landing/logout" class="dropdown-item">Logout</a>
-          </div>
-        </li>
-      </ul>
+              title="About"
+              :href="'/about?uid='+uid"
+            >About</a>
+          </li>
 
-      <!-- show case study dialogue box when creating it from group -->
-    </nav>
-    <div v-if="show_dialogue">
-      <case-create-dbox
-        :action="'Create'"
-        :acted_on="'case study'"
-        :errors="errors"
-        @close="resetErrors"
-        @createCaseStudy="createCaseStudy"
-      ></case-create-dbox>
+          <!-- User menu -->
+          <li class="nav-item dropdown">
+            <span data-toggle="dropdown">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Profile"
+              >
+                <i class="material-icons" style="font-size: 25px">person</i>
+              </a>
+            </span>
+            <div class="dropdown-menu dropdown-menu-right">
+              <div class="profile-usertitle">
+                <div class="profile-usertitle-name">{{user_name}}</div>
+                <div class="profile-usertitle-role">
+                  <a v-if="isAdmin">Admin</a>
+                  <a v-if="isViewer">Viewer</a>
+                  <a v-if="isCollaborator">Collaborator</a>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a
+                v-if="isAdmin"
+                :href="'/admin/users-requests?uid='+uid"
+                class="dropdown-item"
+              >Dashboard</a>
+              <a :href="'/user/profile?uid='+uid" class="dropdown-item">Profile</a>
+              <a
+                v-if="isCollaborator || isAdmin"
+                :href="'/user/cases?uid='+uid"
+                class="dropdown-item"
+              >Cases</a>
+              <a
+                v-if="isCollaborator || isAdmin"
+                :href="'/user/groups?uid='+uid"
+                class="dropdown-item"
+              >Groups</a>
+              <div class="dropdown-divider"></div>
+              <a href="/landing/logout" class="dropdown-item">Logout</a>
+            </div>
+          </li>
+        </ul>
+
+        <!-- show case study dialogue box when creating it from group -->
+      </nav>
+      <div v-if="show_dialogue">
+        <case-create-dbox
+          :action="'Create'"
+          :acted_on="'case study'"
+          :errors="errors"
+          @close="resetErrors"
+          @createCaseStudy="createCaseStudy"
+        ></case-create-dbox>
+      </div>
+    </div>
+    <div v-else>
+      <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
+        <a class="navbar-brand" :href="'/home?uid='+uid">
+          <img
+            class="img-fluid rounded"
+            style="width:70px;height:45px;margin-right:10px"
+            src="../../../public/images/iren_logo.png"
+            alt
+          />
+          Interdisciplinary Research Network
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Nav options -->
+        <ul class="navbar-nav mr-3">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Help"
+              :href="'/help?uid='+uid"
+            >Help</a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="About"
+              :href="'/about?uid='+uid"
+            >About</a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </template>
@@ -185,29 +232,29 @@ export default {
 
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
-      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+      this.uid = Number(this.urlParams.get("uid")); //get user id
       this.q = this.urlParams.get("q");
       if (this.q != null) {
         this.disable_header_search = true;
       }
 
-      fetch("/user?uid=" + this.curr_user)
-        .then(res => res.json())
-        .then(res => {
-          // console.log(res);
-          this.user = res.data[0];
-          if (this.user.u_role == 4) {
-            this.isAdmin = true;
-          } else if (this.user.u_role == 3) {
-            this.isCollaborator = true;
-          } else {
-            this.isViewer = true;
-          }
-          this.uid = this.user.uid;
-          console.log(this.uid);
-          this.user_name = this.user.first_name + " " + this.user.last_name;
-        });
-
+      if (this.uid != "") {
+        fetch("/user?uid=" + this.uid)
+          .then(res => res.json())
+          .then(res => {
+            // console.log(res);
+            this.user = res.data[0];
+            if (this.user.u_role == 4) {
+              this.isAdmin = true;
+            } else if (this.user.u_role == 3) {
+              this.isCollaborator = true;
+            } else {
+              this.isViewer = true;
+            }
+            console.log(this.uid);
+            this.user_name = this.user.first_name + " " + this.user.last_name;
+          });
+      }
     },
 
     /**
