@@ -227,7 +227,10 @@
           <!-- case title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user">{{data.item.c_title}}</b-link>
+              <b-link
+                class="p-2"
+                :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user"
+              >{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -305,7 +308,10 @@
           <!-- title column -->
           <template v-slot:cell(c_title)="data">
             <div>
-              <b-link class="p-2" :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user">{{data.item.c_title}}</b-link>
+              <b-link
+                class="p-2"
+                :href="'/case/body?cid='+data.item.cid+'&uid='+curr_user"
+              >{{data.item.c_title}}</b-link>
             </div>
           </template>
         </b-table>
@@ -415,11 +421,10 @@ export default {
   },
 
   methods: {
-
-/*#region Auxilary methods - These methods provide operational
+    /*#region Auxilary methods - These methods provide operational
 functionalities to to the web page. Operations include but are
 not limited to :Sorting, updating paginator and content,
-validation, and resetting variables
+validation, and resetting variables*/
 
     /**
      * @description - refreshes the paginator
@@ -589,14 +594,13 @@ validation, and resetting variables
       }
     },
 
-/*#endregion*/
+    /*#endregion*/
 
-
-/*#region Query methods - These methods provide the content of
+    /*#region Query methods - These methods provide the content of
 the web page by requesting the data through route calls. The routes
 passes the request to a specified predefined controller who processes
 said request via Laravel's eloquent ORM. The data is appended to the
- global variables as needed to be used.
+ global variables as needed to be used.*/
 
     /**
      * @description gets all the cases of the current user
@@ -636,7 +640,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
      * data is sent by the case_create_dbox dialogue
      */
     createCaseStudy(case_study) {
-      fetch("/case/create", {
+      fetch("/case/create?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -678,7 +682,6 @@ said request via Laravel's eloquent ORM. The data is appended to the
             this.appendDefaultParameters(case_study.cid); //default case study parameters
             //this.fetchCases(); //update case study list
             //this.resetErrors();
-
           } else {
             this.errors = res.errors;
           }
@@ -693,7 +696,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
      * Sends request to Case parameters controller
      */
     appendDefaultParameters(cid) {
-      fetch("/parameter/create/defaults", {
+      fetch("/parameter/create/defaults?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -755,7 +758,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
               });
             }
             //send request
-            fetch("/case/remove", {
+            fetch("/case/remove?uid=" + curr.curr_user, {
               method: "delete",
               //Add json content type application to indicate the media type of the resource.
               //Add access control action response that tells the browser to allow code
@@ -791,7 +794,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
       });
       this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
-/*#endregion*/
+    /*#endregion*/
   }
 };
 </script>

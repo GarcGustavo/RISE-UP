@@ -462,7 +462,7 @@ as needed to be used.*/
       this.uid = this.urlParams.get("uid"); //get user id
       this.gid = this.urlParams.get("gid"); //get group id
 
-      fetch("/groups")
+      fetch("/groups?uid="+this.uid)
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;

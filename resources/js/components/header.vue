@@ -207,6 +207,7 @@ export default {
           console.log(this.uid);
           this.user_name = this.user.first_name + " " + this.user.last_name;
         });
+
     },
 
     /**

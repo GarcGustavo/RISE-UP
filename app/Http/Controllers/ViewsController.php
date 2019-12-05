@@ -177,6 +177,6 @@ class ViewsController extends Controller
             return view('search')
             ->withErrors($validate);
         }
-        return view('search', ['case_study' => $case_study, 'uid'=> $request->input('uid')]);
+        return view('search', ['case_study' => $case_study]);
     }
 }
