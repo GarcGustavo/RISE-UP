@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -51,9 +52,28 @@ class LandingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function redirectToProvider()
+    public function redirectToProvider(Request $request)
     {
-        return Socialite::driver('google')->redirect();
+        //valiadate attributes of record
+        $validator = Validator::make($request->all(), [
+            '_token' => "bail|required",
+            'choice' => "required|string|max:64",
+        ]);
+
+        if ($validator->fails()) {
+            $error = 'Please select a valid login choice.';
+            return redirect('/?error=' . $error);
+        }
+
+        $choice = $request->input('choice');
+
+        if ($choice == "Login with UPR/UPRM account") {
+            return Socialite::driver('google')->redirect();
+        } else {
+            $error = 'Please select a valid login choice.';
+            return redirect('/?error=' . $error);
+        }
+
     }
 
     /**

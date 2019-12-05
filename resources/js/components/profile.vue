@@ -3,57 +3,110 @@
   <div class="body mb-5 mt-5">
     <!-- buttons to create or remove a case study -->
     <h1 class="mb-3">
-      <!-- remove button if clicked, render confirmation dialogue box to validate user's action -->
-      <div>
+    <div>
         <a
           href="#"
           data-toggle="tooltip"
           data-placement="bottom"
-          title="Click icon to delete a case study"
-          @click.prevent="action='Remove',
-        acted_on='case study(s)', isCaseSelected()"
+          title="Click button to edit profile."
+          @click.prevent="update=1"
         >
           <div id="remove_icon">
-            <a>Remove</a>
-            <i class="material-icons">remove_circle_outline</i>
+            <a>Edit</a>
+            <i class="material-icons">create</i>
           </div>
         </a>
       </div>
-
-      <!-- create button if clicked, render create case study dialogue box -->
-      <div>
-        <span data-toggle="modal" data-target="#case_create_dbox">
-          <a
-            href="#"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Click icon to create a case study"
-            @click.prevent=" action='Create',
-            acted_on='case study', show_dialogue=true"
-          >
-            <div id="create_icon">
-              <a>Create</a>
-              <i class="material-icons">add_circle_outline</i>
-            </div>
-          </a>
-        </span>
-      </div>
-
       <p>Profile</p>
     </h1>
-
-    <div v-if="action=='Create' && show_dialogue">
-      <!-- if action is to create group(s) render confirmation dialogue alerting execution of said action-->
-      <case-create-dbox
-        :action="action"
-        :acted_on="acted_on"
-        :errors="errors"
-        @close="resetErrors"
-        @createCaseStudy="createCaseStudy"
-      ></case-create-dbox>
-    </div>
-
     <hr>
+    <div class="container-fluid text-center text-md-left">
+      <!-- Grid row -->
+      <div class="row">
+        <!-- Grid column -->
+        <div class="col-5 mt-md-0 mt-3 justify-content-md-start" id="avatar">
+          <!-- Content -->
+          <!-- <img src="../../../public/images/nsf_logo.jpg" /> -->
+          <div class="circle">
+            <img :src="google_info.picture" alt="User photo" />
+          </div>
+        </div>
+        <!-- Grid column -->
+
+        <div v-if="update" class="col-lg-5 mt-md-0 mt-3 justify-content-md-center" id="updateInfo">
+          <!-- Content -->
+          <div v-if="u_errors" class="alert alert-danger">
+            <ul v-for="e in u_errors" :key="e">
+              <li>{{e}}</li>
+            </ul>
+          </div>
+          <div class="input-group">
+            <form action="/user/update" method="POST" style="width: 100%">
+              <input type="hidden" :value="csrfToken" name="_token" />
+              <input type="hidden" :value="curr_user" name="uid" />
+              <div class="form-goup mt-3">
+                <input
+                  class="form-control form-control-sm"
+                  type="text"
+                  name="first"
+                  id="u_fname"
+                  :value="user.first_name"
+                  :placeholder="user.first_name"
+                />
+              </div>
+              <div class="form-goup mt-3">
+                <input
+                  class="form-control form-control-sm"
+                  type="text"
+                  name="last"
+                  id="u_lname"
+                  :value="user.last_name"
+                  :placeholder="user.last_name"
+                />
+              </div>
+              <div class="form-goup mt-3">
+                <input
+                  class="form-control form-control-sm"
+                  type="email"
+                  name="contact_email"
+                  id="u_email"
+                  :value="user.contact_email"
+                  :placeholder="user.contact_email"
+                />
+              </div>
+              <div class="form-goup mt-3">
+                <input
+                  class="form-control form-control-sm"
+                  type="text"
+                  name="organization"
+                  id="u_organization"
+                  value="Estudiante"
+                  placeholder="Organization"
+                />
+              </div>
+              <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary btn-sm" style="width: 100%">Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Grid column -->
+        <div v-else class="col-lg-5 mt-md-0 mt-3 justify-content-md-center" id="updateInfo">
+          <!-- Content -->
+          <div class="card shadow">
+            <div class="card-body">
+              <h3 class="card-title">User Information</h3>
+              <p>Name: {{user_name}}</p>
+              <p>Contact Email: {{user.contact_email}}</p>
+              <p>Role: {{user_role}}</p>
+              <p>Organization: </p>
+              <p>Account Expiration Date: {{user.u_expiration_date}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Grid row -->
+    </div>
 
     <!-- tables tabs and search bar -->
     <div id="tabs" class="container">
@@ -70,7 +123,7 @@
             @click.prevent="
             curr_tab=1
           "
-          >Case studies i created</a>
+          >Case studies I created</a>
         </li>
         <li class="nav-item">
           <a
@@ -84,7 +137,7 @@
             @click.prevent="
             curr_tab=2
              "
-          >Case studies by groups</a>
+          >Groups I created</a>
         </li>
       </ul>
     </div>
@@ -150,7 +203,7 @@
             maxlength="32"
             v-model="search"
             placeholder="Case title.."
-          >
+          />
         </div>
       </div>
     </div>
@@ -168,7 +221,7 @@
           <!--table headers -->
           <!-- index header -->
           <template v-slot:head(index)>
-            <input type="checkbox" @click="checkAll()" v-model="all_selected">
+            <input type="checkbox" @click="checkAll()" v-model="all_selected" />
             <a
               href="#"
               data-toggle="tooltip"
@@ -219,7 +272,7 @@
                 @click="select()"
                 v-model="selected_cases"
                 :value="data.item.cid"
-              >
+              />
               {{data.index +1}}
             </div>
           </template>
@@ -339,6 +392,13 @@ export default {
 
   data() {
     return {
+      csrfToken: null,
+      user: "",
+      user_name: "",
+      google_info: "",
+      update: "",
+      u_message: "",
+      user_role: "",
       curr_user: "", //current user id
       action: "", //action the user is executing
       acted_on: "", //on what is the action being exected
@@ -353,6 +413,7 @@ export default {
       page_content_tab1: [], //cases to send to paginator
       page_content_tab2: [],
       errors: [],
+      u_errors: [],
 
       case_study: { cid: "", c_title: "" }, //case attributes
 
@@ -388,7 +449,11 @@ export default {
    * @description gets all users cases to populate case table when the page is loaded
    */
   created() {
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     this.fetchCases();
+    this.getUser();
+    this.getGoogleInfo();
+    this.getMessages();
   },
 
   computed: {
@@ -415,8 +480,7 @@ export default {
   },
 
   methods: {
-
-/*#region Auxilary methods - These methods provide operational
+    /*#region Auxilary methods - These methods provide operational
 functionalities to to the web page. Operations include but are
 not limited to :Sorting, updating paginator and content,
 validation, and resetting variables
@@ -589,10 +653,9 @@ validation, and resetting variables
       }
     },
 
-/*#endregion*/
+    /*#endregion*/
 
-
-/*#region Query methods - These methods provide the content of
+    /*#region Query methods - These methods provide the content of
 the web page by requesting the data through route calls. The routes
 passes the request to a specified predefined controller who processes
 said request via Laravel's eloquent ORM. The data is appended to the
@@ -628,6 +691,64 @@ said request via Laravel's eloquent ORM. The data is appended to the
           this.updatePaginator(); //refresh with updated list of cases
         })
         .catch(err => console.log(err));
+    },
+
+    getUser() {
+      if (this.curr_user != "") {
+        fetch("/user?uid=" + this.curr_user)
+          .then(res => res.json())
+          .then(res => {
+            this.user = res.data[0];
+            this.user_name = this.user.first_name + " " + this.user.last_name;
+            if (this.user.u_role == 4) {
+              this.user_role = 'Admin';
+            } else if (this.user.u_role == 3) {
+              this.user_role = 'Collaborator';
+            } else {
+              this.user_role = 'Viewer';
+            }
+            console.log(this.user);
+          });
+      }
+    },
+    getMessages(){
+        this.u_errors = JSON.parse(this.urlParams.get("u_errors"));
+        this.u_message = this.urlParams.get("u_message");
+        if(this.u_errors){
+            this.update = 1;
+        }
+        if(this.u_message != ""){
+            this.confirmationBox();
+        }
+    },
+        confirmationBox(){
+             //alert box
+            this.dialogue = bootbox.alert({
+              title: "Confirmation Message",
+              message: this.u_message,
+              backdrop: true,
+              className: "text-center"
+            });
+
+            //alert box CSS styling
+            this.dialogue.find(".modal-content").css({
+              height: "250px",
+              "font-size": "18px",
+              "text-align": "center"
+            });
+            this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+
+        },
+
+    getGoogleInfo() {
+      if (this.curr_user != "") {
+        fetch("/user/google-info?uid=" + this.curr_user)
+          .then(res => res.json())
+          .then(res => {
+            this.google_info = res["u"];
+            console.log(this.google_info);
+          });
+      }
     },
 
     /**
@@ -678,7 +799,6 @@ said request via Laravel's eloquent ORM. The data is appended to the
             this.appendDefaultParameters(case_study.cid); //default case study parameters
             //this.fetchCases(); //update case study list
             //this.resetErrors();
-
           } else {
             this.errors = res.errors;
           }
@@ -791,13 +911,29 @@ said request via Laravel's eloquent ORM. The data is appended to the
       });
       this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
-/*#endregion*/
+    /*#endregion*/
   }
 };
 </script>
 
 
 <style lang="scss" scoped>
+.circle {
+  border-color: #333333 #3490dc;
+  border-image: none;
+  border-radius: 50% 50% 50% 50%;
+  border-style: solid;
+  border-width: 25px;
+  max-width: 60%;
+  //   height: 200px;
+  //   width: 200px;
+  overflow: hidden;
+}
+img {
+  height: 100%;
+  width: 100%;
+}
+
 /* align table to center */
 table {
   margin-left: auto;

@@ -1,5 +1,9 @@
 <template>
   <div class="body mb-xl-5 mt-xl-5">
+      <hr>
+        <div class="row justify-content-center mb-3">
+<h1>Choose a login method:</h1>
+        </div>
     <div class="row justify-content-center">
       <form id="loginForm" action="/landing/oauth-login" method="POST">
         <div class="form-group form-control-lg">
@@ -15,6 +19,7 @@
         </div>
       </form>
     </div>
+     <hr>
     <div v-if="error" class="alert alert-danger mt-3">
       <p>{{error}}</p>
     </div>

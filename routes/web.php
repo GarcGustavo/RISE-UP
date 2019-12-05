@@ -17,8 +17,6 @@
 //Software requirement 2.2.2.1 - landing page
 Route::get('/', 'ViewsController@landingPage');
 //Profile creation page
-Route::get('/login', 'ViewsController@login');
-//Profile creation page
 Route::get('/user/profile', 'ViewsController@profile')->middleware('sessionCheck');
 //Profile creation page
 Route::get('/profile-creation', 'ViewsController@profileCreation')->middleware('sessionCheck');
@@ -70,11 +68,21 @@ Route::get('/user/verify', 'UserController@verify');
 //Creating a new users
 Route::post('/user/create', 'UserController@store')->middleware('sessionCheck');
 
+//Creating a new users
+Route::get('/user/request-collab', 'UserController@requestCollab')->middleware('sessionCheck');
+
 //List users editing cid
 Route::get('/user/edit', 'UserController@showUsersEditing');//->middleware('sessionCheck');
 
+
 //Update users editing cid
 Route::post('/user/edit', 'UserController@updateUsersEditing');//->middleware('sessionCheck');
+
+//Update users editing cid
+Route::get('/user/google-info', 'UserController@getGoogleInfo')->middleware('sessionCheck');
+
+//Update users editing profile info
+Route::post('/user/update', 'UserController@edit')->middleware('sessionCheck');
 
 
 /********GROUPS*********/
