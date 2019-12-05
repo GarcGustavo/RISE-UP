@@ -9,7 +9,6 @@ use App\Models\case_study;
 use App\Models\User_Groups;
 use App\Models\Case_Parameters;
 use App\Models\Group;
-use App\Models\Action;
 use App\Http\Resources\Case_Study as Case_StudyResource;
 use App\Http\Resources\Group as GroupResource;
 use Carbon\Carbon;
@@ -294,6 +293,12 @@ class CaseController extends Controller
             Case_Study::where(['cid' => $cid])->update(['c_incident_date' => Carbon::parse($c_incident_date)->toDateTimeString()]);
         }
 
+        $uid = $request->input('uid');
+        DB::table('Action')->insert([
+            'a_date'=> now(),
+            'a_user'=>  $uid,
+            'a_type'=>  2,
+        ]);
         return response()->json(['message'=>'Updated case successfully']);
     }
 
@@ -327,11 +332,9 @@ class CaseController extends Controller
             return $item['cid'];
         }, $to_delete);
 
-        $uid_deleting = array_map(function ($item) {
-            return $item['uid'];
-        }, $to_delete);
+
         //uid data is the same
-       // $uid = $uid_deleting[0];
+        $uid = $request->input('uid');
 
         $disabled = case_study::whereIn('cid', $cids_to_delete)->update(['c_status'=>'disabled']);
         $deleted = case_study::whereIn('cid', $cids_to_delete)->delete();
@@ -339,12 +342,14 @@ class CaseController extends Controller
 
         if ($disabled && $deleted) {
             /*
+            foreach($cids_to_delete as $cid){
             DB::table('Action')->insert([
                 'a_date'=> now(),
                 'a_user'=>  $uid,
                 'a_type'=>  3,
             ]);
-            */ 
+            }
+            */
             return response()->json(['message'=>'Case(s) has been removed']);
         } else {
             return response()->json(['errors'=>'Error deleting case study - Origin: Case controller']);

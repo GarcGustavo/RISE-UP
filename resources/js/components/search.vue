@@ -119,9 +119,6 @@ export default {
       default: function() {
         return [];
       }
-    },
-    uid:{
-      type:Number
     }
   },
   components: {
@@ -133,31 +130,31 @@ export default {
    */
   data() {
     return {
-      date_format: "yyyy-MM-dd",
-      incident_date_start: "",
-      incident_date_end: "",
-      search_for: "",
-      selected_param: "",
+      uid: "", //user id
+      date_format: "yyyy-MM-dd", //date formatting for datepicker
+      incident_date_start: "", //range for datepicker
+      incident_date_end: "", //range for datepicker
+      search_for: "", //contains the string the user is searching for
+      selected_param: "", //id of selected/changed parameter
 
-      selected_options: [],
-      case_parameters: [],
-      all_cases_parameters: [],
-      parameter_options: [],
-      selected_options_content: [],
-      selected_options_id: [],
-      list_cases: [],
-      filtered_cases: [],
-      search: [],
+      selected_options: [], //contains id's of the selected options of all parameters
+      case_parameters: [], //contains all registered parameters
+      all_cases_parameters: [],/*contains entries of Case_Parameters table - holds
+                                relation of case studies with their corresponding parameters options selections*/
+      parameter_options: [], //contains all options for parameters
+      list_cases: [], //contains search results
+      filtered_cases: [], //Filter cases
+      search: [], //Variable used in for loop to present searched study cases
 
-      refresh: 0,
-      initial_load: true,
-      empty: true
+
+      empty: true //If search is empty present "No case studies found "
     };
   },
   /**
    * @description
    */
   created() {
+    this.getUser()
     this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
@@ -175,6 +172,15 @@ export default {
   },
 
   methods: {
+
+/*#region Auxilary methods - These methods provide operational
+functionalities to to the web page. Operations include:
+Setting user priveleges, editing title, and resetting variables*/
+
+     getUser() {
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.uid = Number(this.urlParams.get("uid")); //get user id
+    },
     /**
      * @description filters cases by dropdown and date selection.
      * @returns list of cases in accordance to search.
@@ -348,47 +354,7 @@ export default {
     },
 
     /**
-     * @description fetch all system parameters(filters)
-     */
-    fetchParameters() {
-      fetch("/parameters")
-        .then(res => res.json())
-        .then(res => {
-          this.case_parameters = res.data;
-
-          if (this.cases) {
-            this.list_cases = Object.values(this.cases);
-            this.search = this.list_cases;
-            this.empty = false;
-          }
-        })
-        .catch(err => console.log(err));
-      this.fetchParameterOptions();
-    },
-    /**
-     * @description fetch all parameters options
-     */
-    fetchParameterOptions() {
-      fetch("/parameter/options")
-        .then(res => res.json())
-        .then(res => {
-          this.parameter_options = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-    /**
-     * @description fetch the parameters all case studies have correspondingly
-     */
-    fetchAllCasesParameters() {
-      fetch("/cs-parameters")
-        .then(res => res.json())
-        .then(res => {
-          this.all_cases_parameters = res.data;
-        })
-        .catch(err => console.log(err));
-    },
-    /**
-     * @description filterss the options in parameter_options with their corresponding parameter
+     * @description filters the options in parameter_options with their corresponding parameter
      * @param {any} parameter system parameter
      * @returns {any} options for that parameter
      */
@@ -425,7 +391,56 @@ export default {
         return filtered_list;
       }
       return cases_list;
-    }
+    },
+
+    /*//#endregion*/
+
+ /*#region Query methods - These methods provide the content of
+the web page by requesting the data through route calls. The routes
+passes the request to a specified predefined controller who processes
+said request via Laravel's eloquent ORM. The data is appended to the
+global variables as needed to be used.*/
+    /**
+     * @description fetch all system parameters(filters)
+     */
+    fetchParameters() {
+      fetch("/parameters?uid="+this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.case_parameters = res.data;
+
+          if (this.cases) {
+            this.list_cases = Object.values(this.cases);
+            this.search = this.list_cases;
+            this.empty = false;
+          }
+        })
+        .catch(err => console.log(err));
+      this.fetchParameterOptions();
+    },
+    /**
+     * @description fetch all parameters options
+     */
+    fetchParameterOptions() {
+      fetch("/parameter/options?=uid"+this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.parameter_options = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+    /**
+     * @description fetch the parameters all case studies have correspondingly
+     */
+    fetchAllCasesParameters() {
+      fetch("/cs-parameters?uid="+this.uid)
+        .then(res => res.json())
+        .then(res => {
+          this.all_cases_parameters = res.data;
+        })
+        .catch(err => console.log(err));
+    },
+    /*#endregion*/
   }
 };
 </script>

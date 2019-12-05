@@ -270,12 +270,13 @@ The data is appended to the global variables as needed to be used.*/
      * This method is used to determined the id of a newly created case study
      */
     totalCases() {
-      fetch("/cases")
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+      this.curr_user = this.urlParams.get("uid"); //get user id
+      fetch("/cases?uid="+this.curr_user)
         .then(res => res.json())
         .then(res => {
 
           this.all_cases = res.data;
-        console.log(this.all_cases);
 
         })
         .catch(err => console.log(err));

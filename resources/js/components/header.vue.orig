@@ -123,6 +123,10 @@
               class="dropdown-item"
             >Dashboard</a>
             <a :href="'/user/profile?uid='+uid" class="dropdown-item">Profile</a>
+<<<<<<< HEAD
+            <a v-if="isCollaborator || isAdmin" :href="'/user/cases?uid='+uid" class="dropdown-item">Cases</a>
+            <a v-if="isCollaborator || isAdmin" :href="'/user/groups?uid='+uid" class="dropdown-item">Groups</a>
+=======
             <a
               v-if="isCollaborator || isAdmin"
               :href="'/user/cases?uid='+uid"
@@ -133,6 +137,7 @@
               :href="'/user/groups?uid='+uid"
               class="dropdown-item"
             >Groups</a>
+>>>>>>> 4afe75e03043d22b2a667afd83fe7c7f247e2e6a
             <div class="dropdown-divider"></div>
             <a href="/shibboleth-logout2" class="dropdown-item">Logout</a>
           </div>
@@ -207,7 +212,6 @@ export default {
           console.log(this.uid);
           this.user_name = this.user.first_name + " " + this.user.last_name;
         });
-
     },
 
     /**

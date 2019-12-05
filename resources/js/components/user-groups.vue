@@ -430,8 +430,7 @@ export default {
   },
 
   methods: {
-
-/*#region Auxilary methods - These methods provide operational
+    /*#region Auxilary methods - These methods provide operational
 functionalities to to the web page. Operations include but are
 not limited to :Sorting, updating paginator and content,
 validation, and resetting variables
@@ -602,10 +601,9 @@ validation, and resetting variables
       }
     },
 
-/*#endregion*/
+    /*#endregion*/
 
-
-/*#region Query methods - These methods provide the content of
+    /*#region Query methods - These methods provide the content of
 the web page by requesting the data through route calls. The routes
 passes the request to a specified predefined controller who processes
 said request via Laravel's eloquent ORM. The data is appended to
@@ -617,7 +615,7 @@ the global variables as needed to be used.
      * Sends request to the user controller.
      */
     fetchUsers() {
-      fetch("/users")
+      fetch("/users?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
           this.users = res.data; //used in action_table_dbox
@@ -669,7 +667,7 @@ the global variables as needed to be used.
      * @param {Array} members - array of user id's to add to group
      */
     createGroup(group, members) {
-      fetch("/group/create", {
+      fetch("/group/create?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -726,7 +724,7 @@ the global variables as needed to be used.
      * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
      */
     addUsers(users_to_add) {
-      fetch("/user-groups/add", {
+      fetch("/user-groups/add?uid=" + this.curr_user, {
         method: "post",
         //Add json content type application to indicate the media type of the resource.
         //Add access control action response that tells the browser to allow code
@@ -778,7 +776,7 @@ the global variables as needed to be used.
               });
             }
             //send request
-            fetch("/group/remove", {
+            fetch("/group/remove?uid=" + this.curr_user, {
               method: "delete",
               //Add json content type application to indicate the media type of the resource.
               //Add access control action response that tells the browser to allow code
@@ -814,7 +812,7 @@ the global variables as needed to be used.
       });
       this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     }
-/*#endregion*/
+    /*#endregion*/
   }
 };
 </script>
