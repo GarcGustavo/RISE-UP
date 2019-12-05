@@ -45,18 +45,21 @@ class UserController extends Controller
         );
         //valiadate attributes of record
         $validator = Validator::make($request->all(), [
-            'first' => 'bail|required|max:32',
-            'last' => 'bail|required|max:32',
-            'contact_email' => 'bail|required|email',
-            'organization' => 'bail|required',
+            'first' => 'bail|required|string|max:32',
+            'last' => 'bail|required|string|max:32',
+            'contact_email' => 'bail|required|email|max:32',
+            'organization' => 'bail|string|required|max:32',
             'terms' => 'bail|required',
         ]);
         //apply renaming attributes
         $validator->setAttributeNames($attributes);
+
+        //If the validation fails send error to profile creation
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
+            $errors = json_encode($validator->errors()->all());
+            return redirect('/profile-creation?email='. $request->input('email').'&errors='. $errors);
         }
-        //create group
+        //create user
         $user = new User;
         $user->first_name = $request->input('first');
         $user->last_name = $request->input('last');
@@ -66,7 +69,7 @@ class UserController extends Controller
         $user->u_creation_date = Carbon::now()->format('Y-m-d');
         $user->u_ban_status = 0;
         $user->current_edit_cid = null;
-        $user->u_role = 1;
+        $user->u_role = 2;
         $user->u_role_upgrade_request = 0;
 
         //process request
@@ -77,8 +80,8 @@ class UserController extends Controller
             }
             // Store the session data
             $request->session()->put('user', $user["uid"]);
-            $request->session()->flash('message', 'Profile has been created!');
-            return redirect('/home?uid='.$user["uid"]);
+            $message = 'Profile created sucessfully.';
+            return redirect('/home?uid='.$user["uid"].'&message='.$message);
         } else {
             return abort(404);
         }
@@ -117,6 +120,46 @@ class UserController extends Controller
             }
         }
     }
+
+    /**
+     * Return users currently editing specified cid
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function requestCollab(Request $request)
+    {
+        $uid = $request->input('uid');
+        $user = User::where(['uid' => $uid])->get();
+        if (sizeOf($user) != 0) {
+            if($user['0']["u_role_upgrade_request"]==0){
+                User::where(['uid' => $uid])->update(['u_role_upgrade_request' => 1]);
+                $message = 'Sucessfully requested Collaborator role.';
+            }
+            else{
+                $message = 'Already requested Collaborator role.';
+            }
+        }
+        else{
+            $error = 'Invalid access.';
+            return redirect('/?error=' . $error);
+        }
+        return redirect('/home?uid=' . $uid . '&message='.$message);
+    }
+
+    /**
+     * Obtain the user information from Google.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getGoogleInfo(Request $request)
+    {
+        //Store google api user's info in session with key 'u'
+        $u = json_decode($request->session()->get('u'));
+
+        return response()->json(['u'=>$u]);
+    }
+
 
     /**
      * Return users currently editing specified cid
@@ -168,9 +211,35 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+        //rename attributes
+        $attributes = array(
+            'first' => 'first name',
+            'last' => 'last name',
+            'contact_email'  => 'contact email',
+            'organization'  => 'organization',
+        );
+        //valiadate attributes of record
+        $validator = Validator::make($request->all(), [
+            'first' => 'bail|string|max:32',
+            'last' => 'bail|string|max:32',
+            'contact_email' => 'bail|email|max:32',
+            'organization' => 'bail|string|max:32',
+        ]);
+        //apply renaming attributes
+        $validator->setAttributeNames($attributes);
+
+        //If the validation fails send error to profile creation
+        if ($validator->fails()) {
+            $errors = json_encode($validator->errors()->all());
+            return redirect('/user/profile?uid=' . $request->input('uid') . '&u_errors=' . $errors);
+        }
+
+        User::where(['uid' => $request->input('uid')])->update(['first_name' => $request->input('first') , 'last_name'=> $request->input('last'), 'contact_email' => $request->input('contact_email')]);
+        $message = 'You have sucessfully updated you profile information.';
+        return redirect('/user/profile?uid=' . $request->input('uid') . '&u_message=' . $message);
+
     }
 
     /**

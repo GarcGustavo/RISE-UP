@@ -72,7 +72,7 @@
               data-toggle="tooltip"
               data-placement="bottom"
               title="Collaborator"
-              href="#"
+              :href="'/user/request-collab?uid='+uid"
             >Collaborator</a>
           </li>
           <li class="nav-item">
@@ -153,7 +153,7 @@
     </div>
     <div v-else>
       <nav class="navbar fixed-top navbar-expand-lg navbar-custom shadow">
-        <a class="navbar-brand" :href="'/home?uid='+uid">
+        <a class="navbar-brand mr-auto" href="/">
           <img
             class="img-fluid rounded"
             style="width:70px;height:45px;margin-right:10px"
@@ -174,7 +174,7 @@
         </button>
 
         <!-- Nav options -->
-        <ul class="navbar-nav mr-3">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item">
             <a
               class="nav-link"
