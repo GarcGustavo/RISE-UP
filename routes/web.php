@@ -37,7 +37,7 @@ Route::get('/user/groups', 'ViewsController@userGroups')->middleware('sessionChe
 //Software requirement 2.2.3.1 - page thaht displays a user's case studies
 Route::get('/user/cases', 'ViewsController@userCases')->middleware('sessionCheck');
 //Software requirement 2.2.3.4 - case study page
-Route::get('/case/body', 'ViewsController@showCaseBody')->middleware('sessionCheck');
+Route::get('/case/body', 'ViewsController@showCaseBody');
 
 Route::post('/search','ViewsController@search')->middleware('sessionCheck');
 
