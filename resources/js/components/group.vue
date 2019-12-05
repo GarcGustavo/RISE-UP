@@ -462,7 +462,7 @@ global variables as needed to be used.*/
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body: JSON.stringify({data:users_to_add})
       })
         .then(res => res.json())
         .then(res => {
@@ -537,7 +537,7 @@ global variables as needed to be used.*/
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.remove)
+              body: JSON.stringify({data:curr.remove})
             })
               .then(res => res.json())
               .then(res => {

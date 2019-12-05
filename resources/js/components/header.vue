@@ -9,7 +9,7 @@
             style="width:70px;height:45px;margin-right:10px"
             src="../../../public/images/iren_logo.png"
             alt
-          />
+          >
           Interdisciplinary Research Network
         </a>
 
@@ -24,14 +24,15 @@
         </button>
 
         <!-- Search bar -->
-
+        <!--:action="'/search?uid='+uid"-->
         <form
-          :action="'/search?uid='+uid"
+        v-on:submit="search_form()"
+          id="search_form"
           method="POST"
           class="navbar-form navbar-right ml-auto mt-2 mr-5 search"
         >
           <div v-if="!disable_header_search" class="input-group mb-3">
-            <input type="hidden" :value="csrfToken" name="_token" />
+            <input type="hidden" :value="csrfToken" name="_token">
             <input
               type="text"
               name="q"
@@ -39,7 +40,7 @@
               placeholder="search"
               aria-label="Search"
               aria-describedby="basic-addon2"
-            />
+            >
             <div class="input-group-append">
               <button class="btn btn-primary border-0 btn-sm" type="submit">
                 <i class="material-icons">search</i>
@@ -159,7 +160,7 @@
             style="width:70px;height:45px;margin-right:10px"
             src="../../../public/images/iren_logo.png"
             alt
-          />
+          >
           Interdisciplinary Research Network
         </a>
 
@@ -219,8 +220,8 @@ export default {
   },
 
   mounted() {
-    this.getUser()
-    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
+    this.getUser();
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
   },
   methods: {
     resetErrors() {
@@ -321,7 +322,7 @@ export default {
             this.resetErrors(); //reset errors
 
             //once creation process is complete go to case study
-            window.location.href = "http://127.0.0.1:8000/case/body?cid=" + cid;
+            window.location.href = "http://127.0.0.1:8000/case/body?cid=" + cid+"&uid="+uid;
           } else {
             this.errors = res.errors;
           }
@@ -329,6 +330,12 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
+    },
+
+    search_form(){
+    var action_src = "/search?uid="+this.uid+"&q=" + document.getElementsByName("q")[0].value;
+    var search_form = document.getElementById('search_form');
+    search_form.action = action_src ;
     }
   }
 };
