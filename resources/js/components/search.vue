@@ -408,7 +408,7 @@ Setting user priveleges, editing title, and resetting variables*/
     var action_src = "/search?uid="+this.uid+"&q=" + document.getElementsByName("q")[0].value;
     var search_form = document.getElementById('search_form');
     search_form.action = action_src;
-
+    //return csrf_token();
      },
 
     /*//#endregion*/

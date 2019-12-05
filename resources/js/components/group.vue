@@ -166,7 +166,7 @@
           <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
             <div class="card-body">
               <h5 class="card-title">
-                <a :href="'/case/body?cid='+case_study.cid">{{case_study.c_title}}</a>
+                <a :href="'/case/body?cid='+case_study.cid+'&uid='+curr_user">{{case_study.c_title}}</a>
               </h5>
               <h6 class="card-subtitle mb-2 text-muted">{{case_study.c_date}}</h6>
               <p class="card-text">{{case_study.c_description}}</p>

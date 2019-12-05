@@ -7,7 +7,7 @@
 
 require('./bootstrap');
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import BootstrapVue, { BTable, BLink, BTooltip } from "bootstrap-vue";
+import BootstrapVue, { BTab, BTable, BLink, BTooltip } from "bootstrap-vue";
 import Datepicker from 'vuejs-datepicker';
 import linkify from 'vue-linkify';
 import VueLoading from 'vuejs-loading-plugin'
