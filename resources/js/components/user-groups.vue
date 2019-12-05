@@ -615,9 +615,11 @@ the global variables as needed to be used.
      * Sends request to the user controller.
      */
     fetchUsers() {
+
       fetch("/users?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
+            console.log(res);
           this.users = res.data; //used in action_table_dbox
           //filter user from list to show in table
           this.users = this.users.filter(x => x.uid !== this.curr_user); //filter owner
@@ -735,11 +737,11 @@ the global variables as needed to be used.
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify(users_to_add)
+        body: JSON.stringify({data: users_to_add})
       })
-        .then(res => res.json())
-        .then(res => {
-          console.log(res);
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -787,7 +789,7 @@ the global variables as needed to be used.
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify(curr.groups_to_remove)
+              body: JSON.stringify({data:curr.groups_to_remove})
             })
               .then(res => res.json())
               .then(res => {

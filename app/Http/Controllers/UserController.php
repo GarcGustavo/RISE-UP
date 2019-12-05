@@ -18,10 +18,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = Group::withTrashed()->get();
+        $users = User::all();
+     
 
         if ($users) {
-            return GroupResource::collection($users);
+            return UserResource::collection($users);
         } else {
             return response()->json(['errors' => 'Error fetching all registered users - Origin: User controller']);
         }

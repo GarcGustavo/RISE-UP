@@ -206,7 +206,7 @@ class GroupController extends Controller
     public function destroy(Request $request)
     {
         //assign request to data array
-        $data = [ 'data' => $request->all() ];
+        $data = [ 'data' => $request->input('data') ];
         //renaming attributes
         $attributes = array(
             'data.*.gid' => 'group id',
@@ -222,7 +222,7 @@ class GroupController extends Controller
             return response()->json(['errors'=> $validator->errors()->all()]);
         }
         //process request
-        $to_delete = $request->all();
+        $to_delete = $request->input('data');
         $gids_to_delete = array_map(function ($item) {
             return $item['gid'];
         }, $to_delete);

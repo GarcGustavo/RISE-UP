@@ -412,6 +412,7 @@ export default {
           }
         }
       } //search fiter
+
       return this.page_of_cases.filter(page_of_cases => {
         return page_of_cases.c_title
           .toLowerCase()
