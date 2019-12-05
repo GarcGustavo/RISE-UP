@@ -135,15 +135,15 @@
               style="margin: 50px; margin-bottom: 20px; margin-top: 20px;"
             >
               <h5
-                v-if="(case_parameter.csp_name != 'Incident date' || !case_to_show[0].c_incident_date)"
+                v-if="(case_parameter.csp_name != 'Incident date' || !initial_date)"
                 class="btn btn-primary-disabled btn-block"
                 style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
               >{{case_parameter.csp_name}}: {{case_parameter.o_content}}</h5>
               <h5
-                v-if="(case_parameter.csp_name == 'Incident date' && case_to_show[0].c_incident_date)"
+                v-if="(case_parameter.csp_name == 'Incident date' && initial_date)"
                 class="btn btn-primary-disabled btn-block"
                 style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
-              >{{case_parameter.csp_name}}: {{case_to_show[0].c_incident_date}}</h5>
+              >{{case_parameter.csp_name}}: {{initial_date}}</h5>
             </div>
           </div>
           <div class="row border" v-if="editing">
@@ -161,7 +161,7 @@
                 >
                   {{case_parameter.csp_name}}:
                   <datepicker
-                    v-model="case_to_show[0].c_incident_date"
+                    v-model="new_date"
                     :use-utc="true"
                     :format="date_format"
                   ></datepicker>
@@ -453,6 +453,8 @@ export default {
   },
   created() {
     this.preview[0] = false;
+
+    //Verifying user permissions
     this.getUser();
     this.verifyUserAccess(this.curr_user_uid);
     //Initializing item data
@@ -463,50 +465,47 @@ export default {
     this.fetchCase();
     this.fetchCaseParameters();
     this.fetchUsersEditing(this.cid);
-    this.fetchUserGroups();
-
-    //Verifying user permissions
   },
 
   mounted() {
-    // Echo.join(`case.${this.cid}`).listenForWhisper(
-    //   "editing",
-    //   e => {
-    //     this.case_to_show.c_title = e.title;
-    //     this.items.forEach(element => {
-    //       this.items[element] = e.items[element];
-    //     });
-    //     //console.log("hell from channel");
-    //   }
-    // );
-    // .here(users => {
-    //   this.usersEditing = users;
-    // })
-    // .joining(user => {
-    //   this.usersEditing.push(users[0]);
-    // })
-    // .leaving(user => {
-    //   this.usersEditing = this.usersEditing.filter(u => u != users[0]);
-    // })
-    // .listenForWhisper("saved", e => {
-    //   //this.case_study.c_status = e.status;
-    //   // clear is status after 1s
-    //   setTimeout(() => {
-    //     //this.case_study.c_status = "";
-    //   }, 1000);
-    // });
+    Echo.join(`Case.${this.cid}`).listenForWhisper(
+      "editing",
+      e => {
+        this.case_to_show.c_title = e.title;
+        this.items.forEach(element => {
+          this.items[element] = e.items[element];
+        });
+        console.log("hello from channel");
+      }
+    )
+    .here(users => {
+      this.usersEditing = users;
+    })
+    .joining(user => {
+      this.usersEditing.push(this.curr_user_uid);
+    })
+    .leaving(user => {
+      this.usersEditing = this.usersEditing.filter(u => u != this.curr_user_uid);
+    })
+    .listenForWhisper("saved", e => {
+      //this.case_study.c_status = e.status;
+      // clear is status after 1s
+      setTimeout(() => {
+        //this.case_study.c_status = "";
+      }, 1000);
+    });
   },
   methods: {
     editingCase() {
-      //let channel = Echo.join(`case.${this.cid}`);
-      //console.log("hello from editing case");
+      let channel = Echo.join(`Case.${this.cid}`);
+      console.log("hello from editing case");
       //show changes after 1s
-      // setTimeout(() => {
-      //   channel.whisper("editing", {
-      //     title: this.case_to_show.c_title,
-      //     items: this.items
-      //   });
-      // }, 1000);
+      setTimeout(() => {
+        channel.whisper("editing", {
+          title: this.case_to_show.c_title,
+          items: this.items
+        });
+      }, 1000);
     },
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
@@ -568,7 +567,7 @@ export default {
           this.total_items = all_items.length + 1;
           //console.log(text);
           //console.log(this.curr_user_uid);
-          console.log(res.data);
+          //console.log(res.data);
         })
         .catch(err => console.log(err));
     },
@@ -602,6 +601,7 @@ export default {
     },
     //Fetch owner groups
     fetchUserGroups() {
+      //console.log(this.owner);
       fetch("/group/show?uid=" + this.owner)
         .then(res => res.json())
         .then(res => {
@@ -609,11 +609,11 @@ export default {
           this.all_groups.unshift({
             gid: 0,
             g_name: "No Group",
-            g_owner: null
+            g_owner: this.owner
           });
-          //console.log(res.data);
+          console.log(res.data);
         })
-        .catch(err => console.log(res.data));
+        .catch(err => console.log(err));
     },
     //Fetch users actively editing current cid
     fetchUsersEditing(cid) {
@@ -983,7 +983,8 @@ export default {
         this.preview[index] = false;
       }
       this.preview_thumbnail = false;
-      this.new_date = this.case_to_show[0].c_incident_date;
+      this.case_to_show[0].c_incident_date = this.new_date;
+      this.initial_date = this.case_to_show[0].c_incident_date;
 
       this.$nextTick(() => {
         this.updateParams();
