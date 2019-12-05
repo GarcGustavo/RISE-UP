@@ -1,4 +1,4 @@
-@extends('admin.admin')
+@extends('admin.admin' , ['uid' => $uid])
 
 @section('adminMainContent')
     <nav>
@@ -44,7 +44,7 @@
                             @forelse($users as $user)
                             <tr>
                                 @if($user->u_role == 3 || $user->u_role == 2)
-                                    <td class="font-weight-bold">  <a href="/admin/user/edit?id={{$user->uid}}">{{$user->first_name }} {{$user->last_name }}</a>  </td>
+                                    <td class="font-weight-bold">  <a href="/admin/user/edit?urtd={{$user->uid}}&uid={{$uid}}">{{$user->first_name }} {{$user->last_name }}</a>  </td>
                                 @elseif($user->u_role == 1 || $user->u_role == 4)
                                     <td> {{$user->first_name }} {{$user->last_name }}  </td>
                                 @endif
@@ -99,7 +99,7 @@
 
                             @forelse($requests as $request)
                                 <tr>
-                                    <td class="font-weight-bold">  <a href="/admin/user/edit?id={{$request->uid}}">{{$request->first_name }} {{$request->last_name }}</a>  </td>
+                                    <td class="font-weight-bold">  <a href="/admin/user/edit?urtd={{$request->uid}}&uid={{$uid}}">{{$request->first_name }} {{$request->last_name }}</a>  </td>
                                     <td> {{$request->contact_email }} </td>
                                     <td> {{$request->r_name }} </td>
                                 </tr>

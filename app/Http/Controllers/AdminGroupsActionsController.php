@@ -27,7 +27,8 @@ class AdminGroupsActionsController extends Controller
             ->orderBy('Action.a_date', 'desc')
             ->get();
 
-        return view('admin.groups-actions.show', ['groups' => $groups, 'actions' => $actions]);
+            $uid = $request->input('uid');;
+        return view('admin.groups-actions.show', ['groups' => $groups, 'actions' => $actions , 'uid' => $uid]);
 
     }
 }

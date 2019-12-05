@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class AdminFilterOptionController extends Controller
 {
     //public function store
-    public function store(){
+    public function store(Request $request){
         $validatedData = request()->validate([
             'o_parameter' => ['required', 'numeric'],
             'o_content' => ['required', 'string'],
@@ -21,7 +21,9 @@ class AdminFilterOptionController extends Controller
         $option->o_content = $validatedData['o_content'];
         //dd($option);
         $option->save();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }
 
     //public function destroy
@@ -30,7 +32,9 @@ class AdminFilterOptionController extends Controller
         $option = option::find($id);
         //dd($option);
         $option->delete();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }
 	
 	//public function update
@@ -47,7 +51,9 @@ class AdminFilterOptionController extends Controller
         $option->o_content = $validatedData['o_content'];
         //dd($option);
         $option->save();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }
 
 }

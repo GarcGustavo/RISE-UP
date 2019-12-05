@@ -8,7 +8,7 @@
         {{$user->first_name }} {{$user->last_name }}
     </h1>
     <h3 class="text-center">Editing</h3>
-    <form action="/admin/user/edit?id={{$user->uid}}" method="post">
+    <form action="/admin/user/edit?urtd={{$user->uid}}&uid={{$uid}}" method="post">
         @method('PUT')
         @csrf
         <input type="hidden" id="u_role_upgrade" name="u_role_upgrade_request" value="0">

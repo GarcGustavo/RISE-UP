@@ -6909,9 +6909,219 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+<<<<<<< Updated upstream
 
 /**
  * this component is used to display the groups of a user
+=======
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * this component is used to display the cases of a user
+>>>>>>> Stashed changes
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
   /**
@@ -6927,6 +7137,7 @@ __webpack_require__.r(__webpack_exports__);
       acted_on: "",
       //on what is the action being exected
       search: "",
+<<<<<<< Updated upstream
       //search table string
       path: "",
       //URL
@@ -6960,6 +7171,30 @@ __webpack_require__.r(__webpack_exports__);
         g_creation_date: "",
         g_owner: ""
       },
+=======
+      //table search string
+      user_cases: [],
+      // cases of the user
+      cases_user_is_owner: [],
+      //list of cases the user has created
+      user_cases_by_group: [],
+      //list of cases of the groups the user belongs to(member)
+      selected_cases: [],
+      // the cases the user selects
+      cases_to_remove: [],
+      // the cases to remove, sent to controller
+      page_of_cases: [],
+      //cases to show on table page
+      page_content_tab1: [],
+      //cases to send to paginator
+      page_content_tab2: [],
+      errors: [],
+      case_study: {
+        cid: "",
+        c_title: ""
+      },
+      //case attributes
+>>>>>>> Stashed changes
       fields: [//sortable column used in b-table and index column style definition
       {
         index: {
@@ -6968,8 +7203,13 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       }, {
+<<<<<<< Updated upstream
         key: "g_name",
         label: "Name",
+=======
+        key: "c_title",
+        label: "Title",
+>>>>>>> Stashed changes
         "class": "text-center",
         thStyle: {
           paddingLeft: "30px"
@@ -6992,12 +7232,23 @@ __webpack_require__.r(__webpack_exports__);
       reload_paginator: false,
       //used to update paginator
       is_selected: false,
+<<<<<<< Updated upstream
       //has user made a selection,
       all_selected: false,
       //has the option to select all groups been checked
       gname_box_show: false,
       //boolean to append group name input to dialogue box when creating a group
       show_dialogue: false //opens/closes action-table
+=======
+      //has user made selection
+      all_selected: false,
+      //has the option to select all case studies been checked
+      gname_box_show: false,
+      //boolean to append group name input to dialogue box when creating a group
+      initial_load: true,
+      //load initial table tab content when page loads
+      show_dialogue: false //opens/closes case create dbox
+>>>>>>> Stashed changes
 
     };
   },
@@ -7470,6 +7721,453 @@ for (var i = 0, len = code.length; i < len; ++i) {
   revLookup[code.charCodeAt(i)] = i
 }
 
+<<<<<<< Updated upstream
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+=======
+      return this.page_of_groups.filter(function (page_of_groups) {
+        return page_of_groups.g_name.toLowerCase().includes(_this.search.toLowerCase());
+      });
+    }
+  },
+  methods: {
+    /*#region Auxilary methods - These methods provide operational
+    functionalities to to the web page. Operations include but are
+    not limited to :Sorting, updating paginator and content,
+    validation, and resetting variables
+      /**
+     * @description refreshes the paginator
+     */
+    updatePaginator: function updatePaginator() {
+      var _this2 = this;
+>>>>>>> Stashed changes
+
+function getLens (b64) {
+  var len = b64.length
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+<<<<<<< Updated upstream
+=======
+      if (this.curr_tab == 1) {
+        //current tab content will be sorted content
+        this.page_content_tab1 = this.page_content_tab1.slice(0).sort(function (a, b) {
+          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab1 : -_this3.sorting_tab1;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab1_icon = this.sorting_tab1;
+      } else {
+        //curr tab is 2
+        //current tab content will be sorted content
+        this.page_content_tab2 = this.page_content_tab2.slice(0).sort(function (a, b) {
+          return a.g_name.toLowerCase() < b.g_name.toLowerCase() ? _this3.sorting_tab2 : -_this3.sorting_tab2;
+        }); //sort icon display is set to sort direction
+
+        this.sort_order_tab2_icon = this.sorting_tab2;
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description sets sorting direction for current tab and call sorting method
+     */
+    sortItems: function sortItems() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 *= -1;
+      } else {
+        //curr tab is 2
+        this.sorting_tab2 *= -1;
+      }
+
+      this.sortArr(); //call sorting algorithm
+    },
+
+    /**
+     * @description resets all sort variables and icons
+     */
+    deSort: function deSort() {
+      if (this.curr_tab == 1) {
+        this.sorting_tab1 = -1;
+        this.sort_order_tab1_icon = 0;
+        this.page_content_tab1 = this.groups_user_is_owner; //original content
+      } else {
+        this.sorting_tab2 = -1;
+        this.sort_order_tab2_icon = 0;
+        this.page_content_tab2 = this.groups_user_is_member; //original content
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description  checks all checkboxes when user selects "select all" option
+     */
+    checkAll: function checkAll() {
+      this.selected_groups = [];
+
+      if (!this.all_selected) {
+        //push all groups to array
+        for (var i in this.groups_user_is_owner) {
+          this.selected_groups.push(this.groups_user_is_owner[i].gid);
+        }
+      }
+    },
+
+    /**
+     * @description if checkbox is checked again uncheck all selections
+     */
+    select: function select() {
+      this.all_selected = false;
+    },
+
+    /**
+     * @description  lists the set of groups of the current table page
+     * @param {Array} page_of_groups - contains a list of set of groups sent by the paginator
+     */
+    onChangePage: function onChangePage(page_of_groups) {
+      // update page of Groups
+      this.page_of_groups = page_of_groups;
+    },
+
+    /**
+     * @description sets the number of groups to show in a page
+     * @param {Number} entry - variable containing the number of entries per page
+     */
+    selectEntries: function selectEntries(entry) {
+      if (this.curr_tab == 1) {
+        this.entries_per_table_page_tab1 = entry;
+      } else {
+        this.entries_per_table_page_tab2 = entry;
+      }
+
+      this.updatePaginator();
+    },
+
+    /**
+     * @description unchecks any selection of groups the user has made
+     */
+    uncheck: function uncheck() {
+      this.selected_groups = [];
+
+      for (var i in this.selected_groups) {
+        this.selected_groups.push(this.selected_groups[i].gid);
+      }
+    },
+
+    /**
+     * @description method called to reset error variable
+     * Method is specially needed when the action-table-dbox closes as it calls this
+     * function to reset all errors.
+     */
+    resetErrors: function resetErrors() {
+      this.errors = [];
+    },
+
+    /**
+     * @description @description verifies if user has made a selection of a group
+     * if selection is made call the remove group method to proceed with removal.
+     */
+    isGroupSelected: function isGroupSelected() {
+      if (this.selected_groups.length == 0) {
+        this.is_selected = false; //alert box
+
+        this.dialogue = bootbox.alert({
+          title: "Remove",
+          message: "Please select group(s) to remove",
+          backdrop: true,
+          className: "text-center"
+        }); //alert box CSS styling
+
+        this.dialogue.find(".modal-content").css({
+          height: "250px",
+          "font-size": "18px",
+          "text-align": "center"
+        });
+        this.dialogue.find(".modal-body").css({
+          "padding-top": "40px"
+        }); //if selection made remove selected groups
+      } else {
+        this.is_selected = true;
+        this.removeGroups();
+      }
+    },
+
+    /*#endregion*/
+
+    /*#region Query methods - These methods provide the content of
+    the web page by requesting the data through route calls. The routes
+    passes the request to a specified predefined controller who processes
+    said request via Laravel's eloquent ORM. The data is appended to
+    the global variables as needed to be used.
+        /**
+     * @description get all of system's users. These users are afterwards filtered for collaborators.
+     * Sends request to the user controller.
+     */
+    fetchUsers: function fetchUsers() {
+      var _this4 = this;
+
+      fetch("/users?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        _this4.users = res.data; //used in action_table_dbox
+        //filter user from list to show in table
+
+        _this4.users = _this4.users.filter(function (x) {
+          return x.uid !== _this4.curr_user;
+        }); //filter owner
+
+        _this4.users = _this4.users.filter(function (x) {
+          return x.u_role == 3 || x.u_role == 4;
+        }); //filter non collaborators
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description gets all the groups of the current user.
+     * Sends request to the group controller.
+     */
+    fetchGroups: function fetchGroups() {
+      var _this5 = this;
+
+      this.urlParams = new URLSearchParams(window.location.search); //get url parameters
+
+      this.curr_user = Number(this.urlParams.get("uid")); //get user id
+      // fetch("/user_groups/" + this.curr_user)
+
+      fetch("/group/show?uid=" + this.curr_user).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        _this5.user_groups = res.data; //filter groups where user is owner
+
+        _this5.groups_user_is_owner = _this5.user_groups.filter(function (x) {
+          return x.g_owner == _this5.curr_user;
+        }); //filter groups where user is a member
+
+        _this5.groups_user_is_member = _this5.user_groups.filter(function (x) {
+          return x.g_owner !== _this5.curr_user;
+        }); //window content varies according to tab
+
+        _this5.page_content_tab1 = _this5.groups_user_is_owner;
+        _this5.page_content_tab2 = _this5.groups_user_is_member;
+
+        _this5.select(); //deselect all
+
+
+        _this5.uncheck(); //uncheck any selected items
+
+
+        _this5.updatePaginator(); //refresh with updated group list
+
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+
+    /**
+     * @description outputs to the groupController a JSON request to create a group
+     * @param {Array} group - array of group data to create a group - data is sent
+     * by action_table_dbox when calling method
+     * @param {Array} members - array of user id's to add to group
+     */
+    createGroup: function createGroup(group, members) {
+      var _this6 = this;
+
+      fetch("/group/create?uid=" + this.curr_user, {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify(group) //append group to body of request
+
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res); //if there are no errors present
+
+        if (!res.errors) {
+          _this6.addUsers(members); //add users to group
+
+
+          _this6.fetchGroups(); //updpate group list
+          //hide action table dbox
+
+
+          _this6.show_dialogue = false; //remove component's backdrop
+
+          $("body").removeClass("modal-open");
+          $(".modal-backdrop").remove(); //alert box
+
+          _this6.dialogue = bootbox.alert({
+            title: "Create",
+            message: "Group has been created!",
+            backdrop: true,
+            className: "text-center"
+          }); //alert box CSS styling
+
+          _this6.dialogue.find(".modal-content").css({
+            height: "250px",
+            "font-size": "18px",
+            "text-align": "center"
+          });
+
+          _this6.dialogue.find(".modal-body").css({
+            "padding-top": "40px"
+          });
+
+          _this6.errors = []; //reset
+        } else {
+          _this6.errors = res.errors;
+        }
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description outputs to the User_Groups controller a JSON request to add users to existing group
+     * @param {Array} users_to_add - array of user id's to add to group - data is sent by the action_table_dbox dialogue
+     */
+    addUsers: function addUsers(users_to_add) {
+      fetch("/user-groups/add?uid=" + this.curr_user, {
+        method: "post",
+        //Add json content type application to indicate the media type of the resource.
+        //Add access control action response that tells the browser to allow code
+        //from any origin to access the resource
+        //Add Cross-site request forgery protection token
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        body: JSON.stringify({
+          data: users_to_add
+        })
+      }).then(function (res) {
+        return res.text();
+      }).then(function (text) {
+        console.log(text);
+      })["catch"](function (err) {
+        console.error("Error: ", err);
+      });
+    },
+
+    /**
+     * @description removes any selected groups by making a delete request to the group controller
+     */
+    removeGroups: function removeGroups() {
+      var curr = this; //confirmation dialogue box
+
+      this.dialogue = bootbox.confirm({
+        title: "Remove?",
+        message: "Do you want to remove selected groups?",
+        buttons: {
+          confirm: {
+            label: "No",
+            //inverted roles, switched bootbox default order
+            className: "btn btn-secondary"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        },
+        //Callback function with user's input
+        callback: function callback(result) {
+          if (!result) {
+            //if yes
+            for (var i in curr.selected_groups) {
+              curr.groups_to_remove.push({
+                //push selected group id's as gid attributes
+                gid: curr.selected_groups[i]
+              });
+            } //send request
+
+
+            fetch("/group/remove?uid=" + this.curr_user, {
+              method: "delete",
+              //Add json content type application to indicate the media type of the resource.
+              //Add access control action response that tells the browser to allow code
+              //from any origin to access the resource
+              //Add Cross-site request forgery protection token
+              headers: new Headers({
+                "Content-Type": "application/json",
+                "Access-Control-Origin": "*",
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+              }),
+              body: JSON.stringify({
+                data: curr.groups_to_remove
+              })
+            }).then(function (res) {
+              return res.json();
+            }).then(function (res) {
+              console.log(res);
+              curr.fetchGroups(); //update group list
+
+              curr.groups_to_remove = []; //reset variable
+            })["catch"](function (err) {
+              console.error("Error: ", err);
+            });
+          } //end if
+
+        } //end callback
+
+      }); //end alert
+      //alert box CSS styling
+
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({
+        "padding-top": "40px"
+      });
+    }
+    /*#endregion*/
+
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/base64-js/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/base64-js/index.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
 // Support decoding URL-safe base64 strings, as Node.js does.
 // See: https://en.wikipedia.org/wiki/Base64#URL_applications
 revLookup['-'.charCodeAt(0)] = 62
@@ -7482,6 +8180,7 @@ function getLens (b64) {
     throw new Error('Invalid string. Length must be a multiple of 4')
   }
 
+>>>>>>> Stashed changes
   // Trim off extra bytes after placeholder bytes are found
   // See: https://github.com/beatgammit/base64-js/issues/42
   var validLen = b64.indexOf('=')
@@ -91194,7 +91893,11 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
+<<<<<<< Updated upstream
                     "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+=======
+                    "\r\n                    Once you have logged-in with a valid upr email address you may search for and view case studies by using the search bar\r\n                    located in the home page or navigation headers of the website. Once you are in the search results page of the website you will\r\n                    have the option to further filter the results of the search by selecting from a variety of filter options. Any case studies matching\r\n                    the selected filters and text will be shown in the search results, you may select any of these to view the corresponding case study.\r\n                "
+>>>>>>> Stashed changes
                   )
                 ])
               ]
@@ -91229,7 +91932,11 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
+<<<<<<< Updated upstream
                     "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+=======
+                    '\r\n                    To create and edit a case study you must have collaborator permissions, as well as be the owner of the case study or belong to a group\r\n                    that manages that case study. To request collaborator permissions simply click on the "collaborate" option located on the header bar\r\n                    on the top of the screen.\r\n\r\n                    This will create a request that must be approved by site administrators in order to allow access to the editing features of the website.\r\n                    Once you have been approved you may create or edit cases from the "Cases" and "Groups" pages accesible from the header navigation \r\n                    drop-down menu, as well as by clicking on the "Collaborate" option.\r\n                '
+>>>>>>> Stashed changes
                   )
                 ])
               ]
@@ -91262,7 +91969,11 @@ var staticRenderFns = [
               [
                 _c("div", { staticClass: "card-body" }, [
                   _vm._v(
+<<<<<<< Updated upstream
                     "\r\n                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3\r\n                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum\r\n                    eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla\r\n                    assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt\r\n                    sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer\r\n                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus\r\n                    labore sustainable VHS.\r\n                "
+=======
+                    '\r\n                    After requesting collaborator permissions it may take some time for the site administrators to approve your request.\r\n                    If your request has been declined and you believe this to be a mistake, you may contact the site administrators directly\r\n                    to ask for details. For more information on how to contact site administrators please visit the "About" section of the website\r\n                    by clicking on the "About" option located in the header of this page.\r\n                '
+>>>>>>> Stashed changes
                   )
                 ])
               ]
@@ -112561,8 +113272,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "785da5d6e7b9677c9162",
-  cluster: "us2",
+  key: "",
+  cluster: "mt1",
   encrypted: true
 });
 
@@ -113839,8 +114550,13 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+<<<<<<< Updated upstream
 __webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/js/app.js */"./resources/js/app.js");
 module.exports = __webpack_require__(/*! /mnt/c/Users/Garc/Desktop/RISE-UP Development Folder/RISE-UP/resources/sass/app.scss */"./resources/sass/app.scss");
+=======
+__webpack_require__(/*! C:\Users\victor\deLaravel\RISE-UP\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\victor\deLaravel\RISE-UP\resources\sass\app.scss */"./resources/sass/app.scss");
+>>>>>>> Stashed changes
 
 
 /***/ })

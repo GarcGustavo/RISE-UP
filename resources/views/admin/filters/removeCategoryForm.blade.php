@@ -1,4 +1,4 @@
-<form action="/admin/filter-category?id={{$category->csp_id}}" method="post">
+<form action="/admin/filter-category?id={{$category->csp_id}}&uid={{$uid}}" method="post">
     @csrf
     @method('DELETE')
     <div class="d-flex flex-row-reverse">

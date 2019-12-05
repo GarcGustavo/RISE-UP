@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class AdminFilterCategoryController extends Controller
 {
     //public function store
-    public function store(){
+    public function store(Request $request){
         $validatedData = request()->validate([
             'csp_name' => ['required', 'string'],
         ]);
@@ -19,7 +19,9 @@ class AdminFilterCategoryController extends Controller
         $cs_parameter->csp_name = $validatedData['csp_name'];
         //dd($user);
         $cs_parameter->save();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }
 
 
@@ -29,7 +31,9 @@ class AdminFilterCategoryController extends Controller
         $cs_parameter = cs_parameter::find($id);
         //dd($option);
         $cs_parameter->delete();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }
 
 	
@@ -45,6 +49,8 @@ class AdminFilterCategoryController extends Controller
         $cs_parameter->csp_name = $validatedData['csp_name'];
         //dd($user);
         $cs_parameter->save();
-        return redirect('/admin/filters');
+
+        $uid = $request->input('uid');;
+        return redirect('/admin/filters?uid='.$uid);
     }	
 }

@@ -32,7 +32,7 @@
                                     <td> {{$user->first_name }} {{$user->last_name}} </td>
                                     <td> {{$user->act_name }} </td>
                                     <td> {{ \Carbon\Carbon::parse($user->recent_action_date)->format('d F Y')}}  </td>
-                                    <td class="font-weight-bold"> <a href="/admin/user-actions?id={{$user->uid }}">View</a> </td>
+                                    <td class="font-weight-bold"> <a href="/admin/user-actions?id={{$user->uid }}&uid={{$uid}}">View</a> </td>
                                 </tr>
                             @empty
                                 <tr>

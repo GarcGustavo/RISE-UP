@@ -11,10 +11,10 @@
         <div class="bg-light border-right" id="sidebar-wrapper">
             <div class="sidebar-heading">Menu</div>
             <div class="list-group list-group-flush">
-                <a href="{{route('admin.users-requests')}}" class="list-group-item list-group-item-action bg-light">Users</a>
-                <a href="{{route('admin.users-actions')}}" class="list-group-item list-group-item-action bg-light">Actions</a>
-                <a href="{{route('admin.filters')}}" class="list-group-item list-group-item-action bg-light">Filters</a>
-                <a href="{{route('admin.groups')}}" class="list-group-item list-group-item-action bg-light">Groups</a>
+                <a href="/admin/users-requests?uid={{$uid}}" class="list-group-item list-group-item-action bg-light">Users</a>
+                <a href="/admin/users-actions?uid={{$uid}}" class="list-group-item list-group-item-action bg-light">Actions</a>
+                <a href="/admin/filters?uid={{$uid}}" class="list-group-item list-group-item-action bg-light">Filters</a>
+                <a href="/admin/groups?uid={{$uid}}" class="list-group-item list-group-item-action bg-light">Groups</a>
             </div>
         </div>
         <!-- sidebar -->

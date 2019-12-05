@@ -1,0 +1,11 @@
+Tests
+
+1   View:  RISE-UP\resources\views\admin\users-requests\index.blade.php
+        only shows links on names for Viewers u_role==1 and Collaborators u_role==2
+    Controller: RISE-UP\app\Http\Controllers\AdminUsersRequestsController.php
+            only those users with: 
+            u_role==1    (Viewers)
+            u_role_upgrade_request==1
+            u_ban_status==0
+        are the ones making a request to collaborate.
+

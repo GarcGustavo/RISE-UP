@@ -11,18 +11,20 @@ class AdminUserController extends Controller
 {
     //public function edit
     public function edit(Request $request){
-        $uid = $request->input('id');;
+        $urtd = $request->input('urtd');;
+        $uid = $request->input('uid');;
         $users = DB::table('User')
             ->select('User.*')
-            ->where('uid', '=', $uid)
+            ->where('uid', '=', $urtd)
             ->get();
-        return view('admin.user.edit', ['users' => $users]);
+        return view('admin.user.edit', ['users' => $users, 'uid'=> $uid]);
     }
 
 
     //public function update
     public function update(Request $request){
-        $uid = $request->input('id');;
+        $urtd = $request->input('urtd');;
+        $uid = $request->input('uid');;
         $validatedData = request()->validate([
             'u_role' => ['required'],
             'u_expiration_date' => ['required'],
@@ -30,7 +32,7 @@ class AdminUserController extends Controller
             'u_role_upgrade_request' => ['required'],
         ]);
 
-        $user = user::where('uid', $uid)->first(); // ->firstOrFail();
+        $user = user::where('uid', $urtd)->first(); // ->firstOrFail();
         //dd($user);
         $user->u_role = $validatedData['u_role'];
         $user->u_expiration_date = $validatedData['u_expiration_date'];
@@ -38,6 +40,6 @@ class AdminUserController extends Controller
         $user->u_role_upgrade_request = $validatedData['u_role_upgrade_request'];
         //dd($user);
         $user->save();
-        return redirect('/admin/users-requests');
+        return redirect('/admin/users-requests?uid='.$uid);
     }
 }

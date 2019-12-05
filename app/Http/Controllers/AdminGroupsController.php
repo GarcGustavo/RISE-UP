@@ -13,7 +13,7 @@ class AdminGroupsController extends Controller
 	//Show only one action per group per day on index
 	//Show all groups even when the group have no actions
 
-    public function index(){
+    public function index(Request $request){
         $limitActionDate = DB::table('Action')
             ->join('User_Groups', 'User_Groups.uid', '=', 'Action.a_user')
             ->select('gid', DB::raw('MAX(a_date) as recent_action_date'))
@@ -41,6 +41,7 @@ class AdminGroupsController extends Controller
             //->orderBy('g_creation_date', 'desc')
             ->get();
 
-        return view('admin.groups.index', ['groups'=> $groups]);
+        $uid = $request->input('uid');
+        return view('admin.groups.index', ['groups'=> $groups , 'uid'=>$uid]);
     }
 }
