@@ -1,5 +1,5 @@
 <template>
-  <div class="body mb-5 mt-5 border shadow" style="background: #c0c0c0;">
+  <div class="body mb-5 mt-5 border shadow" style="background: #e6e6e6;">
     <div class="container-fluid">
       <div class="row" style="margin: 50px;">
         <div class="col-md-12 col-md-offset-6 border shadow" style="background: white;">
@@ -29,7 +29,7 @@
               v-for="(user,index) in users"
               :key="index + 10"
             >Created by: {{user.first_name}} {{user.last_name}}</h5>
-            <div v-if="!editing">
+            <div v-if="!editing || (curr_user_uid != owner)">
               <h5
                 class="text-center mt-3"
                 v-for="(group,index) in groups"
@@ -38,7 +38,7 @@
               >Group: {{group.g_name}}</h5>
             </div>
           </template>
-          <div class="dropdown" style="text-align: center;" v-if="editing">
+          <div class="dropdown" style="text-align: center;" v-if="editing && (curr_user_uid == owner)">
             <button
               v-for="(group,index) in groups"
               :key="index + 30"
@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="row" style="margin: 50px; background: white;">
-        <!-- Case Description and Thumbnail -->
+        <!-- Case Description -->
         <div class="col-md-8">
           <h4 class="card-title border-0" style="margin: 10px;">Description:</h4>
           <div class="card-body">
@@ -160,11 +160,7 @@
                   style="background: #c0c0c0; border-color: #c0c0c0; color: black; width:250px"
                 >
                   {{case_parameter.csp_name}}:
-                  <datepicker
-                    v-model="new_date"
-                    :use-utc="true"
-                    :format="date_format"
-                  ></datepicker>
+                  <datepicker v-model="new_date" :use-utc="true" :format="date_format"></datepicker>
                 </button>
               </div>
               <div class="dropdown" v-if="(case_parameter.csp_name != 'Incident date')">
@@ -193,8 +189,8 @@
       <div class="row">
         <div class="col-md-2" style="margin-left: 25px;">
           <!-- Table of Contents -->
-          <h4 class="card text-center card-title" style="background: white;">Table of Contents</h4>
           <div class="row mt-2 card mb-5" id="toc">
+            <h4 class="card text-center card-title" style="background: white;">Table of Contents</h4>
             <div class="toc_list">
               <ul class="list-group list-group-flush border-0">
                 <li class="list-group-item" v-for="(item, index) in items" :key="index">
@@ -203,6 +199,7 @@
               </ul>
             </div>
           </div>
+
           <div class="col-sm-12 card" style="background: white;" v-if="this.permission_to_edit">
             <button
               class="btn btn-primary btn-sm mb-2"
@@ -264,7 +261,7 @@
             >
               <div
                 class="col-md"
-                style="margin: 25px; margin-left: 0px;"
+                style="margin: 25px; margin-left: 0px; padding-top:40px;"
                 v-for="(item,index) in items"
                 :key="index"
                 :id="'item' + index"
@@ -419,6 +416,7 @@ export default {
       case_to_show: [],
       users: [],
       groups: [],
+      curr_user_groups: [],
       all_groups: [],
       //Empty data containers for reused temp variables
       user: { uid: "", first_name: "", last_name: "", u_role: "" },
@@ -453,10 +451,6 @@ export default {
   },
   created() {
     this.preview[0] = false;
-
-    //Verifying user permissions
-    this.getUser();
-    this.verifyUserAccess(this.curr_user_uid);
     //Initializing item data
     this.fetchItems();
     this.fetchCaseItems();
@@ -465,40 +459,43 @@ export default {
     this.fetchCase();
     this.fetchCaseParameters();
     this.fetchUsersEditing(this.cid);
+
+    //Verifying user permissions
+    this.getUser();
+    this.verifyUserAccess();
   },
 
   mounted() {
-    Echo.join(`Case.${this.cid}`).listenForWhisper(
-      "editing",
-      e => {
+    Echo.join(`Case.${this.cid}`)
+      .listenForWhisper("editing", e => {
         this.case_to_show.c_title = e.title;
         this.items.forEach(element => {
           this.items[element] = e.items[element];
         });
         console.log("hello from channel");
-      }
-    )
-    .here(users => {
-      this.usersEditing = users;
-    })
-    .joining(user => {
-      this.usersEditing.push(this.curr_user_uid);
-    })
-    .leaving(user => {
-      this.usersEditing = this.usersEditing.filter(u => u != this.curr_user_uid);
-    })
-    .listenForWhisper("saved", e => {
-      //this.case_study.c_status = e.status;
-      // clear is status after 1s
-      setTimeout(() => {
-        //this.case_study.c_status = "";
-      }, 1000);
-    });
+      })
+      .here(users => {
+        this.usersEditing = users;
+      })
+      .joining(user => {
+        this.usersEditing.push(this.curr_user_uid);
+      })
+      .leaving(user => {
+        this.usersEditing = this.usersEditing.filter(
+          u => u != this.curr_user_uid
+        );
+      })
+      .listenForWhisper("saved", e => {
+        //this.case_study.c_status = e.status;
+        // clear is status after 1s
+        setTimeout(() => {
+          //this.case_study.c_status = "";
+        }, 1000);
+      });
   },
   methods: {
     editingCase() {
       let channel = Echo.join(`Case.${this.cid}`);
-      console.log("hello from editing case");
       //show changes after 1s
       setTimeout(() => {
         channel.whisper("editing", {
@@ -524,27 +521,24 @@ export default {
         });
     },
     //Fetch current user groups
-    verifyUserAccess(uid) {
-      var curr_user_groups = [];
-
-      //Admin or owner automatically has permission to edit
-      if (this.is_admin || this.curr_user_uid == this.owner) {
-        this.permission_to_edit = true;
-      }
-
+    verifyUserAccess() {
       //Fetching current user groups to verify group editor permissions
-      fetch("/group/show?uid=" + this.curr_user)
+      fetch("/group/show?uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
-          curr_user_groups = res.data;
+          this.curr_user_groups = res.data;
+          //Admin or owner automatically has permission to edit
+          if (this.is_admin || this.curr_user_uid == this.owner) {
+            this.permission_to_edit = true;
+          }
+          //Verifying if user belongs to case group
+          this.curr_user_groups.forEach(element => {
+            if (element.gid == this.gid) {
+              this.permission_to_edit = true;
+            }
+          });
         })
-        .catch(err => console.log(res.data));
-
-      curr_user_groups.forEach(element => {
-        if (curr_user_groups[element].gid == this.gid) {
-          this.permission_to_edit = true;
-        }
-      });
+        .catch(err => console.log(err));
     },
     //Get items belonging to a case
     fetchCaseItems() {
@@ -701,7 +695,7 @@ export default {
         csp_id: updated_param.csp_id,
         opt_selected: updated_param.opt_selected
       };
-      fetch("/parameter/update" + "?uid=" + this.curr_user_uid, {
+      fetch("/parameter/update?uid=" + this.curr_user_uid, {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -783,36 +777,33 @@ export default {
       form_data.append("i_name", item_to_update.i_name);
       form_data.append("i_content", item_to_update.i_content);
       //console.log(form_data.get('i_content'));
-      this.$loading(true);
-      const login = new Promise((resolve, reject) => {
-        fetch(
-          "/item/update?iid=" +
-            item_to_update.iid +
-            "&uid=" +
-            this.curr_user_uid,
-          {
-            method: "post",
-            headers: new Headers({
-              //"Content-Type": "multipart/form-data",
-              "Access-Control-Origin": "*",
-              "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-            }),
-            //body: JSON.stringify(this.updated_item)
-            body: form_data
-          }
-        )
-          .then(res => res.text())
-          .then(text => {
-            console.log(text);
-          })
-          .catch(err => {
-            console.error("Error: ", err);
-          });
-      });
-      this.$loading(false);
-      asyncLoading(login)
-        .then()
-        .catch();
+      // this.$loading(true);
+      // const login = new Promise((resolve, reject) => {});
+
+      // asyncLoading(login)
+      //   .then()
+      //   .catch();
+      // this.$loading(false);
+      fetch(
+        "/item/update?iid=" + item_to_update.iid + "&uid=" + this.curr_user_uid,
+        {
+          method: "post",
+          headers: new Headers({
+            //"Content-Type": "multipart/form-data",
+            "Access-Control-Origin": "*",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+          }),
+          //body: JSON.stringify(this.updated_item)
+          body: form_data
+        }
+      )
+        .then(res => res.text())
+        .then(text => {
+          console.log(text);
+        })
+        .catch(err => {
+          console.error("Error: ", err);
+        });
     },
     //Iterate through items and update them appropriately
     updateItems(items) {
@@ -931,7 +922,7 @@ export default {
       this.fetchUserGroups();
       //update list of editors
       for (let user in this.users) {
-        this.updateUsersEditing(this.users[user].uid);
+        this.updateUsersEditing(this.curr_user_uid);
       }
       //update case parameters
       for (let option in this.case_parameters) {
@@ -982,6 +973,7 @@ export default {
       for (let index in this.preview) {
         this.preview[index] = false;
       }
+
       this.preview_thumbnail = false;
       this.case_to_show[0].c_incident_date = this.new_date;
       this.initial_date = this.case_to_show[0].c_incident_date;
@@ -991,7 +983,7 @@ export default {
         this.updateItems(items);
         this.updateCase();
       });
-      window.location.reload();
+      //window.location.reload();
       //this.updateParameter();
     },
     //Update selected group for case study
@@ -1010,6 +1002,7 @@ export default {
       this.case_parameters[index].o_content = selected_op.o_content;
       this.case_parameters[index].opt_selected = selected_op.oid;
     },
+    //Regex parsing to determine if there are URL's in item text content that should be embedded
     validURL(str) {
       var pattern = new RegExp(
         "^(https?:\\/\\/)?" + // protocol
@@ -1079,7 +1072,7 @@ export default {
 }
 //image display
 img {
-  width: 50%;
+  width: 70%;
   margin: auto;
   display: block;
   margin-bottom: 10px;
