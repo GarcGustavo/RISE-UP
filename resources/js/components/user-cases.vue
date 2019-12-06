@@ -148,6 +148,7 @@
             type="text"
             class="form-control input-sm"
             maxlength="32"
+            v-on:keyup="filterTab1"
             v-model="search_tab1"
             placeholder="Group name.."
           >
@@ -160,6 +161,7 @@
             type="text"
             class="form-control input-sm"
             maxlength="32"
+            v-on:keyup="filterTab2"
             v-model="search_tab2"
             placeholder="Group name.."
           >
@@ -174,7 +176,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterCases_tab1"
+          :items="casePageContentTab1"
           :fields="fields"
         >
           <!--table headers -->
@@ -251,7 +253,7 @@
         <div id="paginate" v-if="reload_paginator && curr_tab==1">
           <paginator
             ref="paginate"
-            :items="page_content_tab1"
+            :items="searched_content_tab1"
             :page_size="entries_per_table_page_tab1"
             @changePage="onChangePage"
             class="pagination"
@@ -266,7 +268,7 @@
           sticky-header="600px"
           head-variant="light"
           hover
-          :items="filterCases_tab2"
+          :items="casePageContentTab2"
           :fields="fields"
         >
           <!-- table headers -->
@@ -332,7 +334,7 @@
         <div id="paginate" v-if="reload_paginator && curr_tab==2">
           <paginator
             ref="paginate2"
-            :items="page_content_tab2"
+            :items="searched_content_tab2"
             :page_size="entries_per_table_page_tab2"
             @changePage="onChangePage"
             class="pagination"
@@ -369,8 +371,10 @@ export default {
       selected_cases: [], // the cases the user selects
       cases_to_remove: [], // the cases to remove, sent to controller
       page_of_cases: [], //cases to show on table page
-      page_content_tab1: [], //cases to send to paginator
-      page_content_tab2: [],
+      page_content_tab1: [], //contains initial set of groups for tab1
+      page_content_tab2: [], //contains initial setof groups for tab2
+      searched_content_tab1: [], //contains searched content, this is sent to paginator to paginate
+      searched_content_tab2: [], //contains searched content, this is sent to paginator to paginate
       errors: [],
 
       case_study: { cid: "", c_title: "" }, //case attributes
@@ -411,36 +415,35 @@ export default {
   },
 
   computed: {
+
     /**
-     * @description filters cases by title search. Method is called per each key press
-     * @returns list of cases in accordance to search.
+     * @description returns the page content which is set by the page_of_cases variable.
+     * This variable is updated by paginator everytime it updates and calls the onChangePage method
+     * @returns list of users in accordance to search.
      */
 
-    filterCases_tab1() {
+    casePageContentTab1() {
       if (this.curr_tab == 1) {
         if (this.page_content_tab1.length == 0) {
           return [];
         }
       } //search filter
-
-      return this.page_of_cases.filter(page_of_cases => {
-        return page_of_cases.c_title
-          .toLowerCase()
-          .includes(this.search_tab1.toLowerCase());
-      });
+    return this.page_of_cases;
     },
-    filterCases_tab2() {
+
+/**
+     * @description returns the page content which is set by the page_of_groups variable.
+     * This variable is updated by paginator everytime it updates and calls the onChangePage method
+     * @returns list of users in accordance to search.
+     */
+    casePageContentTab2() {
       if (this.curr_tab == 2) {
         if (this.page_content_tab2.length == 0) {
           return [];
         }
       } //search filter
 
-      return this.page_of_cases.filter(page_of_cases => {
-        return page_of_cases.c_title
-          .toLowerCase()
-          .includes(this.search_tab2.toLowerCase());
-      });
+      return this.page_of_cases;
     }
   },
 
@@ -462,13 +465,45 @@ validation, and resetting variables*/
       });
     },
 
+
+    /**
+     * @description filters cases by title search. Method is called per each key press
+     *
+     */
+    filterTab1() {
+      this.searched_content_tab1 = this.page_content_tab1.filter(
+        page_content_tab1 => {
+          return page_content_tab1.c_title
+            .toLowerCase()
+            .includes(this.search_tab1.toLowerCase().trim());
+        }
+      );
+      this.updatePaginator();
+    },
+
+    /**
+     * @description filters cases by title search. Method is called per each key press
+     *
+     */
+    filterTab2() {
+      this.searched_content_tab2 = this.page_content_tab2.filter(
+        page_content_tab2 => {
+          return page_content_tab2.c_title
+            .toLowerCase()
+            .includes(this.search_tab2.toLowerCase().trim());
+        }
+      );
+      this.updatePaginator();
+    },
+
+
     /**
      * @description Sorts the content of the current opened tab
      */
     sortArr() {
       if (this.curr_tab == 1) {
         //current tab content will be filtered content
-        this.page_content_tab1 = this.page_content_tab1
+        this.searched_content_tab1 = this.page_content_tab1
           .slice(0)
           .sort((a, b) =>
             a.c_title.toLowerCase() < b.c_title.toLowerCase()
@@ -480,7 +515,7 @@ validation, and resetting variables*/
       } else {
         //curr tab is 2
         //current tab content will be filtered content
-        this.page_content_tab2 = this.page_content_tab2
+        this.searched_content_tab2 = this.page_content_tab2
           .slice(0)
           .sort((a, b) =>
             a.c_title.toLowerCase() < b.c_title.toLowerCase()
@@ -517,11 +552,11 @@ validation, and resetting variables*/
       if (this.curr_tab == 1) {
         this.sorting_tab1 = -1;
         this.sort_order_tab1_icon = 0;
-        this.page_content_tab1 = this.cases_user_is_owner; //original content
+        this.searched_content_tab1 = this.cases_user_is_owner; //original content
       } else {
         this.sorting_tab2 = -1;
         this.sort_order_tab2_icon = 0;
-        this.page_content_tab2 = this.user_cases_by_group; //original content
+        this.searched_content_tab2 = this.user_cases_by_group; //original content
       }
       this.updatePaginator();
     },
@@ -650,6 +685,8 @@ said request via Laravel's eloquent ORM. The data is appended to the
           //content varies according to tab
           this.page_content_tab1 = this.cases_user_is_owner;
           this.page_content_tab2 = this.user_cases_by_group;
+           this.searched_content_tab1 = this.page_content_tab1; //search content initial state
+          this.searched_content_tab2 = this.page_content_tab2; //search content initial state
 
           this.select(); //unselect all
           this.uncheck(); //uncheck
