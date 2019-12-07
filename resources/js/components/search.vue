@@ -3,7 +3,7 @@
     <!--search bar -->
     <div class="col pt-5">
       <div class="row justify-content-center pt-3">
-        <div id="search_input" method="POST" class="row w-50 mb-1">
+        <div id="search_input" class="row w-50 mb-1">
           <div class="input-group mb-3">
             <input type="hidden" :value="csrfToken" name="_token">
             <input
