@@ -19,7 +19,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-     
+
 
         if ($users) {
             return UserResource::collection($users);
@@ -66,6 +66,7 @@ class UserController extends Controller
         $user->last_name = $request->input('last');
         $user->email = $request->input('email');
         $user->contact_email = $request->input('contact_email');
+        $user->organization = $request->input('organization');
         $user->u_expiration_date = "2020-1-10";
         $user->u_creation_date = Carbon::now()->format('Y-m-d');
         $user->u_ban_status = 0;
@@ -237,7 +238,7 @@ class UserController extends Controller
             return redirect('/user/profile?uid=' . $request->input('uid') . '&u_errors=' . $errors);
         }
 
-        User::where(['uid' => $request->input('uid')])->update(['first_name' => $request->input('first') , 'last_name'=> $request->input('last'), 'contact_email' => $request->input('contact_email')]);
+        User::where(['uid' =>$request->input('uid')])->update(['organization' => $request->input('organization'), 'first_name' => $request->input('first') , 'last_name'=> $request->input('last'), 'contact_email' => $request->input('contact_email')]);
         $message = 'You have sucessfully updated you profile information.';
         return redirect('/user/profile?uid=' . $request->input('uid') . '&u_message=' . $message);
 

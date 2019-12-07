@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property boolean u_ban_status
  * @property string current_edit_cid
  * @property integer u_role
+ * @property integer organization
  */
 class user extends Model
 {
@@ -43,7 +44,8 @@ class user extends Model
         'email',
         'contact_email',
         'u_role_upgrade_request',
-        'current_edit_cid'
+        'current_edit_cid',
+        'organization'
     ];
 
     /**
@@ -62,7 +64,8 @@ class user extends Model
         'u_role_upgrade_request' => 'boolean',
         'u_ban_status' => 'boolean',
         'current_edit_cid' => 'integer',
-        'u_role' => 'integer'
+        'u_role' => 'integer',
+        'organization' => 'string'
     ];
 
     /**
@@ -80,7 +83,8 @@ class user extends Model
         'u_role_upgrade_request' => 'required',
         'u_ban_status' => 'required',
         'current_edit_cid' => 'nullable',
-        'u_role' => 'required'
+        'u_role' => 'required',
+        'organization' => 'required'
     ];
 
     /**

@@ -61,4 +61,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+input[type="checkbox"] {
+  transform: scale(1.3);
+}
 </style>
