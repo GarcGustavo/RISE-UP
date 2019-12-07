@@ -57,7 +57,7 @@ Route::get('/landing/logout', 'LandingController@logout');
 /********USERS*********/
 
 //List specific user
-Route::get('/user', 'UserController@show');//->middleware('sessionCheck');
+Route::get('/user', 'UserController@show')->middleware('sessionCheck');
 
 //List all system users
 Route::get('/users', 'UserController@index')->middleware('sessionCheck');
@@ -72,11 +72,11 @@ Route::post('/user/create', 'UserController@store')->middleware('sessionCheck');
 Route::get('/user/request-collab', 'UserController@requestCollab')->middleware('sessionCheck');
 
 //List users editing cid
-Route::get('/user/edit', 'UserController@showUsersEditing');//->middleware('sessionCheck');
+Route::get('/user/edit', 'UserController@showUsersEditing')->middleware('sessionCheck');
 
 
 //Update users editing cid
-Route::post('/user/edit', 'UserController@updateUsersEditing');//->middleware('sessionCheck');
+Route::post('/user/edit', 'UserController@updateUsersEditing')->middleware('sessionCheck');
 
 //Update users editing cid
 Route::get('/user/google-info', 'UserController@getGoogleInfo')->middleware('sessionCheck');
@@ -93,7 +93,7 @@ Route::get('/groups', 'GroupController@index')->middleware('sessionCheck');
 //List groups of a user
 //Software requirement 2.3.2 Group management
 //Software requirement 2.37. The web application will allow Collaborators to view the groups they belong to.
-Route::get('/group/show', 'GroupController@showGroups');//->middleware('sessionCheck');
+Route::get('/group/show', 'GroupController@showGroups')->middleware('sessionCheck');
 
 //List group info
 Route::get('/group/info', 'GroupController@info')->middleware('sessionCheck');
@@ -132,7 +132,7 @@ Route::delete('/user-groups/remove', 'User_GroupsController@destroy')->middlewar
 /********CASES*********/
 
 //List specific case
-Route::get('/case', 'CaseController@show');//->middleware('sessionCheck');
+Route::get('/case', 'CaseController@show')->middleware('sessionCheck');
 
 //List all system case studies
 Route::get('/cases', 'CaseController@index')->middleware('sessionCheck');
@@ -140,7 +140,7 @@ Route::get('/cases', 'CaseController@index')->middleware('sessionCheck');
 //List cases of a group
 //Software requirement 2.38. The web application will allow Collaborators to view their group members, and
 //group case studies in the “Group View” page.
-Route::get('/case/group/show', 'CaseController@showGroupCases');//->middleware('sessionCheck');
+Route::get('/case/group/show', 'CaseController@showGroupCases')->middleware('sessionCheck');
 
 //List all case studies of a user(author and group cases)
 //Software requirement 2.3.3 Case study management
@@ -166,47 +166,47 @@ Route::delete('case/remove', 'CaseController@destroy')->middleware('sessionCheck
 /********CASE ITEMS*********/
 
 //List items
-Route::get('/items', 'ItemController@index');//->middleware('sessionCheck');
+Route::get('/items', 'ItemController@index')->middleware('sessionCheck');
 
 //List case items
-Route::get('/case/items','ItemController@getCaseItems');//->middleware('sessionCheck');
+Route::get('/case/items','ItemController@getCaseItems')->middleware('sessionCheck');
 
 //Add items to a case
-Route::post('/item/add', 'ItemController@addCaseItem');//->middleware('sessionCheck');
+Route::post('/item/add', 'ItemController@addCaseItem')->middleware('sessionCheck');
 
 //Update item in a case
-Route::post('/item/update', 'ItemController@update');//->middleware('sessionCheck');
+Route::post('/item/update', 'ItemController@update')->middleware('sessionCheck');
 
 //Delete item
-Route::delete('/item/remove', 'ItemController@removeItem');//->middleware('sessionCheck');
+Route::delete('/item/remove', 'ItemController@removeItem')->middleware('sessionCheck');
 
 
 /********CASE PARAMETERS*********/
 
 //List parameters
-Route::get('/parameters','CS_ParameterController@getParameters');//->middleware('sessionCheck');
+Route::get('/parameters','CS_ParameterController@getParameters')->middleware('sessionCheck');
 
 //List parameter options
-Route::get('/parameter/options','CS_ParameterController@getParameterOptions');//->middleware('sessionCheck');
+Route::get('/parameter/options','CS_ParameterController@getParameterOptions')->middleware('sessionCheck');
 
 //List case parameters
-Route::get('/cs-parameters', 'Case_ParametersController@getParameters');//->middleware('sessionCheck');
+Route::get('/cs-parameters', 'Case_ParametersController@getParameters')->middleware('sessionCheck');
 
 //List case parameters of a case study
-Route::get('/case/parameters','Case_ParametersController@getCaseParameters');//->middleware('sessionCheck');
+Route::get('/case/parameters','Case_ParametersController@getCaseParameters')->middleware('sessionCheck');
 
 //List case parameter selected options
-Route::get('/case/{id}/options','Case_ParametersController@getCaseSelectedOptions');//->middleware('sessionCheck');
+Route::get('/case/{id}/options','Case_ParametersController@getCaseSelectedOptions')->middleware('sessionCheck');
 
 
 //Update title/description in a case
-Route::post('/case/update', 'CaseController@updateCaseDetails');//->middleware('sessionCheck');
+Route::post('/case/update', 'CaseController@updateCaseDetails')->middleware('sessionCheck');
 
 //Update parameters in a case
-Route::post('/parameter/update', 'Case_ParametersController@updateCaseParameters');//->middleware('sessionCheck');
+Route::post('/parameter/update', 'Case_ParametersController@updateCaseParameters')->middleware('sessionCheck');
 
 //Create default parameters in a case
-Route::post('/parameter/create/defaults', 'Case_ParametersController@createDefaultParameters');//->middleware('sessionCheck');
+Route::post('/parameter/create/defaults', 'Case_ParametersController@createDefaultParameters')->middleware('sessionCheck');
 
 
 /********ADMIN DASHBOARD*********/
