@@ -39,6 +39,6 @@ class AdminUsersRequestsController extends Controller
 			->where('u_role', 2)
             ->get();
 
-        return view('admin.users-requests.index', ['users' => $users, 'requests' => $requests, 'uid' => $uid]);
+        return view('admin.users-requests.index', ['users' => $users, 'requesters' => $requests, 'uid' => $uid]);
     }
 }

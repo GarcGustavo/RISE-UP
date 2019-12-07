@@ -226,6 +226,18 @@ Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name(
 //Route::get('/admin/users-requests', 'AdminUsersRequestsController@index')->name('admin.users-requests')->middleware('sessionCheck');
 
 
+//Admin Edits a User
+//Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
+//Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
+//Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
+Route::get('/admin/user/edit', 'AdminUserController@edit')->middleware('sessionCheck');
+
+
+//Admin Edits a User
+//Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
+//Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
+//Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
+Route::put('/admin/user/edit', 'AdminUserController@update')->middleware('sessionCheck');
 
 
 
@@ -252,6 +264,8 @@ Route::get('/admin/groups', 'AdminGroupsController@index')->name('admin.groups')
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/groups-actions', 'AdminGroupsActionsController@show')->middleware('sessionCheck');
+
+
 
 
 //List filters
@@ -288,24 +302,3 @@ Route::delete('/admin/filter-option', 'AdminFilterOptionController@destroy')->mi
 //Software Requirement: 2.73.  The web application will allow an Admin to remove search filter categories they have created for case studies
 Route::delete('/admin/filter-category', 'AdminFilterCategoryController@destroy')->middleware('sessionCheck');;
 
-
-
-
-
-
-
-
-
-
-//Admin Edits a User
-//Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
-//Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
-//Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::get('/admin/user/edit', 'AdminUserController@edit')->middleware('sessionCheck');
-
-
-//Admin Edits a User
-//Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
-//Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
-//Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::put('/admin/user/edit', 'AdminUserController@update')->middleware('sessionCheck');

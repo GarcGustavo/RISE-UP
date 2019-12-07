@@ -1,4 +1,4 @@
-@extends('admin.admin' , ['uid' => $uid])
+@extends('admin.admin')
 
 @section('adminMainContent')
     <nav>
@@ -23,7 +23,7 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr class="text-center">
-                                <th>Name</th>
+                                <th>Namxxxe</th>
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Since</th>
@@ -97,11 +97,11 @@
                             </tfoot>
                             <tbody>
 
-                            @forelse($requests as $request)
+                            @forelse($requesters as $requester)
                                 <tr>
-                                    <td class="font-weight-bold">  <a href="/admin/user/edit?urtd={{$request->uid}}&uid={{$uid}}">{{$request->first_name }} {{$request->last_name }}</a>  </td>
-                                    <td> {{$request->contact_email }} </td>
-                                    <td> {{$request->r_name }} </td>
+                                    <td class="font-weight-bold">  <a href="/admin/user/edit?urtd={{$requester->uid}}&uid={{$uid}}">{{$requester->first_name }} {{$requester->last_name }}</a>  </td>
+                                    <td> {{$requester->contact_email }} </td>
+                                    <td> {{$requester->r_name }} </td>
                                 </tr>
                             @empty
                                 <tr>
