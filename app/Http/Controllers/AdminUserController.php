@@ -17,7 +17,11 @@ class AdminUserController extends Controller
             ->select('User.*')
             ->where('uid', '=', $urtd)
             ->get();
-        return view('admin.user.edit', ['users' => $users, 'uid'=> $uid]);
+        if(count($users) == 1){
+            return view('admin.user.edit', ['user' => $users[0], 'uid'=> $uid]);
+        }else{
+            return view('errors.404');
+        }
     }
 
 

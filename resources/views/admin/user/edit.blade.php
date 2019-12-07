@@ -2,8 +2,6 @@
 
 @section('adminMainContent')
 
-    @forelse($users as $user)
-
     <h1 class="text-center">
         {{$user->first_name }} {{$user->last_name }}
     </h1>
@@ -73,11 +71,5 @@
             </div>
         </div>
     </form>
-
-    @empty
-        No such User.
-        <br><br>
-        Made @ UPRM for Capstone 2019.
-    @endforelse
 
 @endsection
