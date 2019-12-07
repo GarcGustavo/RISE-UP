@@ -479,6 +479,7 @@ validation, and resetting variables*/
             .toLowerCase()
             .includes(this.search_tab1.toLowerCase().trim());
         }
+
       );
       this.updatePaginator();
     },
@@ -804,7 +805,7 @@ said request via Laravel's eloquent ORM. The data is appended to the
         buttons: {
           confirm: {
             label: "No", //inverted roles, switched bootbox default order
-            className: "btn btn-secondary"
+            className: "btn btn-danger"
           },
           cancel: {
             label: "Yes",

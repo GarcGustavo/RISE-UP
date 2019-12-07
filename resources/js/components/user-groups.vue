@@ -828,7 +828,7 @@ the global variables as needed to be used.
         buttons: {
           confirm: {
             label: "No", //inverted roles, switched bootbox default order
-            className: "btn btn-secondary"
+            className: "btn btn-danger"
           },
           cancel: {
             label: "Yes",

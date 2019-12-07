@@ -1,183 +1,185 @@
 <template>
   <!-- Team Members -->
-<div class="container">
-  <div class="body mb-5 mt-5">
-    <!-- group title -->
-    <div v-if="!edit_title">
-      <span class="text">
-        <h1
-          class="text-center p-1"
-          :style=" rename_group_permission ? 'margin-left:185px;margin-top:25px' : ''"
-        >
-          {{group_name}}
-          <!--render if user has permission-->
-          <div id="edit_icon">
-            <a
-              href="#"
-              style="padding-bottom:25px;float:right;"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Click icon to edit the group's name"
-              @click.prevent="enableEditTitle"
-              v-if="rename_group_permission"
-            >
-              <a id="edit_title_desc">Edit group name</a>
-              <i class="material-icons">create</i>
-            </a>
-          </div>
-        </h1>
-      </span>
-    </div>
+  <div class="container">
+    <div class="body mb-5 mt-5">
+      <!-- group title -->
+      <div v-if="!edit_title">
+        <span class="text">
+          <h1
+            class="text-center p-1"
+            :style=" rename_group_permission ? 'margin-left:175px;margin-top:25px' : ''"
+          >
+            {{group_name}}
+            <!--render if user has permission-->
+            <div id="edit_icon">
+              <a
+                href="#"
+                style="padding-bottom:25px;float:right;"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Click icon to edit the group's name"
+                @click.prevent="enableEditTitle"
+                v-if="rename_group_permission"
+              >
+                <a id="edit_title_desc">Edit group name</a>
+                <i class="material-icons">create</i>
+              </a>
+            </div>
+          </h1>
+        </span>
+      </div>
 
-    <!-- if edit mode is enabled -->
-    <div v-if="edit_title">
-      <span class="required">*</span>
-      <input v-model="tempValue" maxlength="32" class="input">
-      <button class="btn btn-secondary" @click="disableEditTitle">Cancel</button>
-      <button class="btn btn-primary" @click="saveEdit(), action='Rename'">Save</button>
-      <p aria-hidden="true" style="margin:5px;display:inline" id="required-description">
-        <span class="required">*</span>Required field
-      </p>
-      <div v-if="errors.length">
-        <div>
-          <label>Please correct the following error(s):</label>
-          <div class="alert alert-danger">
-            <ul style="margin:10px;">
-              <li v-for="(error,index) in errors" :key="index" style="margin:10px;">{{ error }}</li>
-            </ul>
+      <!-- if edit mode is enabled -->
+      <div v-if="edit_title">
+        <span class="required">*</span>
+        <input v-model="tempValue" maxlength="32" class="input">
+           <button class="btn btn-primary" @click="saveEdit(), action='Rename'">Save</button>
+        <button class="btn btn-danger" @click="disableEditTitle">Cancel</button>
+        <p aria-hidden="true" style="margin:5px;display:inline" id="required-description">
+          <span class="required">*</span>Required field
+        </p>
+        <div v-if="errors.length">
+          <div>
+            <label>Please correct the following error(s):</label>
+            <div class="alert alert-danger">
+              <ul style="margin:10px;">
+                <li v-for="(error,index) in errors" :key="index" style="margin:10px;">{{ error }}</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <hr>
+      <hr>
 
-    <!--buttons to create or remove a group -->
-    <!-- render if user has permissions -->
-    <h1 class="text-center mt-5 col-sm">
-      <!--remove button -->
-      <span data-toggle="modal" data-target="#action_table_dbox">
-        <a
-          v-if="add_remove_members_permission"
-          href="#"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Click icon to remove a member from the group"
-          @click.prevent=" action='Remove',
+      <!--buttons to create or remove a group -->
+      <!-- render if user has permissions -->
+      <h1 class="text-center mt-5 col-sm">
+        <!--remove button -->
+        <span data-toggle="modal" data-target="#action_table_dbox">
+          <a
+            v-if="add_remove_members_permission"
+            href="#"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Click icon to remove a member from the group"
+            @click.prevent=" action='Remove',
         acted_on='member(s)', show_dialogue=true, fetchMembers()"
-        >
-          <div id="remove_icon">
-            <a>Remove user</a>
-            <i class="material-icons">remove_circle_outline</i>
-          </div>
-        </a>
-      </span>
-
-      <!-- add button -->
-      <span data-toggle="modal" data-target="#action_table_dbox">
-        <a
-          v-if="add_remove_members_permission"
-          href="#"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Click icon to add a user to the group"
-          @click.prevent=" action='Add',
-        acted_on='user(s)', show_dialogue=true, fetchUsers()"
-        >
-          <div id="add_icon">
-            <a>Add user</a>
-            <i class="material-icons">add_circle_outline</i>
-          </div>
-        </a>
-      </span>
-      <p :style=" add_remove_members_permission ? 'margin-left:288px;' : ''">Members</p>
-    </h1>
-
-    <!-- show table dialogue when adding or removing members -->
-    <div v-if="(action=='Add'|| action=='Remove') && show_dialogue">
-      <action-table-dbox
-        :action="action"
-        :acted_on="acted_on"
-        :users_to_add="users_to_add"
-        :users_to_remove="users_to_remove"
-        :curr_user_id="curr_user"
-        @addUsers="addUsers"
-        @removeUsers="removeUsers"
-      ></action-table-dbox>
-    </div>
-
-    <!-- show case study dialogue box when creating it from group -->
-    <div v-if="action=='Create' && show_dialogue">
-      <case-create-dbox
-        :action="'Create'"
-        :acted_on="'case study'"
-        :errors="errors"
-        :group_selection="curr_group"
-        @close="resetErrors"
-        @createCaseStudy="createCaseStudy"
-      ></case-create-dbox>
-    </div>
-
-    <!-- Members -->
-    <div class="card mb-5 shadow" id="members_scroll">
-      <div class="row mt-1 pt-2 pl-4" id="members">
-        <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
-          <div class="card h-100 text-center">
-            <i class="material-icons pt-2" style="font-size: 125px">person</i>
-            <div class="card-body">
-              <h4 class="card-title">
-                <a href="#" class="stretched-link">{{member.first_name}} {{member.last_name}}</a>
-              </h4>
-              <h6 class="card-subtitle text-muted"></h6>
+          >
+            <div id="remove_icon">
+              <a>Remove user</a>
+              <i class="material-icons">remove_circle_outline</i>
             </div>
-            <div class="card-footer">
-              <label>{{member.email}}</label>
+          </a>
+        </span>
+
+        <!-- add button -->
+        <span data-toggle="modal" data-target="#action_table_dbox">
+          <a
+            v-if="add_remove_members_permission"
+            href="#"
+            data-toggle="tooltip"
+            data-placement="top"
+            title="Click icon to add a user to the group"
+            @click.prevent=" action='Add',
+        acted_on='user(s)', show_dialogue=true, fetchUsers()"
+          >
+            <div id="add_icon">
+              <a>Add user</a>
+              <i class="material-icons">add_circle_outline</i>
+            </div>
+          </a>
+        </span>
+        <p :style=" add_remove_members_permission ? 'margin-left:288px;' : ''">Members</p>
+      </h1>
+
+      <!-- show table dialogue when adding or removing members -->
+      <div v-if="(action=='Add'|| action=='Remove') && show_dialogue">
+        <action-table-dbox
+          :action="action"
+          :acted_on="acted_on"
+          :users_to_add="users_to_add"
+          :users_to_remove="users_to_remove"
+          :curr_user_id="curr_user"
+          @addUsers="addUsers"
+          @removeUsers="removeUsers"
+        ></action-table-dbox>
+      </div>
+
+      <!-- show case study dialogue box when creating it from group -->
+      <div v-if="action=='Create' && show_dialogue">
+        <case-create-dbox
+          :action="'Create'"
+          :acted_on="'case study'"
+          :errors="errors"
+          :group_selection="curr_group"
+          @close="resetErrors"
+          @createCaseStudy="createCaseStudy"
+        ></case-create-dbox>
+      </div>
+
+      <!-- Members -->
+      <div class="card mb-5 shadow" id="members_scroll">
+        <div class="row mt-1 pt-2 pl-4" id="members">
+          <div class="col-lg-4 mb-4" v-for="member in group_members" :key="member.uid">
+            <div class="card h-100 text-center">
+              <i class="material-icons pt-2" style="font-size: 125px">person</i>
+              <div class="card-body">
+                <h4 class="card-title">
+                  <a href="#" class="stretched-link">{{member.first_name}} {{member.last_name}}</a>
+                </h4>
+                <h6 class="card-subtitle text-muted"></h6>
+              </div>
+              <div class="card-footer">
+                <label>{{member.email}}</label>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <hr>
+      <hr>
 
-    <!-- Create case button -->
-    <h1 id="cases_header" class="mt-5 text-center">
-      <span data-toggle="modal" data-target="#case_create_dbox">
-        <a
-          v-if="create_group_case_permission"
-          @click.prevent="action='Create', show_dialogue=true"
-          href="#case_create_dbox"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Click icon to create a group case study"
-        >
-          <div id="create_case_study_icon">
-            <a>Create case study</a>
-            <i class="material-icons">add_circle_outline</i>
-          </div>
-        </a>
-      </span>
-      <p :style="create_group_case_permission ? 'margin-left:197px;' : ''">Our Cases</p>
-    </h1>
-
-    <!-- list group's case studies -->
-    <div class="mt-1 card mb-5 shadow" id="cases">
-      <div class="col-sm-12 mb-3">
-        <ul class="list-group list-group-flush border-0">
-          <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a :href="'/case/body?cid='+case_study.cid+'&uid='+curr_user">{{case_study.c_title}}</a>
-              </h5>
-              <h6 class="card-subtitle mb-2 text-muted">{{case_study.c_date}}</h6>
-              <p class="card-text">{{case_study.c_description}}</p>
+      <!-- Create case button -->
+      <h1 id="cases_header" class="mt-5 text-center">
+        <span data-toggle="modal" data-target="#case_create_dbox">
+          <a
+            v-if="create_group_case_permission"
+            @click.prevent="action='Create', show_dialogue=true"
+            href="#case_create_dbox"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Click icon to create a group case study"
+          >
+            <div id="create_case_study_icon">
+              <a>Create case study</a>
+              <i class="material-icons">add_circle_outline</i>
             </div>
-          </li>
-        </ul>
+          </a>
+        </span>
+        <p :style="create_group_case_permission ? 'margin-left:197px;' : ''">Our Cases</p>
+      </h1>
+
+      <!-- list group's case studies -->
+      <div class="mt-1 card mb-5 shadow" id="cases">
+        <div class="col-sm-12 mb-3">
+          <ul class="list-group list-group-flush border-0">
+            <li class="list-group-item" v-for="(case_study,index) in group_cases" :key="index">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a
+                    :href="'/case/body?cid='+case_study.cid+'&uid='+curr_user"
+                  >{{case_study.c_title}}</a>
+                </h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{case_study.c_date}}</h6>
+                <p class="card-text">{{case_study.c_description}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -290,9 +292,39 @@ Setting user priveleges, editing title, and resetting variables*/
      * @description once saved or canceled disabled edit mode
      */
     disableEditTitle() {
-      this.tempValue = null;
-      this.edit_title = false;
-      this.errors = []; //reset errors
+        var curr = this;
+      this.dialogue = bootbox.confirm({
+        title: "Remove?",
+        message: "Are you sure you want to cancel?",
+
+        buttons: {
+          confirm: {
+            label: "No", //inverted roles, switched bootbox default order
+            className: "btn btn-danger"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        }, //Callback function with user's input
+        callback: function(result) {
+          if (!result) {
+            //if yes
+            curr.tempValue = null;
+            curr.edit_title = false;
+            curr.errors = []; //reset errors
+
+          } //end if
+        } //end callback
+      }); //end alert
+
+      //alert box CSS styling
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     },
     /**
      * @description save changes to group name
@@ -421,7 +453,9 @@ global variables as needed to be used.*/
 
           if (!res.errors) {
             this.group_name = this.temp; //group name is the updated name
-            this.disableEditTitle();
+            this.tempValue = null;
+            this.edit_title = false;
+            this.errors = []; //reset errors
             //alert box
             this.dialogue = bootbox.alert({
               title: "Rename",
@@ -464,7 +498,7 @@ global variables as needed to be used.*/
           "Access-Control-Origin": "*",
           "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
         }),
-        body: JSON.stringify({data:users_to_add})
+        body: JSON.stringify({ data: users_to_add })
       })
         .then(res => res.json())
         .then(res => {
@@ -539,7 +573,7 @@ global variables as needed to be used.*/
                 "Access-Control-Origin": "*",
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
               }),
-              body: JSON.stringify({data:curr.remove})
+              body: JSON.stringify({ data: curr.remove })
             })
               .then(res => res.json())
               .then(res => {

@@ -98,7 +98,7 @@
 
               <button type="button" class="btn btn-primary" @click="sendCaseStudyData()">{{action}}</button>
               <!-- close button -->
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger" @click="closeModal()">Cancel</button>
             </div>
           </div>
         </div>
@@ -247,6 +247,38 @@ calling parent method to create case study*/
         c_owner: "",
         c_group: ""
       };
+    },
+
+     closeModal() {
+      this.dialogue = bootbox.confirm({
+        title: "Remove?",
+        message: "Are you sure you want to cancel?",
+
+        buttons: {
+          confirm: {
+            label: "No", //inverted roles, switched bootbox default order
+            className: "btn btn-danger"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        }, //Callback function with user's input
+        callback: function(result) {
+          if (!result) {
+            //if yes
+            $("#case_create_dbox").modal('hide');
+          } //end if
+        } //end callback
+      }); //end alert
+
+      //alert box CSS styling
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
     },
     /*#endregion*/
 

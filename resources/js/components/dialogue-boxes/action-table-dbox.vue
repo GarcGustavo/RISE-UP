@@ -10,7 +10,6 @@
 
             <!-- Render group name input element to dialogue box when user creates group -->
             <div class="modal-body">
-
               <!--Body description -->
               <div v-if="action=='Add'">
                 <p style="font-size:18px;margin:15px,padding-top:25px;" aria-hidden="true">
@@ -147,7 +146,7 @@
 
               <!-- close button -->
               <div>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" @click="closeModal()">Cancel</button>
               </div>
             </div>
           </div>
@@ -194,7 +193,8 @@ export default {
         return [];
       }
     },
-    errors: { //errors sent by parent(user-groups or group) when executing query request
+    errors: {
+      //errors sent by parent(user-groups or group) when executing query request
       type: Array,
       default: function() {
         return [];
@@ -265,7 +265,6 @@ export default {
    * @description handles modal closing event
    */
   mounted() {
-
     $(this.$refs.action_modal).on("hidden.bs.modal", this.resetInputFields);
   },
 
@@ -288,8 +287,7 @@ export default {
   },
 
   methods: {
-
-/*region Auxilary methods - These methods provide operational
+    /*region Auxilary methods - These methods provide operational
 functionalities to to the web page. Operations include: validation,
 and resetting variables, calling parent methods to add/remove
 users and create groups.*/
@@ -305,7 +303,8 @@ users and create groups.*/
           for (let i in this.users_to_add) {
             this.selected_users.push(this.users_to_add[i].uid);
           }
-        } else { //remove action
+        } else {
+          //remove action
           for (let i in this.users_to_remove) {
             this.selected_users.push(this.users_to_remove[i].uid);
           }
@@ -442,35 +441,64 @@ users and create groups.*/
         g_owner: ""
       };
     },
-/*#endregion*/
 
+    closeModal() {
+      this.dialogue = bootbox.confirm({
+        title: "Remove?",
+        message: "Are you sure you want to cancel?",
 
-/*#region Query methods - The following method provides the total amount
+        buttons: {
+          confirm: {
+            label: "No", //inverted roles, switched bootbox default order
+            className: "btn btn-danger"
+          },
+          cancel: {
+            label: "Yes",
+            className: "btn btn-primary"
+          }
+        }, //Callback function with user's input
+        callback: function(result) {
+          if (!result) {
+            //if yes
+            $("#action_table_dbox").modal('hide');
+          } //end if
+        } //end callback
+      }); //end alert
+
+      //alert box CSS styling
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+    },
+    /*#endregion*/
+
+    /*#region Query methods - The following method provides the total amount
 of groups by requesting the data through route calls. The routes passes
 request to a specified predefined controller who processes said request
 via Laravel's eloquent ORM. The data is appended to the global variables
 as needed to be used.*/
-
 
     /**
      * @description gets all of the system's groups.
      * This data is used to determine the new id of a newly created group
      */
     totalGroups() {
-        //define id variables
+      //define id variables
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.uid = this.urlParams.get("uid"); //get user id
       this.gid = this.urlParams.get("gid"); //get group id
 
-      fetch("/groups?uid="+this.uid)
+      fetch("/groups?uid=" + this.uid)
         .then(res => res.json())
         .then(res => {
           this.groups = res.data;
         })
         .catch(err => console.log(err));
-    },
-/*#endregion*/
-
+    }
+    /*#endregion*/
   }
 };
 </script>
