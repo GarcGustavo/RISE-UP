@@ -22,6 +22,7 @@ class CreateCaseTable extends Migration
             $table->date('c_date');
             $table->date('c_incident_date')->nullable()->default(NULL);
             $table->unsignedBigInteger('c_owner');
+            $table->unsignedBigInteger('times_updated');
             $table->unsignedBigInteger('c_group')->nullable()->default(NULL);
             $table->foreign('c_owner')->references('uid')->on('User');
             $table->foreign('c_group')->references('gid')->on('Group');

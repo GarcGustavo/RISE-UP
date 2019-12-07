@@ -1,7 +1,6 @@
 <template>
   <transition>
     <div>
-
       <!-- Dialogue Component to create case study -->
       <div class="modal" id="case_create_dbox" tabindex="-1" role="dialog" ref="case_modal">
         <div class="modal-dialog modal-lg" role="document">

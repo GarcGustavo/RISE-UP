@@ -171,8 +171,8 @@ class UserController extends Controller
      */
     public function showUsersEditing(Request $request)
     {
-        $cid = $request -> input('cid');
-        $user = User::where('User.current_edit_cid', $cid)->get();
+        $cid = $request->input('cid');
+        $user = User::where('current_edit_cid', "=", $cid)->get();
         return UserResource::collection($user);
     }
 

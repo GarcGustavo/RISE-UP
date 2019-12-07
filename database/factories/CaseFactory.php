@@ -12,6 +12,7 @@ $factory->define(case_study::class, function (Faker $faker) {
         'c_date' => $faker->date,
         'c_incident_date' => $faker->date,
         'c_owner' => $faker->numberBetween($min=1, $max=10),
-        'c_group' => $faker->numberBetween($min=1, $max=10)
+        'c_group' => $faker->numberBetween($min=1, $max=10),
+        'times_updated' => 0
     ];
 });

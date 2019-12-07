@@ -1,6 +1,7 @@
 <template>
 
 <!-- Page Content -->
+<div class="container">
 <div class="body mb-5 mt-5">
 
     <!-- Page Heading/Breadcrumbs -->
@@ -39,7 +40,7 @@
                     on the top of the screen.
 
                     This will create a request that must be approved by site administrators in order to allow access to the editing features of the website.
-                    Once you have been approved you may create or edit cases from the "Cases" and "Groups" pages accesible from the header navigation 
+                    Once you have been approved you may create or edit cases from the "Cases" and "Groups" pages accesible from the header navigation
                     drop-down menu, as well as by clicking on the "Collaborate" option.
                 </div>
             </div>
@@ -61,7 +62,7 @@
         </div>
     </div>
 </div>
-
+</div>
 </template>
 
 <script>

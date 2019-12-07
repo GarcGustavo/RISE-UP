@@ -19,7 +19,7 @@ class OptionTableSeeder extends Seeder
 		['o_content'=>'Earthquake','o_parameter'=>1],
         ['o_content'=>'Flooding','o_parameter'=>1],
 		['o_content'=>'Coast Erosion','o_parameter'=>1],
-		
+
         //options for language
 	    ['o_content'=>'None','o_parameter'=>2],
         ['o_content'=>'English','o_parameter'=>2],
@@ -44,15 +44,15 @@ class OptionTableSeeder extends Seeder
          ['o_content'=>'Dorado, PR','o_parameter'=>4],
          ['o_content'=>'Mayaguez, PR','o_parameter'=>4],
          ['o_content'=>'Fajardo, PR','o_parameter'=>4],
-         ['o_content'=>'Ponce, PR','o_parameter'=>4]];
-		
+         ['o_content'=>'Ponce, PR','o_parameter'=>4],
+
 	     //options for Incident date
 		 ['o_content'=>'None','o_parameter'=>5],
          ['o_content'=>'This year','o_parameter'=>5],
 		 ['o_content'=>'This month','o_parameter'=>5],
 		 ['o_content'=>'This week','o_parameter'=>5],
 		 ['o_content'=>'Today','o_parameter'=>5],
-		 ['o_content'=>'Placeholder','o_parameter'=>5],
+		 ['o_content'=>'Placeholder','o_parameter'=>5]];
 
 
         App\Models\Option::insert($options);

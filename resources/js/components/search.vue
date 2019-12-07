@@ -1,13 +1,10 @@
 <template>
-  <div>
+  <div class="container-fluid mt-5">
     <!--search bar -->
-    <form
-        v-on:submit="search_form()"
-          id="search_form"
-          method="POST"
-          class="navbar-form navbar-right ml-auto mt-2 mr-5 search"
-        >
-          <div v-if="!disable_header_search" class="input-group mb-3">
+    <div class="col pt-5">
+      <div class="row justify-content-center pt-3">
+        <div id="search_input" class="row w-50 mb-1">
+          <div class="input-group mb-3">
             <input type="hidden" :value="csrfToken" name="_token">
             <input
               type="text"
@@ -18,92 +15,116 @@
               aria-describedby="basic-addon2"
             >
             <div class="input-group-append">
-              <button class="btn btn-primary border-0 btn-sm" type="submit">
+              <button class="btn btn-primary border-0 btn-sm" @click="search_input()" type="submit">
                 <i class="material-icons">search</i>
               </button>
             </div>
           </div>
-        </form>
-
-    <!-- filters -->
-    <div class="card" style>
-      <div class="row mt-3 ml-4">
-        <label for="group_select" style="padding-top:7px">Filters:</label>
-        <div v-for="(case_parameter, index) in case_parameters" :key="index">
-          <div class="col">
-            <div class="form-group">
-              <button disabled>
-                <a class="text-center text-break">{{case_parameter.csp_name}}</a>
-                <div v-if="(case_parameter.csp_name == 'Incident date')">
-                  From:
-                  <datepicker v-model="incident_date_start" :use-utc="true" :format="date_format"></datepicker>To:
-                  <datepicker v-model="incident_date_end" :use-utc="true" :format="date_format"></datepicker>
-                  <div
-                    v-if="incident_date_start > incident_date_end"
-                    class="text-center text-break"
-                    style="white-space: pre-line;max-width: 200px"
-                  >
-                    Invalid date range:
-                    Starting date must be equal to or lower than end date.
-                  </div>
-                </div>
-                <div id="Frame">
-                  <select
-                    v-if="case_parameter.csp_name != 'Incident date'"
-                    class="form-control"
-                    v-model="selected_options[index]"
-                    @change="selected(case_parameter.csp_id), filterCases()"
-                    :id="case_parameter.csp_id"
-                  >
-                    <!--  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>-->
-                    <!--  <option selected disabled hidden  value></option> -->
-                    <option label="None">None</option>
-                    <option
-                      v-for="option in filteredOptions(case_parameter.csp_id)"
-                      :key="option.oid"
-                      :value="option.oid"
-                    >{{option.o_content}}</option>
-                  </select>
-                </div>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
-      <button type="button" @click="clearFilter()">Clear</button>
     </div>
-    <h4 class="mt-5">Search results for: {{search_for}}</h4>
-    <!-- case studies search -->
-    <div class="card p-3 shadow" style="margin-top:20px;">
-      <div v-if="!empty">
-        <div class="row mt-1 pt-2 pl-2" id="cases">
-          <div class="col-lg-6 mb-4" v-for="case_study in search" :key="case_study.cid">
-            <div class="card h-100 text-center">
-              <img
-                :src="'../images/'+ case_study.c_thumbnail"
-                style="height:150px;width:125px; margin-top:20px; margin-left:200px"
-                onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
-                class="card-img-top"
-                alt="..."
-              >
-              <!-- <i class="material-icons pt-2" style="font-size: 125px">image</i> -->
-              <div class="card-body">
-                <h5 class="card-title">
-                  <a
-                    :href="'/case/body?cid='+case_study.cid+'&uid='+uid"
-                    class="stretched-link"
-                  >{{case_study.c_title}}</a>
-                </h5>
-                <p class="card-text" style="overflow-y:auto">{{case_study.c_description}}</p>
+
+    <!-- filters -->
+    <div class="row">
+      <div class="col-3 mt-5 pt-1 ">
+        <div id="filter-container" class="col card pb-2 mb-3">
+          <h5 for="group_select" class="text-center pt-2 m-auto">Filters:</h5>
+          <hr>
+          <div class="row justify-content-center" v-for="(case_parameter, index) in case_parameters" :key="index">
+            <div class="form-group w-75">
+              <label class="text-center text-break pl-2">{{case_parameter.csp_name}}</label>
+              <div class="p-2 " v-if="(case_parameter.csp_name == 'Incident date')">
+                <div class="card ">
+                  <label class="pl-2 pt-2">From:</label>
+                  <datepicker
+                    id="datepicker"
+                    class="text-center "
+                    v-model="incident_date_start"
+                    :use-utc="true"
+                    :disabled-dates="state.disabledDates"
+                    :format="date_format"
+                  ></datepicker>
+                  <label class="pl-2">To:</label>
+                  <datepicker
+                    id="datepicker"
+                    class="text-center pb-3"
+                    v-model="incident_date_end"
+                    :use-utc="true"
+                    :disabled-dates="state.disabledDates"
+                    :format="date_format"
+                  ></datepicker>
+                  <div
+                    v-if="(incident_date_start && incident_date_end) && incident_date_start > incident_date_end || incident_date_end > now"
+                    class="m-auto text-break"
+                    style="white-space: pre-line;max-width: 200px"
+                  >
+                   <p  class="text-center"> Invalid date range:
+                    Starting date must be equal to or lower than end date.</p>
+                  </div>
+                </div>
+              </div>
+              <div id="Frame" class="pl-2">
+                <select
+                  v-if="case_parameter.csp_name != 'Incident date'"
+                  class="form-control"
+                  v-model="selected_options[index]"
+                  @change="selected(case_parameter.csp_id), filterCases()"
+                  :id="case_parameter.csp_id"
+                >
+                  <!--  <option selected="selected" disabled>{{case_parameter.csp_name}}</option>-->
+                  <!--  <option selected disabled hidden  value></option> -->
+                  <option label="None">None</option>
+                  <option
+                    v-for="option in filteredOptions(case_parameter.csp_id)"
+                    :key="option.oid"
+                    :value="option.oid"
+                  >{{option.o_content}}</option>
+                </select>
               </div>
             </div>
           </div>
         </div>
+        <div class="row p-1">
+          <div class="col text-center">
+            <button class="btn btn-primary w-100" type="button" @click="clearFilter()">Clear</button>
+          </div>
+        </div>
       </div>
-      <div v-else>
-        <p class="text-center p-5">No case studies found. Please try again!</p>
+
+      <!-- case studies search -->
+      <div class="col">
+        <h4 class="mt-5">Search results for: {{search_for}}</h4>
+        <div class="card p-3 w-100 shadow" style="margin-top:20px;">
+          <div v-if="!empty">
+            <div class="row mt-1 pt-2 pl-2" id="cases">
+              <div class="col-4 mb-4" v-for="case_study in search" :key="case_study.cid">
+                <div class="card h-100 text-center">
+                  <img
+                    :src="'../images/'+ case_study.c_thumbnail"
+                    style="height:150px;width:125px; margin-top:20px; margin-left:200px"
+                    onerror="this.onerror=null;this.src='../images/image_placeholder.jpg';"
+                    class="card-img-top m-auto pt-2"
+                    alt="..."
+                  >
+                  <!-- <i class="material-icons pt-2" style="font-size: 125px">image</i> -->
+                  <div class="card-body">
+                    <h5 class="card-title">
+                      <a
+                        :href="'/case/body?cid='+case_study.cid+'&uid='+uid"
+                        class="stretched-link"
+                      >{{case_study.c_title}}</a>
+                    </h5>
+                    <p class="card-text" style="overflow-y:auto">{{case_study.c_description}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <p class="text-center p-5">No case studies found. Please try again!</p>
+          </div>
+        </div>
       </div>
-      <div></div>
     </div>
   </div>
 </template>
@@ -142,7 +163,7 @@ export default {
       incident_date_start: "", //range for datepicker
       incident_date_end: "", //range for datepicker
       search_for: "", //contains the string the user is searching for
-      selected_param: "", //id of selected/changed parameter
+      selected_param: "", //id of selected/changed parameter,
 
       selected_options: [], //contains id's of the selected options of all parameters
       case_parameters: [], //contains all registered parameters
@@ -153,7 +174,15 @@ export default {
       filtered_cases: [], //Filter cases
       search: [], //variable used in for loop to present searched study cases
 
-      empty: true //if search is empty present "No case studies found "
+      state: {
+        disabledDates: {
+          from: new Date() // Disable all dates after specific date
+        }
+      },
+
+      empty: true, //if search is empty present "No case studies found "
+
+      now: new Date().getTime()
     };
   },
   /**
@@ -161,6 +190,7 @@ export default {
    */
   created() {
     this.getUser();
+
     this.getSearch();
     this.fetchParameters();
     this.fetchParameterOptions();
@@ -169,7 +199,7 @@ export default {
   },
 
   mounted() {
-    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
   },
 
   watch: {
@@ -200,7 +230,7 @@ Setting user priveleges, editing title, and resetting variables*/
       //create new array of selected options to manipulate data set without changing original array
       this.selected_options_temp = this.selected_options.slice();
 
-      //Selected_option None equals to "", convert to Null so it matches values on database
+      //Selected_option None equals to "" or none, convert to Null so it matches values on database
       for (let a = 0; a < this.selected_options.length; a++) {
         if (
           this.selected_options[a] == "" ||
@@ -219,7 +249,9 @@ Setting user priveleges, editing title, and resetting variables*/
 
       //These for loops get the case studies on which one or more parameters apply individually
       //That is if user selects to filter by location and damage type, the algorithm will
-      //fetch all case studies with either one or both of the parameter's selected option.
+      //fetch all case studies with either one or both of the parameter's selected option. The list
+      // will contain duplicate id's, these repetetive id's is the key idea to the algorithm. The amount
+      //of duplicate id's will equal to the amount of applicable selected parameters.
       this.case_studies_with_selected_option = []; //temp var for case studies
       //look for case studies(cid) where selected option = selected param
       for (let j = 0; j < this.all_cases_parameters.length; j++) {
@@ -273,7 +305,7 @@ Setting user priveleges, editing title, and resetting variables*/
       for (let i = 0; i < this.case_study_with_id_count.length; i++) {
         for (let k = 0; k < this.list_cases.length; k++) {
           //if the count of case study id equals to those of selected parameters
-          //verify if case id is in case study search list(list_cases) and append to filtered list
+          // if case id is in case study search list(list_cases) and append to filtered list
           if (
             this.case_study_with_id_count[i].count == this.count &&
             this.list_cases[k].cid == this.case_study_with_id_count[i].cid
@@ -292,38 +324,61 @@ Setting user priveleges, editing title, and resetting variables*/
       ) {
         //return [];
         this.search = [];
+        this.empty = true;
       }
       //if no case was found and a filter hasn't been selected
-      //This is when page loads and user has not made any changes
+      //This is when page loads and user has not made any filter/parameter changes(excluding dates)
       //return search items
 
       if (
         !this.case_studies_with_selected_option.length &&
         !this.selected_options_filtered.length
       ) {
-        //filter is dates have been selected
+        //verify date selection
+        //added disabled dates to date picker not needed. Kept for additional robustness
+        if (
+          this.incident_date_start > this.incident_date_end ||
+          this.incident_date_end > this.now
+        ) {
+          this.empty = true;
+          return;
+        }
+        //filter if dates have been selected
         this.list_cases_temp = this.filterDate(
           this.incident_date_start,
           this.incident_date_end,
           this.list_cases
         );
 
-        this.search = this.list_cases_temp;
-        // return this.list_cases_temp;
+        this.search = this.list_cases_temp; // false - update variable
+        if (!this.search.length) {
+          this.empty = true;
+        } else {
+          this.empty = false;
+        }
+        //apply vuejs reactivity
         this.$nextTick(function() {
           this.search = this.list_cases_temp; // true - update variable
         });
         this.$nextTick(function() {
           this.search = this.list_cases_temp; // true - render to DOM
         });
-      }
+        return;
+      } //
       //filter if dates have been selected
       this.filtered_cases = this.filterDate(
         this.incident_date_start,
         this.incident_date_end,
         this.filtered_cases
       );
+
       this.search = this.filtered_cases;
+
+      if (!this.search.length) {
+        this.empty = true;
+      } else {
+        this.empty = false;
+      }
 
       //return this.filtered_cases;
     },
@@ -348,12 +403,14 @@ Setting user priveleges, editing title, and resetting variables*/
      */
     clearFilter() {
       // this.clear = false;
+      this.empty = false;
       this.parameters = document.getElementsByTagName("select");
       this.incident_date_start = "";
       this.incident_date_end = "";
       this.selected_options = [];
       this.search = this.list_cases;
       this.$nextTick(function() {
+        this.empty = false;
         this.search = this.list_cases; // true
 
         for (let i = 0; i < this.parameters.length; i++) {
@@ -402,10 +459,14 @@ Setting user priveleges, editing title, and resetting variables*/
       return cases_list;
     },
 
-    search_form(){
-    var action_src = "/search?uid="+this.uid+"&q=" + document.getElementsByName("q")[0].value;
-    var search_form = document.getElementById('search_form');
-    search_form.action = action_src ;
+    /**
+     * @description calls controller route*/
+    search_input() {
+      document.location.href =
+        "/search?uid=" +
+        this.uid +
+        "&q=" +
+        document.getElementsByName("q")[0].value;
     },
 
     /*//#endregion*/
@@ -468,5 +529,9 @@ global variables as needed to be used.*/
 }
 a {
   color: black;
+}
+#filter-container {
+  max-height: 640px;
+  overflow-y: auto;
 }
 </style>
