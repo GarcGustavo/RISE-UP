@@ -1,5 +1,6 @@
 
 <template>
+<div class="container">
   <div class="body mb-5 mt-5">
     <!-- buttons to create or remove a case study -->
     <h1 class="mb-3">
@@ -343,8 +344,9 @@
         </div>
       </div>
     </div>
-    <!--number of entries per table page option -->
+
   </div>
+</div>
 </template>
 
 <script>
@@ -424,7 +426,7 @@ export default {
 
     casePageContentTab1() {
       if (this.curr_tab == 1) {
-        if (this.page_content_tab1.length == 0) {
+        if (this.page_content_tab1.length == 0 || this.searched_content_tab1.length==0) {
           return [];
         }
       } //search filter
@@ -438,7 +440,7 @@ export default {
      */
     casePageContentTab2() {
       if (this.curr_tab == 2) {
-        if (this.page_content_tab2.length == 0) {
+        if (this.page_content_tab2.length == 0 || this.searched_content_tab2==0) {
           return [];
         }
       } //search filter

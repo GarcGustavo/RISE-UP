@@ -1,5 +1,6 @@
 <template>
   <!-- Team Members -->
+<div class="container">
   <div class="body mb-5 mt-5">
     <!-- group title -->
     <div v-if="!edit_title">
@@ -176,6 +177,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>

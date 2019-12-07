@@ -29,7 +29,7 @@ class CS_ParameterController extends Controller
      */
     public function getParameterOptions()
     {
-        $options = Option::all();
+        $options = Option::orderBy('o_content','asc')->get();
         return OptionResource::collection($options);
     }
     /**

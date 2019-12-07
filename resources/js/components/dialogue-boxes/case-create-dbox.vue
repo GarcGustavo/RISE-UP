@@ -1,7 +1,6 @@
 <template>
   <transition>
     <div>
-
       <!-- Dialogue Component to create case study -->
       <div class="modal" id="case_create_dbox" tabindex="-1" role="dialog" ref="case_modal">
         <div class="modal-dialog modal-lg" role="document">
@@ -17,12 +16,8 @@
                 <div>
                   <label>Please correct the following error(s):</label>
                   <div class="alert alert-danger">
-                    <ul style="margin:10px;">
-                      <li
-                        v-for="(error,index) in errors"
-                        :key="index"
-                        style="margin:10px;"
-                      >{{ error }}</li>
+                    <ul>
+                      <li class="p-2" v-for="(error,index) in errors" :key="index">{{ error }}</li>
                     </ul>
                   </div>
                 </div>
@@ -43,7 +38,7 @@
                       style="height:35px;"
                       required="required"
                       type="text"
-                      maxlength="50"
+                      maxlength="32"
                       v-model="title"
                       placeholder="Title..."
                     >
@@ -56,7 +51,7 @@
                   <select
                     class="form-control"
                     id="group_select"
-                    style="height:38px"
+                    style="height:35px"
                     v-model="curr_group"
                     :disabled="disable_dropdown"
                   >
@@ -95,15 +90,12 @@
 
             <!-- footer -->
             <div class="modal-footer">
-              <p
-                style="margin-right:495px;padding-top:15px;font-size:18px;"
-                aria-hidden="true"
-                id="required-description"
-              >
+              <p class="mr-auto" aria-hidden="true" id="required-description">
                 <span class="required">*</span>Required field
               </p>
 
               <!--action button -->
+
               <button type="button" class="btn btn-primary" @click="sendCaseStudyData()">{{action}}</button>
               <!-- close button -->
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -136,7 +128,8 @@ export default {
       type: String,
       default: ""
     },
-    errors: { //errors sent by parent(user-cases or group) when executing query request
+    errors: {
+      //errors sent by parent(user-cases or group) when executing query request
       type: Array,
       default: function() {
         return [];
@@ -166,7 +159,7 @@ export default {
         c_thumbnail: "",
         c_status: "",
         c_date: "",
-        c_incident_date:"",
+        c_incident_date: "",
         c_owner: "",
         c_group: ""
       },
@@ -197,8 +190,7 @@ export default {
   },
 
   methods: {
-
-/*region Auxilary methods - These methods provide operational
+    /*region Auxilary methods - These methods provide operational
 functionalities to to the modal. Operations include: resetting variables,
 calling parent method to create case study*/
 
@@ -222,7 +214,6 @@ calling parent method to create case study*/
       this.$emit("close"); //reset error prop
     },
 
-
     /**
      * @description calls the createCaseStudy method from parent window(user_cases or group)
      *  and sends the data for the new case study
@@ -230,7 +221,6 @@ calling parent method to create case study*/
     sendCaseStudyData() {
       //yyyy-mm-dd
       this.date = new Date().toJSON().slice(0, 10); //current date
-
 
       //append data to new case study
       this.case_study.cid = this.all_cases[this.all_cases.length - 1].cid + 1; //append new id
@@ -253,14 +243,14 @@ calling parent method to create case study*/
         c_thumbnail: "",
         c_status: "",
         c_date: "",
-        c_incident_date:"",
+        c_incident_date: "",
         c_owner: "",
         c_group: ""
       };
     },
-/*#endregion*/
+    /*#endregion*/
 
-/*#region Query methods - These methods provide the data used by the
+    /*#region Query methods - These methods provide the data used by the
 modal through route calls. The routes passes the request to a specified
 predefined controller who processes said request via Laravel's eloquent ORM.
 The data is appended to the global variables as needed to be used.*/
@@ -272,12 +262,10 @@ The data is appended to the global variables as needed to be used.*/
     totalCases() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
       this.curr_user = this.urlParams.get("uid"); //get user id
-      fetch("/cases?uid="+this.curr_user)
+      fetch("/cases?uid=" + this.curr_user)
         .then(res => res.json())
         .then(res => {
-
           this.all_cases = res.data;
-
         })
         .catch(err => console.log(err));
     },
@@ -303,7 +291,7 @@ The data is appended to the global variables as needed to be used.*/
         })
         .catch(err => console.log(err));
     }
-/*#endregion*/
+    /*#endregion*/
   }
 };
 </script>

@@ -33,7 +33,7 @@ Route::get('/user/cases', 'ViewsController@userCases')->middleware('sessionCheck
 //Software requirement 2.2.3.4 - case study page
 Route::get('/case/body', 'ViewsController@showCaseBody');
 
-Route::post('/search','ViewsController@search')->middleware('sessionCheck');
+Route::any('/search','ViewsController@search')->middleware('sessionCheck');
 
 
 

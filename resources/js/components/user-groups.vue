@@ -1,347 +1,349 @@
 
 <template>
-  <div class="body mb-5 mt-5">
-    <!-- buttons to create or remove a group -->
-    <h1 class="mb-3">
-      <!-- button if clicked, render confirmation dialogue box to validate user's action -->
-      <div>
-        <a
-          href="#"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Click icon to delete a group"
-          @click.prevent="action='Remove',
-          acted_on='group(s)', isGroupSelected()"
-        >
-          <div id="remove_icon">
-            <a>Remove</a>
-            <i class="material-icons">remove_circle_outline</i>
-          </div>
-        </a>
-      </div>
-      <!-- button if clicked, render create group input box -->
-      <div>
-        <span data-toggle="modal" data-target="#action_table_dbox">
+  <div class="container">
+    <div class="body mb-5 mt-5">
+      <!-- buttons to create or remove a group -->
+      <h1 class="mb-3">
+        <!-- button if clicked, render confirmation dialogue box to validate user's action -->
+        <div>
           <a
             href="#"
             data-toggle="tooltip"
             data-placement="bottom"
-            title="Click icon to create a group"
-            @click.prevent="gname_box_show=true, show_dialogue=true,
-            action='Create',
-            acted_on='group', fetchUsers()"
+            title="Click icon to delete a group"
+            @click.prevent="action='Remove',
+          acted_on='group(s)', isGroupSelected()"
           >
-            <div id="create_icon">
-              <a>Create</a>
-              <i class="material-icons">add_circle_outline</i>
+            <div id="remove_icon">
+              <a>Remove</a>
+              <i class="material-icons">remove_circle_outline</i>
             </div>
           </a>
-        </span>
+        </div>
+        <!-- button if clicked, render create group input box -->
+        <div>
+          <span data-toggle="modal" data-target="#action_table_dbox">
+            <a
+              href="#"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Click icon to create a group"
+              @click.prevent="gname_box_show=true, show_dialogue=true,
+            action='Create',
+            acted_on='group', fetchUsers()"
+            >
+              <div id="create_icon">
+                <a>Create</a>
+                <i class="material-icons">add_circle_outline</i>
+              </div>
+            </a>
+          </span>
+        </div>
+
+        <p>My groups</p>
+      </h1>
+
+      <!-- if action is to create group(s) render action table dialogue box-->
+      <div v-if="action=='Create' && show_dialogue">
+        <action-table-dbox
+          :action="action"
+          :acted_on="acted_on"
+          :gname_box_show="gname_box_show"
+          :errors="errors"
+          @close="resetErrors"
+          :users_to_add="users"
+          @createGroup="createGroup"
+        ></action-table-dbox>
       </div>
+      <hr>
 
-      <p>My groups</p>
-    </h1>
-
-    <!-- if action is to create group(s) render action table dialogue box-->
-    <div v-if="action=='Create' && show_dialogue">
-      <action-table-dbox
-        :action="action"
-        :acted_on="acted_on"
-        :gname_box_show="gname_box_show"
-        :errors="errors"
-        @close="resetErrors"
-        :users_to_add="users"
-        @createGroup="createGroup"
-      ></action-table-dbox>
-    </div>
-    <hr>
-
-    <!-- tables tabs -->
-    <div id="tabs" class="container">
-      <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item">
-          <a
-            class="nav-link active"
-            id="tab1"
-            data-toggle="tab"
-            data-placement="bottom"
-            title="Groups i created"
-            href="#owned_groups"
-            role="tab"
-            @click.prevent="
+      <!-- tables tabs -->
+      <div id="tabs" class="container">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <a
+              class="nav-link active"
+              id="tab1"
+              data-toggle="tab"
+              data-placement="bottom"
+              title="Groups i created"
+              href="#owned_groups"
+              role="tab"
+              @click.prevent="
             curr_tab=1
            "
-          >Groups I created</a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            id="tab2"
-            data-toggle="tab"
-            data-placement="bottom"
-            title="Groups i belong to"
-            href="#member_groups"
-            role="tab"
-            @click.prevent="
+            >Groups I created</a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="tab2"
+              data-toggle="tab"
+              data-placement="bottom"
+              title="Groups i belong to"
+              href="#member_groups"
+              role="tab"
+              @click.prevent="
             curr_tab=2
              "
-          >Groups I belong to</a>
-        </li>
-      </ul>
-    </div>
+            >Groups I belong to</a>
+          </li>
+        </ul>
+      </div>
 
-    <div class="container" id="entries_search">
-      <!--entries for tab1 -->
-      <div v-if="curr_tab==1">
-        <div class="btn-group">
-          <span id="entries_label">
-            <label>Entries:</label>
-          </span>
-          <!--entries button -->
-          <span data-toggle="dropdown">
-            <button
-              class="btn btn-primary btn-sm dropdown-toggle"
-              type="button"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Select number of items to show per table page"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >{{entries_per_table_page_tab1}}</button>
-          </span>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
-            <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
-            <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
-            <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
+      <div class="container" id="entries_search">
+        <!--entries for tab1 -->
+        <div v-if="curr_tab==1">
+          <div class="btn-group">
+            <span id="entries_label">
+              <label>Entries:</label>
+            </span>
+            <!--entries button -->
+            <span data-toggle="dropdown">
+              <button
+                class="btn btn-primary btn-sm dropdown-toggle"
+                type="button"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Select number of items to show per table page"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >{{entries_per_table_page_tab1}}</button>
+            </span>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
+              <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
+              <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
+              <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- entries for tab2 -->
-      <div v-if="curr_tab==2">
-        <div class="btn-group">
-          <label id="entries_label">Entries:</label>
-          <!--entries button -->
-          <span data-toggle="dropdown">
-            <button
-              class="btn btn-primary btn-sm dropdown-toggle"
-              type="button"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Select number of items to show per table page"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >{{entries_per_table_page_tab2}}</button>
-          </span>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
-            <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
-            <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
-            <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
+        <!-- entries for tab2 -->
+        <div v-if="curr_tab==2">
+          <div class="btn-group">
+            <label id="entries_label">Entries:</label>
+            <!--entries button -->
+            <span data-toggle="dropdown">
+              <button
+                class="btn btn-primary btn-sm dropdown-toggle"
+                type="button"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Select number of items to show per table page"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >{{entries_per_table_page_tab2}}</button>
+            </span>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" @click.prevent="selectEntries(4)" href="#">4</a>
+              <a class="dropdown-item" @click.prevent="selectEntries(8)" href="#">8</a>
+              <a class="dropdown-item" @click.prevent="selectEntries(16)" href="#">16</a>
+              <a class="dropdown-item" @click.prevent="selectEntries(32)" href="#">32</a>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- search bar -->
-      <div v-if="curr_tab==1" class="input-group">
-        <label>Search</label>
-        <div class="input-group-append search">
-          <input
-            type="text"
-            class="form-control input-sm"
-            maxlength="32"
-            v-on:keyup="filterTab1"
-            v-model="search_tab1"
-            placeholder="Group name.."
-          >
-        </div>
-      </div>
-      <div v-if="curr_tab==2" class="input-group">
-        <label>Search</label>
-        <div class="input-group-append search">
-          <input
-            type="text"
-            class="form-control input-sm"
-            maxlength="32"
-            v-on:keyup="filterTab2"
-            v-model="search_tab2"
-            placeholder="Group name.."
-          >
-        </div>
-      </div>
-    </div>
-
-    <!-- table of groups user created for tab1-->
-    <div class="tab-content">
-      <div class="tab-pane active" id="owned_groups" role="tabpanel">
-        <b-table
-          sticky-header="600px"
-          head-variant="light"
-          hover
-          :items="groupPageContentTab1"
-          :fields="fields"
-        >
-          <!--table headers -->
-          <!-- index header -->
-          <template v-slot:head(index)>
-            <input type="checkbox" @click="checkAll()" v-model="all_selected">
-            <a
-              href="#"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Click to unsort table"
-              @click.prevent="deSort()"
-            >Select All</a>
-          </template>
-          <!-- name header -->
-          <template v-slot:head(g_name)>
-            <a
-              href="#"
-              style="display:block"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Click to sort table"
-              @click.prevent="sortItems()"
+        <!-- search bar -->
+        <div v-if="curr_tab==1" class="input-group">
+          <label>Search</label>
+          <div class="input-group-append search">
+            <input
+              type="text"
+              class="form-control input-sm"
+              maxlength="32"
+              v-on:keyup="filterTab1"
+              v-model="search_tab1"
+              placeholder="Group name.."
             >
-              Name
-              <!-- icons -->
-              <i
-                v-if="sort_order_tab1_icon==0"
-                style="color:grey;float:right;padding-top:4px"
-                class="fa fa-fw fa-sort"
-              ></i>
-              <i
-                v-if="sort_order_tab1_icon==-1"
-                style="color:grey;float:right;padding-top:4px"
-                class="fa fa-fw fa-sort-up"
-              ></i>
-              <i
-                v-if="sort_order_tab1_icon==1"
-                style="color:grey;float:right;padding-top:4px"
-                class="fa fa-fw fa-sort-down"
-              ></i>
-            </a>
-          </template>
+          </div>
+        </div>
+        <div v-if="curr_tab==2" class="input-group">
+          <label>Search</label>
+          <div class="input-group-append search">
+            <input
+              type="text"
+              class="form-control input-sm"
+              maxlength="32"
+              v-on:keyup="filterTab2"
+              v-model="search_tab2"
+              placeholder="Group name.."
+            >
+          </div>
+        </div>
+      </div>
 
-          <!--table rows -->
-          <template v-slot:cell(index)="data">
-            <div class="p-2 pl-4">
-              <input
-                class="checkbox"
-                type="checkbox"
-                id="checkbox"
-                @click="select()"
-                v-model="selected_groups"
-                :value="data.item.gid"
+      <!-- table of groups user created for tab1-->
+      <div class="tab-content">
+        <div class="tab-pane active" id="owned_groups" role="tabpanel">
+          <b-table
+            sticky-header="600px"
+            head-variant="light"
+            hover
+            :items="groupPageContentTab1"
+            :fields="fields"
+          >
+            <!--table headers -->
+            <!-- index header -->
+            <template v-slot:head(index)>
+              <input type="checkbox" @click="checkAll()" v-model="all_selected">
+              <a
+                href="#"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Click to unsort table"
+                @click.prevent="deSort()"
+              >Select All</a>
+            </template>
+            <!-- name header -->
+            <template v-slot:head(g_name)>
+              <a
+                href="#"
+                style="display:block"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Click to sort table"
+                @click.prevent="sortItems()"
               >
-              {{data.index +1}}
-            </div>
-          </template>
+                Name
+                <!-- icons -->
+                <i
+                  v-if="sort_order_tab1_icon==0"
+                  style="color:grey;float:right;padding-top:4px"
+                  class="fa fa-fw fa-sort"
+                ></i>
+                <i
+                  v-if="sort_order_tab1_icon==-1"
+                  style="color:grey;float:right;padding-top:4px"
+                  class="fa fa-fw fa-sort-up"
+                ></i>
+                <i
+                  v-if="sort_order_tab1_icon==1"
+                  style="color:grey;float:right;padding-top:4px"
+                  class="fa fa-fw fa-sort-down"
+                ></i>
+              </a>
+            </template>
 
-          <!--group name column -->
-          <template v-slot:cell(g_name)="data">
-            <div>
-              <b-link
-                class="p-2"
-                :href="'/group?uid='+curr_user+'&gid=' + data.item.gid"
-              >{{data.item.g_name}}</b-link>
-            </div>
-          </template>
-        </b-table>
+            <!--table rows -->
+            <template v-slot:cell(index)="data">
+              <div class="p-2 pl-4">
+                <input
+                  class="checkbox"
+                  type="checkbox"
+                  id="checkbox"
+                  @click="select()"
+                  v-model="selected_groups"
+                  :value="data.item.gid"
+                >
+                {{data.index +1}}
+              </div>
+            </template>
 
-        <!--paginator-->
-        <div id="paginate" v-if="reload_paginator && curr_tab==1">
-          <paginator
-            ref="paginate"
-            :items="searched_content_tab1"
-            :page_size="entries_per_table_page_tab1"
-            @changePage="onChangePage"
-            class="pagination"
-            style="display:inline-block"
-          ></paginator>
+            <!--group name column -->
+            <template v-slot:cell(g_name)="data">
+              <div>
+                <b-link
+                  class="p-2"
+                  :href="'/group?uid='+curr_user+'&gid=' + data.item.gid"
+                >{{data.item.g_name}}</b-link>
+              </div>
+            </template>
+          </b-table>
+
+          <!--paginator-->
+          <div id="paginate" v-if="reload_paginator && curr_tab==1">
+            <paginator
+              ref="paginate"
+              :items="searched_content_tab1"
+              :page_size="entries_per_table_page_tab1"
+              @changePage="onChangePage"
+              class="pagination"
+              style="display:inline-block"
+            ></paginator>
+          </div>
         </div>
-      </div>
 
-      <!-- table of groups user belongs to for tab2 -->
-      <div class="tab-pane" id="member_groups" role="tabpanel">
-        <b-table
-          sticky-header="600px"
-          head-variant="light"
-          hover
-          :items="groupPageContentTab2"
-          :fields="fields"
-        >
-          <!--table headers -->
-          <!-- index header -->
-          <template v-slot:head(index)>
-            <a
-              href="#"
-              style="display:block"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Click to unsort table"
-              @click.prevent="deSort()"
-            >Index</a>
-          </template>
+        <!-- table of groups user belongs to for tab2 -->
+        <div class="tab-pane" id="member_groups" role="tabpanel">
+          <b-table
+            sticky-header="600px"
+            head-variant="light"
+            hover
+            :items="groupPageContentTab2"
+            :fields="fields"
+          >
+            <!--table headers -->
+            <!-- index header -->
+            <template v-slot:head(index)>
+              <a
+                href="#"
+                style="display:block"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Click to unsort table"
+                @click.prevent="deSort()"
+              >Index</a>
+            </template>
 
-          <!-- name header -->
-          <template v-slot:head(g_name)>
-            <a
-              href="#"
-              style="display:block"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Click to sort table"
-              @click.prevent="sortItems()"
-            >
-              Name
-              <!-- icons -->
-              <i
-                v-if="sort_order_tab2_icon==0"
-                style="color:grey;float:right;padding-top:4px"
-                class="fa fa-fw fa-sort"
-              ></i>
-              <i
-                v-if="sort_order_tab2_icon==-1"
-                style="color:grey;float:right;padding-top:4px"
-                class="fa fa-fw fa-sort-up"
-              ></i>
-              <i
-                v-if="sort_order_tab2_icon==1"
-                style="color:grey;float:right;padding-top:4px"
-                class="fa fa-fw fa-sort-down"
-              ></i>
-            </a>
-          </template>
+            <!-- name header -->
+            <template v-slot:head(g_name)>
+              <a
+                href="#"
+                style="display:block"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Click to sort table"
+                @click.prevent="sortItems()"
+              >
+                Name
+                <!-- icons -->
+                <i
+                  v-if="sort_order_tab2_icon==0"
+                  style="color:grey;float:right;padding-top:4px"
+                  class="fa fa-fw fa-sort"
+                ></i>
+                <i
+                  v-if="sort_order_tab2_icon==-1"
+                  style="color:grey;float:right;padding-top:4px"
+                  class="fa fa-fw fa-sort-up"
+                ></i>
+                <i
+                  v-if="sort_order_tab2_icon==1"
+                  style="color:grey;float:right;padding-top:4px"
+                  class="fa fa-fw fa-sort-down"
+                ></i>
+              </a>
+            </template>
 
-          <!-- table columns -->
-          <template v-slot:cell(index)="data">
-            <div class="p-2">{{data.index +1}}</div>
-          </template>
+            <!-- table columns -->
+            <template v-slot:cell(index)="data">
+              <div class="p-2">{{data.index +1}}</div>
+            </template>
 
-          <!-- group name column-->
-          <template v-slot:cell(g_name)="data">
-            <div>
-              <b-link
-                class="p-2"
-                :href="'/group?uid='+curr_user+'&gid=' + data.item.gid"
-              >{{data.item.g_name}}</b-link>
-            </div>
-          </template>
-        </b-table>
+            <!-- group name column-->
+            <template v-slot:cell(g_name)="data">
+              <div>
+                <b-link
+                  class="p-2"
+                  :href="'/group?uid='+curr_user+'&gid=' + data.item.gid"
+                >{{data.item.g_name}}</b-link>
+              </div>
+            </template>
+          </b-table>
 
-        <!--paginator-->
+          <!--paginator-->
 
-        <div id="paginate" v-if="reload_paginator && curr_tab==2">
-          <paginator
-            ref="paginate2"
-            :items="searched_content_tab2"
-            :page_size="entries_per_table_page_tab2"
-            @changePage="onChangePage"
-            class="pagination"
-            style="display:inline-block"
-          ></paginator>
+          <div id="paginate" v-if="reload_paginator && curr_tab==2">
+            <paginator
+              ref="paginate2"
+              :items="searched_content_tab2"
+              :page_size="entries_per_table_page_tab2"
+              @changePage="onChangePage"
+              class="pagination"
+              style="display:inline-block"
+            ></paginator>
+          </div>
         </div>
       </div>
     </div>
@@ -425,7 +427,6 @@ export default {
   },
 
   computed: {
-
     /**
      * @description returns the page content which is set by the page_of_groups variable.
      * This variable is updated by paginator everytime it updates and calls the onChangePage method
@@ -433,14 +434,16 @@ export default {
      */
     groupPageContentTab1() {
       if (this.curr_tab == 1) {
-        if (this.page_content_tab1.length == 0) {
+        if (
+          this.page_content_tab1.length == 0 ||
+          this.searched_content_tab1 == 0
+        ) {
           return [];
         }
       } //search filter
 
       return this.page_of_groups;
     },
-
 
     /**
      * @description returns the page content which is set by the page_of_groups variable.
@@ -449,7 +452,10 @@ export default {
      */
     groupPageContentTab2() {
       if (this.curr_tab == 2) {
-        if (this.page_content_tab2.length == 0) {
+        if (
+          this.page_content_tab2.length == 0 ||
+          this.searched_content_tab2 == 0
+        ) {
           return [];
         }
       } //search filter
@@ -476,7 +482,6 @@ validation, and resetting variables
         this.reload_paginator = true;
       });
     },
-
 
     /**
      * @description filters cases by title search. Method is called per each key press
