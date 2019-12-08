@@ -154,7 +154,7 @@ class ItemController extends Controller
         $type = $request->i_type;
         $order = $request->order;
         $name = $request->i_name;
-        Item::where(['iid' => $request->input('iid')])->update(['i_content' => $content,'i_type' => $type,'order' => $order,'i_name' => $name]);
+        Item::where(['iid' => $request->iid])->update(['i_content' => $content,'i_type' => $type,'order' => $order,'i_name' => $name]);
         return response()->json(['message'=>'Updated item successfully']);
     }
 

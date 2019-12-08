@@ -38,7 +38,8 @@ class case_study extends Model
         'c_description',
         'c_thumbnail',
         'c_incident_date',
-        'c_group'
+        'c_group',
+        'times_updated'
     ];
     /**
      * The attributes that should be casted to native types.
@@ -54,7 +55,8 @@ class case_study extends Model
         'c_date' => 'date:Y-m-d',
         'c_incident_date' => 'date:Y-m-d',
         'c_owner' => 'integer',
-        'c_group' => 'integer'
+        'c_group' => 'integer',
+        'times_updated' => 'integer'
     ];
     /**
      * Validation rules
@@ -69,7 +71,9 @@ class case_study extends Model
         'c_date' => 'required',
         'c_incident_date' => 'nullable',
         'c_owner' => 'required',
-        'c_group' => 'nullable'
+        'c_group' => 'nullable',
+        'c_group' => 'required',
+        'times_updated' => 'required'
     ];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

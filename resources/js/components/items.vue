@@ -38,7 +38,11 @@
               >Group: {{group.g_name}}</h5>
             </div>
           </template>
-          <div class="dropdown" style="text-align: center;" v-if="editing && (curr_user_uid == owner)">
+          <div
+            class="dropdown"
+            style="text-align: center;"
+            v-if="editing && (curr_user_uid == owner)"
+          >
             <button
               v-for="(group,index) in groups"
               :key="index + 30"
@@ -227,6 +231,7 @@
               v-if="this.editing"
             >Add Image Item</button>
             <button
+              id="Submit Button"
               class="btn btn-primary btn-sm mb-2"
               style="background: #c0c0c0; border-color: #c0c0c0; color: black"
               v-on:click="onSubmit(items);"
@@ -365,6 +370,7 @@ import draggable from "vuedraggable";
 import datepicker from "vuejs-datepicker";
 import linkify from "vue-linkify";
 import { asyncLoading } from "vuejs-loading-plugin";
+import { nextTick } from "q";
 export default {
   //name: 'app',
   components: {
@@ -378,6 +384,7 @@ export default {
       //Date variables and formatting
       date_format: "yyyy-MM-dd",
       new_date: new Date(),
+
       //Booleans for keeping track of editor states
       editing: false,
       loading: false,
@@ -388,6 +395,7 @@ export default {
       is_collab: false,
       is_viewer: false,
       permission_to_edit: false,
+
       //Initializing global variables
       curr_user_uid: "",
       curr_user: "",
@@ -401,6 +409,9 @@ export default {
       initial_date: "",
       gid: "",
       uid: "",
+      initial_times_updated: "",
+      latest_times_updated: "",
+
       //Initializing global arrays
       images: [],
       image_names: [],
@@ -418,6 +429,7 @@ export default {
       groups: [],
       curr_user_groups: [],
       all_groups: [],
+
       //Empty data containers for reused temp variables
       user: { uid: "", first_name: "", last_name: "", u_role: "" },
       group: { g_name: "", g_owner: "" },
@@ -429,7 +441,8 @@ export default {
         c_status: "",
         c_date: "",
         c_owner: "",
-        c_group: ""
+        c_group: "",
+        times_updated: ""
       },
       item: {
         iid: "",
@@ -451,6 +464,9 @@ export default {
   },
   created() {
     this.preview[0] = false;
+    //Verifying user permissions
+    this.getUser();
+    this.verifyUserAccess();
     //Initializing item data
     this.fetchItems();
     this.fetchCaseItems();
@@ -458,51 +474,48 @@ export default {
     //Initializing case study data
     this.fetchCase();
     this.fetchCaseParameters();
-    this.fetchUsersEditing(this.cid);
-
-    //Verifying user permissions
-    this.getUser();
-    this.verifyUserAccess();
   },
 
   mounted() {
-    Echo.join(`Case.${this.cid}`)
-      .listenForWhisper("editing", e => {
-        this.case_to_show.c_title = e.title;
-        this.items.forEach(element => {
-          this.items[element] = e.items[element];
-        });
-        console.log("hello from channel");
-      })
-      .here(users => {
-        this.usersEditing = users;
-      })
-      .joining(user => {
-        this.usersEditing.push(this.curr_user_uid);
-      })
-      .leaving(user => {
-        this.usersEditing = this.usersEditing.filter(
-          u => u != this.curr_user_uid
-        );
-      })
-      .listenForWhisper("saved", e => {
-        //this.case_study.c_status = e.status;
-        // clear is status after 1s
-        setTimeout(() => {
-          //this.case_study.c_status = "";
-        }, 1000);
-      });
+    //Deprecated synch functions
+    // Echo.join(`Case.${this.cid}`)
+    //   .listenForWhisper("editing", e => {
+    //     this.case_to_show.c_title = e.title;
+    //     this.items.forEach(element => {
+    //       this.items[element] = e.items[element];
+    //     });
+    //     console.log("hello from channel");
+    //   })
+    //   .here(users => {
+    //     this.usersEditing = users;
+    //   })
+    //   .joining(user => {
+    //     this.usersEditing.push(this.curr_user_uid);
+    //   })
+    //   .leaving(user => {
+    //     this.usersEditing = this.usersEditing.filter(
+    //       u => u != this.curr_user_uid
+    //     );
+    //   })
+    //   .listenForWhisper("saved", e => {
+    //     //this.case_study.c_status = e.status;
+    //     // clear is status after 1s
+    //     setTimeout(() => {
+    //       //this.case_study.c_status = "";
+    //     }, 1000);
+    //   });
   },
   methods: {
     editingCase() {
-      let channel = Echo.join(`Case.${this.cid}`);
+      //Deprecated synch functions
+      //let channel = Echo.join(`Case.${this.cid}`);
       //show changes after 1s
-      setTimeout(() => {
-        channel.whisper("editing", {
-          title: this.case_to_show.c_title,
-          items: this.items
-        });
-      }, 1000);
+      // setTimeout(() => {
+      //   channel.whisper("editing", {
+      //     title: this.case_to_show.c_title,
+      //     items: this.items
+      //   });
+      // }, 1000);
     },
     getUser() {
       this.urlParams = new URLSearchParams(window.location.search); //get url parameters
@@ -544,7 +557,7 @@ export default {
     fetchCaseItems() {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      fetch("/case/items?cid=" + this.cid + "&uid=" + this.curr_user_uid)
+      fetch("/case/items?uid=" + this.curr_user_uid + "&cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.items = res.data;
@@ -554,14 +567,13 @@ export default {
     },
     //Fetch total items to add/delete items without conflict
     fetchItems() {
-      fetch("/items?uid=" + this.curr_user_uid)
+      this.path = new URLSearchParams(window.location.search); //get url parameters
+      this.cid = Number(this.path.get("cid")); //get cid
+      fetch("/items?uid=" + this.curr_user_uid + "&cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           var all_items = res.data;
           this.total_items = all_items.length + 1;
-          //console.log(text);
-          //console.log(this.curr_user_uid);
-          //console.log(res.data);
         })
         .catch(err => console.log(err));
     },
@@ -569,7 +581,7 @@ export default {
     fetchCase() {
       this.path = new URLSearchParams(window.location.search); //get url parameters
       this.cid = Number(this.path.get("cid")); //get cid
-      fetch("/case?cid=" + this.cid + "&uid=" + this.curr_user_uid)
+      fetch("/case?uid=" + this.curr_user_uid + "&cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.case_to_show = res.data;
@@ -578,15 +590,29 @@ export default {
           this.gid = Number(this.case_to_show[0].c_group);
           this.initial_date = this.case_to_show[0].c_incident_date;
           this.initial_gid = this.gid;
-          this.fetchUser(this.owner);
-          this.fetchGroup(this.gid);
+          this.initial_times_updated = Number(
+            this.case_to_show[0].times_updated
+          );
+          this.latest_times_updated = this.initial_times_updated;
+
+          this.fetchUser();
+          this.fetchGroup();
           //console.log(res.data);
         })
         .catch(err => console.log(err));
     },
+    //Check if case has been updated while current user was editing
+    fetchCaseUpdatedTimes() {
+      fetch("/case?uid=" + this.curr_user_uid + "&cid=" + this.cid)
+        .then(res => res.json())
+        .then(res => {
+          this.latest_times_updated = Number(res.data[0].times_updated);
+        })
+        .catch(err => console.log(err));
+    },
     //Fetch user details
-    fetchUser(uid) {
-      fetch("/user?uid=" + this.uid)
+    fetchUser() {
+      fetch("/user?uid=" + this.curr_user_uid)
         .then(res => res.json())
         .then(res => {
           this.users = res.data;
@@ -595,7 +621,6 @@ export default {
     },
     //Fetch owner groups
     fetchUserGroups() {
-      //console.log(this.owner);
       fetch("/group/show?uid=" + this.owner)
         .then(res => res.json())
         .then(res => {
@@ -610,16 +635,17 @@ export default {
         .catch(err => console.log(err));
     },
     //Fetch users actively editing current cid
-    fetchUsersEditing(cid) {
-      fetch("/user/edit?cid=" + cid + "&uid=" + this.curr_user_uid)
+    fetchUsersEditing() {
+      fetch("/user/edit?uid=" + this.curr_user_uid + "&cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.usersEditing = res.data;
+          console.log(res.data);
         })
         .catch(err => console.log(err));
     },
     //Update list of active users editing current cid
-    updateUsersEditing(user_editing_id) {
+    updateUsersEditing() {
       if (this.editing) {
         this.updated_user_edit = {
           current_edit_cid: this.cid
@@ -629,7 +655,7 @@ export default {
           current_edit_cid: "0"
         };
       }
-      fetch("/user/edit?uid=" + user_editing_id, {
+      fetch("/user/edit?uid=" + this.curr_user_uid, {
         method: "post",
         headers: new Headers({
           "Content-Type": "application/json",
@@ -645,12 +671,11 @@ export default {
         .catch(err => {
           console.error("Error: ", err);
         });
-      this.fetchUsersEditing(this.cid); //Fetch users once updated
     },
     //Fetch case group details if a group is set, if not set as independent
-    fetchGroup(gid) {
+    fetchGroup() {
       if (this.gid != 0) {
-        fetch("/case/group?gid=" + this.gid + "&uid=" + this.curr_user_uid)
+        fetch("/case/group?uid=" + this.curr_user_uid, +"&gid=" + this.gid)
           .then(res => res.json())
           .then(res => {
             this.groups = res.data;
@@ -663,7 +688,7 @@ export default {
     },
     //Fetch case parameters via cid
     fetchCaseParameters() {
-      fetch("/case/parameters?cid=" + this.cid + "&uid=" + this.curr_user_uid)
+      fetch("/case/parameters?uid=" + this.curr_user_uid + "&cid=" + this.cid)
         .then(res => res.json())
         .then(res => {
           this.case_parameters = res.data;
@@ -733,6 +758,10 @@ export default {
       form_data.append("c_thumbnail", this.case_to_show[0].c_thumbnail);
       form_data.append("c_status", this.case_to_show[0].c_status);
       form_data.append("c_date", this.case_to_show[0].c_date);
+      form_data.append(
+        "times_updated",
+        Number(this.case_to_show[0].times_updated) + 1
+      );
       if (this.new_date instanceof Date) {
         form_data.append("c_incident_date", this.new_date.toUTCString());
       } else {
@@ -776,6 +805,7 @@ export default {
       form_data.append("order", Number(item_to_update.order));
       form_data.append("i_name", item_to_update.i_name);
       form_data.append("i_content", item_to_update.i_content);
+      form_data.append("iid", item_to_update.iid);
       //console.log(form_data.get('i_content'));
       // this.$loading(true);
       // const login = new Promise((resolve, reject) => {});
@@ -784,22 +814,19 @@ export default {
       //   .then()
       //   .catch();
       // this.$loading(false);
-      fetch(
-        "/item/update?iid=" + item_to_update.iid + "&uid=" + this.curr_user_uid,
-        {
-          method: "post",
-          headers: new Headers({
-            //"Content-Type": "multipart/form-data",
-            "Access-Control-Origin": "*",
-            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-          }),
-          //body: JSON.stringify(this.updated_item)
-          body: form_data
-        }
-      )
+      fetch("/item/update?uid=" + this.curr_user_uid, {
+        method: "post",
+        headers: new Headers({
+          //"Content-Type": "multipart/form-data",
+          "Access-Control-Origin": "*",
+          "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }),
+        //body: JSON.stringify(this.updated_item)
+        body: form_data
+      })
         .then(res => res.text())
         .then(text => {
-          console.log(text);
+          //console.log(text);
         })
         .catch(err => {
           console.error("Error: ", err);
@@ -866,21 +893,15 @@ export default {
 
       //Confirm item to be deleted
       if (confirm("Do you want to delete this item permanently?")) {
-        fetch(
-          "/item/remove?iid=" +
-            Number(item_to_remove.iid) +
-            "&uid=" +
-            this.curr_user_uid,
-          {
-            method: "delete",
-            headers: new Headers({
-              "Content-Type": "application/json",
-              "Access-Control-Origin": "*",
-              "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-            }),
-            body: JSON.stringify(item_to_remove)
-          }
-        )
+        fetch("/item/remove?uid=" + this.curr_user_uid, {
+          method: "delete",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            "Access-Control-Origin": "*",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+          }),
+          body: JSON.stringify(item_to_remove)
+        })
           .then(res => res.text())
           .then(text => {
             console.log(text);
@@ -919,11 +940,17 @@ export default {
     //When a user edits a content field this method updates users editing and item content
     onEdit() {
       this.editing = true;
+
       this.fetchUserGroups();
+
       //update list of editors
-      for (let user in this.users) {
-        this.updateUsersEditing(this.curr_user_uid);
-      }
+      this.updateUsersEditing();
+
+      //getting updated list of editors nextTick so it waits
+      this.$nextTick(() => {
+        this.fetchUsersEditing();
+      });
+
       //update case parameters
       for (let option in this.case_parameters) {
         this.selected_options_content[option] = this.case_parameters[
@@ -946,17 +973,17 @@ export default {
       }
 
       //Reload data from database
-      this.fetchGroup(this.gid);
+      this.fetchGroup();
       this.fetchItems();
       this.fetchCaseItems();
       this.fetchCase();
       this.fetchCaseParameters();
       this.fetchParameterOptions();
+      this.fetchUsersEditing(); //Fetch users once updated
 
       //Update editors list
-      for (let user in this.users) {
-        this.updateUsersEditing(this.curr_user_uid);
-      }
+      this.updateUsersEditing();
+
       //Reset parameter options
       for (let option in this.selected_options_content) {
         this.case_parameters[option].o_content = this.selected_options_content[
@@ -969,22 +996,54 @@ export default {
     },
     //Submit new data to database
     onSubmit(items) {
-      this.editing = false;
-      for (let index in this.preview) {
-        this.preview[index] = false;
-      }
-
-      this.preview_thumbnail = false;
-      this.case_to_show[0].c_incident_date = this.new_date;
-      this.initial_date = this.case_to_show[0].c_incident_date;
+      //checking latest amount of submissions case study has
+      this.$nextTick(() => {
+        this.fetchCaseUpdatedTimes();
+        this.fetchUsersEditing();
+      });
+      console.log(this.initial_times_updated);
+      console.log(this.latest_times_updated);
 
       this.$nextTick(() => {
-        this.updateParams();
-        this.updateItems(items);
-        this.updateCase();
+        if (this.initial_times_updated != this.latest_times_updated) {
+          //return message and disable button cause because an edit has occurred
+          document.getElementById("Submit Button").disabled = true;
+
+          //alert box
+          this.dialogue = bootbox.alert({
+            title: "Submit",
+            message:
+              "The case study has been updated by another user while you were editting. Refresh the page to obtain latest changes, be sure to save your changes on your computer as they will not be saved in the database.",
+            backdrop: true,
+
+            className: "text-center"
+          });
+          //alert box CSS styling
+          this.dialogue.find(".modal-content").css({
+            height: "350px",
+            "font-size": "18px",
+            "text-align": "center"
+          });
+          this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+        } else {
+          this.editing = false;
+          for (let index in this.preview) {
+            this.preview[index] = false;
+          }
+
+          this.preview_thumbnail = false;
+          this.case_to_show[0].c_incident_date = this.new_date;
+          this.initial_date = this.case_to_show[0].c_incident_date;
+
+          this.$nextTick(() => {
+            this.updateParams();
+            this.updateItems(items);
+            this.updateCase();
+            this.updateUsersEditing();
+          });
+          //window.location.reload();
+        }
       });
-      //window.location.reload();
-      //this.updateParameter();
     },
     //Update selected group for case study
     onSelectGroup(selected_gid) {

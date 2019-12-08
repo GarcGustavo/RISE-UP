@@ -1,7 +1,8 @@
 <template>
+<div class="container">
   <div class="body mb-5 mt-5">
     <!-- Page Heading/Breadcrumbs -->
-    <h1 class="mb-3 text-center">About</h1>
+    <h1 class=" mb-3 text-center">About</h1>
     <hr />
     <div class="info">
       <div class="card mt-5 border-0">
@@ -42,6 +43,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>

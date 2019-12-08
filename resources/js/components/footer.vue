@@ -1,41 +1,37 @@
 <template>
   <!-- Footer -->
-  <div class="wrapper">
-    <footer class="page-footer">
-      <div style="background-color: #333333;">
-        <div class="container">
-          <div class="container-fluid text-center text-md-left">
-            <!-- Grid row -->
-            <div class="row">
-              <!-- Grid column -->
-              <div class="col-7 mt-md-0 mt-3 justify-content-md-start" id="Acknowledgment">
-                <!-- Content -->
-                <img src="../../../public/images/nsf_logo.jpg">
-                <h5 class="text-uppercase text-white">Acknowledgment</h5>
-                <p class="text-white font-weight-light">
-                  This material is based upon work supported by the National Science Foundation under grants
-                  No. HSI #1832468 and 1832427 (HSI program).
-                </p>
-              </div>
-              <!-- Grid column -->
-
-              <div class="col-5 mt-md-0 mt-3 justify-content-md-start" id="Disclaimer">
-                <!-- Content -->
-                <h5 class="text-uppercase text-white">Disclaimer</h5>
-                <p class="text-white font-weight-light">
-                  Any opinions, findings, and conclusions or recommendations expressed in this material are
-                  those of the authors and do not necessarily reflect the views of the National Science Foundation.
-                </p>
-              </div>
-              <!-- Grid column -->
-            </div>
-            <!-- Grid row -->
+  <footer class="page-footer">
+    <div style="background-color: #333333;">
+      <div class="text-center text-md-left">
+        <!-- Grid row -->
+        <div class="row">
+          <!-- Grid column -->
+          <div class="col-7 mt-md-0 mt-3 justify-content-md-start" id="Acknowledgment">
+            <!-- Content -->
+            <img src="../../../public/images/nsf_logo.jpg" />
+            <h5 class="text-uppercase text-white">Acknowledgment</h5>
+            <p class="text-white font-weight-light">
+              This material is based upon work supported by the National Science Foundation under grants
+              No. HSI #1832468 and 1832427 (HSI program).
+            </p>
           </div>
-          <!-- Footer Links -->
+          <!-- Grid column -->
+
+          <div class="col-5 mt-md-0 mt-3 justify-content-md-start" id="Disclaimer">
+            <!-- Content -->
+            <h5 class="text-uppercase text-white">Disclaimer</h5>
+            <p class="text-white font-weight-light">
+              Any opinions, findings, and conclusions or recommendations expressed in this material are
+              those of the authors and do not necessarily reflect the views of the National Science Foundation.
+            </p>
+          </div>
+          <!-- Grid column -->
         </div>
+        <!-- Grid row -->
       </div>
-    </footer>
-  </div>
+      <!-- Footer Links -->
+    </div>
+  </footer>
 </template>
 
 <script>

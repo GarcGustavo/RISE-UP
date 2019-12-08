@@ -109,7 +109,8 @@ class CaseController extends Controller
             'c_date' => 'case study creation date',
             'c_incident_date' => 'case study incident date',
             'c_owner' => 'case study author',
-            'c_group' => 'case study group'
+            'c_group' => 'case study group',
+            'times_updated' => 'case study times updated'
         );
         //validation rules
         $validator = Validator::make($request->all(), [
@@ -122,7 +123,7 @@ class CaseController extends Controller
             'c_date' => 'bail|required|date_format:Y-m-d',
             'c_incident_date' => 'bail|nullable|date_format:Y-m-d',
             'c_owner' => 'bail|required|integer',
-            'c_group' => 'nullable',
+            'c_group' => 'nullable'
         ]);
         //apply renaming validation
         $validator->setAttributeNames($attributes);
@@ -141,6 +142,7 @@ class CaseController extends Controller
         $case_study->c_incident_date = $request->input('c_incident_date');
         $case_study->c_owner = $request->input('c_owner');
         $case_study->c_group = $request->input('c_group');
+        $case_study->times_updated = 0;
         //process request
         if ($case_study->save()) {
 
@@ -268,6 +270,7 @@ class CaseController extends Controller
         $c_incident_date = $request->c_incident_date;
         $c_owner = $request->c_owner;
         $c_group = $request->c_group;
+        $times_updated = $request->times_updated;
 
         Case_Study::where(['cid' => $cid])
         ->update([
@@ -276,7 +279,8 @@ class CaseController extends Controller
             'c_thumbnail' => $c_thumbnail,
             'c_status' => $c_status,
             'c_date' => $c_date,
-            'c_owner' => $c_owner
+            'c_owner' => $c_owner,
+            'times_updated' => $times_updated,
             ]);
 
         if($c_group == 0){
