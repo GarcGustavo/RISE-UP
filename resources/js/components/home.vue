@@ -1,5 +1,5 @@
 <template>
-  <div class="body mb-5 mt-5">
+  <div class="container-fluid mt-auto">
     <h1 class="mb-3 mt-3">Look for case studies within IReN:</h1>
     <!-- Search -->
     <div
