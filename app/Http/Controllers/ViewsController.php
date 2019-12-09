@@ -163,7 +163,7 @@ class ViewsController extends Controller
     public function search(Request $request)
     {
         $validate =Validator::make($request->all(), [
-            'q' => 'required'
+            'q' => 'required|string'
         ]);
 
         $q = $request->input('q');

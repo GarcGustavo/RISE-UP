@@ -142,8 +142,8 @@ Route::post('/case/create', 'CaseController@store')->middleware('sessionCheck');
 //created.
 Route::delete('case/remove', 'CaseController@destroy')->middleware('sessionCheck');
 
-
-
+//List case parameter selected options
+Route::get('/case/recents', 'CaseController@recentsCaseStudies')->middleware('sessionCheck');
 
 /********CASE ITEMS*********/
 //List items
@@ -178,7 +178,6 @@ Route::get('/case/parameters','Case_ParametersController@getCaseParameters')->mi
 
 //List case parameter selected options
 Route::get('/case/{id}/options','Case_ParametersController@getCaseSelectedOptions')->middleware('sessionCheck');
-
 
 //Update title/description in a case
 Route::post('/case/update', 'CaseController@updateCaseDetails')->middleware('sessionCheck');

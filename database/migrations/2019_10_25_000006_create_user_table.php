@@ -19,6 +19,7 @@ class CreateUserTable extends Migration
             $table->string('last_name', 255);
             $table->string('email', 255);
             $table->string('contact_email', 255);
+            $table->string('organization', 255);
             $table->date('u_creation_date');
             $table->date('u_expiration_date');
             $table->boolean('u_ban_status');

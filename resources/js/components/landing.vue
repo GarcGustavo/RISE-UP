@@ -1,10 +1,9 @@
 <template>
-  <div class="body mb-xl-5 mt-xl-5">
-      <hr>
-        <div class="row justify-content-center mb-3">
-<h1>Choose a login method:</h1>
-        </div>
-    <div class="row justify-content-center">
+  <div class="container-fluid mt-auto">
+    <div class="row justify-content-center mt-5">
+        <h1>Choose a login method:</h1>
+    </div>
+    <div class="row justify-content-center mt-5">
       <form id="loginForm" action="/landing/oauth-login" method="POST">
         <div class="form-group form-control-lg">
           <input type="hidden" :value="csrfToken2" name="_token" />
@@ -19,7 +18,7 @@
         </div>
       </form>
     </div>
-     <hr>
+    <hr>
     <div v-if="error" class="alert alert-danger mt-3">
       <p>{{error}}</p>
     </div>

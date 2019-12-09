@@ -1,39 +1,77 @@
 
 <template>
-  <div class="body mb-5 mt-5">
-    <!-- buttons to create or remove a case study -->
-    <h1 class="mb-3">
-    <div>
-        <a
-          href="#"
-          data-toggle="tooltip"
-          data-placement="bottom"
-          title="Click button to edit profile."
-          @click.prevent="update=1"
-        >
-          <div id="remove_icon">
-            <a>Edit</a>
-            <i class="material-icons">create</i>
-          </div>
-        </a>
+  <div class="container-fluid mb-5 mt-5">
+    <!-- Grid row 1 -->
+    <div class="row">
+      <!-- Grid column 1.1 -->
+      <div class="col-9">
+        <h1>
+          <p>Profile</p>
+        </h1>
       </div>
-      <p>Profile</p>
-    </h1>
-    <hr>
-    <div class="container-fluid text-center text-md-left">
-      <!-- Grid row -->
-      <div class="row">
-        <!-- Grid column -->
-        <div class="col-5 mt-md-0 mt-3 justify-content-md-start" id="avatar">
-          <!-- Content -->
-          <!-- <img src="../../../public/images/nsf_logo.jpg" /> -->
-          <div class="circle">
-            <img :src="google_info.picture" alt="User photo" />
-          </div>
-        </div>
-        <!-- Grid column -->
+      <!-- End Column 1.1 -->
 
-        <div v-if="update" class="col-lg-5 mt-md-0 mt-3 justify-content-md-center" id="updateInfo">
+      <!-- Grid column 1.2 -->
+      <div class="col-3 float-right">
+        <!-- buttons to update or cancel profile changes; if statement-->
+        <div class="align-content-center" v-if="!update">
+          <a
+            href="#"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Click button to edit profile"
+            @click.prevent="update=1"
+          >
+            <div id="update_icon">
+              <a>Edit</a>
+              <i class="material-icons">create</i>
+            </div>
+          </a>
+        </div>
+
+        <div v-else>
+          <a
+            href="#"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Click button to cancel changes"
+            @click.prevent="update=0"
+          >
+            <div id="update_icon">
+              <a>Cancel</a>
+              <i class="material-icons">cancel</i>
+            </div>
+          </a>
+        </div>
+        <!-- End if statement -->
+      </div>
+      <!-- End Column 1.2 -->
+    </div>
+    <!-- End Grid row 1 -->
+
+    <hr />
+
+    <!-- Grid 2 row -->
+    <div class="row align-items-center">
+
+      <!-- Grid 2.1 column -->
+      <div class="col-3" id="avatar">
+        <!-- Content -->
+        <!-- <img src="../../../public/images/nsf_logo.jpg" /> -->
+        <div class="circle">
+          <img :src="google_info.picture" alt="User photo" />
+        </div>
+      </div>
+      <!-- End Grid 2.1 column -->
+
+     <div class="col-1">
+     </div>
+
+      <!-- Grid 2.2 column -->
+      <div class="col-6" id="updateInfo">
+
+          <!-- If statement -->
+        <div v-if="update">
           <!-- Content -->
           <div v-if="u_errors" class="alert alert-danger">
             <ul v-for="e in u_errors" :key="e">
@@ -51,7 +89,6 @@
                   name="first"
                   id="u_fname"
                   :value="user.first_name"
-                  :placeholder="user.first_name"
                 />
               </div>
               <div class="form-goup mt-3">
@@ -61,7 +98,6 @@
                   name="last"
                   id="u_lname"
                   :value="user.last_name"
-                  :placeholder="user.last_name"
                 />
               </div>
               <div class="form-goup mt-3">
@@ -71,7 +107,6 @@
                   name="contact_email"
                   id="u_email"
                   :value="user.contact_email"
-                  :placeholder="user.contact_email"
                 />
               </div>
               <div class="form-goup mt-3">
@@ -80,8 +115,7 @@
                   type="text"
                   name="organization"
                   id="u_organization"
-                  value="Estudiante"
-                  placeholder="Organization"
+                  :value="user.organization"
                 />
               </div>
               <div class="form-group mt-3">
@@ -90,8 +124,9 @@
             </form>
           </div>
         </div>
-        <!-- Grid column -->
-        <div v-else class="col-lg-5 mt-md-0 mt-3 justify-content-md-center" id="updateInfo">
+
+        <!-- Else of if statement -->
+        <div v-else>
           <!-- Content -->
           <div class="card shadow">
             <div class="card-body">
@@ -99,14 +134,18 @@
               <p>Name: {{user_name}}</p>
               <p>Contact Email: {{user.contact_email}}</p>
               <p>Role: {{user_role}}</p>
-              <p>Organization: </p>
+              <p>Organization: {{user.organization}}</p>
               <p>Account Expiration Date: {{user.u_expiration_date}}</p>
             </div>
           </div>
         </div>
+        <!-- End if statement -->
+
       </div>
-      <!-- Grid row -->
+      <!-- Grid 2.2 column -->
+
     </div>
+    <!-- Grid 2 row -->
 
     <!-- tables tabs and search bar -->
     <div id="tabs" class="container">
@@ -701,44 +740,43 @@ said request via Laravel's eloquent ORM. The data is appended to the
             this.user = res.data[0];
             this.user_name = this.user.first_name + " " + this.user.last_name;
             if (this.user.u_role == 4) {
-              this.user_role = 'Admin';
+              this.user_role = "Admin";
             } else if (this.user.u_role == 3) {
-              this.user_role = 'Collaborator';
+              this.user_role = "Collaborator";
             } else {
-              this.user_role = 'Viewer';
+              this.user_role = "Viewer";
             }
             console.log(this.user);
           });
       }
     },
-    getMessages(){
-        this.u_errors = JSON.parse(this.urlParams.get("u_errors"));
-        this.u_message = this.urlParams.get("u_message");
-        if(this.u_errors){
-            this.update = 1;
-        }
-        if(this.u_message != ""){
-            this.confirmationBox();
-        }
+    getMessages() {
+      this.u_errors = JSON.parse(this.urlParams.get("u_errors"));
+      this.u_message = this.urlParams.get("u_message");
+      if (this.u_errors) {
+        this.update = 1;
+      }
+      if (this.u_message != "") {
+        this.confirmationBox();
+      }
     },
-        confirmationBox(){
-             //alert box
-            this.dialogue = bootbox.alert({
-              title: "Confirmation Message",
-              message: this.u_message,
-              backdrop: true,
-              className: "text-center"
-            });
+    confirmationBox() {
+      //alert box
+      this.dialogue = bootbox.alert({
+        title: "Confirmation Message",
+        message: this.u_message,
+        backdrop: true,
+        className: "text-center"
+      });
 
-            //alert box CSS styling
-            this.dialogue.find(".modal-content").css({
-              height: "250px",
-              "font-size": "18px",
-              "text-align": "center"
-            });
-            this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
-
-        },
+      //alert box CSS styling
+      this.dialogue.find(".modal-content").css({
+        height: "250px",
+        "font-size": "18px",
+        "text-align": "center"
+      });
+      this.dialogue.find(".modal-body").css({ "padding-top": "40px" });
+    },
 
     getGoogleInfo() {
       if (this.curr_user != "") {
@@ -919,12 +957,12 @@ said request via Laravel's eloquent ORM. The data is appended to the
 
 <style lang="scss" scoped>
 .circle {
-  border-color: #333333 #3490dc;
+  border-color: #3490dc;
   border-image: none;
   border-radius: 50% 50% 50% 50%;
   border-style: solid;
   border-width: 25px;
-  max-width: 60%;
+  max-width: 100%;
   //   height: 200px;
   //   width: 200px;
   overflow: hidden;
@@ -1000,39 +1038,38 @@ input[type="checkbox"] {
 }
 
 /* add/remove icons position in relation to header */
-h1 i {
+h1 i,
+i {
   float: right;
-  margin: 10px;
-  margin-top: 20px;
+  // margin: auto;
+  // margin-top: 20px;
 }
 /* change icon background when hovered */
 h1 i:hover,
-h1 a:hover {
+h1 a:hover,
+a:hover {
   color: #428bca;
 }
 /* icon initial color */
-a {
+a,
+h1 a {
   color: black;
 }
 /*move remove icon to right */
-#remove_icon {
+#update_icon {
   float: right;
+  margin: auto;
+  margin-top: 15px;
 }
 
 /*remove label font size, and margin in relation to icon*/
-#remove_icon a {
-  font-size: 18px;
-  margin-left: 15px;
-}
-
-/*move create icon to right */
-#create_icon {
-  float: right;
+#update_icon i {
+  margin-left: 10px;
 }
 
 /*remove label font size, and margin in relation to icon*/
-#create_icon a {
-  font-size: 18px;
+#update_icon a {
+  font-size: 20px;
 }
 
 /*entries container padding in relation to table */

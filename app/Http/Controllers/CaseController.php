@@ -50,6 +50,21 @@ class CaseController extends Controller
     }
 
     /**
+     * Display the specified case study.
+     *
+     * @param  Request $request
+     * @return \App\Http\Resources\case_study
+     */
+    public function recentsCaseStudies(Request $request)
+    {
+        $qty = $request->input('qty');
+
+        $cases = Case_Study::all()->orderBy('c_date','desc')->take($qty)->get();
+
+        return Case_StudyResource::collection($cases);
+    }
+
+    /**
         * Display the case studies of the specified group.
         *
         * @param  Request $request
