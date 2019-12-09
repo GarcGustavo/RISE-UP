@@ -85,6 +85,19 @@
             else
                 $('#menu-toggle').text('Hide');
         });
+
+        $("#banId").change(function() {
+            if(this.checked) {
+                bootbox.confirm("Sure you want to ban this user?", function(result){ 
+                    if(result){
+                        $("#banId").prop('checked', true);
+                    }else{
+                        $("#unbanId").prop('checked', true);
+                    }
+                });
+            }
+        });
+
     </script>
 
 <!-- End of Admin sidebar -- Toggle menu JQuery code -->  

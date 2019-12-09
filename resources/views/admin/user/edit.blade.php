@@ -2,13 +2,15 @@
 
 @section('adminMainContent')
 
+
+
     <h1 class="text-center">
         {{$user->first_name }} {{$user->last_name }}
     </h1>
     <h3 class="text-center">Editing</h3>
-    <form action="/admin/user/edit?urtd={{$user->uid}}&uid={{$uid}}" method="post">
-        @method('PUT')
-        @csrf
+    <form id="adminEditUserForm" action="/admin/user/edit?urtd={{$user->uid}}&uid={{$uid}}" method="post">
+        
+        <input type="hidden" id="csrf-token"     name="_token"                 value="{{ Session::token() }}" >
         <input type="hidden" id="u_role_upgrade" name="u_role_upgrade_request" value="0">
 
         <div class="container">
@@ -41,6 +43,7 @@
                 <div class="form-group">
                     <label for="exp_date" class="font-weight-bold">Expiration Date</label>
                     <small id="exp_dateHelp" class="form-text text-muted">Update this user's account expiration date.</small>
+                    
                     <input type="date" id="exp_date" name="u_expiration_date" value="{{$user->u_expiration_date}}">
                     <small id="exp_dateHelp" class="form-text text-muted">Month / Day / Year.</small>
                 </div>

@@ -237,7 +237,7 @@ Route::get('/admin/user/edit', 'AdminUserController@edit')->middleware('sessionC
 //Software Requirement 2.67. The web application will allow an Admin to approve the user requests for Collaborator role permissions.
 //Software Requirement 2.74. The web application will allow an Admin to ban a Collaborator, removing their role permissions.
 //Software Requirement 2.75. The web application will allow an Admin to unban a Collaborator, restoring their role permissions.
-Route::put('/admin/user/edit', 'AdminUserController@update')->middleware('sessionCheck');
+Route::post('/admin/user/edit', 'AdminUserController@update')->middleware('sessionCheck');
 
 
 
