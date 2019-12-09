@@ -18,7 +18,7 @@ class AdminUserController extends Controller
             ->where('uid', '=', $urtd)
             ->get();
         if(count($users) == 1){
-            return view('admin.user.edit', ['user' => $users[0], 'uid'=> $uid]);
+            return view('admin.user.edit', ['user' => $users[0], 'uid'=> $uid, 'urtd'=> $urtd]);
         }else{
             return view('errors.404');
         }
@@ -31,7 +31,7 @@ class AdminUserController extends Controller
         $uid = $request->input('uid');;
         $validatedData = request()->validate([
             'u_role' => ['required'],
-            'u_expiration_date' => ['required'],
+            'u_expiration_date' => ['required|date|after_or_equal:now '],
             'u_ban_status' => ['required'],
             'u_role_upgrade_request' => ['required'],
         ]);
@@ -44,6 +44,6 @@ class AdminUserController extends Controller
         $user->u_role_upgrade_request = $validatedData['u_role_upgrade_request'];
         //dd($user);
         $user->save();
-        return redirect('/admin/users-requests?uid='.$uid);
+        return redirect('/admin/users-requests?uid=' . $uid);
     }
 }
