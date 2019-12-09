@@ -240,6 +240,8 @@ Route::get('/admin/user/edit', 'AdminUserController@edit')->middleware('sessionC
 Route::post('/admin/user/edit', 'AdminUserController@update')->middleware('sessionCheck');
 
 
+Route::put('/admin/user/roleUpgradeReq/{id}', 'AdminUserController@roleUpgradeReq');
+
 
 //Presents latest action for each user
 //User Requirement 2.59. The web application will allow an Admin to view the recent activity of users
@@ -252,6 +254,10 @@ Route::get('/admin/users-actions', 'AdminUsersActionsController@index')->name('a
 //and groups in the system, the activities are:
 //1. Creation of case studies   2. Updates to case studies   3. Deletion of case studies
 Route::get('/admin/user-actions', 'AdminUsersActionsController@show')->middleware('sessionCheck');
+
+Route::post('/admin/users-actions', 'AdminUsersActionsController@store');
+Route::put('/admin/users-actions/{id}', 'AdminUsersActionsController@update');
+Route::delete('/admin/users-actions/{id}', 'AdminUsersActionsController@destroy');
 
 
 //Presents group name, the group owner, the latest action, and creation date for each group.
@@ -267,6 +273,11 @@ Route::get('/admin/groups-actions', 'AdminGroupsActionsController@show')->middle
 
 
 
+/*
+Route::post('/admin/groups-actions', 'AdminGroupsActionsController@store');
+Route::put('/admin/groups-actions/{id}', 'AdminGroupsActionsController@update');
+Route::delete('/admin/groups-actions/{id}', 'AdminGroupsActionsController@destroy');
+*/
 
 //List filters
 //Software Requirement 2.63  The web application will allow an Admin to view a list of search filters for case studies.

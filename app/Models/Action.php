@@ -21,13 +21,16 @@ class action extends Model
 
     public $table = 'Action';
 
+    protected  $primaryKey = 'aid';
+
     protected $dates = false;
 
     public $timestamps = false;
 
     public $fillable = [
         'a_type',
-        'a_user'
+        'a_user', 
+        'a_date'
     ];
 
     /**
