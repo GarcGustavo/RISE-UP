@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid mt-auto">
-      <hr>
     <div class="row justify-content-center mt-5">
         <h1>Choose a login method:</h1>
     </div>

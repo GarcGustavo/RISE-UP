@@ -39,9 +39,7 @@
 
         <iren-header></iren-header>
 
-        <div id="content" class="container-fluid">
-            @yield('content')
-        </div>
+        @yield('content')
 
         <iren-footer></iren-footer>
 
