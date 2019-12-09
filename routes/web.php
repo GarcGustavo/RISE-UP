@@ -143,10 +143,7 @@ Route::post('/case/create', 'CaseController@store')->middleware('sessionCheck');
 Route::delete('case/remove', 'CaseController@destroy')->middleware('sessionCheck');
 
 //List case parameter selected options
-Route::('/case/recents', 'CaseController@recentsCaseStudies')->middleware('sessionCheck');
-
-
-
+Route::get('/case/recents', 'CaseController@recentsCaseStudies')->middleware('sessionCheck');
 
 /********CASE ITEMS*********/
 //List items
