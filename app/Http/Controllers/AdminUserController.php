@@ -29,9 +29,10 @@ class AdminUserController extends Controller
     public function update(Request $request){
         $urtd = $request->input('urtd');;
         $uid = $request->input('uid');;
+        
         $validatedData = request()->validate([
             'u_role' => ['required'],
-            'u_expiration_date' => ['required|date|after_or_equal:now '],
+            'u_expiration_date' => ['after_or_equal:tomorrow'],
             'u_ban_status' => ['required'],
             'u_role_upgrade_request' => ['required'],
         ]);
