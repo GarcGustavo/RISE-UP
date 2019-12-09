@@ -42,6 +42,7 @@
                     <label for="exp_date" class="font-weight-bold">Expiration Date</label>
                     <small id="exp_dateHelp" class="form-text text-muted">Update this user's account expiration date.</small>
                     <input type="date" id="exp_date" name="u_expiration_date" value="{{$user->u_expiration_date}}">
+                    <small id="exp_dateHelp" class="form-text text-muted">Month / Day / Year.</small>
                 </div>
                 @if($errors->has('u_expiration_date'))
                     <span class="alert alert-danger">{{ $errors->first('u_expiration_date') }}</span>
